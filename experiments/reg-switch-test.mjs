@@ -14,6 +14,11 @@ function check(name, actual, expected) {
 const mkEvents = (format, n, playersEach, date = '2026-12-03T12:00:00Z') =>
   Array.from({length: n}, () => ({format, date, players: playersEach}));
 
+// A0: the official end (Pokémon HOME news 878, checked Nov 25) and the page's own copy of it agree
+check('mc-end-official', REG_END['M-C'], '2026-12-02T01:59:00Z');
+{ const sh = fs.readFileSync(new URL('../app/src/v2/shell.js', import.meta.url), 'utf8').match(/^V2\.REG_END_MC = '([^']+)';/m);
+  check('page-copy-matches', sh && sh[1], REG_END['M-C']); }
+
 // A1: Event -> regulation date & tag edges
 check('pacific-eve-before-end', regAt('M-C', '2026-12-01T17:58:00-08:00'), 'M-C');
 check('pacific-eve-exact-end', regAt('M-C', '2026-12-01T17:59:00-08:00'), 'M-D');

@@ -1,0 +1,153 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>NastyPlot My Team concept</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300..900&family=Instrument+Sans:wght@400..700&display=swap">
+<style>
+:root{--bg:#FBFAF7;--ink:#17161A;--ink2:#48454F;--ink3:#66636E;--rule:rgba(23,22,26,.1);--plot:#0078BF;--ok:#16693B;--warn:#9A5E00;--u:"Unbounded",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif}
+html[data-theme=dark]{--bg:#17161C;--ink:#F3F1ED;--ink2:#CBC7D2;--ink3:#A9A5B1;--rule:rgba(255,255,255,.13);--plot:#4AAEF5;--ok:#5FD08F;--warn:#F2B544}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style}
+.page{width:1440px;overflow:hidden;position:relative}
+.u{font-family:var(--u);font-style:italic;font-weight:900;letter-spacing:-.02em}
+.wash{position:absolute;border-radius:50%;pointer-events:none;filter:blur(34px)}
+header{height:76px;display:flex;align-items:center;padding:0 96px;position:relative;z-index:5}
+header .logo svg{height:40px;display:block}
+nav{display:flex;gap:38px;margin:0 auto}nav a{font:500 15px/1 var(--b);color:var(--ink2)}nav a.on{color:var(--ink);font-weight:700;position:relative}
+nav a.on::after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:5px;background:var(--plot);transform:skewX(-24deg)}
+header .s{display:flex;align-items:center;gap:10px;color:var(--ink2);font:500 15px/1 var(--b)}
+main{padding:28px 96px 72px;position:relative}
+.eyebrow{display:flex;align-items:center;gap:10px;font:500 13px/1 var(--b);letter-spacing:.06em;color:var(--ink3)}
+.eyebrow::before{content:"";width:20px;height:7px;background:var(--plot);transform:skewX(-24deg)}
+.link{font:600 15px/1 var(--b);color:var(--ink);border-bottom:1.5px solid currentColor;padding-bottom:2px;white-space:nowrap}
+.q{font:500 15px/1 var(--b);color:var(--ink2);white-space:nowrap}
+.pill{display:inline-flex;align-items:center;height:48px;padding:0 26px;background:var(--ink);color:var(--bg);font:800 13px/1 var(--u);font-style:italic;white-space:nowrap;clip-path:polygon(13px 0,100% 0,calc(100% - 13px) 100%,0 100%)}
+/* top: name, the six on one floor, the grade */
+.top{position:relative;display:grid;grid-template-columns:280px 1fr 272px;gap:24px;align-items:end;min-height:318px;padding-bottom:26px}
+.top h1{font-size:40px;line-height:1.04;margin:14px 0 10px}
+.top .sub{font-size:14px;color:var(--ink2);line-height:1.5}
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;margin-top:20px}
+.strip{position:relative;display:grid;grid-template-columns:repeat(6,1fr);align-items:end;height:292px}
+.strip .floor{position:absolute;left:0;right:0;bottom:78px;height:1px;background:linear-gradient(90deg,transparent,var(--rule) 10%,var(--rule) 90%,transparent)}
+.slot{position:relative;text-align:center;height:292px}
+.slot img{position:absolute;left:50%;width:132px;height:132px;margin-left:-66px;z-index:2}
+.slot .sh{position:absolute;left:50%;bottom:72px;width:92px;height:13px;margin-left:-46px;border-radius:50%;background:radial-gradient(closest-side,rgba(30,20,50,.32),transparent)}
+[data-theme=dark] .slot .sh{background:radial-gradient(closest-side,rgba(255,255,255,.22),transparent)}
+.slot .t{position:absolute;left:-10px;right:-10px;bottom:0;height:68px;font:600 13px/1.3 var(--b)}
+.slot .t small{display:block;font-weight:500;color:var(--ink3)}
+.slot .t em{display:inline-block;margin-top:3px;font:800 13px/1 var(--u);font-style:italic;letter-spacing:-.02em;color:var(--ink3)}
+.slot.lead .t em{color:var(--plot)}.slot.bench img{filter:saturate(.5) opacity(.7)}
+.slot.on .t::after{content:"";position:absolute;left:22%;right:22%;bottom:-6px;height:5px;background:var(--ink);transform:skewX(-24deg)}
+.grade{text-align:right;position:relative;z-index:2}
+.grade .big{display:flex;align-items:flex-end;justify-content:flex-end;gap:14px}
+.grade .let{flex:none;width:80px;height:66px;display:grid;place-items:center;background:var(--ink);color:var(--bg);font-size:44px;clip-path:polygon(18px 0,100% 0,calc(100% - 18px) 100%,0 100%)}
+.grade .sc{font-size:62px;line-height:.9;white-space:nowrap}.grade .sc small{font:500 20px/1 var(--b);font-style:normal;letter-spacing:0;color:var(--ink3);margin-left:4px}
+.bar{height:6px;background:var(--rule);margin:16px 0 8px;position:relative;transform:skewX(-24deg)}.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--ok)}
+.grade p{font-size:14px;color:var(--ink2)}.grade p b{color:var(--ink);font-weight:700}
+/* three working columns */
+.cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 56px;border-top:1px solid var(--rule);padding-top:30px;position:relative}
+h3{display:flex;align-items:baseline;gap:12px;font-size:22px;line-height:1.1}h3 i{font-style:inherit;color:var(--plot);font-size:15px}
+h3+.h{font-size:14px;color:var(--ink3);margin:4px 0 16px}
+.selhead{display:flex;align-items:center;gap:14px;margin-bottom:14px}.selhead img{width:84px;height:84px;margin:-8px 0 -8px -8px}
+.selhead b{display:block;font:700 17px/1.2 var(--b)}.selhead span{font-size:14px;color:var(--ink2)}
+.selhead .ty{color:#fff;font-size:13px}.ty{display:inline-block;font:700 13px/1 var(--b);padding:4px 9px;border-radius:999px;color:#fff;margin-right:4px}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.kv div{padding:10px 0;border-top:1px solid var(--rule)}.kv small{display:block;font-size:13px;color:var(--ink3)}.kv b{font-weight:600;font-size:15px}.kv em{font-style:normal;font-size:13px;color:var(--ink3);margin-left:6px}
+.mv{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.mv div{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--rule);font-weight:600}
+.mv div::before{content:"";flex:none;width:14px;height:7px;background:var(--c);transform:skewX(-24deg)}.mv small{margin-left:auto;font-size:13px;font-weight:500;color:var(--ink3)}
+.row{display:flex;align-items:center;gap:18px;margin-top:16px}
+.seg{display:inline-flex;gap:3px;padding:3px;border-radius:999px;background:rgba(128,124,136,.14)}
+.seg span{height:30px;padding:0 13px;border-radius:999px;font:600 13px/30px var(--b);color:var(--ink2);white-space:nowrap}.seg span.on{background:var(--bg);color:var(--ink);box-shadow:0 3px 10px -5px rgba(30,20,50,.4)}
+.th{display:grid;grid-template-columns:22px 40px 1fr auto;align-items:center;gap:8px;height:37px;border-top:1px solid var(--rule)}
+.th .k{font:800 13px/1 var(--u);font-style:italic;color:var(--ink3)}.th img{width:38px;height:38px}.th b{font-weight:600}
+.st{font:600 13px/1 var(--b);white-space:nowrap}.st.w{color:var(--ok)}.st.h{color:var(--ok)}.st.s{color:var(--warn)}
+.next{margin-top:14px;padding-top:14px;border-top:1px solid var(--rule)}
+.stack{display:flex;height:8px;gap:2px;transform:skewX(-24deg);margin:10px 0 8px}.stack i{display:block}
+.lg{display:flex;gap:16px;font-size:13px;color:var(--ink2)}.lg b{color:var(--ink)}
+.opt{display:grid;grid-template-columns:104px 1fr;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--ink3)}
+.say{margin-top:12px;padding:14px 0 14px 18px;border-left:5px solid var(--ok);font:600 15px/1.45 var(--b)}
+.mini{padding:13px 0;border-top:1px solid var(--rule);display:flex;justify-content:space-between;gap:14px;font-size:15px}.mini b{font-weight:600}.mini span{color:var(--ink3);white-space:nowrap}
+/* team sheet */
+.sheet{margin-top:40px;border-top:1px solid var(--rule);padding-top:30px}
+.sr{display:grid;grid-template-columns:22px 44px 150px 210px 1fr 230px 40px;align-items:center;gap:12px;height:46px;border-top:1px solid var(--rule);font-size:15px}
+.sr.hd{height:30px;border:0;font-size:13px;color:var(--ink3)}
+.sr .k{font:800 13px/1 var(--u);font-style:italic;color:var(--ink3)}.sr img{width:42px;height:42px}.sr b{font-weight:600}.sr .n{font-size:13px;color:var(--plot);font-weight:600}.sr .e{font-weight:600;border-bottom:1.5px solid currentColor;justify-self:end;line-height:1.2}
+.sr span{color:var(--ink2)}
+.folds{display:grid;grid-template-columns:repeat(3,1fr);gap:0 56px;margin-top:8px}
+footer{display:flex;align-items:center;gap:40px;padding:0 96px;height:96px;border-top:1px solid var(--rule);font-size:14px;color:var(--ink2)}
+footer svg{height:28px;display:block}footer .r{margin-left:auto;display:flex;gap:32px}
+/* richer pass, to match the phone */
+:root{--okbg:#DDF1E3;--warnbg:#FBEBC6}html[data-theme=dark]{--okbg:rgba(95,208,143,.16);--warnbg:rgba(242,181,68,.16)}
+.top::before{content:"";position:absolute;left:-96px;right:-96px;top:-150px;bottom:40px;background:var(--sky);filter:blur(60px);opacity:.7;z-index:-1}
+.slot .pn{position:absolute;left:7px;right:7px;bottom:86px;height:122px;transform:skewY(-6deg);border-radius:6px;overflow:hidden}
+.slot .pn::after{content:"";position:absolute;inset:-60%;background:repeating-conic-gradient(from 10deg at 50% 70%,rgba(255,255,255,.4) 0 2deg,transparent 2deg 18deg)}
+[data-theme=dark] .slot .pn::after{opacity:.3}
+.rt{display:inline-block;margin-top:5px;padding:4px 11px;font:800 13px/1 var(--u);font-style:italic;letter-spacing:-.02em;clip-path:polygon(7px 0,100% 0,calc(100% - 7px) 100%,0 100%)}
+.rt.lead{background:var(--plot);color:#fff}.rt.back{background:var(--ink);color:var(--bg)}.rt.bench{background:var(--rule);color:var(--ink2)}
+h3{align-items:center}h3 i{width:46px;height:38px;display:grid;place-items:center;background:var(--plot);color:#fff!important;font-size:14px!important;clip-path:polygon(9px 0,100% 0,calc(100% - 9px) 100%,0 100%)}
+.st{padding:6px 10px;transform:skewX(-10deg);font-weight:700}.st.w{background:var(--okbg)}.st.s{background:var(--warnbg)}.st.h{border:1.5px solid var(--okbg)}
+.th{height:40px}
+.mv{gap:8px 16px;margin-top:8px}.mv div{height:44px;padding:0 12px;border-top:0;border-left:5px solid var(--c);background:color-mix(in srgb,var(--c) 15%,var(--bg))}.mv div::before{display:none}
+.say{background:var(--okbg);padding:14px 16px}
+</style></head><body><div class="page">
+<header><div class="logo">%LOGO%</div><nav><a>Build</a><a class="on">My team</a><a>Battle</a><a>Meta</a></nav>
+  <div class="s"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Search</span></div></header>
+<main>
+  <div class="top" id="top"></div>
+  <div class="cols" id="cols"></div>
+  <div class="sheet" id="sheet"></div>
+</main>
+<footer>%LOGO2%<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How scoring works</span><span>About</span><span>Send feedback</span></div></footer>
+</div><script>
+/*DATA*/
+const DARK=document.documentElement.dataset.theme==='dark',K=DARK?.7:1,$=id=>document.getElementById(id);
+const TY={Normal:'#8E908C',Rock:'#A69C6A',Dragon:'#5060E1',Ground:'#9A6230'};
+function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
+async function meta(src){const im=new Image();im.src=src;await im.decode();const S=64,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.drawImage(im,0,0,S,S);const d=x.getImageData(0,0,S,S).data,B=Array.from({length:18},()=>[0,0,0,0]);let y1=0;
+  for(let i=0;i<d.length;i+=4){if(d[i+3]<60)continue;y1=Math.max(y1,Math.floor(i/4/S));if(d[i+3]<200)continue;const[h,s,l]=hsl(d[i],d[i+1],d[i+2]);if(s<.28||l<.2||l>.86)continue;const b=B[Math.floor(h/20)%18],w=s*s;b[0]+=d[i]*w;b[1]+=d[i+1]*w;b[2]+=d[i+2]*w;b[3]+=w;}
+  const o=B.map(b=>({w:b[3],c:b[3]?b.slice(0,3).map(v=>Math.round(v/b[3])):[205,205,215]})).sort((a,b)=>b.w-a.w);return{a:o[0].c,bot:(y1+1)/S};}
+const rgb=(c,a)=>`rgba(${c[0]},${c[1]},${c[2]},${a})`;
+(async()=>{
+  const M={};await Promise.all(D.team.map(async m=>{M[m.n]=await meta(m.img);}));
+  $('top').style.setProperty('--sky',`linear-gradient(100deg,${D.team.map(m=>rgb(M[m.n].a,.4*K)).join(',')})`);
+  const slots=D.team.map((m,i)=>{const k=M[m.n],z=132;return `<div class="slot ${m.role.toLowerCase()} ${i?'':'on'}"><i class="pn" style="background:linear-gradient(160deg,${rgb(k.a,(m.role==='Bench'?.45:.85)*K)},${rgb(k.a,(m.role==='Bench'?.2:.45)*K)})"></i><i class="sh"></i><img src="${m.img}" style="bottom:${78-(1-k.bot)*z}px"><div class="t">${m.d}<small>${m.item}</small><span class="rt ${m.role.toLowerCase()}">${m.role}</span></div></div>`;}).join('');
+  $('top').innerHTML=`<div><div class="eyebrow">My team · 6 of 6 · Sun team</div><h1 class="u">${D.name}</h1>
+      <p class="sub">A sample team, here to show how NastyPlot works. <span class="link" style="font-size:14px">Build your own</span> or <span class="link" style="font-size:14px">import a team</span>.</p>
+      <div class="acts"><span class="pill">Update saved team ➜</span><span class="q">Saved teams</span><span class="q">My Box</span><span class="q">Compare</span><span class="q">Share</span><span class="q">Copy for Showdown</span><span class="q">⋯</span></div></div>
+    <div class="strip"><i class="floor"></i>${slots}</div>
+    <div class="grade"><div class="big"><span class="let u">${D.letter}</span><span class="sc u">${D.score}<small>/ 100</small></span></div>
+      <div class="bar"><i style="width:${D.ready}%"></i></div>
+      <p><b>${D.ready}%</b> ready for the top 30 · <b>${D.handled}</b> handled · <b>${D.shaky}</b> shaky</p>
+      <p style="margin-top:6px">Legal, <b>${D.legal}</b> checks · <span class="link" style="font-size:14px">Why A?</span></p></div>`;
+  // ---- three columns ----
+  const g=D.team[0],S=D.sel,stc=s=>s==='Well handled'?['w','✓✓']:s==='Handled'?['h','✓']:['s','~'];
+  const c1=`<div><h3 class="u"><i>01</i>Selected</h3><div class="h">Tap any Pokémon above to switch.</div>
+    <div class="selhead"><img src="${g.img}"><div><b>${g.d} ${S.types.map(t=>`<span class="ty" style="background:${TY[t]}">${t}</span>`).join('')}</b><span>Rated ${g.r}, ${S.tier} · leads with Sneasler vs the meta's top six</span></div></div>
+    <div class="kv"><div><small>Item</small><b>${g.item}</b></div><div><small>Ability</small><b>${g.ab}</b></div><div><small>Nature</small><b>${S.nature}</b><em>most run</em></div><div><small>Stat points</small><b>${S.pts}</b></div></div>
+    <div class="mv">${g.mv.map((m,i)=>`<div style="--c:${TY[S.mvT[i]]}">${m}<small>${S.mvT[i]}</small></div>`).join('')}</div>
+    <div class="row" style="border-top:1px solid var(--rule);padding-top:16px;margin-top:0"><span class="link">Edit set</span><span class="q">Info sheet ›</span><span class="q" style="margin-left:auto">Remove</span></div>
+    <div style="margin-top:26px"><div class="mini" style="border:0;padding:0 0 10px"><b>Game plan vs the meta's top six</b><span>full plan ›</span></div>
+    ${[['Lead',0,1],['Back',2,3],['Bench',4,5]].map(p=>`<div class="mini"><span style="width:56px;font:800 13px/1.5 var(--u);font-style:italic;color:${p[0]=='Lead'?'var(--plot)':'var(--ink3)'}">${p[0]}</span><b style="flex:1">${D.team[p[1]].d} + ${D.team[p[2]].d}</b></div>`).join('')}</div></div>`;
+  const tot=30,A=D.all;
+  const c2=`<div><h3 class="u"><i>02</i>Threats</h3><div class="h">Who beats you, and who handles them.</div>
+    <div class="seg" style="margin-bottom:12px"><span class="on">Top 10</span><span>vs top 12</span><span>All 30</span></div>
+    ${D.threats.map((t,i)=>{const[c,m]=stc(t.s);return `<div class="th"><span class="k">${i+1}</span><img src="${t.img}"><b>${t.d}</b><span class="st ${c}">${m} ${t.s}</span></div>`;}).join('')}
+    <div class="next"><div class="mini" style="border:0;padding:0"><b>All 30 threats</b><span>worst first ›</span></div>
+      <div class="stack"><i style="width:${A.sh/tot*100}%;background:var(--warn)"></i><i style="width:${A.ha/tot*100}%;background:var(--ok);opacity:.55"></i><i style="width:${A.wh/tot*100}%;background:var(--ok)"></i></div>
+      <div class="lg"><span><b>${A.un}</b> unanswered</span><span><b>${A.sh}</b> shaky</span><span><b>${A.ha}</b> handled</span><span><b>${A.wh}</b> well handled</span></div></div></div>`;
+  const c3=`<div><h3 class="u"><i>03</i>Fix it</h3><div class="h">What to change, best first.</div>
+    <div class="opt"><span>Suggest from</span><div class="seg"><span>My Box</span><span class="on">Box + catch</span><span>Whole roster</span></div></div>
+    <div class="opt"><span>Megas on team</span><div><div class="seg"><span>0</span><span>1</span><span class="on">2</span></div></div></div>
+    <div class="opt"><span>Swap my Mega?</span><div><div class="seg"><span class="on">No</span><span>Yes</span></div></div></div>
+    <div class="say">Nothing raises this team's grade right now, and every other swap would lower it.</div>
+    <div class="row" style="margin:14px 0 18px"><span class="link">See all suggestions</span></div>
+    
+    <div class="mini"><b>Types</b><span>what you hit, what hits you ›</span></div>
+    <div class="mini"><b>Problems and checklist</b><span>7 to look at, ${D.legal} checks ›</span></div>
+    <div class="mini"><b>Your games with this six</b><span>none yet · <span class="link" style="font-size:14px">Log a game</span></span></div></div>`;
+  $('cols').innerHTML=c1+c2+c3;
+  // ---- team sheet ----
+  $('sheet').innerHTML=`<h3 class="u"><i>04</i>Team sheet</h3><div class="h">6 sets, Reg M-C, bring 6, pick 4. <span class="link" style="font-size:14px;margin-left:8px">Open team sheet</span></div>
+    <div class="sr hd"><span></span><span></span><span>Pokémon</span><span>Item, ability</span><span>Moves</span><span></span><span></span></div>
+    ${D.team.map((m,i)=>`<div class="sr"><span class="k">${i+1}</span><img src="${m.img}"><b>${m.d}</b><span>${m.item}, ${m.ab}</span><span>${m.mv.join(' · ')}</span><span class="n">${m.note}</span><span class="e">Edit</span></div>`).join('')}`;
+  document.body.dataset.ready=1;
+})();
+</script></body></html>

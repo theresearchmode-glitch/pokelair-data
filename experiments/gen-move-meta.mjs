@@ -1,13 +1,13 @@
 // Generates app/src/data/move-meta.js (MOVE_META, SPECIES_WT) and app/src/data/move-acc.js (MOVE_ACC).
 // SOURCE OF TRUTH: Pokémon Showdown's "champions" data mod with Reg M-C data, built from GitHub source pinned at commit
-// 1242c1e2d9763ba5b85d33f13aecb89bae19ae3d (C:/Users/simra/code/pl-mech/sim). Not the npm release 0.11.11: it stops at Reg M-B and has
+// 1242c1e2d9763ba5b85d33f13aecb89bae19ae3d (C:/Users/<you>/code/pl-mech/sim). Not the npm release 0.11.11: it stops at Reg M-B and has
 // outdated Z-Mega abilities. Filtered to our own Reg M-C move and Pokémon lists.
 // Fallbacks, only where the mod lacks an entry: @smogon/calc gen 0, then @pkmn/dex gen 9 (each such case is printed).
 // Values are never typed by hand; only the RULE each variable-power move follows is named (the data keeps callbacks as code).
 // Run: node experiments/gen-move-meta.mjs [dir with pokemon-showdown] [dir with @smogon/calc + @pkmn/dex]
 import fs from 'node:fs'; import {createRequire} from 'node:module'; import {fileURLToPath} from 'node:url';
-const PS = createRequire((process.argv[2] || 'C:/Users/simra/code/pl-mech/sim/').replace(/\/?$/, '/') + 'x.js');
-const REF = createRequire((process.argv[3] || 'C:/Users/simra/code/pl-verify/').replace(/\/?$/, '/') + 'x.js');
+const PS = createRequire((process.argv[2] || 'C:/Users/<you>/code/pl-mech/sim/').replace(/\/?$/, '/') + 'x.js');
+const REF = createRequire((process.argv[3] || 'C:/Users/<you>/code/pl-verify/').replace(/\/?$/, '/') + 'x.js');
 const {Dex: PSDex} = PS('pokemon-showdown'), CH = PSDex.mod('champions');
 const {Dex} = REF('@pkmn/dex'); const {Generations, toID} = REF('@smogon/calc'); const G0 = Generations.get(0);
 const APP = fileURLToPath(new URL('../app/src/', import.meta.url)), data = fs.readFileSync(APP + 'data/data.js', 'utf8');

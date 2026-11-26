@@ -1,0 +1,77 @@
+diff --git a/app/src/v2/css/sugs.css b/app/src/v2/css/sugs.css
+index f1de424..a649761 100644
+--- a/app/src/v2/css/sugs.css
++++ b/app/src/v2/css/sugs.css
+@@ -47,7 +47,7 @@
+ /* while the next suggestions are worked out: the last ones stay, faded */
+ .sg2-stale{opacity:.45;pointer-events:none}
+ /* Problems and Team Checks: a fold at the foot of Team Checks; open, its full checks card takes the short list's place */
+-.tm-cks:has(> .sg2-fold[open])>.tm-ck,.tm-cks:has(> .sg2-fold[open])>.tm-h3{display:none}
++/* A2 proposal: the checks are listed once, so they stay visible when Things to Know is open (the rule hiding them is gone) */
+ .sg2-fold{margin-top:var(--s6);border-top:1px solid var(--rule)}
+ .sg2-fold>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--s1) var(--s3);padding:var(--s4) 0;cursor:pointer;list-style:none}
+ .sg2-fold>summary::-webkit-details-marker{display:none}
+@@ -120,3 +120,5 @@
+ .sg2-tip[aria-expanded="true"]{color:var(--on-plate)}.sg2-tip[aria-expanded="true"]::before{background:var(--plate)}
+ .sg2-tipop{position:absolute;z-index:45;display:grid;gap:var(--s2);padding:var(--s5);background:var(--surface);color:var(--ink);border-radius:var(--r-l);box-shadow:var(--shadow-lift)}
+ .sg2-tipop b{font-size:var(--t17)}.sg2-tipop p{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
++/* A2 proposal: in a one-line sub-heading the "?" must not make the line taller (it takes 22px of room, not 24) */
++.tm-sub .sg2-tip{margin-block:calc((22px - var(--tap)) / 2)}
+diff --git a/app/src/v2/pages/sugs.js b/app/src/v2/pages/sugs.js
+index 3805d62..621f179 100644
+--- a/app/src/v2/pages/sugs.js
++++ b/app/src/v2/pages/sugs.js
+@@ -108,6 +108,8 @@ V2.fixRows = (D, useA, a, tRows, P) => { const ms = D.ms, out = problemRows(ms,
+       ${I.why ? `<p class="sg2-qw">${V2.esc(V2.undot(I.why))}</p>` : ''}${I.thr ? `<p class="sg2-qw">${V2.undotHtml(I.thr)}</p>` : ''}
+       <div class="sg2-qa"><button type="button" class="np-btn2" data-v2qa="${i}"><span>${V2.esc(I.btn)}</span></button><span class="fine" title="${V2.esc(I.fitTitle)}">${I.fit}</span></div></li>`; };
+   const row = ([s, l, tx, key]) => { const Q = key && P && qa++ < 8 ? quickList(key, P, ms, used) : null, n = Q ? Q.picks.length : 0, minor = !Q && (s === 'lo' || s === 'ok');
++    // A2 proposal: a weakness the "No major weak spot" check lets pass is called minor, so the two can't read as a contradiction
++    if (l === 'Weakness' && (D.basics || []).some(x => /major weak spot/i.test(x.label) && x.ok)) l = 'Minor weakness';
+     const head = `<span class="sg2-sev ${s}">${V2.esc(l)}</span><span class="sg2-pt">${V2.undotHtml(tx)}</span>`;
+     if (!n) return `<div class="sg2-prob${minor ? ' minor' : ''}">${head}${Q && Q.note ? `<p class="fine sg2-qn">${Q.note}</p>` : ''}</div>`;
+     return `<details class="sg2-prob sg2-pf" data-v2pk="${V2.esc(key)}"${V2.fx.open.has(key) ? ' open' : ''}><summary>${head}<span class="sg2-fixn">${n} fix${n > 1 ? 'es' : ''}</span></summary><div class="sg2-qbox"><p class="sg2-k">Quick add</p><ul class="sg2-qps">${Q.picks.map(pl => pick(key, pl)).join('')}</ul></div></details>`; };
+@@ -125,13 +127,14 @@ V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const use
+   // the verdict: legal and items, threats, checks, real results, your games, type balance
+   const hand = !V.illegal && V.RD && CH.hand(V.RD) ? ` · ${CH.handTxt(V.RD, true)}` : '';
+   const chips = [V.score != null ? `<span><b>${V.score}%</b> ready${V2.tip('readiness')}</span>` : '', CK ? `<span><b>${CK.pass}/${CK.n}</b> checks${V2.tip('checklist')}</span>` : '', `<span class="${V.illegal ? 'bad' : 'ok'}"><b>${V.illegal ? 'Not legal' : 'Legal'}</b></span>`].join('');
+-  const vd = `<div class="sg2-vd ${V.lvl}"><p class="sg2-vh">${V2.esc(V2.undot(V.head + hand))}</p><p class="sg2-vc">${chips}</p><dl>${V.rows.map(r => `<div><dt>${r[0]}</dt><dd>${V2.undotHtml(r[1])}</dd></div>`).join('')}</dl>${typeof regNote === 'function' ? regNote('fine') : ''}</div>`;
+-  const sub = [pr.real.length ? pr.real.length + ' to look at' : 'Nothing big to fix', CK ? `${CK.pass}/${CK.n} checks` : '', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
++  const vd = `<div class="sg2-vd ${V.lvl}"><dl>${V.rows.filter(r => !/^Checklist$/.test(r[0])).map(r => `<div><dt>${r[0]}</dt><dd>${V2.undotHtml(r[1])}</dd></div>`).join('')}</dl>${typeof regNote === 'function' ? regNote('fine') : ''}</div>`;
++  // A2 proposal: the fold holds the things to know and the read that appears nowhere else; the checks are listed once, above
++  const sub = [pr.real.length ? `${pr.real.length} thing${pr.real.length === 1 ? '' : 's'} to know` : 'Nothing to know', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
+   // A6 (Sim's fix plan): one live "Working out…" message at load, not two; Suggestions' own line is the one read out
+   const isOpen = !!LS.get('cc2.chf.rfix', null), probs = P ? pr.html : `<p class="tm-sub">Working out the fixes for your team…</p>${V2.fx.last ? `<div class="sg2-stale" inert aria-busy="true">${V2.fx.last}</div>` : ''}`;
+   if (P) V2.fx.last = pr.html;
+-  return `<details class="sg2-fold" data-v2fix${isOpen ? ' open' : ''}><summary><span class="t">Problems and Team Checks</span><span class="s">${V2.esc(sub)}</span></summary>
+-    <div class="sg2-fb"><div class="sg2-probs">${probs}</div>${ckCard}${vd}</div></details>`; };
++  return `<details class="sg2-fold" data-v2fix${isOpen ? ' open' : ''}><summary><span class="t">Things to Know</span><span class="s">${V2.esc(sub)}</span></summary>
++    <div class="sg2-fb"><div class="sg2-probs">${probs}</div>${vd}</div></details>`; };
+ // the fold remembers open / closed on this device (today's key, cc2.chf.rfix); opening it opens the first problem with a fix
+ document.addEventListener('toggle', e => { const d = e.target; if (!d || !d.matches) return;
+   // (a redraw draws the fold again, already open: only a real opening opens the first problem, as on today's page)
+diff --git a/app/src/v2/pages/team.js b/app/src/v2/pages/team.js
+index 3361549..37f825d 100644
+--- a/app/src/v2/pages/team.js
++++ b/app/src/v2/pages/team.js
+@@ -291,7 +291,7 @@ V2.ckBody = (D, ck) => { const fb = D.basics.filter(x => !x.ok), fn = D.notes.fi
+   const nb = D.basics.length, nn = D.notes.length, allOk = !fb.length && !fn.length;
+   const fails = fb.length || fn.length ? `<ul class="tm-ck">${fb.map(ck).join('')}${fn.map(x => ck(x).replace('<span>', '<span><em class="tm-cknote">Note</em> ')).join('')}</ul>` : '';
+   const passed = pb.length + pn.length, line = allOk ? `All ${nb} basics${nn ? ` and all ${nn} notes` : ''} pass` : `${passed} more pass`;
+-  return `${fails}${passed ? `<details class="tm-ckok"><summary><b aria-hidden="true">✓</b>${line}</summary>${pb.length ? `<ul class="tm-ck">${pb.map(ck).join('')}</ul>` : ''}${pn.length ? `<h3 class="tm-h3">Notes</h3><ul class="tm-ck">${pn.map(ck).join('')}</ul>` : ''}</details>` : ''}`; };
++  return `${fails}${passed ? `<details class="tm-ckok"><summary><b aria-hidden="true">✓</b>${line}</summary>${pb.length ? `<ul class="tm-ck">${pb.map(ck).join('')}</ul>` : ''}${pn.length ? `<h3 class="tm-h3">${CK_TXT.notes}</h3><p class="fine">${CK_TXT.notesWhy}</p><ul class="tm-ck">${pn.map(ck).join('')}</ul>` : ''}<p class="fine">${CK_TXT.intro}</p></details>` : ''}`; };
+ 
+ // the More menu (Sim, Nov 11): every other My Team action, one per row; Clear Team sits last, apart
+ V2.moreHtml = () => { const n = S.box.length, ms = members();
+@@ -335,8 +335,10 @@ V2.pages.team = {place: 'team', draw() {
+   // 3. Suggestions: drawn by pages/sugs.js (R4 sugs hook)
+   const sgSec = V2.sgSec(D);
+   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
+-  const ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(x.label)}${!x.ok && x.miss ? `<small>${V2.esc(x.miss)}</small>` : ''}</span></li>`;
+-  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
++  // A2 proposal (Sim's fix plan, Nov 12): the checks are listed ONCE, with the detail that used to sit in a second list inside
++  // "Problems and Team Checks" (what the team has or misses, and how often winners have it); the threats "?" sits on its check
++  const ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(x.label)}${/^Ready for/.test(x.label) ? V2.tip('readiness') : ''}${(x.ok ? x.have : x.miss) ? `<small>${V2.esc(V2.undot(x.ok ? x.have : x.miss))}</small>` : ''}${x.pro && !x.note ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</span></li>`; // notes: their 'why' is said once, above them
++  const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.${V2.tip('checklist')}</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
+   return `<section class="tm-hero">${lockup}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}${acts}</section>${jump}<div class="tm-work"><div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${muSec}${ckSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
+ },
+ after() {

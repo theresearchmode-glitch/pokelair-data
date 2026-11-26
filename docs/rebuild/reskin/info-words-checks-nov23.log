@@ -1,0 +1,25 @@
+Job 5, the Ability and item blue words (hW2, Nov 23). Frozen data out/ @0c992f69. BEFORE = HEAD dc4b03d7 build; AFTER = all four files (build a4). Log stamps machine UTC.
+
+== BEFORE
+guard exit 0 :: v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+tap exit 0 :: tap-size: all passed
+qcheck exit 0 :: qcheck-all: 4 pages + 10 views x 5 widths x 2 themes, 40 findings, 0 new; 539s
+pksrc exit 0 :: v2-pksrc: all passed
+A-team exit 0 :: behaviour: 139 pass, 0 FAIL, 4 known bugs, 0 fixed?, 2 skipped; 923s  (adapter v2)
+B-build exit 0 :: behaviour: 77 pass, 0 FAIL, 14 known bugs, 0 fixed?, 0 skipped; 609s  (adapter v2)
+C-battle exit 0 :: behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skipped; 464s  (adapter v2)
+D-meta-shell exit 0 :: behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 544s  (adapter v2)
+ALL DONE
+qcheck ROUTES=sheet :: qcheck-all: 1 pages + 7 views x 5 widths x 2 themes, 0 findings, 0 new; 330s
+
+== AFTER
+guard exit 0 :: v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+tap exit 0 :: tap-size: all passed
+qcheck exit 0 :: qcheck-all: 4 pages + 10 views x 5 widths x 2 themes, 40 findings, 0 new; 547s
+pksrc exit 0 :: v2-pksrc: all passed
+A-team exit 0 :: behaviour: 139 pass, 0 FAIL, 4 known bugs, 0 fixed?, 2 skipped; 996s  (adapter v2)
+C-battle exit 0 :: behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skipped; 444s  (adapter v2)
+D-meta-shell exit 0 :: behaviour: 117 pass, 0 FAIL, 41 known bugs, 1 fixed?, 7 skipped; 507s  (adapter v2)
+ALL DONE
+qcheck ROUTES=sheet :: qcheck-all: 1 pages + 7 views x 5 widths x 2 themes, 0 findings, 0 new; 322s
+(B-build not re-run: no Build file changed)

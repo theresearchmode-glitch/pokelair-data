@@ -1,0 +1,12 @@
+diff --git a/app/src/v2/css/shell.css b/app/src/v2/css/shell.css
+index 5fe6199..09c5db3 100644
+--- a/app/src/v2/css/shell.css
++++ b/app/src/v2/css/shell.css
+@@ -46,3 +46,7 @@ html,body{overflow-x:clip}
+ @media (min-width:700px) and (max-width:759px){.np-head .logo svg{height:30px}}
+ @media (max-width:359px){.np-head .logo svg{height:26px}}
+ @media (max-width:329px){.np-head .tools{gap:var(--s1)}}
++/* A8 proposal (Sim's fix plan, rule C9: text behind the bars must never be legible): the glass stays, but the tint is 96% on
++   every screen (was 82% header / 86% phone bar on mouse screens, 92% on touch), and where a browser can't blur, the bars are solid */
++.np-head,.np-bar,.np-dock{background:color-mix(in srgb,var(--bg) 96%,transparent)}
++@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.np-head,.np-bar,.np-dock{background:var(--bg)}}

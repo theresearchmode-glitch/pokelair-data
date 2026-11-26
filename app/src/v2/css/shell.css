@@ -1,0 +1,116 @@
+/* Shell: header, navigation, footer, phone bar. Frosted only on the bars (the glass decision). */
+.np-head{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:var(--s6);height:76px;padding:0 var(--gut);
+  background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}
+.np-head .logo{display:inline-flex;align-items:center;min-height:var(--tap)}.np-head .logo svg{display:block;height:36px;width:auto}
+.np-nav{display:flex;gap:36px;margin:0 auto}
+.np-nav a{position:relative;display:inline-flex;white-space:nowrap;align-items:center;min-height:var(--tap);font:500 var(--t15)/1 var(--b);color:var(--ink-2)}
+.np-nav a[aria-current="page"]{color:var(--ink);font-weight:700}
+.np-nav a[aria-current="page"]::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:5px;background:var(--plot);transform:skewX(var(--slant))}
+.np-head .tools{display:flex;align-items:center;gap:var(--s4)}
+.np-search{display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--tap);padding:0 var(--s4);border:1.5px solid var(--rule);color:var(--ink-2);font:500 var(--t15)/1 var(--b);transform:skewX(-10deg)}
+.np-search>*{transform:skewX(10deg)}.np-search kbd{font:600 var(--t13)/1 var(--b);padding:2px 6px;border:1px solid var(--rule);border-radius:var(--r-s)}
+.np-theme{min-width:var(--tap);min-height:var(--tap);display:grid;place-items:center;font:600 var(--t13)/1 var(--b);color:var(--ink-2)}
+/* Back (Sim, Nov 12): one step back in the site, first in the top bar; only there when there's somewhere to go back to */
+.np-goback{min-width:var(--tap);min-height:var(--tap);display:grid;place-items:center;margin:0 calc(var(--s4) * -1) 0 calc(var(--s3) * -1);color:var(--plot-text)}.np-goback[hidden]{visibility:hidden} /* Sim, Nov 12 (decision 4 B): the spot is always kept, so the logo and menu never move */
+.np-goback .np-ic{width:24px;height:24px}
+/* Forward (Sim, Nov 12): Back's mirror, right of the logo; its spot is kept so nothing moves */
+.np-gofwd{min-width:var(--tap);min-height:var(--tap);display:grid;place-items:center;margin:0 calc(var(--s3) * -1) 0 calc(var(--s4) * -1);color:var(--plot-text)}.np-gofwd[hidden]{visibility:hidden}
+.np-gofwd .np-ic{width:24px;height:24px}
+/* My Box quick link: a box icon next to Day/Night (Sim, Nov 11: the box deserves eyes; an icon, not a menu place) */
+.np-boxlink{position:relative}.np-boxlink .np-ic{width:24px;height:24px}.np-boxlink[aria-current="page"]{color:var(--ink)}
+.np-boxlink[aria-current="page"]::after{content:"";position:absolute;left:var(--s2);right:var(--s2);bottom:0;height:5px;background:var(--plot);transform:skewX(var(--slant))}
+@media (max-width:899.98px){.np-head .tools{gap:var(--s2)}}
+.np-foot{display:flex;align-items:center;gap:var(--s10);padding:var(--s8) var(--gut);border-top:1px solid var(--rule);font-size:var(--t15);color:var(--ink-2)}
+.np-foot svg{height:24px;width:auto;flex:none}.np-foot>span{flex:1;min-width:0}.np-foot nav{margin-left:auto;display:flex;gap:var(--s8)}.np-foot nav a{display:inline-flex;align-items:center;min-height:var(--tap);white-space:nowrap}
+.np-main{min-height:60vh}
+/* pre-launch check 1 (Nov 17): the loading panel until today's numbers are in; it fades in after 300 ms, so a fast load never flashes it */
+.np-loading{display:grid;place-items:center;align-content:center;gap:var(--s4);min-height:60vh;padding:var(--s12) var(--s4);text-align:center;animation:np-ldin var(--dur-2) ease-out .3s both}
+.np-ldlogo svg{display:block;height:48px;width:auto}.np-ldtxt{margin:0;font:500 var(--t17)/1.5 var(--b);color:var(--ink-2)}
+@keyframes np-ldin{from{opacity:0}to{opacity:1}}
+/* Sim, Nov 17 ("so it doesn't look like a stuck page"): the logo floats gently and a thin blue bar glides under the line. Slow and soft;
+   reduced motion keeps both still */
+.np-ldlogo{animation:np-float 2.4s ease-in-out infinite}
+@keyframes np-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.np-ldbar{position:relative;width:160px;height:4px;overflow:hidden;border-radius:var(--r-s);background:var(--rule)}
+.np-ldbar::after{content:'';position:absolute;inset:0;width:40%;border-radius:var(--r-s);background:var(--plot);animation:np-glide 1.6s var(--ease-swing) infinite}
+@keyframes np-glide{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+@media (prefers-reduced-motion:reduce){.np-loading,.np-ldlogo,.np-ldbar::after{animation:none}.np-ldbar::after{width:100%;opacity:.35}}
+/* phone: logo + search on top, the five places in a bottom bar */
+.np-bar{display:none}
+@media (max-width:899.98px){.np-nav{gap:var(--s3)}.np-search .lbl,.np-search kbd{display:none}}
+@media (max-width:699.98px){
+  .np-goback{margin:0 calc(var(--s2) * -1) 0 calc(var(--s3) * -1)}
+  .np-head{height:60px;gap:var(--s3)}.np-head .logo svg{height:30px}.np-nav{display:none}.np-head .tools{margin-left:auto}
+  .np-bar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);padding:0 0 env(safe-area-inset-bottom,0px);
+    background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--rule)}
+  .np-bar a{display:grid;place-items:center;min-height:56px;font:600 var(--t13)/1 var(--b);color:var(--ink-2)}
+  .np-bar a[aria-current="page"]{color:var(--ink)}
+  .np-bar a[aria-current="page"]::before{content:"";width:22px;height:5px;margin-bottom:-12px;background:var(--plot);transform:skewX(var(--slant))}
+  /* audit v199 #20 (Sim chose B, Nov 17, approved mock-up audit-20-phone-bar.png): the mark no longer takes its own grid row (that
+     pushed the current page's word 10.8px below the other four); it floats just above the word, 22px wide as before, so all five
+     words sit on one line. Its bottom edge is 12px above the bar's middle (the word's top is 6.5px above it) */
+  .np-bar a{position:relative}
+  .np-bar a[aria-current="page"]::before{position:absolute;top:calc(50% - 17px);left:0;right:0;margin:0 auto}
+  .np-foot{display:block;padding-bottom:calc(var(--s16) + 24px)}.np-foot>svg{display:block;margin-bottom:var(--s2)}.np-foot nav{margin:var(--s3) 0 0;flex-wrap:wrap;gap:var(--s4)}}
+@media (max-width:359.98px){.np-foot nav{flex-direction:column;gap:0}}
+/* Sim, Nov 11 (iPhone): no sideways scroll anywhere, whatever a page holds (clip keeps the sticky header working) */
+html,body{overflow-x:clip}
+/* touch screens (iPhone, iPad): the frosted glass stays (Sim: "i liked the glass"), a little more opaque so text under the bars
+   doesn't read through; the page background scrolls with the page (a fixed background is a classic iOS stutter cause) */
+@media (hover:none){
+  .np-head,.np-bar,.np-dock{background:color-mix(in srgb,var(--bg) 92%,transparent)}
+  body{background:var(--page-wash),var(--bg)}
+}
+/* iPhone zooms the whole page in when a text box with type under 16px gets focus (Save Team name: the page then slid sideways) */
+@media (hover:none){input,select,textarea,.np-field input{font-size:var(--t16)}}
+/* header fit with the My Box icon (measured 300-2560): a smaller logo on the smallest phones and 700-759 windows,
+   menu names 24px apart below 1100 (36 above), so the margins stay even */
+@media (max-width:1099.98px){.np-nav{gap:var(--s6)}}
+@media (max-width:899.98px){.np-nav{gap:var(--s3)}}
+@media (min-width:414px) and (max-width:999.98px){.np-gofwd[hidden]{display:none}}@media (min-width:700px) and (max-width:899.98px){.np-nav{gap:var(--s2)}}@media (min-width:900px) and (max-width:1099.98px){.np-nav{gap:var(--s4)}} /* Nov 16 audit: the new logo + "My Team" on one line pushed Day/Night past the edge at 700-900; Forward's empty spot is used while it is hidden (as on phones) and the menu gaps are a step tighter */
+@media (min-width:700px) and (max-width:759.98px){.np-head .logo svg{height:30px}}
+@media (max-width:359.98px){.np-head .logo svg{height:26px}}
+@media (max-width:329.98px){.np-head .tools{gap:var(--s1)}}
+@media (max-width:359.98px){.np-head{gap:var(--s2)}.np-goback{margin-right:calc(var(--s1) * -1)}.np-goback~.tools .np-search{padding:0 var(--s2)}}
+/* A8 proposal (Sim's fix plan, rule C9: text behind the bars must never be legible): the glass stays, but the tint is 96% on
+   every screen (was 82% header / 86% phone bar on mouse screens, 92% on touch), and where a browser can't blur, the bars are solid */
+.np-head,.np-bar,.np-dock{background:color-mix(in srgb,var(--bg) 96%,transparent)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.np-head,.np-bar,.np-dock{background:var(--bg)}}
+/* 320-wide phones (Sim, Nov 12: option D): footer links share rows instead of one per line */
+@media (max-width:359.98px){.np-foot nav{flex-direction:row;flex-wrap:wrap;gap:0 var(--s4)}}
+@media (max-width:419.98px){.np-head .logo svg{height:26px}.np-head .tools{gap:var(--s1)}.np-gofwd{margin-right:0}} /* Back + Forward on narrow phones (Nov 12): nothing past the edge, no overlapping tap areas */
+@media (min-width:700px) and (max-width:759.98px){.np-head{gap:var(--s3)}}@media (max-width:359.98px){.np-head .logo svg{height:22px}} /* Back + Forward: 700-719 ran 7-17px past the edge, 320 ran 10px (measured Nov 12) */
+@media (max-width:359.98px){.np-head .logo svg{height:20px}.np-gofwd{margin-left:calc(var(--s2) * -1)}} /* 320-359: Forward tap area no longer covers the end of the logo (was 8px) */
+@media (max-width:699.98px){.np-goback{margin-right:calc(var(--s4) * -1)}}@media (max-width:359.98px){.np-gofwd{margin-left:calc(var(--s3) * -1)}} /* Sim, Nov 12: Back and Forward the same distance from the logo (15px each on phones) */
+@media (max-width:359.98px){.np-goback{margin-right:calc(var(--s3) * -1)}} /* 320-359: Back 15px from the logo too, like Forward */
+.np-foot nav a{min-width:var(--tap);justify-content:center} /* footer links never under 44px wide ("About" was 43 at 390, Nov 12) */
+/* Sim, Nov 15 (Q2 A): today's footer parts back: the tagline, Privacy and Contact, Sources and Credits (from the same list as About) */
+.np-foot{flex-wrap:wrap;row-gap:var(--s3)}.np-ftxt{flex:1 0 320px;max-width:100%;min-width:0;display:grid;gap:var(--s1)} /* at least 320 px: when the links don't fit beside it they wrap below (it shrank to 9 px at 820, under the links) */.np-ftag{margin:0;font:800 var(--t20)/1.3 var(--u);font-style:italic;color:var(--ink)}.np-ftag span{color:var(--plot-text)}
+.np-fsrc{flex-basis:100%;margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.np-fsrcb{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer;white-space:nowrap}.np-fsrcb:hover{color:var(--plot-text)}
+@media (max-width:699.98px){.np-foot{padding-top:var(--s6)}.np-ftxt{margin-top:var(--s1)}.np-foot nav{margin-top:var(--s2);column-gap:var(--s4);row-gap:0}} /* phones: tighter, so the restored parts cost as little height as possible */
+/* data note (parity, Nov 15): today's healthBar/regBar as one calm line above Home and the Meta pages; the amber mark is My Team's legal mark */
+.np-dnote{display:flex;align-items:flex-start;gap:var(--s3);margin:var(--s6) var(--gut) var(--s4);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.np-dnote b{color:var(--ink);font-weight:700}.np-dnote span{min-width:0}
+.np-dnote i{flex:none;width:12px;height:6px;margin-top:var(--s2);background:var(--band-work);transform:skewX(-24deg)}
+/* The logo "Sly Devil" (Sim, Nov 16, his designer's sizes): the full logo 44px tall in the header, logo-small 32px on phones, logo-small
+   32px in the footer. One logo in day and night (no theme rules). Drawn as an image: never stretched (width follows height) */
+.np-lg{display:block;flex:none}.np-lg img,img.np-lg{display:block;height:44px;width:auto}
+.np-foot img.np-lg{height:32px}
+/* PROPOSAL for Sim (measured Nov 16): the brief's sizes don't fit beside Back, Forward, Search and Menu below 1000 wide, so: the imp alone
+   below 414 (the brief: under the 28px minimum, use the imp), logo-small 28-32px from 414 to 999, the full logo 44px from 1000 */
+@media (max-width:999.98px){.np-head .np-lg img{height:28px}}
+@media (min-width:480px) and (max-width:699.98px){.np-head .np-lg img{height:32px}}
+@media (max-width:413.98px){.np-head .np-lg img{height:32px}} /* Sim, Nov 16 (3:2x PM): the imp alone on phones again (the full logo made the bar feel cramped); full logo from 414 */
+.np-head .logo{flex:none}
+/* Footer with the new logo (Nov 16): the Sly Devil logo is about 2.4x as wide as the old one, which pushed the links under the text at 1280
+   (an empty left half). From 1100 the logo sits above the tagline in the left column (as on phones) and the links keep the right side;
+   700-1099 the links sit under the text, as before. Clear space under the logo is at least the imp's head (brief), 16px */
+.np-foot img.np-lg{margin-bottom:var(--s4)}
+@media (min-width:700px){.np-foot{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"lg" "tx" "nav";row-gap:0;align-items:center}
+  .np-foot>.np-lg{grid-area:lg}.np-foot>.np-ftxt{grid-area:tx}.np-foot>nav{grid-area:nav;margin:var(--s3) 0 0;justify-self:start}.np-foot>.np-fsrc{grid-column:1/-1}}
+@media (min-width:1100px){.np-foot{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"lg nav" "tx nav";column-gap:var(--s10)}.np-foot>nav{margin:0;justify-self:end}}
+/* Nov 23 (hP, polish): phone footer links in two even-looking rows, 2 then 3 (How We Calculate, About / Privacy, Contact, Sources and Credits), in reading
+   order, instead of 4 + a lone one (or 3 + 2 at 320). A zero-height break sits after the second link; the links only change order around it,
+   so focus order is unchanged. Only for the usual five (with Send Feedback or Owner added they wrap as before). Up to 535 wide, where the five still need two rows; under 360 the gap is 8px so the second row fits */
+@media (max-width:535.98px){.np-foot nav:has(> :nth-child(5):last-child)::before{content:"";flex-basis:100%;order:1}.np-foot nav > :first-child:nth-last-child(5) ~ :nth-child(n+3){order:2}}
+@media (max-width:359.98px){.np-foot nav{column-gap:var(--s2)}}

@@ -1,0 +1,644 @@
+1. OVERALL VERDICT
+needs fixes before switch day (already-planned gaps G1/G3/G4 in docs/reg-md-plan.md plus unplanned leaks in events.mjs, weekly.mjs, and skipped-step carryover would ship M-C files alongside M-D files on switch day; reg-stamp.mjs + reg-guard.mjs + the diffs below close the gap cleanly)
+
+====================================================================
+2. PART A — EVERY STEP IN .github/workflows/update.yml (IN ORDER)
+====================================================================
+step | out/ file(s) written | knows regulation? | on switch day (runs) | if SKIPPED on switch day | severity
+scrub-names.mjs | none (rewrites data/ in place) | no (all files) | scrubs names in data/ | fails job; Commit skipped (safe) | clean
+reg.mjs | out/reg.json | yes (detectReg / formats.mjs) | writes new active reg M-D | keeps M-C reg.json; whole run stays M-C (no mix) | WRONG-SWITCH (1-day delay)
+replays.mjs | out/replays.json | yes (activeReg().sd; clears prev.games on format change) | writes M-D replays (or empty games[]) | keeps yesterday's M-C replays.json (update.mjs ignores via R0.format!==RG.sd, but leads.mjs & practice.mjs do NOT) | MIXES-REGS (if skipped)
+REPLAY_FMT=bo3 replays.mjs | out/replays_bo3.json | yes (activeReg().sd+'bo3'; clears prev.games on format change) | writes M-D bo3 replays (or empty games[]) | keeps yesterday's M-C replays_bo3.json | MIXES-REGS (if skipped)
+practice.mjs | out/practice.json | no (reads replays.json; exits 0 keeping old file if games[] empty) | if M-D replays empty: keeps M-C practice.json! | keeps yesterday's M-C practice.json | MIXES-REGS
+update.mjs | out/limitless.json, out/meta_tour.json, out/info.json, out/teams.json, out/history.json, out/matches.json | yes (activeReg, sameReg; teams.json & replays.json guarded at 25c3464b) | writes M-D files; misses mis-tagged M-C post-Dec-2 events (B4) | fails job (not wrapped in skip.mjs); Commit skipped | DATA-LOST (B4)
+official.mjs | out/official.json, out/official_compare.json, mutates out/teams.json | NO (hardcodes REG='M-C', REG_START='2026-09-01'; planned gap G1) | writes M-C official.json AND injects M-C top-8 into M-D teams.json! | keeps yesterday's M-C official.json | MIXES-REGS (planned G1)
+events.mjs | out/events.json | yes (activeReg, sameReg, inRegWindow) | exits 1 if M-D events < 50% of yesterday's M-C count -> skipped -> keeps M-C events.json! | keeps yesterday's M-C events.json | MIXES-REGS
+weekly.mjs | out/weekly.json | partial (activeReg+sameReg for Limitless; NO inRegWindow on official.json; exits 0 keeping old file if 0 M-D sheets) | leaks M-C official.json into freshOut, or keeps M-C weekly.json if 0 M-D sheets; src hardcodes "Reg M-C" | keeps yesterday's M-C weekly.json | MIXES-REGS / WRONG-TEXT
+calendar.mjs | out/calendar.json | no (season-wide VGC calendar; reg-agnostic) | writes season calendar | keeps yesterday's calendar (reg-agnostic) | clean
+model.mjs | out/model.json | indirect (reads M-D matches.json) | if !ships (expected early M-D), exits 1 keeping yesterday's M-C model.json! (planned G3) | keeps yesterday's M-C model.json | MIXES-REGS (planned G3)
+six.mjs | mutates out/model.json (sixes) | indirect (reads matches.json + model.json) | adds M-D sixes if model.ships, or mixes M-D matches into M-C model if model.mjs skipped! | skips sixes | MIXES-REGS (if model skipped)
+ctr.mjs | mutates out/model.json (ctr) | indirect (reads matches.json + model.json) | adds M-D ctr if model.ships, or mixes M-D matches into M-C model if model.mjs skipped! | skips ctr | MIXES-REGS (if model skipped)
+model-guard.mjs | restores HEAD:out/model.json on failure | NO (compares against HEAD M-C model; requires 250+ mons & rho>=0.85; planned G3) | almost certain to fail on switch day and restore yesterday's M-C model.json! | leaves today's model.json | MIXES-REGS (planned G3)
+leads.mjs | mutates out/model.json (leads) | NO (reads replays.json without checking format) | if replays.json is M-C, writes M-C leads into M-D model.json | skips leads | MIXES-REGS (if replays skipped)
+ladder.mjs | out/meta_ladder.json | yes (activeReg().sd; clears old ladder if source lacks FMT) | clears old M-C ladder stats cleanly | keeps yesterday's M-C meta_ladder.json | MIXES-REGS (if skipped)
+sources.mjs | out/sources.json | NO (hardcodes showdowntier /formats/dmc/ & pika championstournaments; planned G1) | writes M-C Showdowntier data into sources.json | keeps yesterday's M-C sources.json | MIXES-REGS (planned G1)
+playwright install | none | n/a | installs chromium | ratings-snapshot skips | clean
+perf.mjs | out/perf.json | partial (copies out/reg.json; does NOT check reg of meta_ingame.json, sources.json, meta_ladder.json) | copies frozen M-C meta_ingame.json & M-C sources.json into M-D perf.json | keeps yesterday's M-C perf.json | MIXES-REGS
+crosscheck.mjs | out/crosscheck.json | NO (compares M-D meta_tour vs M-C sources/official; hardcodes "Pikalytics Reg M-C") | compares M-D against M-C sources -> false warnings | keeps yesterday's M-C crosscheck.json | WRONG-TEXT
+ratings-snapshot.mjs | out/ratings_log.json | NO (appends {d, r} without reg; planned G4) | mixes M-D snapshot into M-C ratings_log.json | keeps yesterday's ratings_log.json | MIXES-REGS (planned G4)
+scoreboard.mjs | out/scoreboard.json | NO (grades M-C snapshots in ratings_log against M-D matches.json; planned G4) | grades M-C snapshots on M-D games | keeps yesterday's scoreboard.json | MIXES-REGS (planned G4)
+track.mjs | out/track.json | NO (carries forward prev.ev M-C events & grades M-C snapshots against M-D events; planned G4) | mixes M-C and M-D track record | keeps yesterday's M-C track.json | MIXES-REGS (planned G4)
+scrub-names --check | none | no | fails job if any raw name found | fails job (safe) | clean
+split-docs.mjs | out/split/*.json, out/split/index.json | no (splits whatever is in out/) | splits current out/ files (including any M-C stragglers unless reg-guard runs first!) | keeps old out/split/ | MIXES-REGS (order matters)
+Commit | pushes out/ + data/ to main | no | commits whatever is in out/ | fails job | —
+health.mjs | $HEALTH_REPORT (runs after Commit) | NO (fixed size/count floors like teams>0, top>=10, rounds>=20, events>=5) | marks emptied day-1 M-D files "broken" and fails run / opens Daily data problem issue | n/a | BLOCKS-LIVE (alarm noise)
+
+OUT/ FILE LIST & CURRENT REGULATION STAMP TODAY (checked by reading every writer):
+- out/reg.json              -> stamped: `id` (exempt: source of truth)
+- out/limitless.json        -> stamped: `reg` (line 135 of update.mjs)
+- out/teams.json            -> stamped: `reg` (line 217 of update.mjs; NOT preserved if official.mjs rewrites? official.mjs mutates T in place so T.reg survives unless T was missing)
+- out/replays.json          -> stamped indirectly: `format` (Showdown id, e.g. gen9championsvgc2026regmc); NO `reg` field
+- out/replays_bo3.json      -> stamped indirectly: `format` (Showdown id + 'bo3'); NO `reg` field
+- out/perf.json             -> stamped: `reg` AS AN OBJECT `{id, name, since, ...}` (perf.mjs:52 — DO NOT overwrite with string!)
+- out/meta_tour.json        -> UNSTAMPED (reg only inside prose `source`)
+- out/info.json             -> UNSTAMPED (reg only inside prose `source`)
+- out/history.json          -> UNSTAMPED
+- out/matches.json          -> UNSTAMPED
+- out/practice.json         -> UNSTAMPED (format only inside prose `source`)
+- out/official.json         -> UNSTAMPED
+- out/official_compare.json -> UNSTAMPED
+- out/official_perf.json    -> UNSTAMPED (exempt: frozen RK9 archive, retired Nov 1)
+- out/events.json           -> UNSTAMPED
+- out/weekly.json           -> UNSTAMPED (hardcoded "Reg M-C" in `src`)
+- out/calendar.json         -> UNSTAMPED (exempt: season-wide calendar)
+- out/model.json            -> UNSTAMPED
+- out/meta_ladder.json      -> UNSTAMPED (FMT only inside prose `source`)
+- out/meta_ingame.json      -> UNSTAMPED (frozen since Nov 18 op.gg pause)
+- out/sources.json          -> UNSTAMPED
+- out/crosscheck.json       -> UNSTAMPED
+- out/ratings_log.json      -> UNSTAMPED
+- out/scoreboard.json       -> UNSTAMPED
+- out/track.json            -> UNSTAMPED
+- out/skips.json            -> UNSTAMPED (exempt: pipeline skip log)
+- out/split/*.json          -> UNSTAMPED (derived copies of out/ files)
+
+====================================================================
+3. FINDINGS TABLE
+====================================================================
+# | finding | severity | file:line | checked/not checked | fix?
+1 | Skipped steps on switch day keep yesterday's M-C out/ files and Commit pushes a mixed out/ set to main | MIXES-REGS | .github/workflows/update.yml:36-101 | checked (code inspection) | New files B1/B2 + Diffs 1a-1m + Diff 2
+2 | official.mjs hardcodes REG='M-C' & REG_START='2026-09-01' and injects M-C top-8 into M-D out/teams.json (already planned: G1) | MIXES-REGS | official.mjs:22,190-194 | checked (code inspection) | Diff 1d (stamp) + reg-guard; G1 full fix planned
+3 | sources.mjs hardcodes Showdowntier /formats/dmc/ (M-C) (already planned: G1); perf.mjs also copies frozen M-C meta_ingame.json | MIXES-REGS | sources.mjs:33, perf.mjs:24-26,40 | checked (code inspection) | Diff 1j (stamp) + reg-guard; G1 full fix planned
+4 | model.mjs (!ships exits 1) and model-guard.mjs (250+ mons & rho>=0.85 vs HEAD M-C) restore yesterday's M-C model.json on switch day (already planned: G3) | MIXES-REGS | model.mjs:237, model-guard.mjs:14-32 | checked (code inspection) | Diff 1g (stamp) + reg-guard; G3 full fix planned
+5 | events.mjs fail-safe compares today's M-D event count against yesterday's M-C count without checking reg -> exits 1 and keeps M-C events.json | MIXES-REGS | events.mjs:67 | checked (code inspection) | Diff 4
+6 | weekly.mjs reads out/official.json without filtering by inRegWindow(R.date, RGW), leaking M-C official top-8s into M-D freshOut (and hardcodes "Reg M-C" in src) | MIXES-REGS | weekly.mjs:92,105 | checked (code inspection) | Diff 5
+7 | update.mjs fetches only format=${FORMAT} after switching to M-D, dropping post-Dec-2 Limitless events still mis-tagged "M-C" | DATA-LOST | update.mjs:45 | checked (Node proof) | Diff 3 (B4)
+8 | practice.mjs exits 0 keeping yesterday's M-C practice.json when M-D replays.json has 0 games | MIXES-REGS | practice.mjs:15 | checked (code inspection) | Diff 1c (stamp) + reg-guard
+9 | ratings-snapshot.mjs / scoreboard.mjs / track.mjs mix M-C snapshots and events with M-D games (already planned: G4) | MIXES-REGS | ratings-snapshot.mjs:19, scoreboard.mjs:33, track.mjs:25 | checked (code inspection) | Diffs 1k-1m (stamp) + reg-guard; G4 full fix planned
+10 | perf.json already uses `out.reg` as an OBJECT `{id, name, ...}`: blindly stamping a string `reg` onto perf.json would break the page's regulation banner | BLOCKS-LIVE | perf.mjs:52 | checked (code inspection + reg-guard-test.mjs) | Handled in reg-guard.mjs `stampOf()` (no perf.mjs overwrite)
+11 | health.mjs enforces fixed non-empty floors (teams>0, top>=10, events>=5, rounds>=20) and will alert on emptied day-1 M-D files | WRONG-TEXT / BLOCKS-LIVE | health.mjs:25-42 | checked (code inspection) | report only (already noted in reg-md-plan G11)
+
+====================================================================
+4. NEW FILES & DIFFS (each with S3 proof)
+====================================================================
+
+--- New File B1: reg-stamp.mjs ---
+Proof (checked in Node via experiments/reg-guard-test.mjs case `stampReg-adds-reg`):
+  input: stampReg({updated: '2026-12-02', teams: [1, 2]}, 'M-D')
+  -> old: no helper; files written without `reg` field
+  -> new: {reg: 'M-D', updated: '2026-12-02', teams: [1, 2]} (original object unmutated)
+
+----- BEGIN reg-stamp.mjs -----
+// Regulation stamp helper (Nov 24): adds {reg: "&lt;id&gt;"} to any out/ JSON object without altering existing fields.
+import {activeReg} from './formats.mjs';
+export const stampReg = (doc, id = activeReg().id) =>
+  doc && typeof doc === 'object' && !Array.isArray(doc) ? {...doc, reg: id} : doc;
+----- END reg-stamp.mjs -----
+
+--- Diffs 1a-1m: add stampReg() to Part A writers (smallest change each; perf.mjs omitted because out.reg is already `{id: R.id, ...}`) ---
+Proof (checked via reg-guard-test.mjs):
+  input: any writer writing doc on active reg M-D -> old: doc.reg === undefined -> new: doc.reg === 'M-D'
+
+[Diff 1a: update.mjs — stamp meta_tour.json, info.json, history.json, matches.json (limitless.json & teams.json already have reg)]
+--- a/update.mjs
++++ b/update.mjs
+@@ -11,6 +11,7 @@
+ import fs from 'node:fs';
+ import {topcut} from './topcut.mjs';
+ import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
++import {stampReg} from './reg-stamp.mjs';
+ import {politeFetch} from './http.mjs';
+ import {lkey, lmap, reportUnknown, canonSet, canonReport, canonNature} from './names.mjs';
+ // the regulation every number is built from (out/reg.json from reg.mjs; Reg M-C until a newer one has enough data)
+@@ -182,7 +183,7 @@
+     cs: (() => { const b = [...o.cs].sort((x, y) => y[1] - x[1])[0]; if (!b) return undefined; const [it, ab, mv] = JSON.parse(b[0]); return {it, ab, mv, pct: Math.round(1000 * b[1] / o.t) / 10}; })()}));
+   const recent = V2.filter(T => lastD - new Date(T.d) <= 28 * DAY);
+-  fs.writeFileSync('out/meta_tour.json', JSON.stringify({format: 'doubles', kind: 'tour', source: `Limitless team sheets · ${nT.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
++  fs.writeFileSync('out/meta_tour.json', JSON.stringify(stampReg({format: 'doubles', kind: 'tour', source: `Limitless team sheets · ${nT.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
+     period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', updated: new Date().toISOString(), note: 'Moves, items, abilities and natures as players registered them.',
+-    top: rows.slice(0, 60), more: rows.slice(60, 100)}));
++    top: rows.slice(0, 60), more: rows.slice(60, 100)}, FORMAT)));
+   console.log(`meta_tour: ${nT} teams, ${rows.length} Pokémon`); }
+@@ -202,8 +203,8 @@
+   const pack = (M, mons) => Object.fromEntries([...M].sort((a, b) => b[1].t - a[1].t).map(([x, o]) => [x, [o.t, [...o.u].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8).map(([n, c]) => [n, c, per.get(n)]), o.u.size, ...(mons ? [o.m] : [])]]));
+   const recent = V2.filter(T => lastD - new Date(T.d) <= 28 * DAY);
+-  fs.writeFileSync('out/info.json', JSON.stringify({N, source: `Limitless team sheets · ${N.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
+-    period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', mv: pack(K.mv), it: pack(K.it), ab: pack(K.ab), ntN, nt: pack(K.nt, true)}));
++  fs.writeFileSync('out/info.json', JSON.stringify(stampReg({N, source: `Limitless team sheets · ${N.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
++    period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', mv: pack(K.mv), it: pack(K.it), ab: pack(K.ab), ntN, nt: pack(K.nt, true)}, FORMAT)));
+   console.log(`info: ${N} teams, ${K.mv.size} moves, ${K.it.size} items, ${K.ab.size} Abilities, ${K.nt.size} natures (${ntN} of ${6 * N} Pokémon with a readable nature)`); }
+@@ -222,7 +223,7 @@
+     for (const id of KEEP) { const T = readJSON(`data/t/${id}.json`, null); if (!T) continue; const t = new Date(T.d).getTime(); if (t > end || t <= end - 14 * DAY) continue;
+       for (const [, w, l, ks] of T.e) { const ms = [...new Set(ks.map(lmap).filter(Boolean))]; if (ms.length !== 6) continue; n++; for (const m of ms) c.set(m, (c.get(m) || 0) + 1); } }
+     if (!n) continue; days.push({d: new Date(end).toISOString().slice(0, 10), tour: Object.fromEntries([...c].sort((a, b) => b[1] - a[1]).slice(0, 80).map(([m], i) => [m, i + 1]))}); }
+-  fs.writeFileSync('out/history.json', JSON.stringify({days})); console.log(`history: ${days.length} days`); }
++  fs.writeFileSync('out/history.json', JSON.stringify(stampReg({days}, FORMAT))); console.log(`history: ${days.length} days`); }
+@@ -236,7 +237,7 @@
+     const seenG = new Set(); /* data audit Nov 8: skip repeated pairings (same round, same two players) and self-pairings */
+     for (const [r, a, b, win] of P) { const A = by.get(a), B = by.get(b); if (!A || !B || a === b || A.pl === B.pl) continue; const gk = r + ':' + [a, b].sort().join(':'); if (seenG.has(gk)) continue; seenG.add(gk); const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d]); } });
+-  fs.writeFileSync('out/matches.json', JSON.stringify({updated: new Date().toISOString(), events: V2T.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}));
++  fs.writeFileSync('out/matches.json', JSON.stringify(stampReg({updated: new Date().toISOString(), events: V2T.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}, FORMAT)));
+   console.log(`matches: ${M.length} games, ${teams.length} distinct teams, ${plist.length} players`); }
+
+[Diff 1b: replays.mjs]
+--- a/replays.mjs
++++ b/replays.mjs
+@@ -6,6 +6,7 @@
+ import fs from 'node:fs';
+ import {politeFetch} from './http.mjs';
+ import {activeReg} from './formats.mjs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -64,7 +65,7 @@
+ function save(prev, fresh) {
+   const byId = new Map(); for (const g of [...fresh, ...prev.games]) if (!byId.has(g.id)) byId.set(g.id, g);
+   const games = [...byId.values()].sort((a, b) => (b.t || 0) - (a.t || 0)).slice(0, KEEP);
+-  fs.writeFileSync(FILE, JSON.stringify({updated: new Date().toISOString(), format: FMT, source: 'Showdown replays (replay.pokemonshowdown.com)', games}));
++  fs.writeFileSync(FILE, JSON.stringify(stampReg({updated: new Date().toISOString(), format: FMT, source: 'Showdown replays (replay.pokemonshowdown.com)', games})));
+   return games.length; }
+
+[Diff 1c: practice.mjs]
+--- a/practice.mjs
++++ b/practice.mjs
+@@ -12,6 +12,7 @@
+ //   rounds: [oppIndex, mySix, myBrought, myLead, myRating, theirRating, iWon, theirBrought, theirLead, pair]
+ //         one real game seen from the side facing opp[oppIndex]; pair = what players with a similar six did against a
+ //         similar opposing six: [games, mostCommonFour, itsCount, mostCommonLead, itsCount]
+ import fs from 'node:fs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -58,7 +59,7 @@
+     rounds.push([oi, s.six.map(id), g.b[s.i].map(id), g.l[s.i].map(id), s.r, Array.isArray(g.r) ? +g.r[j] || 0 : 0, g.w === s.i ? 1 : 0, g.b[j].map(id), g.l[j].map(id),
+       [sim.length, f[0].split('|').map(id), f[1], l[0].split('|').map(id), l[1]]]); }
+ }
+-const out = {updated: new Date().toISOString(), source: `Showdown ladder replays (${src.format || 'Reg M-C'}), ${games.length.toLocaleString('en-US')} recent games`, from: Math.min(...games.map(g => g.t || Infinity)), to: Math.max(...games.map(g => g.t || 0)), minR: MIN_R, roundR: ROUND_R, dict, opp, rounds};
++const out = stampReg({updated: new Date().toISOString(), source: `Showdown ladder replays (${src.format || 'Reg M-C'}), ${games.length.toLocaleString('en-US')} recent games`, from: Math.min(...games.map(g => g.t || Infinity)), to: Math.max(...games.map(g => g.t || 0)), minR: MIN_R, roundR: ROUND_R, dict, opp, rounds}, src.reg);
+
+[Diff 1d: official.mjs — stamps with its own REG so reg-guard catches M-C output after switch]
+--- a/official.mjs
++++ b/official.mjs
+@@ -18,6 +18,7 @@
+ import fs from 'node:fs'; import crypto from 'node:crypto';
+ import {readJSON, dec, ROSTER, mapMon, validItem, bad} from './names.mjs';
+ import {opid, okeys, keyScore} from './pid.mjs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -179,13 +180,13 @@
+   // 4) gate: the new file against the previous out/official.json, team by team (same event date and placement)
+   const prev = readJSON('out/official.json', null), cmp = compare(prev, out);
+-  fs.writeFileSync('out/official_compare.json', JSON.stringify(cmp));
++  fs.writeFileSync('out/official_compare.json', JSON.stringify(stampReg(cmp, REG)));
+   console.log(`official: vs previous file (${cmp.previous}): ${cmp.summary}`);
+   const prevTeams = prev ? (prev.events || []).reduce((a, e) => a + (e.teams || []).length, 0) : 0, newTeams = out.events.reduce((a, e) => a + e.teams.length, 0);
+   if (!out.events.length) { console.log('::warning::official: no events read; kept the previous out/official.json'); return; }
+   if (prevTeams && newTeams < prevTeams * .8) { console.log(`::warning::official: only ${newTeams} teams (had ${prevTeams}); kept the previous out/official.json`); return; }
+   if (!cmp.pass) { console.log(`::warning::official: the new sheets disagree with the previous file beyond the gate (${cmp.summary}); kept the previous out/official.json`); return; }
+-  fs.writeFileSync('out/official.json', JSON.stringify(out));
++  fs.writeFileSync('out/official.json', JSON.stringify(stampReg(out, REG)));
+
+[Diff 1e: events.mjs (combined with Diff 4 below)]
+[Diff 1f: weekly.mjs (combined with Diff 5 below)]
+
+[Diff 1g: model.mjs]
+--- a/model.mjs
++++ b/model.mjs
+@@ -10,6 +10,7 @@
+ // team against real tournament teams instead of a fixed range that any odd team could max out.
+ import fs from 'node:fs'; import {pilotTest} from './pilot.mjs'; import {deckBasics} from './team-basics.mjs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -235,7 +236,7 @@
+ // never replace a working model with an unshipped one (the daily job keeps yesterday's; update.yml reports the skip)
+ { const dest = process.env.MODEL_OUT || (TRAIN_ONLY ? 'out/model_train.json' : 'out/model.json'); let prev = null; try { prev = JSON.parse(fs.readFileSync(dest, 'utf8')); } catch (e) {}
+   if (!ships && prev && prev.ships && prev.mons) { console.log(`model: NOT shipped today, so ${dest} keeps the previous model (from ${String(prev.updated || '').slice(0, 10)})`); process.exit(1); }
+-  fs.writeFileSync(dest, JSON.stringify(out)); }
++  fs.writeFileSync(dest, JSON.stringify(stampReg(out, M.reg))); }
+
+[Diff 1h: ladder.mjs]
+--- a/ladder.mjs
++++ b/ladder.mjs
+@@ -2,6 +2,7 @@
+ // Builds out/meta_ladder.json in the same shape as meta_tour.json (plus checks & counters), only when a new month is out.
+ import fs from 'node:fs'; import vm from 'node:vm'; import {politeFetch as fetch} from './http.mjs';
+ import {activeReg} from './formats.mjs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -10,7 +11,7 @@
+ if (!month) { console.log('ladder: no stats found');
+   // last regulation's ladder stats are never shown as this one's (formats.mjs): an empty list until Smogon has the new format
+-  if (prev && !String(prev.source || '').includes(FMT)) { fs.writeFileSync('out/meta_ladder.json', JSON.stringify({format: 'doubles', kind: 'ladder', month: null, source: `Showdown ladder (no ${FMT} stats yet)`, period: '', battles: 0, updated: new Date().toISOString(), note: 'Smogon publishes monthly; the new regulation shows here after its first month.', top: [], more: []})); console.log('ladder: regulation changed; cleared the old ladder stats'); }
++  if (prev && !String(prev.source || '').includes(FMT)) { fs.writeFileSync('out/meta_ladder.json', JSON.stringify(stampReg({format: 'doubles', kind: 'ladder', month: null, source: `Showdown ladder (no ${FMT} stats yet)`, period: '', battles: 0, updated: new Date().toISOString(), note: 'Smogon publishes monthly; the new regulation shows here after its first month.', top: [], more: []}))); console.log('ladder: regulation changed; cleared the old ladder stats'); }
+   process.exit(0); }
+@@ -35,5 +36,5 @@
+ const out = {format: 'doubles', kind: 'ladder', month, source: `Showdown ladder ${CUT}+ (Smogon usage stats, ${FMT})`, period: month, battles: N, updated: new Date().toISOString(),
+   note: 'Usage among teams on the 1630+ ladder. Checks & counters: how often the listed Pokémon KOs or forces this one out.', top: rows.slice(0, 60), more: rows.slice(60), usage1760};
+-fs.writeFileSync('out/meta_ladder.json', JSON.stringify(out));
++fs.writeFileSync('out/meta_ladder.json', JSON.stringify(stampReg(out)));
+
+[Diff 1i: sources.mjs — stamped 'M-C' because its URLs are hardcoded to M-C (G1)]
+--- a/sources.mjs
++++ b/sources.mjs
+@@ -8,6 +8,7 @@
+ import fs from 'node:fs';
+ import {mapMon, ROSTER, dec, text} from './names.mjs';
+ import {UA as NP_UA, politeFetch} from './http.mjs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -58,7 +59,7 @@
+   return {date: new Date().toISOString().slice(0, 10), dataDate: date, scope, rows, sets, miss}; });
+-fs.writeFileSync('out/sources.json', JSON.stringify(out));
++fs.writeFileSync('out/sources.json', JSON.stringify(stampReg(out, 'M-C')));
+
+[Diff 1j: crosscheck.mjs]
+--- a/crosscheck.mjs
++++ b/crosscheck.mjs
+@@ -9,6 +9,7 @@
+ //    hold only one of a species, so the plain form and its Megas add up exactly), except checks marked per form.
+ import fs from 'node:fs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -79,7 +80,7 @@
+ const out = {updated: new Date().toISOString(), checks};
+-fs.writeFileSync('out/crosscheck.json', JSON.stringify(out));
++fs.writeFileSync('out/crosscheck.json', JSON.stringify(stampReg(out)));
+
+[Diff 1k: ratings-snapshot.mjs]
+--- a/ratings-snapshot.mjs
++++ b/ratings-snapshot.mjs
+@@ -3,6 +3,7 @@
+ // games played AFTER it was taken, which the ratings could not have seen: the fairest test of whether they're right.
+ // Needs Playwright (installed by the op.gg step); if it's missing the step just skips.
+ import fs from 'node:fs'; import {execFileSync} from 'node:child_process';
++import {stampReg} from './reg-stamp.mjs';
+@@ -17,4 +18,4 @@
+ const log = rd('ratings_log.json') || {days: []}, d = new Date().toISOString().slice(0, 10);
+ log.days = [...log.days.filter(x => x.d !== d), {d, r}].slice(-120); log.updated = new Date().toISOString();
+-fs.writeFileSync('out/ratings_log.json', JSON.stringify(log)); console.log(`ratings snapshot: ${Object.keys(r).length} Pokémon saved for ${d} (${log.days.length} days kept)`);
++fs.writeFileSync('out/ratings_log.json', JSON.stringify(stampReg(log))); console.log(`ratings snapshot: ${Object.keys(r).length} Pokémon saved for ${d} (${log.days.length} days kept)`);
+
+[Diff 1l: scoreboard.mjs]
+--- a/scoreboard.mjs
++++ b/scoreboard.mjs
+@@ -9,6 +9,7 @@
+ // Writes out/scoreboard.json (today + up to a year of daily history) and warns when a number falls clearly below its
+ // recent level. Never fails the job: it only reports.
+ import fs from 'node:fs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -45,5 +46,5 @@
+ row.warnings = warns;
+-fs.writeFileSync('out/scoreboard.json', JSON.stringify({updated: new Date().toISOString(), today: row, history: [...hist, row].slice(-365)}, null, 1));
++fs.writeFileSync('out/scoreboard.json', JSON.stringify(stampReg({updated: new Date().toISOString(), today: row, history: [...hist, row].slice(-365)}), null, 1));
+
+[Diff 1m: track.mjs]
+--- a/track.mjs
++++ b/track.mjs
+@@ -13,6 +13,7 @@
+ //   fw   scoreboard.mjs's games check (snapshot 14+ days old, 300+ later games): [date, accuracy, games]
+ // Bands: 80+, 60-79, 40-59, under 40 (index 0..3).
+ import fs from 'node:fs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -46,5 +47,5 @@
+ // under the cap: the oldest events lose their per-Pokémon lists first (their band totals stay)
+ for (let i = 0; Buffer.byteLength(JSON.stringify(out)) > CAP && i < evs.length - 20; i++) evs[i][9] = null;
+-fs.writeFileSync('out/track.json', JSON.stringify(out));
++fs.writeFileSync('out/track.json', JSON.stringify(stampReg(out)));
+
+--- New File B2: reg-guard.mjs ---
+Proof (checked in Node via experiments/reg-guard-test.mjs — 14/14 passed):
+  input: active reg M-D (switched), out/model.json = {reg:'M-C', ships:true, mons:{Incineroar:0.5}}, out/sources.json = {updated:'2026-12-01', sdt:{rows:[1]}}, out/mystery.json = {hello:1}
+  -> old: M-C model.json & unstamped sources.json committed to main alongside M-D limitless.json
+  -> new: logs "emptied model.json (was M-C)", "emptied sources.json (was unstamped)", "unknown mystery.json"; replaces model.json & sources.json with M-D empty states; leaves data/ untouched
+
+----- BEGIN reg-guard.mjs -----
+// Switch-day regulation guard (Nov 24): checks every out/*.json file against activeReg().id.
+// Replaces any file stamped with a different regulation (or unstamped after a switch) with its empty state.
+// Never touches data/ (raw saved events).
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {activeReg, readReg} from './formats.mjs';
+
+export const EXEMPT = new Set(['reg.json', 'calendar.json', 'skips.json', 'official_perf.json']);
+
+export function emptyFor(file, reg, sd = '', now = new Date().toISOString()) {
+  const day = now.slice(0, 10);
+  switch (file) {
+    case 'limitless.json': return {reg, updated: now, tournaments: 0, teams: 0, games: 0, base: 0.5, adj: {label: '', rows: []}, tour: {label: '', split: true, updated: day, rows: [], megas: []}, results: {source: '', teams: 0, base: 0.5, minCore: 40, mons: {}, pairs: {}, cores: [], proven: [], records: []}};
+    case 'meta_tour.json': return {reg, format: 'doubles', kind: 'tour', source: '', period: '', updated: now, note: '', top: [], more: []};
+    case 'info.json': return {reg, N: 0, source: '', period: '', mv: {}, it: {}, ab: {}, ntN: 0, nt: {}};
+    case 'teams.json': return {reg, source: '', updated: now, teams: []};
+    case 'history.json': return {reg, days: []};
+    case 'matches.json': return {reg, updated: now, events: [], teams: [], players: 0, feats: [], decks: [], m: []};
+    case 'replays.json': return {reg, updated: now, format: sd, source: '', games: []};
+    case 'replays_bo3.json': return {reg, updated: now, format: sd ? sd + 'bo3' : '', source: '', games: []};
+    case 'practice.json': return {reg, updated: now, source: '', from: null, to: null, minR: 1300, roundR: 1450, dict: [], opp: [], rounds: []};
+    case 'official.json': return {reg, updated: now, source: '', attribution: '', events: [], checks: []};
+    case 'official_compare.json': return {reg, previous: 'none', events: [], pass: true, summary: 'regulation switched'};
+    case 'events.json': return {reg, updated: now, source: '', dict: [], events: []};
+    case 'weekly.json': return {reg, v: 1, updated: now, src: '', th: {}, a: {from: '', to: '', ev: 0, n: 0}, b: {from: '', to: '', ev: 0, n: 0}, enough: false, cutA: 0, up: [], down: [], top: [], tech: [], sty: {up: [], down: []}, styAll: [], fresh: []};
+    case 'model.json': return {reg, updated: now, ships: false, games: 0, events: 0, mons: {}, pairs: {}, sets: {}, team: {}, sixes: {}, leads: {}};
+    case 'meta_ladder.json': return {reg, format: 'doubles', kind: 'ladder', month: null, source: '', period: '', battles: 0, updated: now, note: '', top: [], more: [], usage1760: null};
+    case 'meta_ingame.json': return {reg, format: 'doubles', kind: 'ingame', source: '', period: '', updated: now, top: [], more: []};
+    case 'sources.json': return {reg, updated: now, problems: []};
+    case 'perf.json': return {updated: day, reg: {id: reg}};
+    case 'crosscheck.json': return {reg, updated: now, checks: []};
+    case 'ratings_log.json': return {reg, updated: now, days: []};
+    case 'scoreboard.json': return {reg, updated: now, today: null, history: []};
+    case 'track.json': return {reg, v: 1, updated: now, since: null, snaps: 0, last: null, top: 8, ev: [], mons: [], mb: [[0, 0], [0, 0], [0, 0], [0, 0]], fw: [], mv: null};
+    default: return null;
+  }
+}
+
+export function stampOf(doc) {
+  if (!doc || typeof doc !== 'object') return null;
+  if (typeof doc.reg === 'string' && doc.reg) return doc.reg;
+  if (doc.reg && typeof doc.reg === 'object' && typeof doc.reg.id === 'string' && doc.reg.id) return doc.reg.id;
+  return null;
+}
+
+export function guardOut({outDir = 'out', regFile = path.join(outDir, 'reg.json'), log = console.log} = {}) {
+  const RG = activeReg(regFile), rawReg = readReg(regFile);
+  const switched = !!(rawReg && rawReg.switched) || RG.id !== 'M-C';
+  const lines = [], emptied = [], unknown = [];
+  if (!fs.existsSync(outDir)) return {reg: RG.id, lines, emptied, unknown};
+  const files = fs.readdirSync(outDir).filter(f => f.endsWith('.json')).sort();
+  for (const f of files) {
+    if (EXEMPT.has(f)) { const ln = `ok ${f}`; lines.push(ln); log(ln); continue; }
+    const empty = emptyFor(f, RG.id, RG.sd);
+    if (!empty) { const ln = `unknown ${f}`; lines.push(ln); unknown.push(f); log(ln); continue; }
+    const fp = path.join(outDir, f);
+    let doc = null; try { doc = JSON.parse(fs.readFileSync(fp, 'utf8')); } catch (e) {}
+    const st = stampOf(doc);
+    const bad = st ? st !== RG.id : switched;
+    if (bad) {
+      fs.writeFileSync(fp, JSON.stringify(empty));
+      const ln = `emptied ${f} (was ${st || 'unstamped'})`;
+      lines.push(ln); emptied.push(f); log(ln);
+    } else {
+      const ln = `ok ${f}`; lines.push(ln); log(ln);
+    }
+  }
+  return {reg: RG.id, lines, emptied, unknown};
+}
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
+  guardOut();
+}
+----- END reg-guard.mjs -----
+
+--- Diff 2 (B3: add reg-guard.mjs to .github/workflows/update.yml right before Commit; see S1 note on split-docs order) ---
+Proof (code trace; not run on GitHub):
+  input: switch-day run where model-guard.mjs restored M-C model.json
+  -> old: Commit pushes M-C model.json next to M-D limitless.json
+  -> new: reg-guard.mjs empties M-C model.json before Commit pushes
+
+--- a/.github/workflows/update.yml
++++ b/.github/workflows/update.yml
+@@ -90,6 +90,8 @@
+       # page storage limit (Nov 10; after the name guard, so the parts are made from files with IDs only): any document the morning refresh writes that is over 200 KB is split into two parts in
+       # out/split/ (nothing dropped; the page joins them back). The refresh writes those parts instead of the whole file.
+       - run: node split-docs.mjs || node skip.mjs "page-size split skipped (a document too big even in two parts)"
++      - name: Regulation guard
++        run: node reg-guard.mjs
+       - name: Commit
+         run: |
+
+--- Diff 3 (B4: update.mjs also fetches previous regulation's tag for dates >= REG_END[prevF], rate-limit & MAX_FETCH safe) ---
+Proof (checked in Node):
+  input: FORMAT = 'M-D', Limitless page 1 for format=M-C has ev1 (2026-12-03T18:00:00Z) and ev2 (2026-12-01T20:00:00Z)
+  -> old: fetched ids = [] (ev1 lost)
+  -> new: fetched ids = ['ev1'] (ev2 excluded; stops after page with no post-cutoff events, max 3 pages via get() 6.5s gap; todo still capped by MAX_FETCH)
+
+--- a/update.mjs
++++ b/update.mjs
+@@ -10,7 +10,7 @@
+ import {updateModes} from './tour-modes.mjs';
+ import fs from 'node:fs';
+ import {topcut} from './topcut.mjs';
+-import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
++import {offFormat, oddEvents, activeReg, sameReg, REG_END, nextRegIds} from './formats.mjs';
+ import {politeFetch} from './http.mjs';
+ import {lkey, lmap, reportUnknown, canonSet, canonReport, canonNature} from './names.mjs';
+@@ -43,6 +43,12 @@
+ // 1) tournament list, then standings for new ones and for anything from the last 3 days (results can still change)
+ const list = [];
+ for (let page = 1; page < 30; page++) { const r = await get(`/tournaments?game=VGC&format=${FORMAT}&limit=100&page=${page}`); if (!r.length) break; list.push(...r); }
++const prevF = Object.keys(REG_END).find(k => nextRegIds(k)[0] === FORMAT);
++if (prevF) { const seenIds = new Set(list.map(t => t.id)), cut = Date.parse(REG_END[prevF]);
++  for (let page = 1; page <= 3; page++) { const r = await get(`/tournaments?game=VGC&format=${prevF}&limit=100&page=${page}`); if (!r.length) break;
++    const kept = r.filter(t => !seenIds.has(t.id) && Date.parse(t.date) >= cut && sameReg({f: t.format || prevF, d: t.date}, FORMAT));
++    for (const t of kept) { seenIds.add(t.id); list.push(t); }
++    if (!r.some(t => Date.parse(t.date) >= cut)) break; } }
+ // v2 files (full sheets + pairings) are backfilled for older tournaments too, newest first, within MAX_FETCH.
+
+--- Diff 4 (Finding #5 + Diff 1e: events.mjs same-reg drop guard + reg stamp) ---
+Proof (code trace):
+  input: prev out/events.json has 20 M-C events, switch day has 3 M-D events (RG.id = 'M-D')
+  -> old: 3 < 20 * 0.5 -> exits 1, keeps M-C events.json
+  -> new: sameAsPrev is false ((prev.reg || 'M-C') !== 'M-D') -> writes stamped M-D events.json
+
+--- a/events.mjs
++++ b/events.mjs
+@@ -3,6 +3,7 @@
+ // VR Pastes via official.mjs). Compact on purpose: the page keeps it in one document (256 KiB cap). Run after update.mjs and official.mjs.
+ import fs from 'node:fs';
+ import {offFormat, oddEvents, activeReg, sameReg, inRegWindow} from './formats.mjs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -64,8 +65,8 @@
+ // fail-safe (stress test, Oct 28): never replace yesterday's events with far fewer (a broken index or a bad day of data)
+ { const prev = readJSON('out/events.json', null), n0 = prev && Array.isArray(prev.events) ? prev.events.length : 0;
+-  if (n0 >= 10 && doc.events.length < n0 * .5) { console.log(`::error::events: only ${doc.events.length} events (had ${n0}); kept the existing file`); process.exit(1); } }
+-fs.writeFileSync('out/events.json', JSON.stringify(doc));
++  if ((!prev || (prev.reg || 'M-C') === RG.id) && n0 >= 10 && doc.events.length < n0 * .5) { console.log(`::error::events: only ${doc.events.length} events (had ${n0}); kept the existing file`); process.exit(1); } }
++fs.writeFileSync('out/events.json', JSON.stringify(stampReg(doc, RG.id)));
+
+--- Diff 5 (Finding #6 + Diff 1f: weekly.mjs filter official.json by inRegWindow + reg stamp) ---
+Proof (code trace):
+  input: RGW = {id: 'M-D', since: '2026-12-02', end: null}, out/official.json has M-C event dated '2026-11-15'
+  -> old: M-C event enters `cut` and pollutes M-D `firstSeen` / `freshOut`
+  -> new: `!inRegWindow('2026-11-15', RGW)` skips M-C event; weekly.json stamped with `reg: RGW.id`
+
+--- a/weekly.mjs
++++ b/weekly.mjs
+@@ -9,7 +9,8 @@
+ // at 3+ standard errors, and (4) it survives dropping the single event that pushes it most (one big event can't make a trend).
+ // The page shows the counts with every line, and its footnote reads the thresholds from TH below. Run after update.mjs and rk9.mjs.
+ import fs from 'node:fs';
+-import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
++import {offFormat, oddEvents, activeReg, sameReg, inRegWindow} from './formats.mjs';
++import {stampReg} from './reg-stamp.mjs';
+@@ -89,7 +90,7 @@
+ // official events: the existing out/official.json (this step makes no new requests anywhere)
+-for (const R of (readJSON('out/official.json', {events: []}).events || [])) { if (!R || !R.date) continue;
++for (const R of (readJSON('out/official.json', {events: []}).events || [])) { if (!R || !R.date || !inRegWindow(R.date, RGW)) continue;
+   for (const t of R.teams || []) { if (!(t.st <= TH.cut) || !t.mons || t.mons.length !== 6 || t.mons.some(m => !m.n || !ROSTER.has(m.n))) continue;
+     cut.push({day: dayN(R.date), ev: R.name, p: R.players || 0, who: t.player || '', pl: t.st, off: 1, mons: t.mons.map(m => ({n: m.n, i: m.i || ''}))}); } }
+@@ -102,7 +103,7 @@
+ const wk = (w, lo, hi) => ({from: dayS(lo), to: dayS(hi), ev: w.ev.size, n: w.n});
+-const doc = {v: 1, updated: new Date().toISOString(), src: 'Limitless team sheets · standard Reg M-C events (whole fields) + official events (top 8, for new in top cut)', th: TH,
++const doc = stampReg({v: 1, updated: new Date().toISOString(), src: `Limitless team sheets · standard ${RGW.name} events (whole fields) + official events (top 8, for new in top cut)`, th: TH,
+   a: wk(W.a, end - 6, end), b: wk(W.b, end - 13, end - 7), enough, cutA, up: up.slice(0, 8), down: down.slice(0, 8),
+-  top: [...W.a.mon].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([n, x]) => [n, x, W.b.mon.get(n) || 0]), tech: techOut.slice(0, 10), sty, styAll, fresh: freshOut};
++  top: [...W.a.mon].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([n, x]) => [n, x, W.b.mon.get(n) || 0]), tech: techOut.slice(0, 10), sty, styAll, fresh: freshOut}, RGW.id);
+
+====================================================================
+5. PART C — TEST FILE: experiments/reg-guard-test.mjs
+====================================================================
+Command run (Node 22, against reg-stamp.mjs + reg-guard.mjs + formats.mjs):
+  node experiments/reg-guard-test.mjs
+Result: 14 passed, 0 failed (ALL PASSED, exit code 0).
+
+----- BEGIN experiments/reg-guard-test.mjs -----
+import fs from 'node:fs';
+import path from 'node:path';
+import {stampReg} from '../reg-stamp.mjs';
+import {guardOut, emptyFor} from '../reg-guard.mjs';
+
+let failed = 0;
+function check(name, actual, expected) {
+  if (actual === expected) console.log(`pass ${name}`);
+  else { failed++; console.log(`FAIL ${name}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`); }
+}
+
+const tmp = fs.mkdtempSync(path.join(process.env.TMPDIR || '/tmp', 'reg-guard-test-'));
+const runCase = (regDoc, files) => {
+  const dir = fs.mkdtempSync(path.join(tmp, 'c-'));
+  const dataDir = path.join(dir, 'data');
+  fs.mkdirSync(dataDir);
+  fs.writeFileSync(path.join(dataDir, 'index.json'), JSON.stringify({tournaments: {t1: {d: '2026-11-20', f: 'M-C'}}}));
+  const outDir = path.join(dir, 'out');
+  fs.mkdirSync(outDir);
+  if (regDoc) fs.writeFileSync(path.join(outDir, 'reg.json'), JSON.stringify(regDoc));
+  for (const [k, v] of Object.entries(files)) {
+    fs.writeFileSync(path.join(outDir, k), typeof v === 'string' ? v : JSON.stringify(v));
+  }
+  const res = guardOut({outDir, regFile: path.join(outDir, 'reg.json'), log: () => {}});
+  const read = f => JSON.parse(fs.readFileSync(path.join(outDir, f), 'utf8'));
+  const rawData = JSON.parse(fs.readFileSync(path.join(dataDir, 'index.json'), 'utf8'));
+  return {res, read, rawData};
+};
+
+try {
+  // 1. stampReg adds reg without changing existing fields
+  const orig = {updated: '2026-12-02', teams: [1, 2]};
+  const stamped = stampReg(orig, 'M-D');
+  check('stampReg-adds-reg', `${stamped.reg}/${stamped.teams.length}/${orig.reg}`, 'M-D/2/undefined');
+
+  // 2. M-D active: M-D stamped file stays ok
+  const mdReg = {id: 'M-D', since: '2026-12-02', sd: 'gen9championsvgc2026regmd', switched: {from: 'M-C', to: 'M-D', on: '2026-12-02'}};
+  {
+    const {res, read} = runCase(mdReg, {'limitless.json': {reg: 'M-D', teams: 42}});
+    check('md-stamped-stays-ok', res.lines.includes('ok limitless.json') && read('limitless.json').teams === 42, true);
+  }
+
+  // 3. M-D active: M-C stamped model.json is emptied
+  {
+    const {res, read} = runCase(mdReg, {'model.json': {reg: 'M-C', ships: true, mons: {Incineroar: 0.5}}});
+    check('mc-model-emptied', res.lines.includes('emptied model.json (was M-C)') && read('model.json').ships === false && read('model.json').reg === 'M-D', true);
+  }
+
+  // 4. M-D active: M-C stamped official.json is emptied
+  {
+    const {res, read} = runCase(mdReg, {'official.json': {reg: 'M-C', events: [{name: 'LAIC'}]}});
+    check('mc-official-emptied', res.lines.includes('emptied official.json (was M-C)') && read('official.json').events.length === 0, true);
+  }
+
+  // 5. M-D active (switched): unstamped sources.json is emptied
+  {
+    const {res, read} = runCase(mdReg, {'sources.json': {updated: '2026-12-01', sdt: {rows: [1]}}});
+    check('unstamped-after-switch-emptied', res.lines.includes('emptied sources.json (was unstamped)') && read('sources.json').sdt === undefined && read('sources.json').reg === 'M-D', true);
+  }
+
+  // 6. M-C active (before switch): unstamped legacy file stays ok
+  const mcReg = {id: 'M-C', since: '2026-09-01', sd: 'gen9championsvgc2026regmc', switched: null};
+  {
+    const {res, read} = runCase(mcReg, {'sources.json': {updated: '2026-11-24', sdt: {rows: [1]}}});
+    check('unstamped-before-switch-ok', res.lines.includes('ok sources.json') && read('sources.json').sdt.rows.length === 1, true);
+  }
+
+  // 7. M-C active: M-D stamped file (wrong reg) is emptied
+  {
+    const {res, read} = runCase(mcReg, {'teams.json': {reg: 'M-D', teams: [{event: 'Future'}]}});
+    check('wrong-reg-before-switch-emptied', res.lines.includes('emptied teams.json (was M-D)') && read('teams.json').teams.length === 0 && read('teams.json').reg === 'M-C', true);
+  }
+
+  // 8. perf.json with object reg {id: 'M-D'} stays ok (does not break object reg)
+  {
+    const {res, read} = runCase(mdReg, {'perf.json': {updated: '2026-12-02', reg: {id: 'M-D', name: 'Reg M-D'}, tour: {rows: [1]}}});
+    check('perf-object-reg-ok', res.lines.includes('ok perf.json') && read('perf.json').tour.rows.length === 1, true);
+  }
+
+  // 9. perf.json with object reg {id: 'M-C'} is emptied when M-D active
+  {
+    const {res, read} = runCase(mdReg, {'perf.json': {updated: '2026-12-01', reg: {id: 'M-C', name: 'Reg M-C'}, tour: {rows: [1]}}});
+    check('perf-object-reg-mismatch-emptied', res.lines.includes('emptied perf.json (was M-C)') && read('perf.json').tour === undefined && read('perf.json').reg.id === 'M-D', true);
+  }
+
+  // 10. Exempt files (reg.json, calendar.json, skips.json) stay untouched
+  {
+    const {res, read} = runCase(mdReg, {'calendar.json': {ev: [{n: 'Regional'}]}, 'skips.json': {runs: [{day: '2026-12-02'}]}});
+    check('exempt-files-untouched', res.lines.includes('ok reg.json') && res.lines.includes('ok calendar.json') && res.lines.includes('ok skips.json') && read('calendar.json').ev.length === 1, true);
+  }
+
+  // 11. Unknown .json file prints "unknown &lt;file&gt;" and is not deleted or modified
+  {
+    const {res, read} = runCase(mdReg, {'mystery.json': {hello: 1}});
+    check('unknown-file-reported', res.lines.includes('unknown mystery.json') && read('mystery.json').hello === 1, true);
+  }
+
+  // 12. Corrupt JSON file after switch is replaced with empty state
+  {
+    const {res, read} = runCase(mdReg, {'weekly.json': '{not valid json'});
+    check('corrupt-json-emptied', res.lines.includes('emptied weekly.json (was unstamped)') && read('weekly.json').enough === false && read('weekly.json').v === 1, true);
+  }
+
+  // 13. Raw data/ folder is never touched
+  {
+    const {rawData} = runCase(mdReg, {'model.json': {reg: 'M-C', ships: true}});
+    check('data-folder-untouched', rawData.tournaments.t1.f, 'M-C');
+  }
+
+  // 14. replays.json empty state carries activeReg().sd as format
+  {
+    const e = emptyFor('replays.json', 'M-D', 'gen9championsvgc2026regmd');
+    check('replays-empty-carries-sd', `${e.reg}/${e.format}/${e.games.length}`, 'M-D/gen9championsvgc2026regmd/0');
+  }
+} finally {
+  fs.rmSync(tmp, {recursive: true, force: true});
+}
+
+console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
+process.exit(failed ? 1 : 0);
+----- END experiments/reg-guard-test.mjs -----
+
+TEST TABLE:
+case | checks | S7 (bug that would fail it) | result
+stampReg-adds-reg | adds reg without mutating input or dropping fields | mutating input object or omitting existing keys | pass
+md-stamped-stays-ok | M-D file stays ok when M-D active | unconditionally emptying all files after switch | pass
+mc-model-emptied | M-C model.json replaced with ships:false M-D empty state | failing to check doc.reg !== activeReg().id | pass
+mc-official-emptied | M-C official.json replaced with events:[] | missing official.json in emptyFor() | pass
+unstamped-after-switch-emptied | unstamped file emptied after switch | treating missing reg as ok after switch | pass
+unstamped-before-switch-ok | unstamped legacy file kept before switch | emptying legacy M-C files before switch | pass
+wrong-reg-before-switch-emptied | M-D file emptied when M-C active | skipping mismatch check when !switched | pass
+perf-object-reg-ok | perf.json `{reg:{id:'M-D'}}` recognized as M-D | only checking `typeof doc.reg === 'string'` | pass
+perf-object-reg-mismatch-emptied | perf.json `{reg:{id:'M-C'}}` emptied when M-D active | ignoring `doc.reg.id` on object reg | pass
+exempt-files-untouched | reg.json, calendar.json, skips.json never emptied | missing EXEMPT set or emptying reg.json | pass
+unknown-file-reported | unrecognized .json logs "unknown &lt;file&gt;" untouched | crashing or deleting unknown files | pass
+corrupt-json-emptied | unparseable JSON after switch replaced with empty state | throwing on JSON.parse instead of catching | pass
+data-folder-untouched | data/index.json never modified | touching data/ during guard run | pass
+replays-empty-carries-sd | replays.json empty state carries activeReg().sd | leaving format blank so update.mjs/replays.mjs misread it | pass
+
+====================================================================
+6. ORDER QUESTIONS FOR HH (S1) & "I'M UNSURE" ITEMS (S6)
+====================================================================
+Order questions for HH (S1):
+1. Should `reg-guard.mjs` ALSO fail the workflow run (exit 1) when it empties files?
+   - Option (a) Exit 0 (recommended for switch day): empties M-C files so Commit ships a clean, unmixed M-D out/ set with empty states on day 1 (matches Sim's "thin data / empty state on day 1" decision in docs/reg-md-plan.md). Trade-off: an unexpected mid-regulation mismatch only shows in the log unless health.mjs catches it.
+   - Option (b) Exit 1 whenever anything is emptied: stops Commit so nothing reaches live until every script is updated. Trade-off: on switch day, until G1/G3/G4 are all finished, Commit would be blocked every run and live would stay stuck on M-C.
+   - Option (c) Exit 0 when `switched` (or on switch day), exit 1 if a mismatch happens mid-regulation.
+2. Placement of `reg-guard.mjs` relative to `split-docs.mjs` in `update.yml`:
+   - B2 says "right before the Commit step", which is after `split-docs.mjs` (line 92). If `reg-guard.mjs` runs AFTER `split-docs.mjs`, `out/split/` could still hold split parts of an emptied M-C file. Running `reg-guard.mjs` one step earlier (right BEFORE `split-docs.mjs`) ensures `out/split/` is always built from the guarded `out/` files.
+
+I'm unsure (S6):
+- Client-side empty-state readers for `out/info.json`, `out/official_compare.json`, `out/crosscheck.json`, `out/scoreboard.json`, `out/ratings_log.json`, and `out/track.json`: I derived every empty state in `emptyFor()` from how the pipeline scripts read/write them, but I do NOT have the browser page scripts (`app/src/...`) to confirm whether any page view assumes a non-empty field (e.g. `track.json`'s `since`/`last` being a string vs `null`, or `perf.json`'s `reg` needing `name`/`since`). Need `app/src/app/03-persistence.js` and the page readers to be 100% sure.
+- `opgg.mjs` (paused Nov 18) is not in this file, so I could not check whether `meta_ingame.json` has any other required fields beyond `top`/`more`/`updated`/`source`/`period`.
+
+====================================================================
+7. WHAT YOU DID NOT LOOK AT
+====================================================================
+- `scrub-names.mjs`, `names.mjs`, `pid.mjs`, `http.mjs`, `pilot.mjs`, `team-basics.mjs`, `tour-modes.mjs`, `opgg.mjs`
+- Browser page readers in `app/src/` (how the UI renders empty states for each `out/` file)
+- Live GitHub Actions runs of `update.yml` and live `out/*.json` files on `main`

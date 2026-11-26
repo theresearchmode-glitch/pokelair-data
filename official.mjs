@@ -128,7 +128,7 @@ async function run() {
   // 1) the season's event pages (one request); only new or edited pages are read again
   let list; try { list = JSON.parse(await get(`${VR}?search=${season}&per_page=100&_fields=id,slug,modified,title`)); if (!Array.isArray(list)) throw new Error('not a page list'); }
   catch (e) { console.log(`::warning::official: Victory Road page list unavailable (${e.message}); kept the previous out/official.json`); return; }
-  const pages = list.map(p => ({slug: p.slug, modified: p.modified, title: strip(p.title && p.title.rendered)})).filter(p => /^\d{4} .+ (Regional|International|Special|World) Championships$/.test(p.title));
+  const pages = list.map(p => ({slug: String(p.slug || ''), modified: p.modified, title: strip(p.title && p.title.rendered)})).filter(p => /^[A-Za-z0-9_-]{1,80}$/.test(p.slug) /* a slug becomes a file name (Kip job 36 A #3) */ && /^\d{4} .+ (Regional|International|Special|World) Championships$/.test(p.title));
   for (const p of pages) { const E = index.events[p.slug];
     if (E && E.modified === p.modified && (E.done || E.skip || !E.failed)) continue;  /* unchanged page: read again only to retry failed pastes */
     try { const j = JSON.parse(await get(`${VR}?slug=${p.slug}&_fields=id,slug,modified,title,content`))[0]; if (!j) continue;

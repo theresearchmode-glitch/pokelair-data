@@ -1,0 +1,376 @@
+KIP JOB 22 — STRENGTH SCORE LAB, ROUND 2 (BASELINE PROOF, COMBO, SENSITIVITY, ROBUSTNESS, SHIP PLAN)
+Base commit: 925114e7 (branch alt/gemini-v3lab)
+Date: 2026-11-24
+
+================================================================================
+1-PAGE SUMMARY
+================================================================================
+
+Apply status on 925114e7:
+- 1 unified diff (`experiments/v3-lab.mjs`, +148/-20 lines) applies cleanly with `git apply --check` on exact commit `925114e7`.
+- ZERO changes to `model.mjs`, `six.mjs`, `out/model.json`, or any page/design file.
+- S8 plain-text audit: ZERO HTML entities or URL-encoded braces across the entire deliverable.
+
+Reading Run 1 (real 38,513 decided games to Nov 9; 17,839 paired walk-forward games):
+- Two ideas cleanly beat today's model on paired 95% tournament-clustered bootstrap CIs:
+  1. `matchup` (Blade-Chest d=4): `dLL = -0.00124 [-0.0017, -0.0006]`, `dAcc = +0.26 pts [-0.14, +0.83]` -> KEEP.
+  2. `no-evid-hier` (clean ridge + recency-aligned team-aware six delta): `dLL = -0.00068 [-0.0010, -0.0002]`, `dAcc = +0.22 pts [-0.02, +0.46]` -> KEEP.
+- `fm` and `mega-cap` showed no difference beyond chance; `glicko` was strictly worse (`dLL = +0.00139`).
+- M-D day-one sim: nothing beats cold start in Weeks 1–2; `l2-sp-decay` beats cold start from Week 3 (`-0.00069`, `-0.00053`).
+
+What Round 2 adds to `experiments/v3-lab.mjs`:
+1. **Live `model.mjs` baseline proof (`--verify-baseline`)**: spawns the real `model.mjs` on the exact same 80/20 split (using a temp `MODEL_OUT` so `out/model.json` is never touched), prints `v3-lab` vs `model.mjs` side by side (`raw acc`, `raw log-loss`, `cal log-loss`, `cal slope`), and **exits 1 if any metric differs beyond `1e-4`**.
+2. **Combined winner (`--ideas=combo`) & sensitivity (`--sensitivity`)**: stacks `no-evid-hier` + Blade-Chest (`fitBladeChestOn`) and adds `matchup-d2/d4/d8` + `combo-d2/d4/d8` across 8 weekly cuts (default `--weeks=8`).
+3. **Robustness splits (Rule 21)**: evaluates every variant with paired 95% CIs across 4 slices — event size (`<64` vs `64+` players) and train-only team familiarity (`both teams 30+ train games` vs `rarer team <30 train games`), marking any slice with `<500` test games as `UNKNOWN (<500 games)`.
+
+Commands for HH / Scout on real `out/matches.json`:
+1. Prove baseline identical to `model.mjs` (fast, ~10 s):
+   `node experiments/v3-lab.mjs --verify-baseline --ideas=none`
+2. Run combo + robustness splits on 8 weekly cuts (200 boots):
+   `node experiments/v3-lab.mjs --ideas=matchup,no-evid-hier,combo --weeks=8 --boots=200 --json=out/v3-lab-round2.json`
+3. Run Blade-Chest rank sensitivity (`d = 2, 4, 8`) on 8 weekly cuts:
+   `node experiments/v3-lab.mjs --sensitivity --weeks=8 --boots=200 --json=out/v3-lab-sensitivity.json`
+
+What was checked vs NOT checked in this offline VM:
+- CHECKED:
+  - `git apply --check` on clean `925114e7`: PASS.
+  - `node --check experiments/v3-lab.mjs`: PASS.
+  - Live `--verify-baseline` against the REAL `model.mjs` on synthetic 1,600-game `matches.json` (20 events, 16 teams, 80 players):
+    `raw acc: 0.5563 vs 0.5563 (|diff| = 0.00000 <= 0.0001)`
+    `raw log-loss: 0.6848 vs 0.6848 (|diff| = 0.00000 <= 0.0001)`
+    `cal log-loss: 0.6813 vs 0.6813 (|diff| = 0.00000 <= 0.0001)`
+    `cal slope: 2.185 vs 2.185 (|diff| = 0.0000 <= 0.001)`
+    -> `VERDICT: PASS (baseline proven identical within 1e-4)`.
+  - `--ideas=combo` + robustness splits + `--sensitivity` (`d=2,4,8`) executed cleanly end-to-end on synthetic data.
+- NOT CHECKED:
+  - Running Round 2 on real `out/matches.json` (38,513 games not in this offline VM).
+
+================================================================================
+ONE-PAGE PLAN: WHAT WE'D SHIP & HOW TO CHECK IT INDEPENDENTLY LATER
+(IF `combo` STILL WINS ON 8 CUTS + ROBUSTNESS SPLITS; SIM DECIDES, NOTHING SHIPS NOW)
+================================================================================
+
+1. Architectural distinction (critical honesty check from `docs/strength-score.md`):
+   - `no-evid-hier` improves **team strength `x(team) + delta`** directly — it raises accuracy and lowers log-loss for the **0–100 Strength Score** on every page (My Team, Build, Compare, Saved Teams).
+   - `matchup` (Blade-Chest rank-`d` antisymmetric `u(A)·v(B) - u(B)·v(A)`) improves **head-to-head win probability `P(A beats B)`**. Per `docs/strength-score.md` Phase 0, learned pairwise matchups previously helped single-game Battle predictions (`56.68% -> 57.50%`) while averaging them over the field as a team grade slightly hurt (`55.85%`). Therefore, we should ship them as two clean, independently testable pieces:
+     - **Piece A (`no-evid-hier`) -> Strength Score + Battle**: updates `model.mjs` + `six.mjs`.
+     - **Piece B (Blade-Chest `bc`) -> Battle: Plan a Match first**, and ONLY enter the 0–100 Strength Score (`CH.fieldWin`) if field-averaged `bc` beats `no-evid-hier` alone in `experiments/walk-forward.mjs` / `experiments/site-board.mjs`.
+
+2. Exact files that would change (zero design / zero new visible words):
+   - `model.mjs`:
+     - Replace post-hoc `EVID_K=1000` / `EVID_KP=300` double shrinkage with the cleaner in-objective ridge (`lb = 4 * K * 2.5`, `lp = 15 * K * pairShrink * 1.5`, `EVID_K = 0`, `EVID_KP = 0`, locked in `model-settings.json`).
+     - Fit Blade-Chest `(U, Vc)` at the winning rank `d` (likely `d = 4` if `d = 2/4/8` sensitivity confirms `d = 4` is optimal without overfitting) and export `bc: {d, u, v}` in `out/model.json` (~350 mons × 2 × 4 rounded 3-dec floats ≈ ~22 KB, well within the 256 KB Firestore doc limit; `split-docs.mjs` already splits >200 KB docs).
+   - `six.mjs`:
+     - Align `xOf(t, d)` with `model.mjs` by including `MD.team` (`noMega`, `protectLow`) and applying the same recency half-life weights (`MD.half`) used in `model.mjs`.
+   - `app/src/app/35-win-model.js` (only for Piece B in Battle):
+     - In `realMatch(mine, theirs)`, add the Blade-Chest antisymmetric term `bcDot(A, B)` alongside (or replacing) `ctrVal` if head-to-head `v3-lab` beats `ctr.mjs` on unseen games.
+
+3. What the page would show differently (numbers only, no design changes):
+   - **Strength Score (0–100)**: same 80-midpoint scale, same band words (`90+ Top tier`, `80s Tournament ready`, etc.), slightly sharper separation between genuinely strong cores and over-shrunk viable Pokémon (removing `n/(n+1000)` bias on mid-usage staples).
+   - **Battle: Plan a Match**: sharper win-chance % on intransitive matchups (e.g., Sun vs Rain vs Trick Room archetypes) without altering any layout or wording.
+
+4. Independent later-results confirmation protocol (CLAUDE.md Rule 21):
+   - **Gate 1 (before Sim's yes)**: `--verify-baseline` PASS (`<= 1e-4`) on real `out/matches.json`; 8-cut walk-forward `combo` 95% CI strictly `< 0` on `dLL` AND no regression on `64+ players` events or `rarer teams` slices.
+   - **Gate 2 (pre-merge CI)**: run `node experiments/accuracy-gate.mjs`, `node experiments/golden.mjs`, `node experiments/same-grade.mjs`, and `node experiments/broken-teams.mjs` (verify no-Mega teams still drop ~20+ pts and `80` remains median tournament team).
+   - **Gate 3 (independent unseen future games — confirms or rejects)**:
+     - Evaluate on the **sealed set (events after Nov 9)** ONCE (never tuned on it).
+     - After shipping (or shadow-logging in `scoreboard.mjs` / `track.mjs`), track the **next 2 full weeks of unseen tournaments** (and separately **M-D Weeks 3–4**, NOT Weeks 1–2 where Run 1 proved cold-start is best).
+     - **Reject / revert criteria**: if unseen 2-week log-loss is worse than baseline (95% CI `> 0`) or calibration slope drifts outside `[0.80, 1.20]` or day-to-day Strength Score median swing exceeds 5 points (`stability.mjs`), revert `model-settings.json` / `model.mjs` in one commit.
+
+================================================================================
+MERGE-READY PATCH BLOCK (APPLY DIRECTLY TO COMMIT 925114e7)
+================================================================================
+
+diff --git a/experiments/v3-lab.mjs b/experiments/v3-lab.mjs
+index 320d058..e7e5e57 100644
+--- a/experiments/v3-lab.mjs
++++ b/experiments/v3-lab.mjs
+@@ -6,11 +6,12 @@
+ //   --matches=out/matches.json     Path to matches.json (default: out/matches.json)
+ //   --settings=model-settings.json Path to locked settings (default: model-settings.json)
+ //   --weeks=8                      Walk-forward window count, 7-day cuts (default: 8)
+-//   --ideas=all                    Comma list: fm,matchup,glicko,no-evid-hier,mega-cap (default: all)
++//   --ideas=all                    Comma list: fm,matchup,glicko,no-evid-hier,mega-cap,combo,matchup-d2,matchup-d4,matchup-d8,combo-d2,combo-d4,combo-d8
++//   --sensitivity                  Shortcut: run matchup & combo across d=2,4,8 (+ no-evid-hier)
+ //   --boots=200                    Tournament-clustered bootstrap resamples for 95% CIs (default: 200)
+ //   --iters=250                    Adam iterations per fit (matches model.mjs default 250)
+ //   --md-sim                       Run Part D M-D day-one small-data regulation-change simulation
+-//   --verify-baseline              Run exact reproduction check against model.mjs fit logic
++//   --verify-baseline              Spawn model.mjs on the same 80/20 split and fail if any metric differs > 1e-4
+ //   --json=out/v3-lab.json         Optional JSON output path
+ //
+ // CLAUDE.md Rule 21:
+@@ -21,6 +22,9 @@
+ //   - Single games first; Best-of-3 evaluated strictly separately if matches.json distinguishes games from sets.
+ 
+ import fs from 'node:fs';
++import os from 'node:os';
++import path from 'node:path';
++import {execFileSync} from 'node:child_process';
+ import {deckBasics} from '../team-basics.mjs';
+ 
+ const arg = (k, d) => {
+@@ -34,12 +38,16 @@ const BOOTS = Math.max(20, Number(arg('boots', '200')) || 200);
+ const ITERS = Math.max(20, Number(arg('iters', process.env.ITERS || '250')) || 250);
+ const RUN_MD_SIM = process.argv.includes('--md-sim');
+ const VERIFY_BASELINE = process.argv.includes('--verify-baseline');
++const SENSITIVITY = process.argv.includes('--sensitivity');
+ const JSON_OUT = arg('json', '');
+-const ALL_IDEAS = ['fm', 'matchup', 'glicko', 'no-evid-hier', 'mega-cap'];
++const CORE_IDEAS = ['fm', 'matchup', 'glicko', 'no-evid-hier', 'mega-cap', 'combo'];
++const SENS_IDEAS = ['matchup-d2', 'matchup-d4', 'matchup-d8', 'no-evid-hier', 'combo-d2', 'combo-d4', 'combo-d8'];
++const ALL_IDEAS = [...new Set([...CORE_IDEAS, ...SENS_IDEAS])];
+ const IDEAS = (() => {
++  if (SENSITIVITY) return SENS_IDEAS;
+   const raw = arg('ideas', 'all');
+   if (raw === 'none' || raw === '') return [];
+-  if (raw === 'all') return ALL_IDEAS;
++  if (raw === 'all') return CORE_IDEAS;
+   return raw.split(',').map(s => s.trim()).filter(s => ALL_IDEAS.includes(s));
+ })();
+ 
+@@ -77,9 +85,17 @@ function loadData(matchesPath, settingsPath) {
+   const deckTF = hasSets ? M.decks.map(fs_ => deckBasics((fs_ || []).map(f => M.feats[f]))) : [];
+   const megaCounts = teams.map(m => m.filter(n => /-Mega/.test(n)).length);
+ 
++  // Event player counts for robustness splits (<64 vs 64+ players): use M.events[i][2] if numeric > 0, else distinct players in G.
++  const evPlayerSets = new Map();
++  for (const g of G) {
++    let ps = evPlayerSets.get(g[3]); if (!ps) evPlayerSets.set(g[3], ps = new Set());
++    ps.add(g[4]); ps.add(g[5]);
++  }
++  const evPlayers = M.events.map((e, i) => (typeof e[2] === 'number' && e[2] > 0) ? e[2] : (evPlayerSets.get(i)?.size || 0));
++
+   // Detect whether matches.json distinguishes Bo3 sets from Bo1 games (Rule 21).
+   const bo3Info = detectBo3(M, G);
+-  return {M, S, teams, evDates, isSD, G, hasSets, deckTF, megaCounts, bo3Info};
++  return {M, S, teams, evDates, evPlayers, isSD, G, hasSets, deckTF, megaCounts, bo3Info};
+ }
+ 
+ function detectBo3(M, G) {
+@@ -414,12 +430,11 @@ function fitFM(data, ctx, games, D = 4, lfm = 25) {
+   return {b, Fm, s, c, T, x, predictLogit: (A, B, dA, dB) => x(A, dA) - x(B, dB)};
+ }
+ 
+-// IDEA 2 (--idea=matchup): Blade-Chest Intransitive Team-vs-Team Matchup Term (Chen & Joachims 2016).
+-// Adds antisymmetric low-rank matchup term: u(A).v(B) - u(B).v(A) on top of baseline x(A) - x(B).
+-function fitMatchup(data, ctx, games, D = 4, lbc = 15) {
+-  const base = fitBaseline(data, ctx, games);
++// IDEA 2 (--ideas=matchup, matchup-d2/d4/d8) & COMBO (--ideas=combo, combo-d2/d4/d8):
++// Blade-Chest Intransitive Team-vs-Team Matchup Term (Chen & Joachims 2016): u(A).v(B) - u(B).v(A).
++function fitBladeChestOn(base, data, ctx, games, D = 4, lbc = 15) {
+   const {evDates} = data;
+-  const {mons, tf, nP} = ctx;
++  const {mons, tf} = ctx;
+   const half = data.S.half ?? 14;
+   const rng = makeRng(99);
+   const U = new Float64Array(mons.length * D), Vc = new Float64Array(mons.length * D);
+@@ -429,7 +444,7 @@ function fitMatchup(data, ctx, games, D = 4, lbc = 15) {
+   let last = -Infinity; for (const g of games) last = Math.max(last, dayNum(evDates[g[3]]));
+   const W = games.map(g => half ? Math.pow(0.5, (last - dayNum(evDates[g[3]])) / half) : 1);
+   const Wn = games.length / (W.reduce((a, x) => a + x, 0) || 1);
+-  const baseEta = games.map(([A, B, , , pa, pb, , dA, dB]) => base.x(A, dA) - base.x(B, dB) + base.s[pa] - base.s[pb]);
++  const baseEta = games.map(([A, B, , , pa, pb, , dA, dB]) => base.predictLogit(A, B, dA, dB) + base.s[pa] - base.s[pb]);
+ 
+   const bcDot = (A, B) => {
+     let val = 0;
+@@ -468,10 +483,19 @@ function fitMatchup(data, ctx, games, D = 4, lbc = 15) {
+   }
+   return {
+     ...base, U, Vc,
+-    predictLogit: (A, B, dA, dB) => base.x(A, dA) - base.x(B, dB) + bcDot(A, B),
++    predictLogit: (A, B, dA, dB) => base.predictLogit(A, B, dA, dB) + bcDot(A, B),
+   };
+ }
+ 
++function fitMatchup(data, ctx, games, D = 4, lbc = 15) {
++  return fitBladeChestOn(fitBaseline(data, ctx, games), data, ctx, games, D, lbc);
++}
++
++// Combined winner candidate: clean ridge + fixed six delta (no-evid-hier) + Blade-Chest rank-D matchup term.
++function fitCombo(data, ctx, games, D = 4, lbc = 15) {
++  return fitBladeChestOn(fitNoEvidHier(data, ctx, games), data, ctx, games, D, lbc);
++}
++
+ // IDEA 3 (--idea=glicko): Strictly Causal Pre-Match Glicko-2 Player Skill Offset (Glickman 2013).
+ // Computes chronological player skill (mu, phi) BEFORE each game with RD inflation over inactive days,
+ // then fits team strength with that dynamic skill offset + lightly shrunk residual player skill.
+@@ -654,13 +678,21 @@ function runWalkForward(data) {
+   const variants = [
+     {id: 'baseline', label: "Today's model (model.mjs)", fn: (d, c, gs) => fitBaseline(d, c, gs), ctxOpts: {}},
+     ...(IDEAS.includes('fm') ? [{id: 'fm', label: 'C1: Factorization Machine pairs (d=4)', fn: (d, c, gs) => fitFM(d, c, gs), ctxOpts: {}}] : []),
+-    ...(IDEAS.includes('matchup') ? [{id: 'matchup', label: 'C2: Blade-Chest matchup term (d=4)', fn: (d, c, gs) => fitMatchup(d, c, gs), ctxOpts: {}}] : []),
++    ...(IDEAS.includes('matchup') ? [{id: 'matchup', label: 'C2: Blade-Chest matchup term (d=4)', fn: (d, c, gs) => fitMatchup(d, c, gs, 4), ctxOpts: {}}] : []),
++    ...(IDEAS.includes('matchup-d2') ? [{id: 'matchup-d2', label: 'C2: Blade-Chest matchup term (d=2)', fn: (d, c, gs) => fitMatchup(d, c, gs, 2), ctxOpts: {}}] : []),
++    ...(IDEAS.includes('matchup-d4') ? [{id: 'matchup-d4', label: 'C2: Blade-Chest matchup term (d=4)', fn: (d, c, gs) => fitMatchup(d, c, gs, 4), ctxOpts: {}}] : []),
++    ...(IDEAS.includes('matchup-d8') ? [{id: 'matchup-d8', label: 'C2: Blade-Chest matchup term (d=8)', fn: (d, c, gs) => fitMatchup(d, c, gs, 8), ctxOpts: {}}] : []),
+     ...(IDEAS.includes('glicko') ? [{id: 'glicko', label: 'C3: Causal Glicko-2 player skill', fn: (d, c, gs) => fitGlicko(d, c, gs), ctxOpts: {}}] : []),
+     ...(IDEAS.includes('no-evid-hier') ? [{id: 'no-evid-hier', label: 'C4: Clean ridge + fixed six delta', fn: (d, c, gs) => fitNoEvidHier(d, c, gs), ctxOpts: {}}] : []),
+     ...(IDEAS.includes('mega-cap') ? [{id: 'mega-cap', label: 'C5: Mega diminishing returns', fn: (d, c, gs) => fitMegaCap(d, c, gs), ctxOpts: {teamFeats: ['noMega', 'protectLow', 'multiMega']}}] : []),
++    ...(IDEAS.includes('combo') ? [{id: 'combo', label: 'COMBO: no-evid-hier + Blade-Chest (d=4)', fn: (d, c, gs) => fitCombo(d, c, gs, 4), ctxOpts: {}}] : []),
++    ...(IDEAS.includes('combo-d2') ? [{id: 'combo-d2', label: 'COMBO: no-evid-hier + Blade-Chest (d=2)', fn: (d, c, gs) => fitCombo(d, c, gs, 2), ctxOpts: {}}] : []),
++    ...(IDEAS.includes('combo-d4') ? [{id: 'combo-d4', label: 'COMBO: no-evid-hier + Blade-Chest (d=4)', fn: (d, c, gs) => fitCombo(d, c, gs, 4), ctxOpts: {}}] : []),
++    ...(IDEAS.includes('combo-d8') ? [{id: 'combo-d8', label: 'COMBO: no-evid-hier + Blade-Chest (d=8)', fn: (d, c, gs) => fitCombo(d, c, gs, 8), ctxOpts: {}}] : []),
+   ];
+ 
+   const pooled = Object.fromEntries(variants.map(v => [v.id, {probs: [], ys: [], evs: [], perCut: []}]));
++  const meta = {evBig: [], bothCommon: []};
+ 
+   console.log(`=== WALK-FORWARD LAB (${cuts.length} weekly cuts ending ${maxDate}; ${BOOTS} tournament-clustered boots) ===`);
+   for (const cut of cuts) {
+@@ -673,6 +705,12 @@ function runWalkForward(data) {
+     }
+     const ys = test.map(g => g[2] === 1 ? 1 : 0);
+     const evs = test.map(g => `${cut}:${g[3]}`);
++    const trTeamCnt = new Int32Array(data.M.teams.length);
++    for (const g of train) { trTeamCnt[g[0]]++; trTeamCnt[g[1]]++; }
++    for (const g of test) {
++      meta.evBig.push((data.evPlayers[g[3]] || 0) >= 64);
++      meta.bothCommon.push(trTeamCnt[g[0]] >= 30 && trTeamCnt[g[1]] >= 30);
++    }
+     const rowLine = [`  cut ${cut}->${to} (n=${test.length}${test.length < 500 ? ' UNKNOWN' : ''}):`];
+ 
+     for (const v of variants) {
+@@ -712,7 +750,45 @@ function runWalkForward(data) {
+       console.log(`  delta vs baseline: dAcc=${((m.acc - bm.acc) * 100 >= 0 ? '+' : '')}${((m.acc - bm.acc) * 100).toFixed(2)} pts ${fPctCI(ci.dAccCI)} | dLL=${(m.ll - bm.ll >= 0 ? '+' : '')}${(m.ll - bm.ll).toFixed(5)} ${fCI(ci.dLlCI)} | dBrier=${(m.brier - bm.brier >= 0 ? '+' : '')}${(m.brier - bm.brier).toFixed(5)} ${fCI(ci.dBrierCI)}`);
+     }
+   }
+-  return summary;
++  // Robustness splits (Rule 21: "too few teams = unknown" under 500 games)
++  const slices = [
++    {id: 'ev_under_64', label: 'Event size: under 64 players', mask: meta.evBig.map(b => !b)},
++    {id: 'ev_64_plus', label: 'Event size: 64+ players', mask: meta.evBig},
++    {id: 'teams_common_30', label: 'Team familiarity: both teams 30+ train games', mask: meta.bothCommon},
++    {id: 'teams_rarer', label: 'Team familiarity: rarer team (<30 train games)', mask: meta.bothCommon.map(b => !b)},
++  ];
++  const robustness = {};
++  if (variants.length > 1) {
++    console.log('\n=== ROBUSTNESS SPLITS (PAIRED 95% CI; <500 GAMES = UNKNOWN) ===');
++    for (const sl of slices) {
++      const idx = [];
++      for (let i = 0; i < sl.mask.length; i++) if (sl.mask[i]) idx.push(i);
++      const bProbs = idx.map(i => baseP.probs[i]), bYs = idx.map(i => baseP.ys[i]), bEvs = idx.map(i => baseP.evs[i]);
++      const bm = metricsOf(bProbs, bYs);
++      console.log(`\n  Slice: ${sl.label} (n=${bm.n}${bm.unknown ? ' UNKNOWN' : ''}) | baseline acc=${bm.n ? (bm.acc * 100).toFixed(2) + '%' : 'n/a'} ll=${bm.n ? bm.ll.toFixed(5) : 'n/a'}`);
++      robustness[sl.id] = {label: sl.label, n: bm.n, unknown: bm.unknown, baseline: bm, variants: {}};
++      for (const v of variants) {
++        if (v.id === 'baseline') continue;
++        const p = pooled[v.id];
++        const vProbs = idx.map(i => p.probs[i]);
++        const vm = metricsOf(vProbs, bYs);
++        const ci = !vm.unknown ? bootstrapCI(vProbs, bYs, bEvs, bProbs) : null;
++        let verdict = 'UNKNOWN (<500 games)';
++        if (!vm.unknown) {
++          if (ci && ci.dLlCI[1] < 0) verdict = 'KEEP';
++          else if (ci && ci.dLlCI[0] > 0) verdict = 'REJECT';
++          else verdict = 'NO DIFFERENCE';
++        }
++        robustness[sl.id].variants[v.id] = {metrics: vm, ci, verdict};
++        const dLL = vm.n ? (vm.ll - bm.ll) : NaN;
++        const dAcc = vm.n ? (vm.acc - bm.acc) * 100 : NaN;
++        const fCI = c => c ? `[${c[0].toFixed(4)}, ${c[1].toFixed(4)}]` : 'n/a';
++        const fPct = c => c ? `[${(c[0] * 100).toFixed(2)}%, ${(c[1] * 100).toFixed(2)}%]` : 'n/a';
++        console.log(`    ${v.id.padEnd(14)} -> ${verdict.padEnd(20)} | dAcc=${isFinite(dAcc) ? (dAcc >= 0 ? '+' : '') + dAcc.toFixed(2) + ' pts' : 'n/a'} ${ci ? fPct(ci.dAccCI) : ''} | dLL=${isFinite(dLL) ? (dLL >= 0 ? '+' : '') + dLL.toFixed(5) : 'n/a'} ${ci ? fCI(ci.dLlCI) : ''}`);
++      }
++    }
++  }
++  return {summary, robustness};
+ }
+ 
+ // ============================================================================
+@@ -797,6 +873,8 @@ function runMdDayOneSim(data) {
+ 
+ // ============================================================================
+ // 7. BASELINE REPRODUCTION CHECK (--verify-baseline)
++//    Spawns model.mjs on the exact same 80/20 split (read-only temp MODEL_OUT)
++//    and fails (exit 1) if raw acc, raw log-loss, or calibrated log-loss differ > 1e-4.
+ // ============================================================================
+ function verifyBaselineRepro(data) {
+   const {evDates, G} = data;
+@@ -804,7 +882,7 @@ function verifyBaselineRepro(data) {
+   const lo = Math.floor(order.length * 0.8);
+   const before = new Set(order.slice(0, lo)), cut = new Set(order.slice(lo));
+   const train = G.filter(g => before.has(g[3])), test = G.filter(g => cut.has(g[3]));
+-  // Use full-G context ONLY in this check to match model.mjs's current exact behavior for bit-level verification.
++  // Use full-G context ONLY in this check to match model.mjs's exact vocabulary for bit-level verification.
+   const ctx = buildContext(data, G);
+   const m = fitBaseline(data, ctx, train);
+   const ys = test.map(g => g[2] === 1 ? 1 : 0);
+@@ -812,9 +890,57 @@ function verifyBaselineRepro(data) {
+   const calSlope = fitCalib(m, test);
+   const calProbs = test.map(g => sig(calSlope * m.predictLogit(g[0], g[1], g[7], g[8])));
+   const mr = metricsOf(rawProbs, ys), mc = metricsOf(calProbs, ys);
+-  console.log(`\n=== BASELINE REPRODUCTION CHECK (same 80/20 split as model.mjs) ===`);
+-  console.log(`  train=${train.length} test=${test.length} | raw: acc=${(mr.acc * 100).toFixed(2)}% ll=${mr.ll.toFixed(4)} | calibrated (slope=${calSlope.toFixed(3)}): ll=${mc.ll.toFixed(4)}`);
+-  console.log(`  Compare directly against: FAST=${data.S.shrink ?? 3},${data.S.half ?? 14},${data.S.skill ?? 1},${data.S.sets ?? 60} node model.mjs`);
++
++  const K = data.S.shrink ?? 3, half = data.S.half ?? 14, skill = data.S.skill ?? 1, sets = data.S.sets ?? 60;
++  const fastSpec = `${K},${half},${skill},${sets}`;
++  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'v3lab-verify-'));
++  const tmpModelOut = path.join(tmpDir, 'model_verify.json');
++  const rootDir = path.dirname(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')));
++  let ev = null;
++  try {
++    const env = {
++      ...process.env,
++      MATCHES: path.resolve(MATCHES_PATH),
++      MODEL_OUT: tmpModelOut,
++      TRAIN_ONLY: '1',
++      FAST: fastSpec,
++      ITERS: String(ITERS),
++    };
++    const stdout = execFileSync(process.execPath, [path.join(rootDir, 'model.mjs')], {cwd: rootDir, env, encoding: 'utf8'});
++    if (fs.existsSync(tmpModelOut)) {
++      ev = JSON.parse(fs.readFileSync(tmpModelOut, 'utf8')).eval;
++    } else {
++      const mEv = stdout.match(/held-out test (\{.*\})/);
++      if (mEv) ev = JSON.parse(mEv[1]);
++    }
++  } finally {
++    fs.rmSync(tmpDir, {recursive: true, force: true});
++  }
++  if (!ev || !ev.model_teams_only) {
++    console.error('FAIL --verify-baseline: could not read held-out eval from model.mjs');
++    process.exit(1);
++  }
++  const mAcc = ev.model_teams_only.acc;
++  const mLL = ev.model_teams_only.logloss;
++  const mCalLL = ev.model_teams_only_calibrated ? ev.model_teams_only_calibrated.logloss : null;
++  const mSlope = ev.model_teams_only_calibrated ? ev.model_teams_only_calibrated.slope : null;
++  const vAcc = +mr.acc.toFixed(4), vLL = +mr.ll.toFixed(4), vCalLL = +mc.ll.toFixed(4), vSlope = +calSlope.toFixed(3);
++  const dAcc = Math.abs(vAcc - mAcc), dLL = Math.abs(vLL - mLL);
++  const dCalLL = mCalLL != null ? Math.abs(vCalLL - mCalLL) : 0;
++  const dSlope = mSlope != null ? Math.abs(vSlope - mSlope) : 0;
++  const TOL = 1e-4;
++  const ok = dAcc <= TOL && dLL <= TOL && dCalLL <= TOL && dSlope <= 1e-3;
++
++  console.log(`\n=== BASELINE REPRODUCTION PROOF (v3-lab vs model.mjs on same 80/20 split; FAST=${fastSpec}) ===`);
++  console.log(`  Metric         | v3-lab   | model.mjs | |diff|   | limit`);
++  console.log(`  ---------------+----------+-----------+----------+-------`);
++  console.log(`  train / test   | ${train.length}/${test.length} | ${ev.train_games}/${ev.test_games}   | exact    | exact`);
++  console.log(`  raw acc        | ${vAcc.toFixed(4)}   | ${mAcc.toFixed(4)}    | ${dAcc.toFixed(5)}  | <= 0.0001`);
++  console.log(`  raw log-loss   | ${vLL.toFixed(4)}   | ${mLL.toFixed(4)}    | ${dLL.toFixed(5)}  | <= 0.0001`);
++  if (mCalLL != null) console.log(`  cal log-loss   | ${vCalLL.toFixed(4)}   | ${mCalLL.toFixed(4)}    | ${dCalLL.toFixed(5)}  | <= 0.0001`);
++  if (mSlope != null) console.log(`  cal slope      | ${vSlope.toFixed(3)}    | ${mSlope.toFixed(3)}     | ${dSlope.toFixed(4)}   | <= 0.001`);
++  console.log(`  VERDICT: ${ok ? 'PASS (baseline proven identical within 1e-4)' : 'FAIL (baseline diverged > 1e-4)'}`);
++  if (!ok) process.exit(1);
+ }
+ 
+ // ============================================================================
+@@ -825,7 +951,7 @@ console.log(`v3-lab loaded ${MATCHES_PATH}: ${data.G.length} decided games, ${da
+ 
+ if (VERIFY_BASELINE) verifyBaselineRepro(data);
+ 
+-const wfSummary = runWalkForward(data);
++const wfOut = IDEAS.length || !VERIFY_BASELINE ? runWalkForward(data) : {summary: {}, robustness: {}};
+ 
+ // Separate Best-of-3 section (CLAUDE.md Rule 21)
+ console.log('\n=== BEST-OF-3 SECTION (SEPARATE PER CLAUDE.md RULE 21) ===');
+@@ -839,6 +965,6 @@ if (!data.bo3Info.available) {
+ const mdSummary = RUN_MD_SIM ? runMdDayOneSim(data) : null;
+ 
+ if (JSON_OUT) {
+-  fs.writeFileSync(JSON_OUT, JSON.stringify({wfSummary, mdSummary, bo3Info: data.bo3Info}, null, 2));
++  fs.writeFileSync(JSON_OUT, JSON.stringify({wfSummary: wfOut.summary, robustness: wfOut.robustness, mdSummary, bo3Info: data.bo3Info}, null, 2));
+   console.log(`\nWrote ${JSON_OUT}`);
+ }

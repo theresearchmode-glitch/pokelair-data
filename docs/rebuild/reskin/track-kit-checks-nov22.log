@@ -1,0 +1,19 @@
+Track Record fixed to the approved mock (hW2 after hM, Nov 22-23), rebased on 40d89104 (Wave 3). Frozen data out/ @0c992f69. Log stamps machine UTC.
+
+== on the rebased build, before the TOTAL fix:
+guard :: v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+trkfit :: v2-trkfit: all passed
+q72 :: v2-q72: all passed
+unb :: v2-unbounded: none outside the named exception across 28 pages
+kitpage :: kit-page: all 14 views passed (7 widths x day and night)
+overlap :: v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 43s)
+qcheck :: qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 31s
+dtrack :: behaviour: 10 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 20s  (adapter v2)
+ctrack :: behaviour: 6 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 19s  (adapter v2)
+min-main1 :: v2-minors (main1):1 failed
+  FAIL  Sim (Nov 17, Q2 recommended): on phones the Pokémon / Tournaments tabs come right after the headline and intro line on every Meta page (meta 387 (+20), usage 423 (+20), sets 371 (+20), tournaments 437 (+20), events 452 (+20), archetypes 437 (+20), weekly 421 (+20) px)
+
+
+== after the TOTAL fix (final build): v2 guard clean; qcheck-all track 0 findings, 0 new; v2-trkfit all passed; v2-overlap 0 findings; v2-unbounded none outside the named exception
+
+== the 4 TRACK fails hM saw, on HEAD 6a8b260f's page and tests with --only: D TRACK-06 pass, TRACK-08b pass; C TRACK-04 pass, TRACK-07 pass (not reproduced)

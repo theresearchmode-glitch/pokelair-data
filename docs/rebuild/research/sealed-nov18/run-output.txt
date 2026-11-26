@@ -1,0 +1,23 @@
+SEALED LOOK (one only): model trained on events before 2026-11-09; scoring 2026-11-09 to 2026-11-19 (exclusive)
+window 2026-11-09 → 2026-11-19: training on events before 2026-11-09…
+  2026-11-09 → 2026-11-19: 5881 games · best-of-1 713 · best-of-3 5168 · unknown 0
+
+SEALED-one-2026-11-09_2026-11-19: 2026-11-09 to 2026-11-19 (exclusive), 1 window(s) · SEALED LOOK
+
+best-of-1 rounds: 713 games in 7 tournaments
+  pick 56.1% (52.53 to 60.39) · log-loss 0.6783 (0.66331 to 0.69033) · edge scale 1.18 (0.648 to 1.864) · calibration gap 0.74 pts
+  said 54.3% → won 54% (596; 49.8 to 60.1) · said 63.2% → won 65.5% (110; 54.8 to 79.2) · said 71.6% → won 85.7% (7; 50 to 100)
+
+best-of-3 rounds: 5168 games in 69 tournaments
+  pick 54.39% (52.49 to 56.02) · log-loss 0.68572 (0.68124 to 0.69066) · edge scale 0.80 (0.598 to 0.989) · calibration gap 1.71 pts
+  said 54.3% → won 52.5% (4183; 50.5 to 54.2) · said 63.3% → won 62.6% (932; 58.1 to 65.7) · said 72.6% → won 61.5% (52; 48.8 to 73.2) · said 82.8% → won 0% (1; 0 to 0)
+
+unknown format: 0 games
+
+all rounds: 5881 games in 70 tournaments
+  pick 54.6% (52.88 to 56.28) · log-loss 0.68482 (0.68036 to 0.68923) · edge scale 0.85 (0.653 to 1.024) · calibration gap 1.47 pts
+  said 54.3% → won 52.7% (4779; 50.9 to 54.5) · said 63.3% → won 62.9% (1042; 59.1 to 66.1) · said 72.5% → won 64.4% (59; 53.8 to 74.4) · said 82.8% → won 0% (1; 0 to 0)
+
+unknown format because: no round-format record for the event 0 · no round number 0 · round past the last phase 0
+ranges: 95%, 200 resamples by tournament · edge scale 1 = win chances the right size, under 1 = too confident
+saved /tmp/claude-0/-home-user-pokelair-data/25f65f15-063e-5621-be2b-3a9994dfed43/scratchpad/wt-sealed/out/wf/split/SEALED-one-2026-11-09_2026-11-19/summary.json

@@ -1,0 +1,392 @@
+// experiments/kip37-bands.mjs
+// Standalone held-out experiment for Strength Score band mappings (Kip Job 37; Rule 21 compliant).
+// Uses the Job 35 Idea #1 model (zero-centered Ridge lb=100, lp=900, ls=15, lc=60, half=14, teamHalf=0,
+// no post-hoc evidK/evidKp, train-only feature selection & centering, bounded Newton calib).
+//
+// Evaluates 4 mappings from field win chance e = CH.fieldWin(y) to 0-100:
+//   TODAY:  80 + 122 * (e - 0.50)                        [58-strength.js:21-22]
+//   A:      Percentile (last 45d dist.q): p95->90, p75->80, p40->70, p10->60, p0->0, p100->100
+//   B:      Win-chance anchored: 58%->90, 53%->80, 48%->70, 43%->60  (74 + 200 * (e - 0.50))
+//   C:      Win-chance anchored: 60%->90, 54%->80, 48%->70, 42%->60  (73.33 + 166.67 * (e - 0.50))
+//           — 6 pts of field win chance per 10-pt band: keeps top tier truly elite (~8-10% of games),
+//           puts an unseen/average 50% team at 73 (Solid), lowers day-over-day jitter vs B, and
+//           requires zero new fields in out/model.json.
+//
+// Prints:
+//   1. Band shares, held-out win rates, and 95% event-clustered bootstrap CIs over 4 strict 7-day windows.
+//   2. Adjacent-band separation (95% event-clustered CI of winRate(upper) - winRate(lower)).
+//   3. Day-over-day stability (mean, p95, max |score(d) - score(d-1)| and band flips for 50 fixed real teams).
+//   4. Unseen 6-mon team score & Reg M-D Week-1 (first 7 events) behavior.
+//
+// Usage:
+//   node experiments/kip37-bands.mjs
+//   MATCHES=out/matches.json ITERS=120 node experiments/kip37-bands.mjs
+
+import fs from 'node:fs';
+
+const MATCHES_PATH = process.env.MATCHES || 'out/matches.json';
+const ITERS = +(process.env.ITERS || 120);
+const BOOT = +(process.env.BOOT || 1000);
+
+const M = JSON.parse(fs.readFileSync(MATCHES_PATH, 'utf8'));
+const teams = (M.teams || []).map(k => k.split('|'));
+const evDates = (M.events || []).map(e => e[1]);
+const G = (M.m || []).filter(g => g[2] !== 0.5 && g[0] !== g[1]);
+
+const day = s => new Date(s + 'T00:00:00Z').getTime() / 864e5;
+const sig = z => 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, z))));
+const clamp = (v, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, v));
+
+const PROT = new Set([
+  'Protect', 'Detect', 'Spiky Shield', "King's Shield",
+  'Baneful Bunker', 'Silk Trap', 'Burning Bulwark', 'Obstruct'
+]);
+const deckProtectLow = (M.decks || []).map(fs_ => {
+  const bySp = new Map();
+  let mvCount = 0;
+  for (const fi of fs_) {
+    const f = M.feats[fi];
+    const idx = f.indexOf(':');
+    if (idx > 0) {
+      mvCount++;
+      const sp = f.slice(0, idx), mv = f.slice(idx + 1);
+      if (!bySp.has(sp)) bySp.set(sp, []);
+      bySp.get(sp).push(mv);
+    }
+  }
+  if (mvCount < 16) return 0;
+  let prot = 0;
+  for (const mvs of bySp.values()) if (mvs.some(m => PROT.has(m))) prot++;
+  return prot <= 2 ? 1 : 0;
+});
+
+function buildFeatures(games) {
+  const monIx = new Map(), mons = [];
+  teams.flat().forEach(n => { if (!monIx.has(n)) { monIx.set(n, mons.length); mons.push(n); } });
+  const pc = new Map(), seenT = new Set();
+  for (const g of games) {
+    for (const t of [g[0], g[1]]) {
+      if (seenT.has(t)) continue;
+      seenT.add(t);
+      const m = teams[t];
+      for (let i = 0; i < m.length; i++) {
+        for (let j = i + 1; j < m.length; j++) {
+          const k = m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i];
+          pc.set(k, (pc.get(k) || 0) + 1);
+        }
+      }
+    }
+  }
+  const pairIx = new Map([...pc].filter(([, n]) => n >= 30).map(([k], i) => [k, i]));
+  const pairs = [...pairIx.keys()];
+  const tf = teams.map(m => {
+    const f = m.map(n => monIx.get(n)), p = [];
+    for (let i = 0; i < m.length; i++) {
+      for (let j = i + 1; j < m.length; j++) {
+        const k = m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i];
+        const q = pairIx.get(k);
+        if (q != null) p.push(q);
+      }
+    }
+    return {f, p};
+  });
+  const cnt = new Map(), usedD = new Set();
+  for (const g of games) { usedD.add(g[7]); usedD.add(g[8]); }
+  for (const d of usedD) if (d != null && M.decks[d]) for (const fi of M.decks[d]) cnt.set(fi, (cnt.get(fi) || 0) + 1);
+  const keep = new Map([...cnt].filter(([, n]) => n >= 40).map(([fi], i) => [fi, i]));
+  const setNames = [...keep.keys()].map(fi => M.feats[fi]);
+  const deckF = (M.decks || []).map(fs_ => fs_.map(fi => keep.get(fi)).filter(j => j != null));
+  const featSp = setNames.map(f => f.split(/[@:#]/)[0]), spFeats = new Map(), freq = new Float64Array(setNames.length);
+  const spDecks = new Map(), fd = new Float64Array(setNames.length);
+  for (const d of usedD) {
+    if (d == null || !M.decks[d]) continue;
+    for (const sp of new Set(M.decks[d].map(fi => M.feats[fi].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1);
+    for (const j of deckF[d]) fd[j]++;
+  }
+  setNames.forEach((f, j) => {
+    freq[j] = fd[j] / (spDecks.get(featSp[j]) || 1);
+    if (!spFeats.has(featSp[j])) spFeats.set(featSp[j], []);
+    spFeats.get(featSp[j]).push(j);
+  });
+  return {mons, pairs, tf, setNames, deckF, spFeats, freq};
+}
+
+// Job 35 Idea #1 model: zero-centered EB Ridge (lb=100, lp=900, ls=15, lc=60, half=14, teamHalf=0, no evidK)
+function fitIdea1(games, F, iters = ITERS) {
+  const {mons, pairs, tf, setNames, deckF, spFeats, freq} = F;
+  const b = new Float64Array(mons.length), q = new Float64Array(pairs.length), s = new Float64Array(M.players);
+  const c = new Float64Array(setNames.length), T = new Float64Array(2);
+  const P = [b, q, s, c, T], Mm = P.map(a => new Float64Array(a.length)), V = P.map(a => new Float64Array(a.length));
+  const L = [100, 900, 15, 60, 1];
+  let last = -Infinity;
+  for (const g of games) last = Math.max(last, day(evDates[g[3]]));
+  const W = games.map(g => Math.pow(0.5, (last - day(evDates[g[3]])) / 14));
+  const Wn = games.length / (W.reduce((a, x) => a + x, 0) || 1);
+  const dv = new Map();
+  const deckVec = (t, d) => {
+    if (d == null || !setNames.length) return [];
+    const key = t + ',' + d;
+    let v = dv.get(key);
+    if (v) return v;
+    v = [];
+    const has = new Set(deckF[d]);
+    for (const n of teams[t]) for (const j of (spFeats.get(n) || [])) v.push([j, (has.has(j) ? 1 : 0) - freq[j]]);
+    dv.set(key, v);
+    return v;
+  };
+  const tvCache = new Map();
+  const teamVec = (t, d) => {
+    const key = t + ',' + (d ?? -1);
+    let v = tvCache.get(key);
+    if (v) return v;
+    v = [teams[t].some(n => /-Mega/.test(n)) ? 0 : 1, d != null ? deckProtectLow[d] : 0];
+    tvCache.set(key, v);
+    return v;
+  };
+  const x = (t, d) => {
+    let v = 0;
+    for (const j of tf[t].f) v += b[j];
+    for (const j of tf[t].p) v += q[j];
+    for (const [j, w] of deckVec(t, d)) v += c[j] * w;
+    const tv = teamVec(t, d);
+    v += T[0] * tv[0] + T[1] * tv[1];
+    return v;
+  };
+  for (let it = 1; it <= iters; it++) {
+    const Gr = P.map(a => new Float64Array(a.length));
+    for (let gi = 0; gi < games.length; gi++) {
+      const [A, B, r, , pa, pb, , dA, dB] = games[gi];
+      const eta = x(A, dA) - x(B, dB) + s[pa] - s[pb];
+      const e0 = sig(eta) - r, d = e0 * W[gi] * Wn;
+      for (const j of tf[A].f) Gr[0][j] += d;
+      for (const j of tf[B].f) Gr[0][j] -= d;
+      for (const j of tf[A].p) Gr[1][j] += d;
+      for (const j of tf[B].p) Gr[1][j] -= d;
+      Gr[2][pa] += d; Gr[2][pb] -= d;
+      for (const [j, w] of deckVec(A, dA)) Gr[3][j] += d * w;
+      for (const [j, w] of deckVec(B, dB)) Gr[3][j] -= d * w;
+      const ta = teamVec(A, dA), tb = teamVec(B, dB);
+      Gr[4][0] += e0 * (ta[0] - tb[0]); Gr[4][1] += e0 * (ta[1] - tb[1]);
+    }
+    const c1 = 1 - 0.9 ** it, c2 = 1 - 0.999 ** it;
+    for (let k = 0; k < P.length; k++) {
+      const a = P[k], g = Gr[k], m = Mm[k], v = V[k];
+      for (let j = 0; j < a.length; j++) {
+        const gg = g[j] + 2 * L[k] * a[j];
+        m[j] = 0.9 * m[j] + 0.1 * gg;
+        v[j] = 0.999 * v[j] + 0.001 * gg * gg;
+        a[j] -= 0.03 * (m[j] / c1) / (Math.sqrt(v[j] / c2) + 1e-8);
+      }
+    }
+  }
+  const nb = new Float64Array(mons.length);
+  for (const [A, B] of games) for (const t of [A, B]) for (const j of tf[t].f) nb[j]++;
+  let sw = 0, sb = 0;
+  for (let j = 0; j < b.length; j++) { sw += nb[j]; sb += nb[j] * b[j]; }
+  const mu = sb / (sw || 1);
+  for (let j = 0; j < b.length; j++) if (nb[j] > 0) b[j] -= mu;
+  return {b, q, s, c, T, x};
+}
+
+function fitCalib(model, games) {
+  let w = 1;
+  for (let k = 0; k < 30; k++) {
+    let g = 0, h = 0;
+    for (const [A, B, r, , , , , dA, dB] of games) {
+      const e = model.x(A, dA) - model.x(B, dB);
+      const p = sig(w * e);
+      g += (p - r) * e;
+      h += p * (1 - p) * e * e;
+    }
+    const step = Math.max(-0.5, Math.min(0.5, g / (h + 1e-6)));
+    w = Math.max(0.1, Math.min(2.5, w - step));
+  }
+  return w;
+}
+
+function buildDist(model, games, cal) {
+  const last = games.reduce((a, g) => evDates[g[3]] > a ? evDates[g[3]] : a, '');
+  const since = new Date(new Date(last).getTime() - 45 * 864e5).toISOString().slice(0, 10);
+  const seenTD = new Set(), xs = [];
+  for (const [A, B, , ev, , , , dA, dB] of games) {
+    if (evDates[ev] < since) continue;
+    for (const [t, d] of [[A, dA], [B, dB]]) {
+      const k = t + ',' + d;
+      if (seenTD.has(k)) continue;
+      seenTD.add(k);
+      xs.push(model.x(t, d));
+    }
+  }
+  xs.sort((a, b) => a - b);
+  const q101 = Array.from({length: 101}, (_, i) => xs[Math.round(i / 100 * (xs.length - 1))]);
+  const fieldWin = y => q101.reduce((a, v) => a + sig(cal * (y - v)), 0) / 101;
+  const eQ = [0, 10, 40, 75, 95, 100].map(p => fieldWin(q101[p]));
+  return {q101, fieldWin, eQ, n: xs.length};
+}
+
+function ssPercentile(e, eQ) {
+  if (e == null || !isFinite(e)) return null;
+  const ys = [0, 60, 70, 80, 90, 100];
+  if (e <= eQ[0]) return 0;
+  if (e >= eQ[5]) return 100;
+  for (let i = 0; i < 5; i++) {
+    if (e <= eQ[i + 1]) {
+      const span = eQ[i + 1] - eQ[i];
+      return span > 1e-9 ? ys[i] + (ys[i + 1] - ys[i]) * (e - eQ[i]) / span : ys[i + 1];
+    }
+  }
+  return 100;
+}
+
+const MAPPINGS = [
+  {name: 'TODAY (80 + 122*(e-0.5))', fn: (e) => clamp(80 + 122 * (e - 0.5))},
+  {name: 'A: Percentile (p95/p75/p40/p10)', fn: (e, d) => clamp(ssPercentile(e, d.eQ))},
+  {name: 'B: Win-chance 58/53/48/43 (74 + 200*(e-0.5))', fn: (e) => clamp(74 + 200 * (e - 0.5))},
+  {name: 'C: Win-chance 60/54/48/42 (73.33 + 166.67*(e-0.5))', fn: (e) => clamp(73.3333 + 166.6667 * (e - 0.5))},
+];
+
+const BANDS = [
+  {label: '90+ Top tier', lo: 90, hi: 101},
+  {label: '80s Tournament ready', lo: 80, hi: 90},
+  {label: '70s Solid', lo: 70, hi: 80},
+  {label: '60s Needs work', lo: 60, hi: 70},
+  {label: '<60 Missing a basic', lo: -1, hi: 60},
+];
+const bandIdx = s => { const r = Math.round(s); return r >= 90 ? 0 : r >= 80 ? 1 : r >= 70 ? 2 : r >= 60 ? 3 : 4; };
+
+const cuts = [
+  ['2026-10-28', '2026-11-04'],
+  ['2026-11-04', '2026-11-11'],
+  ['2026-11-11', '2026-11-18'],
+  ['2026-11-18', '2026-11-26'],
+];
+
+const perMapEvents = MAPPINGS.map(() => new Map());
+let lastDist = null;
+
+console.log(`=== kip37-bands (Job 35 Idea #1 model, ITERS=${ITERS}, matches=${G.length}) ===`);
+for (const [cFrom, cTo] of cuts) {
+  const train = G.filter(g => evDates[g[3]] < cFrom);
+  const test = G.filter(g => evDates[g[3]] >= cFrom && evDates[g[3]] < cTo);
+  const trEvs = [...new Set(train.map(g => g[3]))].sort((a, b) => evDates[a].localeCompare(evDates[b]) || a - b);
+  const valSet = new Set(trEvs.slice(Math.floor(trEvs.length * 0.8)));
+  const F = buildFeatures(train);
+  const cal = fitCalib(fitIdea1(train.filter(g => !valSet.has(g[3])), F), train.filter(g => valSet.has(g[3])));
+  const mod = fitIdea1(train, F);
+  const dist = buildDist(mod, train, cal);
+  lastDist = dist;
+
+  for (const [A, B, r, ev, , , , dA, dB] of test) {
+    const ek = cFrom + ':' + ev;
+    for (const [t, d, won] of [[A, dA, r], [B, dB, 1 - r]]) {
+      const e = dist.fieldWin(mod.x(t, d));
+      for (let mi = 0; mi < MAPPINGS.length; mi++) {
+        const s = MAPPINGS[mi].fn(e, dist);
+        const bi = bandIdx(s);
+        let arr = perMapEvents[mi].get(ek);
+        if (!arr) { arr = Array.from({length: 5}, () => [0, 0]); perMapEvents[mi].set(ek, arr); }
+        arr[bi][0]++; arr[bi][1] += won;
+      }
+    }
+  }
+}
+
+function summarizeMapping(evMap, seed = 42) {
+  const keys = [...evMap.keys()];
+  const tot = Array.from({length: 5}, () => [0, 0]);
+  let totalTG = 0;
+  for (const arr of evMap.values()) {
+    for (let b = 0; b < 5; b++) { tot[b][0] += arr[b][0]; tot[b][1] += arr[b][1]; totalTG += arr[b][0]; }
+  }
+  let st = seed >>> 0;
+  const rnd = () => { st = (st * 1664525 + 1013904223) >>> 0; return st / 4294967296; };
+  const wrBoots = Array.from({length: 5}, () => []);
+  const diffBoots = Array.from({length: 4}, () => []);
+  for (let b = 0; b < BOOT; b++) {
+    const bg = [0, 0, 0, 0, 0], bw = [0, 0, 0, 0, 0];
+    for (let i = 0; i < keys.length; i++) {
+      const arr = evMap.get(keys[Math.floor(rnd() * keys.length)]);
+      for (let k = 0; k < 5; k++) { bg[k] += arr[k][0]; bw[k] += arr[k][1]; }
+    }
+    const wr = bg.map((g, k) => g ? bw[k] / g : NaN);
+    for (let k = 0; k < 5; k++) if (!isNaN(wr[k])) wrBoots[k].push(wr[k]);
+    for (let k = 0; k < 4; k++) if (!isNaN(wr[k]) && !isNaN(wr[k + 1])) diffBoots[k].push(wr[k] - wr[k + 1]);
+  }
+  const ci = a => { if (!a.length) return [NaN, NaN]; a.sort((x, y) => x - y); return [a[Math.floor(0.025 * a.length)], a[Math.floor(0.975 * a.length)]]; };
+  return {totalTG, events: keys.length, tot, wrCI: wrBoots.map(ci), diffCI: diffBoots.map(ci)};
+}
+
+console.log('\n=== 1 & 2. HELD-OUT BAND TABLES (4 strict 7-day windows) ===');
+for (let mi = 0; mi < MAPPINGS.length; mi++) {
+  const S = summarizeMapping(perMapEvents[mi], 42 + mi);
+  console.log(`\n--- ${MAPPINGS[mi].name} (${S.totalTG} team-games, ${S.events} events) ---`);
+  for (let b = 0; b < 5; b++) {
+    const [g, w] = S.tot[b], sh = 100 * g / S.totalTG, wr = g ? 100 * w / g : NaN;
+    const [lo, hi] = S.wrCI[b];
+    console.log(`  ${BANDS[b].label.padEnd(22)} share=${sh.toFixed(1).padStart(5)}% (n=${String(g).padStart(5)})  win%=${isNaN(wr) ? '  n/a' : wr.toFixed(1).padStart(5)}%  95% CI=[${isNaN(lo) ? ' n/a' : (100 * lo).toFixed(1).padStart(4)}, ${isNaN(hi) ? ' n/a' : (100 * hi).toFixed(1).padStart(4)}]%`);
+  }
+  const gaps = S.diffCI.map(([lo, hi], k) => {
+    const [g1, w1] = S.tot[k], [g2, w2] = S.tot[k + 1];
+    const d = (g1 && g2) ? 100 * (w1 / g1 - w2 / g2) : NaN;
+    const sigTxt = !isNaN(lo) && lo > 0 ? 'SIG' : 'overlap';
+    return `${BANDS[k].label.split(' ')[0]}-${BANDS[k + 1].label.split(' ')[0]}: +${isNaN(d) ? '?' : d.toFixed(1)}pp [${isNaN(lo) ? '?' : (100 * lo).toFixed(1)}, ${isNaN(hi) ? '?' : (100 * hi).toFixed(1)}] (${sigTxt})`;
+  });
+  console.log('  Adjacent gaps: ' + gaps.join(' | '));
+  const eUnseen = lastDist.fieldWin(0);
+  console.log(`  Unseen 6-mon team (x=0, e=${(100 * eUnseen).toFixed(1)}%): score=${MAPPINGS[mi].fn(eUnseen, lastDist).toFixed(1)}`);
+}
+
+const allDates = [...new Set(evDates)].sort();
+const stabDates = allDates.slice(-8, -1);
+const freqTD = new Map();
+for (const [A, B, , , , , , dA, dB] of G) {
+  for (const k of [A + ',' + dA, B + ',' + dB]) freqTD.set(k, (freqTD.get(k) || 0) + 1);
+}
+const fixed50 = [...freqTD.entries()].sort((a, b) => b[1] - a[1]).slice(0, 50).map(([k]) => k.split(',').map(Number));
+const dailyScores = MAPPINGS.map(() => []);
+for (const dt of stabDates) {
+  const tr = G.filter(g => evDates[g[3]] <= dt);
+  const trEvs = [...new Set(tr.map(g => g[3]))].sort((a, b) => evDates[a].localeCompare(evDates[b]) || a - b);
+  const valSet = new Set(trEvs.slice(Math.floor(trEvs.length * 0.8)));
+  const F = buildFeatures(tr);
+  const cal = fitCalib(fitIdea1(tr.filter(g => !valSet.has(g[3])), F), tr.filter(g => valSet.has(g[3])));
+  const mod = fitIdea1(tr, F);
+  const dist = buildDist(mod, tr, cal);
+  for (let mi = 0; mi < MAPPINGS.length; mi++) {
+    dailyScores[mi].push(fixed50.map(([t, d]) => MAPPINGS[mi].fn(dist.fieldWin(mod.x(t, d)), dist)));
+  }
+}
+console.log(`\n=== 3. DAY-OVER-DAY STABILITY (50 fixed teams across ${stabDates.length} daily refits: ${stabDates[0]}..${stabDates[stabDates.length - 1]}) ===`);
+for (let mi = 0; mi < MAPPINGS.length; mi++) {
+  const diffs = [];
+  let bandFlips = 0, totalPairs = 0;
+  for (let d = 1; d < dailyScores[mi].length; d++) {
+    for (let i = 0; i < fixed50.length; i++) {
+      const a = dailyScores[mi][d - 1][i], b = dailyScores[mi][d][i];
+      diffs.push(Math.abs(b - a));
+      if (bandIdx(a) !== bandIdx(b)) bandFlips++;
+      totalPairs++;
+    }
+  }
+  diffs.sort((a, b) => a - b);
+  const mean = diffs.reduce((a, b) => a + b, 0) / diffs.length;
+  const p95 = diffs[Math.floor(0.95 * diffs.length)], max = diffs[diffs.length - 1];
+  console.log(`  ${MAPPINGS[mi].name.padEnd(55)} mean|dS|=${mean.toFixed(2)}  p95=${p95.toFixed(2)}  max=${max.toFixed(2)}  bandFlips=${bandFlips}/${totalPairs} (${(100 * bandFlips / totalPairs).toFixed(1)}%)`);
+}
+
+const ord = [...evDates.keys()].sort((a, b) => evDates[a].localeCompare(evDates[b]) || a - b);
+const eTr = G.filter(g => new Set(ord.slice(0, 5)).has(g[3]));
+const eTe = G.filter(g => new Set(ord.slice(5, 7)).has(g[3]));
+const Fe = buildFeatures(eTr);
+const mE = fitIdea1(eTr, Fe);
+const calE = fitCalib(mE, eTe);
+const dE = buildDist(mE, eTr, calE);
+console.log(`\n=== 4. REG M-D WEEK-1 COLD START (7 events, dist.n=${dE.n}, cal=${calE.toFixed(3)}, eQ=[${dE.eQ.map(x => (100 * x).toFixed(1) + '%').join(', ')}]) ===`);
+for (let mi = 0; mi < MAPPINGS.length; mi++) {
+  const cnt = [0, 0, 0, 0, 0];
+  for (const [A, B, , , , , , dA, dB] of eTe) {
+    for (const [t, d] of [[A, dA], [B, dB]]) cnt[bandIdx(MAPPINGS[mi].fn(dE.fieldWin(mE.x(t, d)), dE))]++;
+  }
+  const n = eTe.length * 2;
+  console.log(`  ${MAPPINGS[mi].name.padEnd(55)} 90+:${(100*cnt[0]/n).toFixed(0).padStart(2)}%  80s:${(100*cnt[1]/n).toFixed(0).padStart(2)}%  70s:${(100*cnt[2]/n).toFixed(0).padStart(2)}%  60s:${(100*cnt[3]/n).toFixed(0).padStart(2)}%  <60:${(100*cnt[4]/n).toFixed(0).padStart(2)}%`);
+}

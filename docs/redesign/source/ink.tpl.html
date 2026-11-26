@@ -1,0 +1,112 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>NastyPlot home concept: colour is earned</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500..900&family=Instrument+Sans:wght@400..700&display=swap">
+<style>
+:root{--bg:#0B0A0C;--ink:#F4F1EC;--ink2:#B9B4BD;--ink3:#86818C;--rule:rgba(255,255,255,.14);--pink:#FF2E93;--blue:#4AAEF5;
+  --d:"Unbounded",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;overflow-x:hidden;background:var(--bg);color:var(--ink);font:500 16px/1.5 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style}
+.dsp{font-family:var(--d);font-style:italic;font-weight:900;letter-spacing:-.035em}
+.hero{position:relative;height:1020px;overflow:hidden}
+.paint{position:absolute;left:0;top:0;z-index:1}
+.tone{position:absolute;right:0;top:0;width:760px;height:620px;z-index:1;background:radial-gradient(rgba(255,255,255,.2) 2px,transparent 2.4px) 0 0/14px 14px;-webkit-mask-image:radial-gradient(closest-side at 70% 30%,#000,transparent)}
+.grain{position:absolute;inset:0;opacity:.13;mix-blend-mode:screen;pointer-events:none;z-index:9}
+header{position:absolute;z-index:8;left:0;right:0;top:0;height:80px;display:flex;align-items:center;padding:0 250px 0 64px}
+header .logo svg{height:40px;display:block}
+nav{display:flex;gap:36px;margin-left:64px}
+nav a{font:700 15px/1 var(--b);color:var(--ink);display:flex;align-items:center;gap:9px}
+nav a::before{content:"";width:5px;height:18px;background:var(--pink);transform:skewX(-18deg)}
+.find{margin-left:auto;display:flex;align-items:center;gap:12px;width:280px;height:44px;padding:0 14px;border:1.5px solid var(--ink);font-size:15px;white-space:nowrap;transform:skewX(-10deg)}
+.find>*{transform:skewX(10deg)}
+h1{position:absolute;z-index:6;left:64px;top:122px;font-size:62px;line-height:1.02;white-space:nowrap}
+h1 em{font-style:inherit;color:var(--blue)}
+.lead{position:absolute;z-index:6;left:64px;top:266px;width:520px;font-size:18px;line-height:1.45;color:var(--ink2)}
+.lead b{color:var(--ink);font-weight:700}.lead mark{background:var(--pink);color:#0B0A0C;font-weight:700;padding:0 7px;display:inline-block;transform:skewX(-10deg)}
+/* the roster: type, not boxes */
+.tabs{position:absolute;z-index:6;left:64px;top:368px;display:flex;gap:26px;font:700 13px/1 var(--b);letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+.tabs b{color:var(--ink);font-weight:700;padding-bottom:8px;border-bottom:3px solid var(--pink)}
+.list{position:absolute;z-index:6;left:64px;top:404px;width:610px}
+.row{position:relative;height:58px;display:grid;grid-template-columns:56px 1fr auto;align-items:center}
+.row .r{font:900 17px/1 var(--d);font-style:italic;color:var(--ink3)}
+.row .nm{font:900 34px/1 var(--d);font-style:italic;letter-spacing:-.035em;color:var(--bg);-webkit-text-stroke:2.6px rgba(244,241,236,.62);paint-order:stroke fill;white-space:nowrap}
+.row .u{font-size:13px;color:var(--ink3);white-space:nowrap}
+.row.in .nm{color:var(--ink);-webkit-text-stroke:0 transparent}.row.in .r{color:var(--pink)}.row.in .u{color:var(--ink);font-weight:700}
+.row.in .u::before{content:"";display:inline-block;width:16px;height:5px;background:var(--pink);transform:skewX(-24deg);margin-right:8px;vertical-align:2px}
+.row.hv::before{content:"";position:absolute;left:-90px;right:-34px;top:2px;bottom:2px;background:var(--pink);transform:skewX(-14deg);z-index:-1}
+.row.hv .nm{color:#0B0A0C;-webkit-text-stroke:0 transparent}.row.hv .r{color:#0B0A0C}.row.hv .u{color:#0B0A0C;font:900 15px/1 var(--d);font-style:italic}
+/* the splash */
+.mon{position:absolute;z-index:5}
+.mon img{display:block;filter:drop-shadow(12px 14px 0 #000)}
+.mon.gr img{filter:grayscale(1) contrast(1.35) brightness(.82) drop-shadow(3px 3px 0 var(--pink)) drop-shadow(10px 12px 0 #000)}
+.mon.bg{z-index:3}.mon.bg img{filter:grayscale(1) contrast(1.2) brightness(.42)}
+.tagp{position:absolute;z-index:6;white-space:nowrap;padding:7px 16px 7px 14px;background:#0B0A0C;font:900 17px/1 var(--d);font-style:italic;letter-spacing:-.02em;transform:skewX(-12deg);border-left:6px solid var(--pink)}
+.tagp>span{display:inline-block;transform:skewX(12deg)}.tagp b{color:var(--pink);margin-left:10px}
+.tagp.q{background:var(--ink);color:#0B0A0C;border-left-color:#0B0A0C}.tagp.q b{color:#0B0A0C}
+.streak{position:absolute;z-index:4}
+/* your six */
+.six{position:absolute;z-index:7;left:0;right:0;top:896px;height:124px;padding:0 64px;background:var(--bg);display:flex;align-items:center;border-top:2px solid var(--ink)}
+.six h2{font-size:22px;width:170px}.six h2 small{display:block;font:700 13px/1 var(--b);font-style:normal;letter-spacing:.02em;color:var(--pink);margin-top:6px}
+.six .s{position:relative;width:92px;height:86px;display:grid;place-items:center;font:900 26px/1 var(--d);font-style:italic;color:transparent;-webkit-text-stroke:1.4px rgba(244,241,236,.4)}
+.six .s img{width:76px;height:76px}.six .s.nx{-webkit-text-stroke:0;color:var(--pink)}
+.six p{margin-left:28px;font-size:15px;color:var(--ink2);max-width:250px;line-height:1.35}.six p b{color:var(--ink)}
+.btn{height:54px;padding:0 26px;display:inline-flex;align-items:center;font:900 15px/1 var(--d);font-style:italic;letter-spacing:-.01em;white-space:nowrap;transform:skewX(-12deg)}
+.btn>span{display:inline-block;transform:skewX(12deg)}
+.btn.p{background:var(--pink);color:#0B0A0C;margin-left:auto}.btn.g{border:1.5px solid var(--ink);margin-left:12px}
+/* week band */
+.band{position:relative;z-index:8;height:58px;background:var(--pink);color:#0B0A0C;display:flex;align-items:center;gap:30px;padding:0 64px;white-space:nowrap;overflow:hidden;font:900 19px/1 var(--d);font-style:italic;letter-spacing:-.02em}
+.band small{font:800 13px/1 var(--b);font-style:normal;letter-spacing:.12em;text-transform:uppercase}.band i{font-style:normal;opacity:.5}
+/* sections as type */
+.secs{padding:36px 64px 56px;overflow:hidden}
+.sec{position:relative;isolation:isolate;display:grid;grid-template-columns:90px 560px 1fr auto;align-items:center;height:128px;border-bottom:1px solid var(--rule)}
+.sec .n{font:900 17px/1 var(--d);font-style:italic;color:var(--pink)}
+.sec h2{font-size:84px;line-height:1;color:var(--bg);-webkit-text-stroke:4px rgba(244,241,236,.8);paint-order:stroke fill;white-space:nowrap}
+.sec p{font-size:18px;color:var(--ink2);max-width:420px;line-height:1.4}
+.sec .go{font:900 15px/1 var(--d);font-style:italic;color:var(--ink3)}
+.sec.hv::before{content:"";position:absolute;left:-90px;right:-90px;top:10px;bottom:10px;background:var(--ink);transform:skewX(-14deg);z-index:-1}
+.sec.hv{border-color:transparent}.sec.hv h2{color:#0B0A0C;-webkit-text-stroke:0 transparent}.sec.hv p{color:#0B0A0C;font-weight:600}.sec.hv .go{color:#0B0A0C}.sec.hv .n{color:#0B0A0C}
+.sec.hv .go::after{content:"";display:inline-block;width:44px;height:8px;background:var(--pink);transform:skewX(-24deg);margin-left:14px}
+footer{display:flex;align-items:center;gap:40px;padding:0 64px;height:104px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink2)}
+footer svg{height:30px;display:block}footer .r{margin-left:auto;display:flex;gap:32px}
+</style></head><body>
+<section class="hero">
+  <svg class="paint" width="1440" height="1020"><defs>
+    <filter id="rough" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".012 .11" numOctaves="3" seed="7"/><feDisplacementMap in="SourceGraphic" scale="46"/></filter>
+    <pattern id="ht" width="13" height="13" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><circle cx="6.5" cy="6.5" r="2.7" fill="#0B0A0C"/></pattern>
+    <linearGradient id="fade" x1="0" y1="1" x2="1" y2="0"><stop offset=".2" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".9"/></linearGradient><mask id="mk"><rect width="1440" height="1020" fill="url(#fade)"/></mask></defs>
+    <g filter="url(#rough)"><polygon points="700,1060 1040,1060 1500,330 1500,-40 1330,-40" fill="#FF2E93"/><polygon points="1090,1060 1118,1060 1500,470 1500,426" fill="#F4F1EC"/><polygon points="668,1060 688,1060 1316,-40 1298,-40" fill="#F4F1EC" opacity=".9"/></g>
+    <g mask="url(#mk)"><polygon points="700,1060 1040,1060 1500,330 1500,-40 1330,-40" fill="url(#ht)" opacity=".5"/></g></svg>
+  <div class="tone"></div>
+  <svg class="grain" width="1440" height="1020"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .6 0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+  <header><div class="logo">%LOGO%</div><nav><a>Build</a><a>My team</a><a>Battle</a><a>Meta</a></nav>
+    <div class="find"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Find a Pokémon or tool</span></div></header>
+  <h1 class="dsp">Sharply raise<br><em>your win rate.</em></h1>
+  <p class="lead">Everything starts in black and white. <mark>Pick a Pokémon</mark> and it comes to life in colour. Six picks in, NastyPlot <b>grades your team out of 100</b>.</p>
+  <div class="tabs"><b>Top rated</b><span>Rising this week</span><span>Hidden gems</span><span>All 322</span></div>
+  <div class="list" id="list"></div>
+  <div id="splash"></div>
+  <div class="six" id="six"></div>
+</section>
+<div class="band" id="band"></div>
+<section class="secs">
+  <div class="sec"><span class="n">01</span><h2 class="dsp">Build</h2><p>A full six drafted from real winning teams, or built your own way.</p><span class="go">Build me a team</span></div>
+  <div class="sec"><span class="n">02</span><h2 class="dsp">My team</h2><p>Your six graded out of 100, with the reasons and the fixes.</p><span class="go">Check my team</span></div>
+  <div class="sec hv"><span class="n">03</span><h2 class="dsp">Battle</h2><p>Their six in. Your four, the leads and turn 1 out.</p><span class="go">Battle mode</span></div>
+  <div class="sec"><span class="n">04</span><h2 class="dsp">Meta</h2><p>Every recent tournament, every winning team, every Pokémon rated.</p><span class="go">Ratings</span></div>
+</section>
+<footer>%LOGO2%<span>Team building for Pokémon Champions, from real tournament results.</span><div class="r"><span>How the ratings work</span><span>About</span><span>Send feedback</span></div></footer>
+<script>
+/*DATA*/
+const $=id=>document.getElementById(id),by=n=>D.list.find(m=>m.n===n);
+$('list').innerHTML=D.list.map(m=>{const c=D.picked.includes(m.n)?'in':m.n===D.hover?'hv':'';return `<div class="row ${c}"><span class="r">${m.r}</span><span class="nm">${m.d}</span><span class="u">${c=='in'?'On your six':c=='hv'?'Add  ➜':m.u+'% of teams'}</span></div>`;}).join('');
+// splash: picked Pokemon in colour, the hovered one arriving in greyscale, two more waiting in the dark
+const S=[['Charizard-Mega-Y',770,150,270,''],['Sneasler',930,330,320,''],['Kingambit',1150,500,290,''],['Rillaboom',700,560,280,'gr']];
+const B=D.list.filter(m=>!D.picked.includes(m.n)&&m.n!==D.hover).slice(0,2),BP=[[1190,150,200],[1010,90,170]];
+let h=B.map((m,i)=>`<div class="mon bg" style="left:${BP[i][0]}px;top:${BP[i][1]}px"><img src="${m.img}" width="${BP[i][2]}" height="${BP[i][2]}"></div>`).join('');
+for(const[n,x,y,z,c]of S){const m=by(n);h+=`<div class="mon ${c}" style="left:${x}px;top:${y}px"><img src="${m.img}" width="${z}" height="${z}"></div>`;}
+const T=[['Charizard-Mega-Y',800,404,''],['Sneasler',1010,632,''],['Kingambit',1196,776,''],['Rillaboom',690,826,'q']];
+for(const[n,x,y,c]of T){const m=by(n);h+=`<div class="tagp ${c}" style="left:${x}px;top:${y}px"><span>${m.d}<b>${m.r}</b></span></div>`;}
+
+$('splash').innerHTML=h;
+$('six').innerHTML=`<h2 class="dsp">Your six<small>3 of 6 picked</small></h2>`+D.picked.map(n=>`<div class="s"><img src="${by(n).img}"></div>`).join('')+'<div class="s nx">4</div><div class="s">5</div><div class="s">6</div><p><b>3 more</b> and your grade drops in, with what to fix first.</p><span class="btn p"><span>Build me a team ➜</span></span><span class="btn g"><span>Import from Showdown</span></span>';
+const it=(a,s)=>a.map(x=>`<span>${s} ${x[0]} ${x[1]>0?'+':'−'}${Math.abs(x[1])}</span><i>/</i>`).join('');
+$('band').innerHTML='<small>This week</small>'+it(D.up,'▲')+it(D.down,'▼');
+</script></body></html>

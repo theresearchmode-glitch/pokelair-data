@@ -1,7 +1,7 @@
 # Sealed-set check: pass rules (written Nov 10, before anyone looked)
 
 Focus plan step f1-rules. These rules are fixed **before** the sealed games are scored, so the goalposts can't move afterwards.
-If a rule turns out to be badly written, that is reported to Sim and the rule is changed only with her OK, in writing here,
+If a rule turns out to be badly written, that is reported to Sim and the rule is changed only with his OK, in writing here,
 with the date, **before** any re-look.
 
 ## The data

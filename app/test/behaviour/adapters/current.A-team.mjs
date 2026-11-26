@@ -100,6 +100,10 @@ export default (ui, pg, o) => {
     homeTopRows: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="home"] .hmini')].filter(e => e.getClientRects().length).map(e => e.dataset.lt)),
 
     // ---------- My Team ----------
+    /** the Legal badge's rules tooltip */
+    rulesTooltip: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="report"] [title]')].map(e => e.title).find(t => /Based on our reading/.test(t)) || null),
+    /** the empty box's picture (Darkrai) is showing */
+    emptyBoxArt: () => pg.evaluate(() => [...document.querySelectorAll('[data-pane="box"] img')].some(i => i.getClientRects().length && i.src === window.NP_MASCOT)),
     teamHeading: () => pg.evaluate(() => { const p = document.querySelector('[data-pane="report"]'); const h = p && [...p.querySelectorAll('[role=heading][aria-level="1"],h1')].find(e => e.getClientRects().length); return h ? h.innerText.replace(/\s+/g, ' ').trim() : null; }),
     /** Strength Score block: {label, score, band} or null */
     scoreBlock: () => pg.evaluate(() => { const p = document.querySelector('[data-pane="report"]'); if (!p) return null; const t = p.innerText.replace(/\s+/g, ' ');
@@ -113,6 +117,8 @@ export default (ui, pg, o) => {
     tapTile: name => H.tapLabel(name + ': show its set', 700),
     tilePressed: name => pg.evaluate(n => { const e = [...document.querySelectorAll('[data-pane="report"] [data-chset]')].find(e => (e.getAttribute('aria-label') || '').startsWith(n + ':')); return e ? e.getAttribute('aria-pressed') === 'true' : null; }, name),
     setCard: () => txt('#rzSet'),
+    /** how many move strips the set card shows */
+    setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#rzSet [class*=mv], #rzSet li')].filter(e => e.getClientRects().length && e.children.length <= 3).length),
     /** show a Pokémon's set card (tap its tile unless its card is already showing) */
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },
     lockOnTile: async name => { if (!(await has(`[data-pane="report"] [data-lock][aria-label*="${name}"]`))) await H.tapTile(name); await click(`[data-pane="report"] [data-lock][aria-label*="${name}"]`, 700); },
@@ -149,6 +155,8 @@ export default (ui, pg, o) => {
     undoBar: () => pg.evaluate(() => { const e = [...document.querySelectorAll('[data-undobar]')].find(e => e.getClientRects().length); if (!e) return null; let c = e.parentElement; return c.innerText.replace(/\s+/g, ' ').trim(); }),
     undoLastApplied: () => click('[data-undobar]', 1500),
     // edit panel
+    /** is keyboard focus inside the open edit panel? (Nov 12: moved here from EDIT-01, which read #chEdit itself) */
+    focusInEditPanel: () => pg.evaluate(() => { const e = document.querySelector('#chEdit'); return !!(e && !e.hidden && e.getClientRects().length && e.contains(document.activeElement)); }),
     editPanel: () => pg.evaluate(() => { const e = document.querySelector('#chEdit'); if (!e || e.hidden || !e.getClientRects().length) return null; const h = e.querySelector('h1,h2,h3,b,strong'); return {title: (h ? h.innerText : '').replace(/\s+/g, ' ').trim(), text: e.innerText.replace(/\s+/g, ' ').trim()}; }),
     openEditPanel: async name => { await H.showSet(name); await click('#rzSet [data-chedit]', 900); await H.settle(); },
     closeEditPanel: () => click('#chEditDone', 500),

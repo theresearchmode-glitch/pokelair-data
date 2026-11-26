@@ -7,13 +7,7 @@
    shows its weather. A visible word ("Rain team") says it in text. The particles sit behind the text, move with
    transform/opacity only, pause off screen and in a hidden tab, and stay still (a static tint) under reduced motion.
    The animation clock follows performance.now(), so a redraw of the header does not restart the particles. */
-const WXFX = {rain: {n: 'Rain', p: 22}, sun: {n: 'Sun', p: 2}, sand: {n: 'Sand', p: 26}, snow: {n: 'Snow', p: 22},
-  grassy: {n: 'Grassy Terrain', p: 9}, psy: {n: 'Psychic Terrain', p: 3}, elec: {n: 'Electric Terrain', p: 10}, misty: {n: 'Misty Terrain', p: 12}};
-function wxKeyOf(ms) { if (!ms || !ms.length) return null; let a = null; try { a = teamArchetype(ms); } catch (e) {} if (!a || !a.field) return null;
-  /* a weather beats a terrain; within each, one the team uses (active) beats a setter on its own */
-  const pick = keys => { const f = a.field.filter(x => keys.includes(x.key)); const x = f.find(y => y.active) || f[0]; return x ? x.key : null; };
-  return pick(WEATHER_KEYS) || pick(TERRAIN_KEYS); }
-const wxName = k => WXFX[k] ? WXFX[k].n + ' team' : '';
+/* WXFX, wxKeyOf and wxName (the team's weather word, "Sun team") moved to 18-archetypes.js (R4, Nov 11) so the new build shares them */
 /* the particles: positions and timings from a fixed sequence, so every redraw puts them in the same places */
 function wxLayer(k, cls) { const F = WXFX[k]; if (!F) return '';
   const rnd = i => { const x = Math.sin((i + 1) * 12.9898 + k.length * 78.233) * 43758.5453; return x - Math.floor(x); };
@@ -41,25 +35,7 @@ CH.wrap('renderHome', () => { const k = wxKeyOf(members()); if (!k) return; cons
    the team name, the archetype, the grade (letter in its band colour + the number) and how many of the top 30 threats it
    handles, with the NastyPlot logo and "Sharply raise your win rate." Light or Warm charcoal, like the share card. No win-chance words.
    Sprites come from sp/ on the same origin, so the canvas stays exportable. */
-const PO = {W: 1080, H: 1350};
-PO.hex = h => { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); };
-PO.mix = (a, b, t) => { const A = PO.hex(a), B = PO.hex(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
-PO.lum = h => { const c = PO.hex(h).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
-PO.cr = (a, b) => { const x = PO.lum(a), y = PO.lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
-PO.hue = h => { const [r, g, b] = PO.hex(h).map(v => v / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; if (!d) return {h: 0, s: 0};
-  const hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return {h: (hh * 60 + 360) % 360, s: d / (1 - Math.abs(mx + mn - 1))}; };
-/* the team's two most common types, skipping red (red is for opponents) and the dull ones (Normal, Dark, Steel) */
-PO.colours = ms => { const n = {}; ms.forEach(m => (m.types || m.p.t || []).forEach(t => { n[t] = (n[t] || 0) + 1; }));
-  const ok = t => { const c = TC[t]; if (!c || ['Normal', 'Dark', 'Steel'].includes(t)) return false; const {h, s} = PO.hue(c); return s > .35 && !(h < 12 || h > 352); };
-  const ts = Object.keys(n).filter(ok).sort((a, b) => n[b] - n[a] || Object.keys(TC).indexOf(a) - Object.keys(TC).indexOf(b));
-  /* two neighbours of red (Psychic pink next to Fire orange) would read as red together: the second goes to the next type */
-  const warm = t => { const {h} = PO.hue(TC[t]); return h < 30 || h > 330; }, pick = ts.slice(0, 1); for (const t of ts.slice(1)) { if (pick.length < 2 && !(warm(pick[0]) && warm(t))) pick.push(t); }
-  const c = pick.map(t => TC[t]); if (!c.length) c.push('#0078BF'); if (c.length < 2) c.push(PO.mix(c[0], '#6a3cee', .55)); return {c, types: pick}; };
-PO.round = (x, X, Y, w, h, r) => { x.beginPath(); x.moveTo(X + r, Y); x.arcTo(X + w, Y, X + w, Y + h, r); x.arcTo(X + w, Y + h, X, Y + h, r); x.arcTo(X, Y + h, X, Y, r); x.arcTo(X, Y, X + w, Y, r); x.closePath(); };
-/* the facts the poster shows, worked out the same way as My team and Saved teams */
-function posterFacts(ms, name) { const RD = ms.length ? prepOf(ms) : null; let ck = null; try { ck = ms === members() && ui.vsum && ui.vsum.CK ? ui.vsum.CK : proChecks(ms, true); } catch (e) {}
-  const G = RD && ms.length === 6 ? CH.gradeOf(RD, ck, ms) : null; let arch = ''; try { const a = teamArchetype(ms); arch = a && a.label || ''; } catch (e) {}
-  return {RD, G, hd: CH.hand(RD), arch, name: name || (typeof teamTitleFor === 'function' ? teamTitleFor(ms) : '') || 'My team'}; }
+/* PO (colour helpers) and posterFacts live in 44-share-images.js (Nov 11) */
 async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length) return null; ms = ms.slice(0, 6);
   const dark = (opt.dark != null ? opt.dark : (CH.shareMode || document.documentElement.dataset.look) === 'dark');
   const P = dark ? {paper: '#232120', ink: '#F3EBDC', mute: '#D9D0C2', pen: '#7CC4FF', line: '#4A4541', card: '#2C2A28'} : {paper: '#F1E9DA', ink: '#1D2140', mute: '#4E5068', pen: '#005A90', line: '#D8CCB6', card: '#FBF6EC'};
@@ -123,7 +99,7 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   /* footer: the logo and the line */
   x.fillStyle = P.line; x.fillRect(56, 1236, W - 112, 3);
   const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
-  await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 50, 1252, 300, 300 * 196 / 761.34); } catch (e) {}
+  await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 50, 1252, npLogoW(logo, 300), 300 * 196 / 761.34); } catch (e) {}
   x.textAlign = 'right'; x.font = '400 50px "Instrument Sans",system-ui,sans-serif'; x.fillStyle = P.pen; x.fillText('Sharply raise your win rate.', W - 56, 1302);
   x.font = '700 18px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', W - 56, 1332); x.textAlign = 'left';
   return c; }

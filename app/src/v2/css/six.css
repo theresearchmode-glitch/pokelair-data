@@ -1,0 +1,122 @@
+/* My Team's six tiles and the set card (R4 group "six", Nov 11). Approved mock: the six in three pairs, Lead / Back / Bench,
+   each pair under its slanted label; every name over its item. Phones: the three pairs side by side, each a column of two. */
+.tm-six.sx{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+.sx-grps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s6);align-items:start}
+.sx-grp{position:relative;display:grid;gap:var(--s3);min-width:0}
+.sx-gl{display:flex;align-items:center;gap:var(--s2);font-size:var(--t20);color:var(--ink-2)}
+.sx-gl::before{content:"";flex:none;width:16px;height:6px;background:var(--ink-3);transform:skewX(var(--slant))}
+.sx-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);align-items:end}
+.sx-slot{position:relative;min-width:0;container-type:inline-size}
+/* a narrow tile (a 1200px window, the smallest phones) steps its name and item down a size, so long names stay inside */
+@container (max-width:100.98px){.sx-slot .np-mon b{font-size:var(--t13)}.sx-slot .np-mon small{font-size:var(--t13);letter-spacing:-.01em}}
+.sx-slot .np-mon small{overflow-wrap:anywhere}
+/* each sprite fills its tile (up to the mock's 160px), so wide screens use the room and no tile has a half-pixel gap */
+.sx-slot .np-mon{--iw:min(100cqi,160px)}
+/* the game plan under the six (today's words): who leads, who waits in the back, who sits on the bench */
+.sx-plan{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s4);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.sx-plan b{font-weight:700;color:var(--ink)}
+.sx-reset{display:inline-flex;align-items:center;min-height:var(--tap)}
+@media (max-width:699.98px){
+  .sx-grps{column-gap:var(--s3)}
+  /* the three columns share their rows (Nov 11): each row's names line up whatever a sprite's height or a name's wrap */
+  .sx-grps{grid-template-rows:auto auto auto;row-gap:var(--s4)}
+  .sx-grp{grid-row:span 3;grid-template-rows:subgrid;row-gap:var(--s4)}
+  .sx-tiles{display:contents}
+  .sx-grp > .sx-tiles > .sx-slot{align-self:end}
+  .sx-gl{font-size:var(--t17)}
+  /* the bench sits apart from the four you bring */
+  .sx-grp:nth-child(3)::before{content:"";position:absolute;top:0;bottom:0;left:calc(var(--s3) / -2);width:1px;background:var(--rule)}
+}
+/* the set card: where it plays in the plan under the heading, its rating on a slanted plate over the art (the mock's
+   "Rated 92 · S tier"), then the facts as quiet rows with thin rules, the moves, and the three actions */
+.sx-role{margin-top:var(--s2)}
+.sx-art{position:relative;padding-bottom:var(--s4)}
+/* the art fills the set's column, as in the mock (up to 600px, from the left like the rating plate; 16px spare each side for the picked art's 1.08 scale), so a wide screen never leaves a strip beside it */
+.tm-art.sx-art{max-width:none;container-type:inline-size}.sx-art .np-mon{--iw:min(100cqi - 2 * var(--s4),600px)}.sx-art .np-mon .st{margin:0 0 0 var(--s4)}
+/* the set's art is always the picked one: no step-forward scale here, so its head never rises into the line above */
+.sx-art .np-mon.sel img{scale:1}
+.sx-rate{position:absolute;left:0;bottom:0;display:inline-flex;align-items:baseline;gap:var(--s2);padding:var(--s2) var(--s5);background:var(--plate);color:var(--on-plate);transform:skewX(var(--slant))}
+.sx-rate>*{transform:skewX(24deg)}
+.sx-rate b{font-size:var(--t24);line-height:1}
+.sx-rate span{font:700 var(--t13)/1 var(--b);letter-spacing:.02em}
+:root[data-theme="night"] .sx-rate{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge)}
+.sx-kv{margin-top:var(--s4);border-bottom:1px solid var(--rule)}
+.sx-kv>div{display:grid;grid-template-columns:minmax(88px,30%) minmax(0,1fr);gap:var(--s3);align-items:baseline;padding:var(--s2) 0;border-top:1px solid var(--rule)}
+.sx-kv dt{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.sx-kv dd{margin:0;font:500 var(--t16)/1.5 var(--b);color:var(--ink);overflow-wrap:anywhere}
+.sx-kv small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3);white-space:nowrap}
+.sx-info{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 var(--s1)}
+.tm-setacts{align-items:center}
+/* the action strip under the six (Sim, Nov 11): the picked Pokémon's name, then Remove (today's "−"), Lock, Set as Lead, Edit Set.
+   One thin rule above, no box (page + one card colour); actions are text buttons at full tap height, one size for all */
+.sx-act{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s5);margin-top:var(--s4);padding-top:var(--s2);border-top:1px solid var(--rule)}
+.sx-an{font:600 var(--t15)/1.3 var(--b);color:var(--ink);min-width:0}
+.sx-ab{display:flex;flex-wrap:wrap;gap:0 var(--s4);margin-left:auto}
+.sx-a{display:inline-flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:0 var(--s1);border:0;background:none;font:600 var(--t15)/1 var(--b);color:var(--plot-text);cursor:pointer}
+.sx-a i{font-style:normal;font-size:var(--t20);line-height:1}
+.sx-a svg,svg.sx-lk{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.sx-a.on{color:var(--ink)}
+@media (hover:hover){.sx-a:hover{text-decoration:underline}}
+/* a locked Pokémon: a small padlock before its item (status only; the control is in the strip); the tile keeps its height */
+svg.sx-lk{display:inline-block;width:13px;height:13px;margin-right:var(--s1);vertical-align:-2px}
+@media (max-width:479.98px){.sx-ab{margin-left:0;width:100%;justify-content:space-between;gap:0}}
+/* very narrow phones: four actions as an even two by two (no lone "Edit Set" on its own row) */
+@media (max-width:359.98px){.sx-ab:has(> :nth-child(4)){display:grid;grid-template-columns:repeat(2,max-content);justify-content:space-between;column-gap:var(--s4)}}
+/* an empty spot: the same footprint as a tile, a dashed tilted panel with a big slanted +, "Add a Pokémon" over its spot number */
+.sx-add{display:block;width:100%;text-align:center;color:var(--ink)}
+.sx-addart{position:relative;display:grid;place-items:center;width:min(100cqi,160px);aspect-ratio:1;margin:0 auto}
+.sx-addart::before{content:"";position:absolute;inset:12% 4% 4%;border:1.5px dashed color-mix(in srgb,var(--ink) 32%,transparent);border-radius:var(--r-m);transform:skewY(var(--tilt))}
+.sx-addart i{position:relative;font-family:var(--u);font-style:italic;font-weight:900;font-size:var(--t34);line-height:1;color:var(--plot-text)}
+.sx-add b{display:block;margin-top:var(--s3);font:700 var(--t15)/1.25 var(--b)}.sx-pre{display:block}
+.sx-add small{display:block;font:500 var(--t13)/1.35 var(--b);color:var(--ink-3)}
+.sx-add:hover .sx-addart::before,.sx-add:focus-visible .sx-addart::before{border-color:var(--plot)}
+@container (max-width:100.98px){.sx-add b{font-size:var(--t13)}}
+/* the name box in the sheet: matches as rows (art, name, types, In your box, share of teams); the active row is washed */
+.sx-addsh .np-field{margin-top:var(--s2)}
+.sx-hits{display:grid;margin-top:var(--s3)}
+.sx-hit{grid-template-columns:48px minmax(0,1fr) auto auto}
+.sx-hit[aria-selected="true"]{background:var(--wash)}
+.sx-meta{display:flex;align-items:center;justify-content:flex-end;gap:var(--s3)}
+.sx-inbox{font:600 var(--t13)/1 var(--b);color:var(--good-text);white-space:nowrap}
+.sx-use{min-width:5ch;font:600 var(--t13)/1 var(--b);color:var(--ink-2);text-align:right}
+.sx-none{padding:var(--s3) 0}.sx-addhint{margin-top:var(--s3)}
+@media (max-width:519.98px){.sx-hit{grid-template-columns:40px minmax(0,1fr) auto}.sx-hit img{width:40px;height:40px}.sx-hit .ty{grid-column:2;grid-row:2}.sx-hit b{grid-column:2;grid-row:1}.sx-hit img{grid-row:1 / span 2}.sx-meta{grid-column:3;grid-row:1 / span 2;flex-direction:column;align-items:flex-end;gap:var(--s1)}}
+/* while the Edit Set sheet holds the name box (an empty spot), it takes the small sheet's size, so it fits what it shows */
+.np-sheet:has(> .sx-addsh){top:12vh;bottom:auto;max-height:76vh;width:min(640px,calc(100% - 64px))}
+@media (max-width:699.98px){.np-sheet:has(> .sx-addsh){top:auto;bottom:var(--kb);width:100%;max-height:min(88vh,calc(100vh - var(--kb) - var(--s10)))}}
+/* the set card without its big picture (Sim, Nov 11): one column of details; the rating sits by the types */
+.tm-setgrid.sx-noart{grid-template-columns:minmax(0,1fr)}
+.sx-rate2{display:inline-flex;align-items:baseline;gap:var(--s1);margin-left:var(--s2);font:600 var(--t15)/1 var(--b);color:var(--ink-2)}.sx-rate2 b{font-size:var(--t20);font-style:italic;color:var(--ink)}
+.sx-an{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2);margin:0}.sx-an b{font:600 var(--t15)/1.3 var(--b);color:var(--ink)}.sx-rt{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+/* phones, typing in a sheet (shell.js kbo): pin the sheet to the top of the visible area, sized to what's above the keyboard, so the
+   box being typed in stays in view even where the keyboard height can't be measured (Claude app on iPhone) */
+@media (max-width:699.98px){:root.kbo .np-sheet{top:calc(var(--vvt,0px) + var(--s2));bottom:auto;max-height:calc(var(--vvh,100vh) - var(--s4));border-radius:var(--r-xl)}}
+/* Height cut (Nov 12): on phones My Team's Set details sit two by two, label over value (no word broken mid-way) */
+@media (max-width:699.98px){.tm-set .sx-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s4)}.tm-set .sx-kv>div{grid-template-columns:minmax(0,1fr);gap:0}.tm-set .sx-kv dd{overflow-wrap:normal}}
+/* A10 (Sim, Nov 12: "your recommendation"): the line before Bench (the two you don't bring) shows on every width, not only phones */
+@media (min-width:700px){.sx-grp:nth-child(3)::before{content:"";position:absolute;top:0;bottom:0;left:calc(var(--s6) / -2);width:1px;background:var(--rule)}}
+/* i42 (Nov 13): on phones the shorter fact (Nature) stretched to its neighbour's height and its value slid down; values start at the top,
+   so Nature and Stat points share their first line (rule 9.5) */
+@media (max-width:699.98px){.tm-set .sx-kv>div{align-content:start}}
+/* My Team: The Hand (Nov 14): the editing strip shows Nature and Stat points as compact label-over-value pairs, no rules */
+.mt-edit .sx-kv{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s8);margin:0;border:0}.mt-edit .sx-kv>div{display:grid;grid-template-columns:none;gap:2px;padding:0;border:0}.mt-edit .sx-kv dd{white-space:nowrap}
+.mh-hand .sx-grp:nth-child(3)::before{content:none}
+/* Sim, Nov 18 (C, phone length): phones 360-699 show the Hand three across, Lead | Back | Bench, each group's two Cards stacked.
+   The three headers share one row and each row of Cards starts level (subgrid, as from 1100). Under 700 the editing panel stays shut
+   until a Card is tapped (six.js V2.mtShut); the hint line sits where the panel opens, under the whole Hand. */
+.mt-hint{margin:var(--s3) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3);text-align:center} /* scan S7 A (Sim, Nov 20): grey, not link blue; blue means 'tap me' */
+.mh .mc-id h3 .mg.none{display:none} /* the blank stand-in for "Mega" pushed short names a space off centre */
+@media (min-width:360px) and (max-width:699.98px){
+  .tm-hero.mt .mh-hand:not(.mh-build){grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto auto auto;gap:var(--s4) var(--s3)}
+  .mh-hand:not(.mh-build) .mh-grp{display:grid;grid-row:span 3;grid-template-rows:subgrid;align-content:start;min-width:0}
+  .mh-hand:not(.mh-build) .mh-pair{display:contents}
+  .mh-hand:not(.mh-build) .mh-gh{flex-direction:column;align-items:flex-start;align-self:end;gap:0;margin:0}
+  .mh-hand:not(.mh-build) .mh-gh span{white-space:nowrap}
+  .tm-hero.mt .mh-build .mh-six{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s3)}
+  .mh .ms-card,.mh-build .mh-add{height:128px}.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:88px}.mh .mc-id{left:var(--s1);right:var(--s1);bottom:var(--s3)}
+  .mh-ty{flex-direction:column;align-items:flex-start;gap:var(--s1)}.mh-it b{font-size:var(--t13)}
+  .tm-six.mh>.mt-edit{margin-top:var(--s4)}}
+/* Sim, Nov 20: the empty My Team's six spots are Spot 1-6 (no Lead / Back / Bench), so they sit as one even row: no pair groups, no divider */
+.tm-e-six .sx-grps{grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--s3)}.tm-e-six .sx-grp{display:contents}.tm-e-six .sx-tiles{display:contents}
+.tm-e-six .sx-grp::before,.tm-e-six .sx-grp::after{content:none}
+@media (max-width:699.98px){.tm-e-six .sx-grps{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:none;row-gap:var(--s3)}}

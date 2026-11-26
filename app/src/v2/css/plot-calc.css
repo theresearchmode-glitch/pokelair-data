@@ -1,0 +1,289 @@
+/* ---------- the Damage Calc board, "Plot the hit" (Sim, Nov 21; from the designer's plot4 mock-up; sizes on the type scale, spacing on
+   the 4px grid, colours as tokens). Three things only: photos, marker, sticky notes. ---------- */
+.dc2.pc{--pc-gap:var(--s5)}
+.pc-board{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"top top" "pa pd" "ans ans" "mv mv" "sky sky" "gnd gnd" "turn turn" "kits kits" "ko ko" "lk lk";
+  gap:var(--s5) var(--s3);margin:0 calc(var(--gut) * -1);padding:var(--s4) var(--gut) var(--s8);color:var(--pc-ink);overflow:hidden;
+  background:linear-gradient(var(--pc-grid) 1.5px,transparent 1.5px) 0 0/120px 120px,linear-gradient(90deg,var(--pc-grid) 1.5px,transparent 1.5px) 0 0/120px 120px,
+    linear-gradient(var(--pc-grid2) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,var(--pc-grid2) 1px,transparent 1px) 0 0/24px 24px,var(--pc-paper)}
+.pc-board h2{margin:0 0 var(--s2);font-size:var(--t16);line-height:1.2}
+.pc-board .arw{display:inline-block;flex:none;width:10px;height:8px;background:currentColor;opacity:.7;clip-path:polygon(0 0,100% 0,50% 100%)}
+/* the marker circle: red = chosen; a white edge so it still shows on a red (Fire) swipe (brief, known flaw 1) */
+.pc-ring{position:absolute;inset:-8px -12px;width:calc(100% + 24px);height:calc(100% + 16px);pointer-events:none;overflow:visible}
+.pc-ring path{fill:none;stroke:var(--pc-mark);stroke-width:3.6;stroke-linecap:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 1px var(--pc-mark-edge)) drop-shadow(0 0 1px var(--pc-mark-edge))}
+.pc-top{grid-area:top;display:flex;align-items:center;justify-content:space-between;gap:var(--s3)}
+.pc-title{margin:0;font-size:var(--d-pctitle);line-height:1;white-space:nowrap;rotate:-2deg}
+.pc-swap{display:flex;align-items:center;gap:var(--s2);min-height:var(--tap);line-height:1.2;text-align:left;padding:0;border:0;background:none;color:var(--pc-ink);font-size:var(--t15);cursor:pointer} /* 15, not 13: Unbounded only at 15px and up (type rule, v2-unbounded) */
+.pc-swap svg{width:44px;height:26px}.pc-swap path{fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+/* the photos: white frame, tilted; blue tint attacker ("the muscle"), pink tint defender ("the target", circled). The photo is the picker. */
+.pc-ph{position:relative;grid-area:pa;display:grid;justify-items:start;padding:var(--s2) var(--s2) var(--s3);background:var(--pc-photo);color:var(--pc-ink);rotate:var(--r);box-shadow:0 0 0 1px var(--pc-photo-rim),0 18px 24px -14px var(--pc-drop)}
+.pc-ph.a{--r:-3deg;--t:var(--pc-tint-a)}.pc-ph.d{grid-area:pd;--r:3deg;--t:var(--pc-tint-d)}
+.pc-pic{position:relative;display:block;width:100%;aspect-ratio:1;overflow:hidden;background:var(--t)}.pc-pic img{position:absolute;inset:4%;width:92%;height:92%;object-fit:contain}.pc-ph.d .pc-pic img{transform:scaleX(-1)}
+.pc-ph small{margin-top:6px;font:700 var(--t13)/1.2 var(--b);color:var(--pc-ink2)}
+.pc-ph b{display:flex;align-items:center;gap:6px;max-width:100%;font-size:var(--t16);line-height:1.2;white-space:nowrap;margin-top:var(--s1)} /* Nov 23: 4px under the 'Mega' line, so its g no longer grazes the name's capitals (the ink was 0-2px apart) */
+.pc-ph .pc-ring-ph{inset:-4px -6px auto;width:calc(100% + 12px);height:auto;aspect-ratio:1}
+.pc-ph .arn-pickbtn{position:absolute;inset:0;z-index:2;width:100%;height:100%;margin:0;padding:0;border:0;background:none;cursor:pointer}
+.pc-ph:has(.arn-pickbtn:focus-visible){outline:3px solid var(--plot);outline-offset:4px}
+/* the answer: the marker arrow, the damage under it in the move's type colour, the circled verdict */
+.pc-ans{grid-area:ans;container-type:inline-size;display:grid;justify-items:center;gap:2px;text-align:center}
+.pc-ans p{margin:0}
+.pc-arrow{width:74%;height:44px;overflow:visible;margin-bottom:2px}.pc-arrow path{fill:none;stroke:var(--pc-ink);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.pc-l1{display:flex;align-items:center;gap:var(--s2);font:700 var(--t16)/1.3 var(--b)}
+.pc-ty{padding:0 var(--s2);background:var(--tc,var(--type-none));color:var(--on-type);font:700 var(--t13)/1.7 var(--b);clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+.pc-ans .pc-big{font-size:var(--d-pcbig);margin:var(--s1) 0;line-height:1;white-space:nowrap;color:var(--tc,var(--pc-ink))}
+.pc-l2{font:600 var(--t16)/1.3 var(--b)}.pc-l2 b{font-weight:900}
+.pc-ans .pc-vd{margin:var(--s8) 0 var(--s6);font-size:var(--t24);line-height:1.1;color:var(--pc-mark-text)}.pc-vd span{position:relative;display:inline-block;padding:2px var(--s1)}
+.pc-vd .pc-ring{inset:-12px -32px;width:calc(100% + 64px);height:calc(100% + 24px)}
+.pc-sm{font-size:var(--t15);line-height:1.3;color:var(--pc-line);rotate:-1.5deg}
+/* the moves: highlighter swipes in the type's colour (white words); All moves a dashed outline; the chosen one circled */
+.pc-mvb{grid-area:mv}.pc-sky{grid-area:sky}.pc-gnd{grid-area:gnd}.pc-turn{grid-area:turn}
+.pc-mvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s3)}
+.pc-mv{position:relative;isolation:isolate;display:grid;align-content:center;gap:1px;min-height:84px;padding:var(--s2) var(--s4) var(--s3);border:0;background:none;color:var(--pc-on-swipe);text-align:left;rotate:var(--r);cursor:pointer}
+.pc-sw{position:absolute;inset:0;z-index:-1;background:var(--tc);clip-path:polygon(2% 8%,12% 2%,30% 6%,52% 0,74% 5%,96% 1%,100% 14%,98% 40%,100% 66%,97% 92%,80% 100%,58% 95%,36% 100%,14% 94%,1% 98%,3% 70%,0 42%)}
+.pc-mv b{display:block;font-size:var(--t15);line-height:1.15;text-wrap:balance} /* long names (Stomping Tantrum, Weather Ball) wrap to two lines, never cut */.pc-mv em{font-size:var(--t22);line-height:1.1;white-space:nowrap}
+.pc-mv small{font:700 var(--t13)/1.3 var(--b);color:var(--pc-swipe-sub)}
+.pc-mv .pc-ring{inset:-12px -16px;width:calc(100% + 32px);height:calc(100% + 24px)} /* wide enough that the ellipse clears the first and last letters (Nov 23: it covered "H"eat Wave and "F"ire) */
+@media (max-width:699.98px){.pc-mv .pc-ring{inset:-12px -8px;width:calc(100% + 16px);height:calc(100% + 24px)}} /* phones: stays inside the 16px page gutter */
+.pc-mv:focus-visible,.pc-five button:focus-visible,.pc-sws button:focus-visible,.pc-swap:focus-visible{outline:3px solid var(--plot);outline-offset:4px}
+.dc2.pc .pc-all{position:relative;display:grid;align-content:center;min-height:84px;padding:var(--s2) var(--s4);border:3px dashed var(--pc-dash);border-radius:0;background:none;box-shadow:none;color:var(--pc-ink);rotate:1deg;font:900 var(--t15)/1.2 var(--u);font-style:italic}
+.dc2.pc .pc-all span{display:flex;align-items:center;gap:var(--s2)}
+/* sky, ground: icons and words written on the board in their own colour; the circle is the choice */
+.pc-five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.pc-five button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;min-height:60px;padding:0;border:0;background:none;color:var(--pc-ink);font:800 var(--t13)/1.1 var(--b);cursor:pointer}
+.pc-five .arn-ic{width:22px;height:22px;flex:none;color:var(--k);fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pc-five .pc-ring{inset:1px 0;width:100%;height:calc(100% - 2px)}
+/* this turn: the switches written on the board; on = ink and circled, off = grey (5.2:1) */
+.pc-sws{display:flex;flex-wrap:wrap;gap:6px var(--s2)}
+.dc2.pc .pc-sws button{position:relative;display:flex;align-items:center;min-height:var(--tap);padding:0 var(--s3);border:0;border-radius:0;background:none;box-shadow:none;color:var(--pc-off);font:800 var(--t15)/1.1 var(--b);cursor:pointer}
+.dc2.pc .pc-sws button[aria-pressed="true"]{color:var(--pc-ink);background:none}.dc2.pc .pc-sws button i{display:none}
+.pc-sws .pc-ring{inset:2px -2px;width:calc(100% + 4px);height:calc(100% - 4px)}
+/* the sticky notes: only the two sets (blue the muscle's, pink the target's) */
+.dc2.pc .pc-kits{grid-area:kits;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s3);align-items:start}
+.dc2.pc .pc-kits .arn-set{position:relative;display:grid;align-content:start;padding:var(--s3) var(--s3) var(--s2);border:0;border-radius:0;background:var(--p);color:var(--pc-ink);rotate:var(--r);box-shadow:0 22px 22px -18px var(--pc-drop)}
+.dc2.pc .pc-kits .arn-set.a{--p:var(--pc-note-a);--r:1.2deg}.dc2.pc .pc-kits .arn-set.d{--p:var(--pc-note-d);--r:-1.2deg}
+.dc2.pc .pc-kits .arn-set::before{content:"";position:absolute;left:0;right:0;top:0;height:16px;background:linear-gradient(180deg,var(--pc-note-top),transparent)}
+.dc2.pc .pc-kits .arn-set header{display:block;margin:0 0 2px}.arn-set header .pc-sset{display:inline} /* the title's "'s set" (Nov 23: its own span, so phones can drop it); in the line, not a grid row as the header's other spans */.dc2.pc .pc-kits .arn-set header img{display:none}
+/* the set's source right under the note's title ('most used set' / 'estimated set' / 'your set'): it says whether the set is assumed or the
+   player's own, so it stays on the note (Nov 21; the port had hidden it: CALC-01/02/04). Small, in the note's secondary ink. */
+.dc2.pc .pc-kits .arn-set header small{display:block;font:500 var(--t13)/1.3 var(--b);color:var(--pc-on-paper2)}
+.dc2.pc .pc-kits .arn-set header b{font-size:var(--t13)}
+.dc2.pc .pc-kits .arn-f{min-height:48px;padding:0;border-radius:0;background:none;box-shadow:none;border-bottom:2px dotted var(--pc-dots);color:var(--pc-ink)}
+.dc2.pc .pc-kits .arn-f .lb,.dc2.pc .pc-kits .arn-box span{color:var(--pc-note-label)}
+/* each row's label (Item, Ability, Nature) shown small above its value, as on the note (spoken the same as before) */
+.dc2.pc .pc-kits .arn-f:has(> .vh){display:grid;align-content:center;padding-top:var(--s1)}
+.dc2.pc .pc-kits .arn-f > .vh{position:static;width:auto;height:auto;overflow:visible;clip:auto;padding:0 var(--s3);font:700 var(--t13)/1.2 var(--b);color:var(--pc-note-label)}
+.dc2.pc .pc-kits .arn-f > .vh ~ .arn-sel{min-height:28px}
+.dc2.pc .pc-kits .arn-st{border-bottom:0}.dc2.pc .pc-kits .arn-st button{width:var(--tap)}.dc2.pc .pc-kits .arn-st button{background:var(--pc-key);color:var(--pc-ink)}
+/* the KO Board: the site's own dark slanted bar; the links: plain underlined */
+.pc-kob{grid-area:ko;min-width:0}
+.pc-links{grid-area:lk;display:flex;flex-wrap:wrap;gap:0 var(--s6)}
+.pc-links .np-link{display:inline-flex;align-items:center;min-height:var(--tap);font:800 var(--t15)/1 var(--b);color:var(--pc-line);text-decoration:underline 2px;text-underline-offset:6px}
+/* tablets and small laptops (700-1319): four even columns; the photos beside the answer, sky beside ground, the two notes side by side */
+@media (min-width:700px) and (max-width:1319.98px){
+  .pc-board{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"top top top top" "pa ans ans pd" "mv mv mv mv" "sky sky gnd gnd" "turn turn turn turn" "kits kits kits kits" "ko ko ko ko" "lk lk lk lk"; /* the KO Board full width: at 700 its tiles fell to 40px wide beside the links */gap:var(--s6) var(--s5);margin:0;padding:var(--s6) var(--s6) var(--s10);align-items:start}
+  .pc-ans{align-self:center}.pc-arrow{width:calc(100% + 48px);height:64px;margin:0 -24px -4px}.pc-mvs{grid-template-columns:repeat(4,minmax(0,1fr))}.pc-ph b{font-size:var(--t17)}
+  .pc-links{display:flex}}
+/* desktop (1320+; under that the sky and ground buttons fall under 44px wide): 260 / 1fr / 1fr / 260 (the mock's 280 / 1fr / 1fr / 280, inside the page frame) */
+@media (min-width:1320px){
+  .pc-board{grid-template-columns:260px minmax(0,1fr) minmax(0,1fr) 260px;grid-template-areas:"top top top top" "pa ans ans pd" "ka mv mv kd" "ka sky gnd kd" "ko turn turn lk";gap:var(--s8) var(--s6);margin:0;padding:var(--s6) var(--s6) var(--s12);align-items:start}
+  .dc2.pc .pc-kits{display:contents}.dc2.pc .pc-kits .arn-set.a{grid-area:ka}.dc2.pc .pc-kits .arn-set.d{grid-area:kd}
+  .pc-ph{padding:var(--s3) var(--s3) var(--s4)}.pc-ph b{font-size:var(--t22)}
+  .pc-ans{align-self:center}.pc-arrow{width:calc(100% + 88px);height:84px;margin:0 -44px -6px}
+  .pc-l1,.pc-l2{font-size:var(--t20)}.pc-ans .pc-vd{margin:var(--s12) 0 var(--s6);font-size:var(--t34)}.pc-sm{font-size:var(--t16)}
+  .pc-board h2{font-size:var(--t17)}.pc-mvs{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s4)}.pc-mv,.dc2.pc .pc-all{min-height:104px;padding:var(--s3) var(--s3) var(--s3) var(--s4)}
+  .pc-mv em{font-size:var(--t20)}.dc2.pc .pc-kits .arn-set{padding:var(--s4) var(--s4) var(--s2)}.dc2.pc .pc-kits .arn-set header b{font-size:var(--t15)}.pc-five button{min-height:64px}
+  .pc-kob{align-self:center}.pc-links{display:grid;align-self:center}
+  /* the KO Board sits in the 260px side column at every desktop width: its title stays 17px, so at most two lines as in the mock (the Arena's 20 from 1450 made three) */
+  .pc-kob .arn-kbbar .t{font-size:var(--t17)}}
+@media (max-width:699.98px){.dc2.pc .pc-sws button{padding:0 var(--s2)}
+  /* phone length (Nov 21, authority): the board was 2.12 phone screens, the approved mock 2.05 (v2-arena). Spacing only, on the 4px grid:
+     rows 20 -> 16 apart, the circled verdict 32/24 -> 24/16 (its circle still clears the lines by 4px), the move swipes 16 -> 12 apart,
+     sky / ground 60 -> 56 tall (taps stay 44+), the foot 32 -> 24. No text smaller, nothing hidden or folded. */
+  .pc-board{row-gap:var(--s4);padding-bottom:var(--s6)}.pc-ans .pc-vd{margin:var(--s6) 0 var(--s4)}.pc-mvs{row-gap:var(--s3)}.pc-five button{min-height:56px}
+  /* the hangs-on line may use 8px of the gutter each side, so at 390 it stays one line (it was 1px too wide in day weight); when it does wrap
+     (320) the lines are even and the HP range never splits at its dash */
+  .pc-ans .pc-sm{margin-inline:calc(var(--s2) * -1);text-wrap:balance}}
+.pc-nw{white-space:nowrap}
+@media (max-width:379.98px){.pc-board{gap:var(--s4) var(--s2)}.pc-mv{padding:var(--s2) var(--s3)}.pc-mv em{font-size:var(--t20)}.pc-five button{font-size:var(--t13)}.pc-ph b{font-size:var(--t15)}}
+
+/* photos and sticky notes are paper in every theme: their words stay ink (Q105 B) */
+.pc-ph,.dc2.pc .pc-kits .arn-set{--pc-ink:var(--pc-on-paper);--pc-ink2:var(--pc-on-paper2)}.dc2.pc .pc-kits .arn-set .arn-f,.dc2.pc .pc-kits .arn-set .arn-sel,.dc2.pc .pc-kits .arn-set output{color:var(--pc-on-paper)}.dc2.pc .pc-kits .arn-set small{color:var(--pc-on-paper2)}
+:root[data-theme="night"] .pc-ans .pc-big{color:var(--tcn,var(--tc,var(--pc-ink)))}
+/* polish (Nov 21, authority): the five switches never leave one alone on a row (polish-check: 4+1 at 560/720/1360, 2+2+1 at 320):
+   five across when the panel is 592+ wide, otherwise 3 + 2; under 334 the labels drop to 13px, under 300 with tighter spacing, so all five stay on one line each (320 included) */
+.pc-turn{container-type:inline-size}
+.pc-sws{display:grid;grid-template-columns:repeat(3,max-content);justify-content:start}.dc2.pc .pc-sws button{grid-column:auto;clip-path:none}
+@container (min-width:592px){.pc-sws{grid-template-columns:repeat(5,max-content)}}
+@container (max-width:333.98px){.dc2.pc .pc-sws button{font-size:var(--t13);padding:0 var(--s2)}}
+@container (max-width:299.98px){.pc-sws{column-gap:var(--s1)}.dc2.pc .pc-sws button{padding:0 var(--s1);white-space:nowrap}.pc-sws .pc-ring{inset:-4px -6px;width:calc(100% + 12px);height:calc(100% + 8px)}}
+/* polish (Nov 21, authority): on tablets the photos are narrow (about 130px at 720): a long name ("Mega Charizard Y") wraps under the
+   photo instead of being cut (polish-check: +8px spill at 720) */
+@media (min-width:700px) and (max-width:1319.98px){.pc-ph b{flex-wrap:wrap;white-space:normal;overflow-wrap:normal;row-gap:0}}
+/* 700-899 the photos are about 100-130px wide: the name stays 15px and its ▼ moves to the photo's top-right corner, so it never wraps alone */
+@media (min-width:700px) and (max-width:899.98px){.pc-ph b{font-size:var(--t15)}.pc-ph b .arw{position:absolute;top:var(--s3);right:var(--s3);width:12px;height:10px;opacity:.85}}
+/* All moves rows (Nov 21; Sim, Nov 20: HP numbers, not %): the damage big as before, ' of 157 HP' small beside it like a unit, so the row stays
+   about as wide as the old '88–104%' and the move names keep their room */
+.arn-mvd b .of{font:600 var(--t13)/1 var(--b);font-style:normal;letter-spacing:0;color:var(--ink-2)}
+
+/* Nov 21 (Sim, 8:39 AM: % first): the % sign at a smaller size beside the big numbers, so 136–160% keeps the width the HP numbers had */
+.pc-ans .pc-big .pc-pc{font-size:var(--d-pcpct)}.pc-mv em .pc-pc{font-size:var(--t15)}
+.pc-ans .pc-big.pc-pctf{font-size:var(--d-pcbigp)}.pc-mv em{font-size:var(--t20)} /* % first: the numbers are a character longer */
+@media (max-width:379.98px),(min-width:700px) and (max-width:999.98px){.pc-mv em{font-size:var(--t17)}}
+/* Sim, Nov 21 (iPhone): in All moves on phones the "x–y of N HP" part sits under the big %, so the move name keeps the row's width (it ran into the % and broke a word per line) */
+@media (max-width:699.98px){.arn-mvd b .of{display:block;margin-top:2px;text-align:right}.arn-mvd b .of .sep{display:none}}
+@media (max-width:359.98px){.arn-mvhit .nm b{font-size:var(--t15)}.np-hit.arn-mvhit{column-gap:var(--s2)}}
+
+/* ---------- the reskin on the shared kit (Nov 21; HYBRID.md, the Calc "keep as drawn, small fixes"): kit header and sentence, the plan
+   line's four steps; the graph paper is step 1's hero only (photos + the answer); the rest is the shared kit on the page's paper.
+   Everything here is scoped to .pck (the kit version of the page), so the rules above stay as they were. ---------- */
+.dc2.pc.pck{--pc-gap:var(--s5)}
+.pck .k-sent{margin-top:var(--s6)}
+.pck .pc-hint{display:flex;flex-wrap:wrap;align-items:center;column-gap:var(--s3)}
+.dc2.pc.pck .pc-swap{min-height:var(--tap);color:var(--k-plot-text);font:700 var(--t15)/1.2 var(--b)}
+.dc2.pc.pck .pc-swap svg{width:32px;height:20px}
+.pck .k-plan{padding-bottom:var(--s8)}
+/* step 1: the graph paper (the Calc's own hero): the two photos and the answer */
+.dc2.pc.pck .pc-board{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"pa pd" "ans ans";gap:var(--s4) var(--s3);margin:0;padding:var(--s5) var(--s4) var(--s4);box-shadow:0 10px 24px -14px var(--k-card-shadow)}
+.dc2.pc.pck .pc-ans .pc-vd{margin:var(--s6) 0 var(--s4)}
+.pck .k-step .k-sec{margin-bottom:var(--s4)}
+/* step 2: the move swipes as drawn (2 across on phones, 4 across from 700) */
+/* step 3: the sky, the ground, this turn: rows of boxed blue words (the kit's taps; the filled one is on); then the two kits */
+.pck .pc-conds{display:grid;gap:var(--s4)}
+.pck .pc-conds .pc-blk{grid-area:auto}
+.pck .pc-conds h3{margin:0 0 var(--s2);font:800 var(--t17)/1.2 var(--u);font-style:italic;color:var(--k-ink)}
+.pck .pc-conds .pc-ring{display:none}
+.dc2.pc.pck .pc-five,.dc2.pc.pck .pc-sws{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s3)}
+.dc2.pc.pck .pc-five button,.dc2.pc.pck .pc-sws button{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:var(--s2);min-width:0;min-height:var(--tap);padding:0 var(--s4);border:3px solid var(--k-plot);border-radius:0;background:transparent;box-shadow:none;color:var(--k-plot-text);font:800 var(--t15)/1.15 var(--u);font-style:italic;transform:skewX(-8deg);cursor:pointer}
+.dc2.pc.pck .pc-five button>*,.dc2.pc.pck .pc-sws button>*{transform:skewX(8deg)}
+.dc2.pc.pck .pc-five button[aria-pressed="true"],.dc2.pc.pck .pc-sws button[aria-pressed="true"]{background:var(--k-plot);color:var(--k-on-plot)}
+.dc2.pc.pck .pc-five .arn-ic{width:18px;height:18px;color:currentColor}
+/* the two kits: one panel each (page + one card), the same height side by side; label small over its value; the ▼ rides on the value's last word */
+.dc2.pc.pck .pc-kits{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s3);align-items:stretch;margin-top:var(--s6)}
+.dc2.pc.pck .pc-kits .arn-set{grid-area:auto;align-content:start;padding:var(--s4) var(--s4) var(--s3);background:var(--k-card);rotate:none;box-shadow:0 8px 16px var(--k-card-shadow);--pc-ink:var(--k-ink);--pc-ink2:var(--k-ink2);--pc-on-paper:var(--k-ink);--pc-on-paper2:var(--k-ink2);--pc-note-label:var(--k-ink2)}
+.dc2.pc.pck .pc-kits .arn-set::before{content:none}
+.dc2.pc.pck .pc-kits .arn-set header{margin:0 0 var(--s2)}
+.dc2.pc.pck .pc-kits .arn-set header b{font-size:var(--t17);line-height:1.2}
+.dc2.pc.pck .pc-kits .arn-f{border-bottom:1px solid var(--k-rule)}
+.dc2.pc.pck .pc-kits .arn-f:has(.arn-val){display:grid;align-content:center;min-height:56px;padding:var(--s1) 0}
+.dc2.pc.pck .pc-kits .arn-f > .vh{padding:0}
+.dc2.pc.pck .pc-kits .arn-f:has(.arn-val) .arn-sel{position:absolute;inset:0;width:100%;height:100%;opacity:0}
+.dc2.pc.pck .pc-kits .arn-f:has(.arn-val) > .arw{display:none}
+.pck .arn-val{display:block;font:700 var(--t15)/1.3 var(--b);color:var(--k-ink)}
+.pck .arn-val .nw{white-space:nowrap}
+.pck .arn-val .arw{display:inline-block;width:10px;height:8px;margin-left:6px;background:currentColor;opacity:.7;clip-path:polygon(0 0,100% 0,50% 100%)}
+.pck .arn-f:has(.arn-sel:disabled) .arn-val .arw{display:none}
+.dc2.pc.pck .pc-kits .arn-ov,.dc2.pc.pck .pc-kits .arn-pts>summary{padding:0}
+.dc2.pc.pck .pc-kits .arn-ov{display:flex;flex-wrap:wrap;align-items:center;align-content:center;min-height:56px}.dc2.pc.pck .pc-kits .arn-ov .lb{flex:0 0 100%}
+.dc2.pc.pck .pc-kits .arn-ov .lb{grid-column:1/-1;font:700 var(--t13)/1.2 var(--b);color:var(--k-ink2)}.dc2.pc.pck .pc-kits .arn-ov .lb small{font:inherit;color:inherit}
+.dc2.pc.pck .pc-kits .arn-ov .v{margin:0;font:700 var(--t15)/1.3 var(--b);color:var(--k-ink)}
+.dc2.pc.pck .pc-kits .arn-ov>.arw{flex:none;position:static;translate:none;align-self:center;margin-left:6px;width:10px;height:8px;background:currentColor;opacity:.7}
+.dc2.pc.pck .pc-kits .arn-pts>summary{display:flex;align-items:center;min-height:56px}.dc2.pc.pck .pc-kits .arn-pts>summary .lb{flex:0 1 auto;min-width:0}.dc2.pc.pck .pc-kits .arn-pts>summary>.arw{display:none}
+/* the points' ▼ is written after "pts" with a no-break space, so in a narrow panel the line wraps at a space and the ▼ stays with its word */
+.dc2.pc.pck .pc-kits .arn-pts>summary .lb small::after{content:"\00a0\25BE";opacity:.7}.dc2.pc.pck .pc-kits .arn-pts>summary .lb{font:700 var(--t15)/1.3 var(--b);color:var(--k-ink)}.dc2.pc.pck .pc-kits .arn-pts>summary .lb small{font:700 var(--t13)/1.2 var(--b);color:var(--k-ink2)}
+.dc2.pc.pck .pc-kits .arn-st{border-bottom:0;padding-top:var(--s2)}
+.dc2.pc.pck .pc-kits .arn-st .lb{font:800 var(--t15)/1.2 var(--u);font-style:italic}
+.dc2.pc.pck .pc-kits .arn-st button{border:3px solid var(--k-plot);border-radius:0;background:transparent;color:var(--k-plot-text)}
+/* step 4: the KO Board: the three counts, its top rows (6 on desktop, 3 on phones), the page's one pink move opens the board */
+.pck .pc-kob .k-facts{margin:0 0 var(--s4)}
+.pck .pc-kempty{margin:0;font-size:var(--t16);line-height:1.5;color:var(--k-ink2)}
+.pck .pc-krs{display:grid;grid-template-columns:minmax(0,1fr);column-gap:var(--s8);margin:0;padding:0;list-style:none;border-top:1px solid var(--k-rule)}
+.pck .pc-krs li{border-bottom:1px solid var(--k-rule)}
+.pck .pc-kr{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:var(--s3);width:100%;min-height:56px;margin:0;padding:var(--s2) 0;border:0;background:none;color:var(--k-ink);font:inherit;text-align:left;cursor:pointer}
+.pck .pc-kr .mon,.pck .pc-kr img{max-width:40px;max-height:40px}
+.pck .pc-krn{display:grid;min-width:0}
+.pck .pc-krn b{font:700 var(--t16)/1.3 var(--b)}
+.pck .pc-krn small{font:500 var(--t13)/1.3 var(--b);color:var(--k-ink2)}
+.pck .pc-krv{font-size:var(--t20);line-height:1;white-space:nowrap}
+.pck .pc-kr:hover .pc-krn b{text-decoration:underline}
+.pck .pc-kr:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
+.pck .pc-kgo{margin-top:var(--s2)}
+.pck .pc-kgo>summary{list-style:none}.pck .pc-kgo>summary::-webkit-details-marker{display:none}
+.dc2.pc.pck .pc-kgo .arn-kbbar{display:inline-block;grid-template-columns:none;border-radius:0;background:var(--k-go);color:var(--k-on-go);padding:var(--s3) var(--s6)}
+.pck .pc-kgo .arn-kbbar .t,.pck .pc-kgo .arn-kbbar .t2{font-size:inherit}
+.pck .pc-kgo .t2,.pck .pc-kgo[open] .t{display:none}.pck .pc-kgo[open] .t2{display:inline}
+.pck .pc-kgo .arn-kbbar:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
+.pck .pc-kgo .arn-kbin{margin-top:var(--s6)}
+.dc2.pc.pck .pc-links{display:flex;flex-wrap:wrap;gap:0 var(--s6);margin-top:var(--s4)}
+.dc2.pc.pck .pc-links .np-link{font:700 var(--t15)/1.3 var(--b);color:var(--k-plot-text);text-decoration:none}
+.dc2.pc.pck .pc-links .arn-notes[open]{flex-basis:100%}
+.dc2.pc.pck .pc-links .arn-notes>summary{color:var(--k-plot-text);font-weight:700}
+.pck .pc-kgo .arn-kbbar .t,.pck .pc-kgo .arn-kbbar .t2{white-space:nowrap;text-wrap:nowrap}
+.pck .arn-kbfull{margin-top:0}
+/* 700+: the photos beside the answer; the conditions' labels on the left; the kits' rows two across; the KO rows two columns */
+@media (min-width:700px){
+  .dc2.pc.pck .pc-board{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) minmax(0,1fr);grid-template-areas:"pa ans pd";gap:var(--s6);padding:var(--s6)}
+  .pck .pc-conds{gap:var(--s3)}
+  .pck .pc-conds .pc-blk{display:grid;grid-template-columns:136px minmax(0,1fr);align-items:center}
+  .pck .pc-conds h3{margin:0}
+  .dc2.pc.pck .pc-kits .arn-set{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--s5)}
+  .dc2.pc.pck .pc-kits .arn-set>header,.dc2.pc.pck .pc-kits .arn-set>.arn-st,.dc2.pc.pck .pc-kits .arn-set>.arn-pts[open]{grid-column:1/-1}
+  .pck .pc-krs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pck .pc-krv{font-size:var(--t24)}}
+/* Nov 23: 700-899 the KO rows stay one column: two columns left about 40px for the name beside the 24px damage, which was drawn over
+   "your Mega Charizard Y's Weather Ball" (from about 830px the two columns fit; checked 700-1320) */
+@media (min-width:700px) and (max-width:899.98px){.pck .pc-krs{grid-template-columns:minmax(0,1fr)}}
+@media (min-width:1320px){.dc2.pc.pck .pc-board{grid-template-columns:260px minmax(0,1fr) 260px;padding:var(--s8) var(--s8) var(--s6)}
+  .dc2.pc.pck .pc-kits{display:grid}.pck .pc-krv{font-size:var(--t28)}}
+/* phones: the sky and the ground five across (icon over word, Instrument Sans: Unbounded never under 15px); this turn 3 + 2 filling the row;
+   only the top 3 KO rows (the pink move opens all 30) */
+@media (max-width:699.98px){
+  .dc2.pc.pck .pc-board{padding:var(--s4) var(--s3) var(--s3)}
+  .dc2.pc.pck .pc-five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1)}
+  .dc2.pc.pck .pc-five button{flex-direction:column;gap:2px;min-height:52px;padding:var(--s1) 0;border-width:2px;font:700 var(--t13)/1.1 var(--b);transform:none}
+  .dc2.pc.pck .pc-five button>*{transform:none}
+  .dc2.pc.pck .pc-sws{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2)}
+  .dc2.pc.pck .pc-sws button{grid-column:span 2;min-height:48px;padding:0 var(--s1);font:700 var(--t15)/1.15 var(--b);text-align:center;text-wrap:balance}
+  .dc2.pc.pck .pc-sws button:nth-child(n+4){grid-column:span 3}
+  .dc2.pc.pck .pc-kits{gap:var(--s2);margin-top:var(--s5)}
+  .dc2.pc.pck .pc-kits .arn-set{padding:var(--s3) var(--s3) var(--s2)}
+  .pck .pc-krs li:nth-child(n+4){display:none}
+  /* phone length (THEME 4: no longer than today's page): tighter header and step spacing on the 4px grid; the photos a little shorter than
+     square; each KO row on one line (the name and the damage; whose move is in its spoken label and one tap away on the board) */
+  .pck .k-kicker{margin-top:var(--s4)}.pck .k-lead{margin-top:var(--s2)}.pck .k-sent{margin-top:var(--s4);gap:var(--s2)}
+  .pck .k-step .k-sec{margin:var(--s8) 0 var(--s3)}.pck .k-step:first-child .k-sec{margin-top:var(--s6)}
+  .dc2.pc.pck .pc-pic{aspect-ratio:5/4}.dc2.pc.pck .pc-arrow{height:28px}.dc2.pc.pck .pc-ans .pc-vd{margin:var(--s5) 0 var(--s3)}
+  .pck .pc-conds{gap:var(--s3)}.pck .pc-conds h3{margin-bottom:var(--s1)}
+  .dc2.pc.pck .pc-kits .arn-f:has(.arn-val){min-height:48px}
+  .dc2.pc.pck .pc-kits .arn-set header b{font-size:var(--t15)}
+  .pck .pc-krn small{display:none}.pck .pc-kr{min-height:52px;padding:var(--s1) 0}
+  .dc2.pc.pck .pc-links{margin-top:var(--s2)}
+  .pck .k-step:nth-child(3) .k-note{display:none} /* the sky / the ground / this turn labels say it */
+  .pck .k-step .k-sec{margin-top:var(--s6)}.pck .k-sent{font-size:var(--t20)}.pck .k-w{min-height:var(--tap);padding:0 var(--s3)}
+  .dc2.pc.pck .pc-pic{aspect-ratio:4/3} /* 16:9 tried (Sim's shorter-photos ask, Nov 21): it cropped the Pokémon and the ring covered the name, so 4:3 stays */
+  .dc2.pc.pck .pc-kits .arn-st .lb{font:700 var(--t13)/1.2 var(--b);font-style:normal}
+  .pck .pc-krv{font-size:var(--t17)}.pck .pc-krn b{font-size:var(--t15)}.pck .pc-kr{min-height:48px}
+  .dc2.pc.pck .pc-kgo .arn-kbbar{display:block}
+  /* Nov 23 (hJ, HH's design authority): the two set cards stay even on phones. The title is the name only ("'s set" drops; the small line
+     under it already says "most used set" / "your set"), and both titles keep room for two lines, the name sitting on its small line, so a
+     one-line name ("Sneasler") beside a two-line one ("Mega Charizard Y") leaves the Item, Ability, Nature, points and stage rows level.
+     (A subgrid can't do it: the cards are size containers for the stage row's container query) */
+  .pck .arn-set header .pc-sset{display:none}
+  .dc2.pc.pck .pc-kits .arn-set header b{display:grid;align-content:end;min-height:2.4em}}
+@media (max-width:359.98px){.dc2.pc.pck .pc-five button{font-stretch:75%}.dc2.pc.pck .pc-kits .arn-set{padding:var(--s2)}}
+/* under 380 the step is narrower than today's full-width board: a long name ('Charizard Y') wraps under its photo instead of widening it, and the
+   two tilted photos get a little more room (they touched at 320) */
+@media (max-width:379.98px){.dc2.pc.pck .pc-board{column-gap:var(--s5);padding-inline:var(--s2)}.pck .pc-ph{min-width:0}.pck .pc-ph.a{--r:-2deg}.pck .pc-ph.d{--r:2deg}
+  .dc2.pc.pck .pc-ph b{flex-wrap:wrap;white-space:normal;overflow-wrap:normal;row-gap:0}}
+/* under 360 the graph paper sits inside the plan line, narrower than today's full-width board: the big damage drops to 34 so '136–160%' stays in it (v2-overlap CLIP at 320) */
+@media (max-width:359.98px){.dc2.pc.pck .pc-ans .pc-big.pc-pctf{font-size:var(--t34)}.dc2.pc.pck .pc-ans .pc-big .pc-pc{font-size:var(--t20)}}
+/* Sim, Nov 21 (4:49 PM, recommended): the hint and swap sit in the lead line (one row less) */
+.pck .k-lead .pc-hint{display:inline-flex;margin:0 0 0 var(--s2);vertical-align:baseline}
+/* C-battle X-04 (Nov 21): the answer keeps its height when the numbers change on phones: two lines for the verdict, a row for the "hangs on" line */
+.pc-sm0{display:none}
+@media (max-width:699.98px){.dc2.pc.pck .pc-ans .pc-vd{display:grid;align-content:center;min-height:calc(2.2em + var(--s1))}.dc2.pc.pck .pc-sm0{display:block}.dc2.pc.pck .pc-ans .pc-sm{min-height:2.6em}} /* two lines: the hangs-on line can wrap at 390 (X-04 with the test team) */
+/* Damage Calc at 1280-1439 (alt/len1280, Nov 23: the desktop length rule; 1280x800 was 3.15 screens, cap 3): its four steps are already
+   full width, so the space between them is 40px (was 64px) and the plan ends 8px over the footer (was 32px). Nothing is hidden;
+   1440 and up, 1100-1279 and phones are unchanged */
+@media (min-width:1280px) and (max-width:1439.98px){.pck .k-plan>.k-step>.k-sec{margin-top:var(--s10)}.pck .k-plan{padding-bottom:var(--s2)}}
+/* the condition chips at 700 and up (hP2 polish, Nov 24): a row of five that can't fit on one line goes 3 + 2 (this turn: 2 + 3, its long names first), both rows
+   filling the width as the phone does (at 870-996 this turn keeps its chips' own widths, 3 + 2), instead of 4 + 1 or 2 + 2 + 1 with a chip left alone. The line it needs: the sky 636px, the ground 730px, this turn
+   859px of chips beside the 136px label */
+@media (min-width:700px){.pck .pc-conds .pc-blk{container:pcb/inline-size}}
+@container pcb (max-width:774.98px){.dc2.pc.pck .pc-sky .pc-five{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}}
+@container pcb (max-width:869.98px){.dc2.pc.pck .pc-gnd .pc-five{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}}
+@container pcb (max-width:996.98px){.dc2.pc.pck .pc-turn .pc-sws{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
+  .dc2.pc.pck .pc-turn .pc-sws button{padding:0 var(--s2);text-align:center;text-wrap:balance}
+  .dc2.pc.pck .pc-turn .pc-sws>button:nth-child(-n+2){grid-column:span 3}.dc2.pc.pck .pc-turn .pc-sws>button:nth-child(n+3){grid-column:span 2}}
+@container pcb (max-width:869.98px){.dc2.pc.pck .pc-blk .pc-five>button{grid-column:span 2}.dc2.pc.pck .pc-blk .pc-five>button:nth-child(n+4){grid-column:span 3}}
+@container pcb (min-width:870px) and (max-width:996.98px){.dc2.pc.pck .pc-turn .pc-sws{grid-template-columns:repeat(3,max-content)}
+  .dc2.pc.pck .pc-turn .pc-sws>button:nth-child(n){grid-column:auto;padding:0 var(--s4)}}
+@container pcb (min-width:775px) and (max-width:869.98px){.dc2.pc.pck .pc-sky .pc-five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}.dc2.pc.pck .pc-sky .pc-five>button:nth-child(n){grid-column:auto}} /* the sky still fits on one line: it fills the width too, as the ground and this turn under it do */

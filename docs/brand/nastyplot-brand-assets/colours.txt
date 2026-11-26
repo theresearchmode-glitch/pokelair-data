@@ -1,0 +1,10 @@
+NastyPlot colours
+
+Nasty pink    #E8364F
+Plot blue     #0078BF
+Ink           #17161A
+Sticker white #FFFFFF
+Night         #14131C
+Day paper     #F7F5F0
+
+Fonts: Unbounded (headlines, slanted), Instrument Sans (body). Tagline: "Sharply raise your win rate." with "your win rate." in Plot blue.

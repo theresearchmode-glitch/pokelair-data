@@ -1,0 +1,196 @@
+/* Components: one rule each (design-system.md section 6 + the Nov 11 decisions in 2b). Names start with np-. */
+/* eyebrow: the small label with the slanted PLOT-blue mark */
+.np-eyebrow{display:flex;align-items:center;gap:var(--s3);font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
+.np-eyebrow::before{content:"";flex:none;width:20px;height:7px;background:var(--plot);transform:skewX(var(--slant))}
+/* the main action: the filled slanted plate (one per block); night: the one blue action */
+.np-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 var(--s8);background:var(--main);color:var(--on-main);
+  font:900 var(--t15)/1 var(--u);font-style:italic;white-space:nowrap;clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+:root[data-theme="night"] .np-btn{background:linear-gradient(180deg,var(--main-hi),var(--main-lo));box-shadow:var(--lit-edge)}
+/* secondary: the outline slanted button */
+.np-btn2{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);padding:0 var(--s5);border:1.5px solid var(--ink);color:var(--ink);
+  font:600 var(--t15)/1 var(--b);white-space:nowrap;transform:skewX(-12deg)}
+.np-btn2>span{transform:skewX(12deg)}
+:root[data-theme="night"] .np-btn2{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
+/* text link */
+.np-link{font:600 var(--t15)/1.3 var(--b);color:var(--plot-text)}
+@media (hover:hover){.np-link:hover{text-decoration:underline}}
+/* the one chip: slanted, never a rounded pill */
+.np-chip{display:inline-flex;align-items:center;flex:none;white-space:nowrap;min-height:36px;padding:0 var(--s5);font:600 var(--t15)/1 var(--b);color:var(--ink);background:var(--wash);
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{background:var(--plate);color:var(--on-plate)}
+:root[data-theme="night"] .np-chip[aria-pressed="true"],:root[data-theme="night"] .np-chip.on{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
+.np-type{display:inline-flex;align-items:center;min-height:28px;padding:0 var(--s4);font:700 var(--t13)/1 var(--b);color:var(--on-type);background:var(--tc,var(--type-none));clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+/* type symbols (Sim approved the look, Nov 21, 3:35 PM): the symbol before the word, white on the type colour like the word; 12px sides as in the mock */
+.np-type.sym{gap:var(--s1);padding:0 var(--s3)}.np-type .k-tyi{width:16px;height:16px}
+/* phones: 6px before the symbol, a 2px gap and 8px after the word (the slant needs the 8px, or the last letter is cut), so a chip with
+   its symbol is exactly as wide as the chip was before (16 + 16 = 6 + 16px symbol + 2 + 8); no row of chips wraps where it didn't before
+   (measured 320-430: My Team, Type Chart, Pokémon page, search) */
+@media (max-width:699.98px){.np-type.sym{gap:2px;padding:0 var(--s2) 0 6px}}
+/* tabs */
+.np-tabs{display:flex;gap:var(--s8);border-bottom:1px solid var(--rule)}
+.np-tabs a,.np-tabs button{position:relative;padding:var(--s3) 0;font:600 var(--t15)/1.2 var(--b);color:var(--ink-2);white-space:nowrap;min-height:var(--tap)}
+.np-tabs [aria-selected="true"],.np-tabs [aria-current="location"]{color:var(--ink)}
+.np-tabs [aria-selected="true"]::after,.np-tabs [aria-current="location"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
+.np-tabs small{font:600 var(--t13)/1 var(--b);color:var(--ink-3);margin-left:4px}
+@media (max-width:699.98px){.np-tabs{gap:var(--s4)}}
+/* narrowest phones: every tab must still fit (nothing cut off at the edge); the counts move into the sections themselves */
+@media (max-width:379.98px){.np-tabs{gap:var(--s3)}.np-tabs a,.np-tabs button{font-size:var(--t13)}.np-tabs small{display:none}}
+/* a Pokémon standing on its floor: the art on a pool of its own normalised colour (--cp); feet on one line (--fo) */
+.np-mon{position:relative;text-align:center;--iw:110px}
+/* the stage holds the art, its colour pool and the selected panel, so none of them can reach the name below (Sim, Nov 11) */
+.np-mon .st{position:relative;width:var(--iw);max-width:100%;margin:0 auto}
+.np-mon .pool{position:absolute;left:50%;bottom:0;width:95%;height:calc(var(--iw)*.2);transform:translate(-50%,30%);border-radius:50%;
+  background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp,150,150,165),.62),rgba(var(--cp,150,150,165),.28) 55%,transparent)}
+:root[data-theme="night"] .np-mon .pool{background:radial-gradient(closest-side,rgba(var(--cp,150,150,165),.9),rgba(var(--cp,150,150,165),.32) 45%,transparent);filter:blur(1.5px)}
+.np-mon img{position:relative;display:block;width:100%;aspect-ratio:1;margin:0 auto;object-fit:contain;object-position:50% 100%;translate:0 calc(var(--fo,0)*100%);filter:drop-shadow(4px 7px 7px rgba(var(--shade),.16))}
+:root[data-theme="night"] .np-mon img{filter:drop-shadow(0 0 .6px rgba(var(--rim),.55)) drop-shadow(0 -1px 5px rgba(var(--cp,150,150,165),.3))}
+.np-mon b{position:relative;display:block;margin-top:var(--s3);font:700 var(--t15)/1.25 var(--b)}
+/* Mega (Sim, Nov 11: clear, but never bigger than the name): the word "Mega" at the name's own size, bold, in PLOT blue */
+.mg{font:inherit;font-weight:800;color:var(--plot-text);letter-spacing:0;text-transform:none}
+.np-mon b .mg{display:block}
+.np-mon b .mg.none{visibility:hidden}
+.np-mon small{position:relative;display:block;font:500 var(--t13)/1.35 var(--b);color:var(--ink-2)}
+/* the selected Pokémon: stands on the tilted panel in its own colour, a step forward */
+/* the selected Pokémon stands on a floor ring in its own colour, with a brighter pool (Sim, Nov 11: idea 2 "Floor ring";
+   replaces the tilted colour panel, so nothing sits behind the Pokémon) */
+.np-mon.sel .st::before,.np-mon.ft .st::before{content:"";position:absolute;z-index:0;left:50%;bottom:0;width:104%;height:calc(var(--iw)*.22);transform:translate(-50%,58%);border-radius:50%;
+  border:0;background:radial-gradient(closest-side,rgba(var(--cp),.8),rgba(var(--cp),.38) 55%,transparent);box-shadow:0 0 22px 4px rgba(var(--cp),.35)} /* Ring Q1 B (Sim, Nov 13): a soft glow in its own colour, no outline */
+:root[data-theme="night"] .np-mon.sel .st::before,:root[data-theme="night"] .np-mon.ft .st::before{background:radial-gradient(closest-side,rgba(var(--cp),.9),rgba(var(--cp),.45) 55%,transparent);box-shadow:0 0 26px 6px rgba(var(--cp),.45)}
+.np-mon.sel .pool,.np-mon.ft .pool{background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp,150,150,165),.85),rgba(var(--cp,150,150,165),.4) 55%,transparent)}
+.np-mon.sel img{scale:1.08;transform-origin:50% 100%}.np-mon.sel b{font-weight:800}
+/* featured (today's underdog on the empty screens; Sim, Nov 11, review item 13): stands on the selected floor in its own colour,
+   with room under it for the ring; its pool breathes slowly (opacity of the pool's own layer only, never the art; reduce motion = still) */
+.np-mon.ft{padding:0 var(--s5) var(--s8)}
+.np-mon.ft .pool::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(closest-side,rgba(var(--cp),.6),rgba(var(--cp),.2) 60%,transparent);animation:np-breathe 4.5s ease-in-out infinite}
+@keyframes np-breathe{0%,100%{opacity:.3}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.np-mon.ft .pool::after{animation:none;opacity:.6}}
+/* the Strength Score lockup: the big number and its band word (blue only in the band word) */
+.np-score{display:flex;align-items:flex-end;gap:var(--s4)}
+.np-score b{font:900 var(--d168)/.86 var(--u);font-style:italic;letter-spacing:-.05em;color:var(--score-ink)}
+.np-score .w{padding-bottom:var(--s4)}.np-score .w span{display:block;font:900 var(--t26)/1.05 var(--u);font-style:italic;color:var(--band)}
+.np-score .w small{display:block;margin-top:6px;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.np-score[style*="band-top"] .w span,[style*="band-top"] .np-score:not([style]) .w span{text-shadow:var(--band-glow)} /* Build Q4 B (Sim, Nov 13): the night glow only on "Top tier", as kept on Nov 12 */
+.np-score.sm b{font-size:var(--d64)}.np-score.sm .w{padding-bottom:4px}.np-score.sm .w span{font-size:var(--t20)}
+@media (max-width:699.98px){.np-score b{font-size:var(--d120)}}
+/* list row and the soft rule */
+.np-row{display:flex;justify-content:space-between;align-items:center;min-height:52px;border-bottom:1px solid var(--rule);font:600 var(--t15)/1.2 var(--b)}
+
+/* slider: the sliding segmented picker (today's "Apple-style" slider, slanted); the thumb slides under the chosen option */
+.np-slide{position:relative;display:inline-grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--wash);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.np-slide button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);min-height:var(--tap);padding:0 var(--s5);font:600 var(--t15)/1 var(--b);color:var(--ink-2);white-space:nowrap}
+.np-slide button[aria-pressed="true"]{color:var(--on-plate)}
+.np-slide .thumb{position:absolute;z-index:0;top:0;bottom:0;left:0;width:calc(100% / var(--n));translate:calc(100% * var(--i)) 0;background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);transition:translate .22s var(--ease-snap)}
+/* phones: the icon sits above its name, like today's iPhone-style picker, so 3-4 choices always fit the width */
+@media (max-width:519.98px){.np-slide{display:grid;width:100%;max-width:100%}.np-slide button{flex-direction:column;gap:var(--s1);min-height:56px;padding:var(--s2) var(--s1);font-size:var(--t13);white-space:normal;text-align:center;line-height:1.2}.np-slide .np-ic{width:20px;height:20px}}
+/* field and search */
+.np-field{display:flex;align-items:center;gap:var(--s2);min-height:52px;padding:0 var(--s4);border:1.5px solid var(--ink);transform:skewX(-10deg);color:var(--ink-3)}
+.np-field>*{transform:skewX(10deg)}.np-field input{flex:1;min-width:0;border:0;background:none;font:500 var(--t15)/1 var(--b);color:var(--ink);outline:0}
+.np-ic{width:20px;height:20px;flex:none}.np-field .np-ic{color:var(--ink-2)}
+.np-field:focus-within{outline:3px solid var(--plot);outline-offset:3px}
+:root[data-theme="night"] .np-field{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
+/* the site's own × (X-05, V2.CLR in shell.js): the search glass's twin at the right end (20px, the same ink, the same 26px from the
+   edge), a 44px tap that reaches past the box's padding without making the box taller; only while the box has text. The browser's
+   own × is hidden, so there is one × on every browser. */
+.np-field input::-webkit-search-cancel-button,.np-field input::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+.np-clr{flex:none;display:grid;place-items:center;width:var(--tap);height:var(--tap);margin:calc(-1 * var(--s3)) calc(-1 * var(--s3)) calc(-1 * var(--s3)) 0;padding:0;border:0;background:none;color:var(--ink-2);cursor:pointer;-webkit-tap-highlight-color:transparent}
+@media (hover:hover){.np-clr:hover .np-ic{color:var(--ink)}}
+.np-field input:placeholder-shown~.np-clr{display:none}
+/* forms strip: a Pokémon and its Megas, one tab each; the open form stands on its tilted panel */
+.np-forms .k{display:flex;justify-content:space-between;align-items:center;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-bottom:var(--s2)}.np-forms .k .np-link{display:inline-flex;align-items:center;min-height:var(--tap);margin:calc(var(--s3) * -1) 0}
+.np-forms .r{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,160px);gap:var(--s2)}
+.np-forms .np-mon{--iw:80px}
+@media (max-width:699.98px){.np-forms .r{grid-auto-columns:minmax(0,1fr)}}
+/* sheet: a solid surface over the lit page, which is softly blurred, never dimmed dark (the glass decision) */
+.np-scrim{position:fixed;inset:0;z-index:40;background:var(--scrim);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+/* Sim, Nov 16 (batch 4C; code review B-I2: the blur cost 8-9 slow frames per scroll on desktop): on mouse screens no blur, a deeper dim */
+@media (hover:hover) and (pointer:fine){.np-scrim{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--scrim-deep)}}
+.np-sheet{position:fixed;z-index:41;left:50%;top:48px;bottom:48px;width:min(1120px,calc(100% - 64px));translate:-50% 0;overflow:auto;background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--shadow-lift)}
+.np-sheet .x{position:sticky;top:0;float:right;min-width:var(--tap);min-height:var(--tap);font:600 var(--t20)/1 var(--b);color:var(--ink-2)}
+.np-sheet .x{position:sticky;z-index:5;background:var(--surface);border-radius:50%} /* i42 (Nov 13): the X stays on top of scrolled content (a tilted panel painted over it), on the sheet's own surface */
+@media (max-width:699.98px){.np-sheet{top:auto;bottom:0;left:0;width:100%;max-height:92vh;translate:none;border-radius:var(--r-xl) var(--r-xl) 0 0}}
+/* toast */
+.np-toast{position:fixed;z-index:50;left:50%;bottom:var(--tb,var(--s6));translate:-50% 0;display:flex;align-items:center;gap:var(--s4);max-width:calc(100% - 32px);padding:var(--s3) var(--s5);background:var(--plate);color:var(--on-plate);
+  font:600 var(--t15)/1.3 var(--b);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.np-toast button{color:var(--plate-link);font-weight:700;min-height:var(--tap)}
+@media (max-width:699.98px){.np-toast{left:var(--gut);right:var(--gut);translate:none;max-width:none;justify-content:space-between;bottom:var(--tb,calc(64px + env(safe-area-inset-bottom,0px)))}}
+/* V2.toast() lifts it above the team dock and phone bar */
+/* the underdog (empty and loading screens; Sim, Nov 11, review item 13: "no free-floating glows"): the featured Pokémon stands on
+   a floor in its own colour, the selected Pokémon's floor ring and pool (V2.mon with ft; .np-mon.ft above). No cloud behind it. */
+.np-under{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s6);align-items:center}.np-under .np-mon{--iw:200px}
+.np-under h3{font-size:var(--t28);margin:var(--s2) 0}.np-under h3 span{color:var(--plot-text)}.np-under p{font-size:var(--t15);color:var(--ink-2)}
+.np-under .acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s4)}.np-under .acts .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+@media (max-width:699.98px){.np-under{grid-template-columns:1fr;justify-items:center;text-align:center}.np-under .np-mon{--iw:168px}.np-under .np-eyebrow,.np-under .acts{justify-content:center}}
+/* team dock: frosted bar with your team on every page except My Team */
+.np-dock{position:sticky;bottom:0;z-index:15;display:flex;align-items:center;gap:var(--s6);padding:var(--s3) var(--gut);border-top:1px solid var(--rule);
+  background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}
+.np-dock .six{display:flex;gap:var(--s2)}.np-dock .six img{width:44px;height:44px;object-fit:contain}
+.np-dock .np-btn2{margin-left:auto}
+@media (max-width:699.98px){.np-dock{bottom:calc(56px + env(safe-area-inset-bottom,0px));gap:var(--s3)}.np-dock .np-btn2{display:none}.np-dock .six{flex:1;min-width:0;justify-content:flex-end}.np-dock .six img{flex:0 1 36px;min-width:0;width:36px;height:36px}}
+@media (max-width:379.98px){.np-dock .fine{display:none}}
+
+/* sheets: the page behind never scrolls while one is open */
+.np-locked{overflow:hidden}
+.np-sheet:focus{outline:0}
+.np-sheet.sm{top:12vh;bottom:auto;max-height:76vh;width:min(640px,calc(100% - 64px))}
+@media (max-width:699.98px){.np-sheet.sm{top:auto;bottom:0;width:100%;max-height:88vh}}
+/* phones: an open sheet sits above the on-screen keyboard (--kb, set from visualViewport in shell.js; 0 when no keyboard) */
+:root{--kb:0px}
+@media (max-width:699.98px){.np-sheet{bottom:var(--kb);max-height:min(92vh,calc(100vh - var(--kb) - var(--s10)))}.np-sheet.sm{bottom:var(--kb);max-height:min(88vh,calc(100vh - var(--kb) - var(--s10)))}}
+/* search */
+.np-find{padding:var(--s8)}.np-find h2{font-size:var(--t28);margin-bottom:var(--s4)}
+.np-find .hits{margin-top:var(--s4);display:grid}
+.np-find .fine{padding:var(--s3) 0}
+.np-find .miss-k{margin:var(--s4) 0 var(--s1);font:800 var(--t17)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--ink)} /* scan S34 A: the line over today's top six after a miss */
+.np-hit{display:grid;grid-template-columns:48px 1fr auto;align-items:center;gap:var(--s3);min-height:56px;padding:var(--s1) var(--s2);text-align:left;border-bottom:1px solid var(--rule);color:var(--ink);text-decoration:none;font:600 var(--t16)/1.2 var(--b)}
+.np-hit:last-child{border-bottom:0}
+.np-hit:hover,.np-hit:focus-visible{background:var(--wash)}
+.np-hit img{width:48px;height:48px;object-fit:contain}
+.np-hit .pg{font:600 var(--t13)/1 var(--b);color:var(--ink-3);text-align:center}
+.np-hit .ty,.np-monsheet .ty{display:flex;gap:var(--s1);flex-wrap:wrap}.np-hit .ty{flex-wrap:wrap;justify-content:flex-end}.np-hit{grid-template-columns:48px minmax(min-content,1fr) auto} /* the name keeps its width; two type pills stack when tight (Garchomp ran under Dragon at 390; Nov 16 audit) */
+.np-hit .mg{margin-right:var(--s1)}.np-hit .mg.none{display:none}
+.np-hit .nm{display:grid;gap:2px;min-width:0}.np-hit .nm small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)} /* a page's line, a Pokémon's rating (Nov 15) */
+.np-tyh b{display:flex;align-items:center;gap:var(--s2)}.np-tyb{display:inline-flex;align-items:center;justify-content:center;width:36px;height:28px;flex:none;color:var(--on-type);background:var(--tc);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)} /* a Type hit (Nov 24): its symbol white on the type colour in the type pill's slanted shape (kit rule), beside its name */
+.np-ith b{display:flex;align-items:center;gap:var(--s2)}.np-itb{display:inline-flex;align-items:center;justify-content:center;width:36px;height:28px;flex:none;margin-block:-6px}.np-hit .np-itb img,.np-itb svg{width:28px;height:28px;object-fit:contain} /* an Item hit (Nov 24): the item's picture in the Type tile's slot, before its name; it hangs past the name's line (-6px) so the row keeps the height of the hits without one */
+@media (max-width:379.98px){.np-find{padding:var(--s6) var(--s4)}.np-hit{grid-template-columns:40px 1fr}.np-hit img{width:40px;height:40px}.np-hit .ty{grid-column:2}}
+/* the simple Pokémon sheet (the full info sheet replaces it in R4) */
+.np-monsheet{display:flex;align-items:center;gap:var(--s8);padding:var(--s8)}
+.np-monsheet h2{font-size:var(--t34);margin-bottom:var(--s3)}.np-monsheet .fine{margin-top:var(--s3)}
+@media (max-width:699.98px){.np-monsheet{flex-direction:column;text-align:center}.np-monsheet .ty{justify-content:center}}
+/* slider icons: today's line drawings, drawn in the text colour so they turn light on the sliding plate */
+.np-slide .np-ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.np-slide button{transition:color var(--dur-3) var(--ease-snap)}
+@media (prefers-reduced-motion:reduce){.np-slide .thumb{transition:none}}
+.np-btn:disabled,.np-btn2:disabled{opacity:.45;cursor:not-allowed}
+/* a sheet open on a phone fills the bottom of the screen: its messages show at the top so they never cover its buttons */
+@media (max-width:699.98px){.np-locked .np-toast{bottom:auto;top:calc(var(--s4) + env(safe-area-inset-top,0px))}}
+/* a full-width sheet that is only as tall as its content (Saved Teams with a few teams) */
+@media (min-width:700px){.np-sheet.fit{bottom:auto;max-height:calc(100% - 96px)}}
+.np-asof{white-space:nowrap}
+/* the underdog's "Or build around your favourite Pokémon" line: its own line under the actions, a 44px link */
+.np-or{margin:var(--s1) 0 0}.np-or .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+/* while a sheet is open the toast (e.g. Removed X · Undo) sits under the dimmed backdrop, not over the sheet's title (Sim, Nov 11) */
+:root:has(.np-sheetwrap) .np-toast{z-index:39}
+/* C8 (Sim's fix plan, rule C8: every tap target 44x44 on touch widths): text links and tabs narrower than 44px get an invisible
+   44x44 tap area centred on them (::before; their look is unchanged, checked pixel-identical). Not My Box's box markers: they sit
+   8px apart, so a bigger area would cover the next marker (needs a spacing change: visual, for Sim). */
+.np-tabs a,.np-tabs button,.np-nav a,.np-foot nav a,.sg2-nact a,.sg2-undo .np-btn2,.np-toast button,.tm-sample .np-link,.sx-gpl,.hm-imp .np-link,.hm-acts .np-link,.hm-all,.hm-fav,.hm-sample .np-link,.bd-side .np-link,.bd-cmore,.bt-acts .np-link,.bd-hint .np-link,.bd-cacts .np-link,.bd-brk .np-link,.bd-wacts .np-link,.tm-ckmu{position:relative}
+.np-tabs a::before,.np-tabs button::before,.np-nav a::before,.np-foot nav a::before,.sg2-nact a::before,.sg2-undo .np-btn2::before,.np-toast button::before,.tm-sample .np-link::before,.sx-gpl::before,.hm-imp .np-link::before,.hm-acts .np-link::before,.hm-all::before,.hm-fav::before,.hm-sample .np-link::before,.bd-side .np-link::before,.bd-cmore::before,.bt-acts .np-link::before,.bd-hint .np-link::before,.bd-cacts .np-link::before,.bd-brk .np-link::before,.bd-wacts .np-link::before,.tm-ckmu::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
+.np-link:not(:is(p,li) a.np-link){position:relative}.np-link:not(:is(p,li) a.np-link)::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)} /* every action link (not a link inside a sentence) gets a 44px tap area; nothing moves (Nov 16 audit: 18 were 19-26px tall). Nov 19 (design review #3): a BUTTON styled as a link gets it inside a <p> or <li> too (a button is one box, so its area can't split across lines; "Win logged. Undo" was 38x20 to a finger); only <a> links in a sentence stay exempt */
+/* design review Nov 19 #5: the action link at the end of a sentence (Battle and Archetypes with no team) can wrap onto two lines, where a
+   ::before box only covers the first line; vertical padding on an inline link adds to every line's tap area and never moves a line
+   (inline padding doesn't change line height; no background, so nothing shows). 19px + 12 + 16 = 47px. Test: app/test/tap-size.mjs */
+.bt-empty .np-link,.ar-none .np-link{position:relative;padding:var(--s3) 0 var(--s4)}
+/* A9 (Sim, Nov 12): the selected Pokémon's floor ring sits lower and flatter, under the feet, so it no longer crosses the picture
+   (was 118% wide, 30% tall, 34% down); on phones the selected picture stays inside its tile (it was 120px in a 111px tile) */
+@media (max-width:699.98px){.np-mon.sel img{scale:1}}
+.np-megatag{position:absolute;z-index:2;left:0;top:0;padding:var(--s1) var(--s2);font:800 var(--t13)/1 var(--u);font-style:italic;font-synthesis:style;color:var(--on-main);background:var(--plot);transform:skewX(var(--slant))}
+/* A13 (Sim, Nov 12: option C): in day mode a chosen option is a light blue plate with blue text, so the one main action stays the
+   only black plate on a screen (4.7:1 contrast). Night mode keeps its lit plates. */
+:root:not([data-theme="night"]) .np-slide .thumb{background:color-mix(in srgb,var(--plot) 16%,var(--surface));box-shadow:none}
+:root:not([data-theme="night"]) .np-slide button[aria-pressed="true"]{color:var(--plot-text)}
+/* night: the picked position as clear as by day (Sim, Nov 12, outside sweep: "hard to tell from the unpicked one"): a tint of the
+   night blue with blue words, the same idea as the day switch */
+:root[data-theme="night"] .np-slide .thumb{background:color-mix(in srgb,var(--plot) 24%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--plot) 45%,transparent)}
+:root[data-theme="night"] .np-slide button[aria-pressed="true"]{color:var(--plot-text)}
+.np-btn small,.np-btn2 small{font-size:var(--t13)} /* Nov 15: a count in a button ("Saved Teams 1") took the browser default "smaller", 10.8 px on a 13 px button; now the scale minimum */
+.np-cnt{flex:none;font:600 var(--t13)/1 var(--b);color:var(--ink-3)}.np-cnt:empty{display:none} /* pre-launch 6d: the name counter */

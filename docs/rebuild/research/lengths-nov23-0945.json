@@ -1,0 +1,552 @@
+{
+ "home": {
+  "390": {
+   "px": 6933,
+   "screens": 8.21,
+   "widthUsed": 2528
+  },
+  "1280": {
+   "px": 5998,
+   "screens": 7.5,
+   "widthUsed": 765
+  },
+  "1440": {
+   "px": 5471,
+   "screens": 6.08,
+   "widthUsed": 680
+  },
+  "1920": {
+   "px": 5738,
+   "screens": 5.31,
+   "widthUsed": 510
+  }
+ },
+ "build": {
+  "390": {
+   "px": 3085,
+   "screens": 3.66,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2717,
+   "screens": 3.4,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2576,
+   "screens": 2.86,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 2450,
+   "screens": 2.27,
+   "widthUsed": 99
+  }
+ },
+ "team": {
+  "390": {
+   "px": 3730,
+   "screens": 4.42,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 3150,
+   "screens": 3.94,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2829,
+   "screens": 3.14,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 3039,
+   "screens": 2.81,
+   "widthUsed": 99
+  }
+ },
+ "battle": {
+  "390": {
+   "px": 1768,
+   "screens": 2.09,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 1068,
+   "screens": 1.33,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 1075,
+   "screens": 1.19,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 1080,
+   "screens": 1,
+   "widthUsed": 99
+  }
+ },
+ "calc": {
+  "390": {
+   "px": 2845,
+   "screens": 3.37,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2518,
+   "screens": 3.15,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2566,
+   "screens": 2.85,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 2514,
+   "screens": 2.33,
+   "widthUsed": 99
+  }
+ },
+ "practice": {
+  "390": {
+   "px": 1614,
+   "screens": 1.91,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 1305,
+   "screens": 1.63,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 1278,
+   "screens": 1.42,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 1233,
+   "screens": 1.14,
+   "widthUsed": 99
+  }
+ },
+ "gauntlet": {
+  "390": {
+   "px": 2629,
+   "screens": 3.11,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2687,
+   "screens": 3.36,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2604,
+   "screens": 2.89,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 2582,
+   "screens": 2.39,
+   "widthUsed": 99
+  }
+ },
+ "speed": {
+  "390": {
+   "px": 2792,
+   "screens": 3.31,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2715,
+   "screens": 3.39,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2621,
+   "screens": 2.91,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 2505,
+   "screens": 2.32,
+   "widthUsed": 99
+  }
+ },
+ "types": {
+  "390": {
+   "px": 2716,
+   "screens": 3.22,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 3000,
+   "screens": 3.75,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2845,
+   "screens": 3.16,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 2786,
+   "screens": 2.58,
+   "widthUsed": 99
+  }
+ },
+ "meta": {
+  "390": {
+   "px": 3066,
+   "screens": 3.63,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 3484,
+   "screens": 4.36,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 3314,
+   "screens": 3.68,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 3259,
+   "screens": 3.02,
+   "widthUsed": 99
+  }
+ },
+ "usage": {
+  "390": {
+   "px": 3534,
+   "screens": 4.19,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2886,
+   "screens": 3.61,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2288,
+   "screens": 2.54,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 2123,
+   "screens": 1.97,
+   "widthUsed": 99
+  }
+ },
+ "sets": {
+  "390": {
+   "px": 3094,
+   "screens": 3.67,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2152,
+   "screens": 2.69,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2028,
+   "screens": 2.25,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 1950,
+   "screens": 1.81,
+   "widthUsed": 99
+  }
+ },
+ "archetypes": {
+  "390": {
+   "px": 2280,
+   "screens": 2.7,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 1832,
+   "screens": 2.29,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 1721,
+   "screens": 1.91,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 1635,
+   "screens": 1.51,
+   "widthUsed": 99
+  }
+ },
+ "tournaments": {
+  "390": {
+   "px": 3139,
+   "screens": 3.72,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2055,
+   "screens": 2.57,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2031,
+   "screens": 2.26,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 1924,
+   "screens": 1.78,
+   "widthUsed": 99
+  }
+ },
+ "events": {
+  "390": {
+   "px": 3298,
+   "screens": 3.91,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2752,
+   "screens": 3.44,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2642,
+   "screens": 2.94,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 2553,
+   "screens": 2.36,
+   "widthUsed": 99
+  }
+ },
+ "weekly": {
+  "390": {
+   "px": 4500,
+   "screens": 5.33,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 3409,
+   "screens": 4.26,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 3264,
+   "screens": 3.63,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 3173,
+   "screens": 2.94,
+   "widthUsed": 99
+  }
+ },
+ "news": {
+  "390": {
+   "px": 3311,
+   "screens": 3.92,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2370,
+   "screens": 2.96,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2315,
+   "screens": 2.57,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 2222,
+   "screens": 2.06,
+   "widthUsed": 99
+  }
+ },
+ "gifts": {
+  "390": {
+   "px": 2825,
+   "screens": 3.35,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2248,
+   "screens": 2.81,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2211,
+   "screens": 2.46,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 2112,
+   "screens": 1.96,
+   "widthUsed": 99
+  }
+ },
+ "track": {
+  "390": {
+   "px": 3111,
+   "screens": 3.69,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2444,
+   "screens": 3.06,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 2446,
+   "screens": 2.72,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 2423,
+   "screens": 2.24,
+   "widthUsed": 99
+  }
+ },
+ "method": {
+  "390": {
+   "px": 3336,
+   "screens": 3.95,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2062,
+   "screens": 2.58,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 1937,
+   "screens": 2.15,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 1811,
+   "screens": 1.68,
+   "widthUsed": 99
+  }
+ },
+ "about": {
+  "390": {
+   "px": 2786,
+   "screens": 3.3,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 2053,
+   "screens": 2.57,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 1997,
+   "screens": 2.22,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 1974,
+   "screens": 1.83,
+   "widthUsed": 99
+  }
+ },
+ "feedback": {
+  "390": {
+   "px": 1375,
+   "screens": 1.63,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 1247,
+   "screens": 1.56,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 1205,
+   "screens": 1.34,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 1142,
+   "screens": 1.06,
+   "widthUsed": 99
+  }
+ },
+ "box": {
+  "390": {
+   "px": 2402,
+   "screens": 2.85,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 1858,
+   "screens": 2.32,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 1440,
+   "screens": 1.6,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 1382,
+   "screens": 1.28,
+   "widthUsed": 99
+  }
+ },
+ "pokemon=Garchomp": {
+  "390": {
+   "px": 5267,
+   "screens": 6.24,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 4634,
+   "screens": 5.79,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 4365,
+   "screens": 4.85,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 4177,
+   "screens": 3.87,
+   "widthUsed": 99
+  }
+ },
+ "compare": {
+  "390": {
+   "px": 1397,
+   "screens": 1.66,
+   "widthUsed": 100
+  },
+  "1280": {
+   "px": 1139,
+   "screens": 1.42,
+   "widthUsed": 99
+  },
+  "1440": {
+   "px": 1081,
+   "screens": 1.2,
+   "widthUsed": 99
+  },
+  "1920": {
+   "px": 1080,
+   "screens": 1,
+   "widthUsed": 99
+  }
+ }
+}

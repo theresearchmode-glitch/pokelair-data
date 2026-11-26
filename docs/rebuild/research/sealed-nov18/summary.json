@@ -1,0 +1,210 @@
+{
+ "tag": "SEALED-one-2026-11-09_2026-11-19",
+ "made": "2026-11-18T11:03:28.614Z",
+ "row": "+ own sets + this six's own record  [site today, minus matchups]",
+ "sealed": true,
+ "oneModel": true,
+ "from": "2026-11-09",
+ "until": "2026-11-19",
+ "windows": [
+  {
+   "cut": "2026-11-09",
+   "to": "2026-11-19",
+   "games": 5881,
+   "BO1": 713,
+   "BO3": 5168,
+   "unknown": 0
+  }
+ ],
+ "matches": "/tmp/claude-0/-home-user-pokelair-data/25f65f15-063e-5621-be2b-3a9994dfed43/scratchpad/wt-sealed/out/matches.json",
+ "tourModes": "/tmp/claude-0/-home-user-pokelair-data/25f65f15-063e-5621-be2b-3a9994dfed43/scratchpad/wt-sealed/data/tour-modes.json",
+ "unknownWhy": {
+  "noRecord": 0,
+  "noRound": 0,
+  "pastLastPhase": 0
+ },
+ "buckets": {
+  "BO1": {
+   "games": 713,
+   "tournaments": 7,
+   "pick": 56.1,
+   "pickRange": [
+    52.53,
+    60.39
+   ],
+   "ll": 0.6783,
+   "llRange": [
+    0.66331,
+    0.69033
+   ],
+   "edgeScale": 1.184,
+   "edgeScaleRange": [
+    0.648,
+    1.864
+   ],
+   "calGap": 0.74,
+   "cal": [
+    {
+     "bin": "50-60%",
+     "games": 596,
+     "said": 54.3,
+     "won": 54,
+     "wonRange": [
+      49.8,
+      60.1
+     ]
+    },
+    {
+     "bin": "60-70%",
+     "games": 110,
+     "said": 63.2,
+     "won": 65.5,
+     "wonRange": [
+      54.8,
+      79.2
+     ]
+    },
+    {
+     "bin": "70-80%",
+     "games": 7,
+     "said": 71.6,
+     "won": 85.7,
+     "wonRange": [
+      50,
+      100
+     ]
+    }
+   ],
+   "resamples": 200
+  },
+  "BO3": {
+   "games": 5168,
+   "tournaments": 69,
+   "pick": 54.39,
+   "pickRange": [
+    52.49,
+    56.02
+   ],
+   "ll": 0.68572,
+   "llRange": [
+    0.68124,
+    0.69066
+   ],
+   "edgeScale": 0.804,
+   "edgeScaleRange": [
+    0.598,
+    0.989
+   ],
+   "calGap": 1.71,
+   "cal": [
+    {
+     "bin": "50-60%",
+     "games": 4183,
+     "said": 54.3,
+     "won": 52.5,
+     "wonRange": [
+      50.5,
+      54.2
+     ]
+    },
+    {
+     "bin": "60-70%",
+     "games": 932,
+     "said": 63.3,
+     "won": 62.6,
+     "wonRange": [
+      58.1,
+      65.7
+     ]
+    },
+    {
+     "bin": "70-80%",
+     "games": 52,
+     "said": 72.6,
+     "won": 61.5,
+     "wonRange": [
+      48.8,
+      73.2
+     ]
+    },
+    {
+     "bin": "80-90%",
+     "games": 1,
+     "said": 82.8,
+     "won": 0,
+     "wonRange": [
+      0,
+      0
+     ]
+    }
+   ],
+   "resamples": 200
+  },
+  "unknown": {
+   "games": 0
+  },
+  "all": {
+   "games": 5881,
+   "tournaments": 70,
+   "pick": 54.6,
+   "pickRange": [
+    52.88,
+    56.28
+   ],
+   "ll": 0.68482,
+   "llRange": [
+    0.68036,
+    0.68923
+   ],
+   "edgeScale": 0.846,
+   "edgeScaleRange": [
+    0.653,
+    1.024
+   ],
+   "calGap": 1.47,
+   "cal": [
+    {
+     "bin": "50-60%",
+     "games": 4779,
+     "said": 54.3,
+     "won": 52.7,
+     "wonRange": [
+      50.9,
+      54.5
+     ]
+    },
+    {
+     "bin": "60-70%",
+     "games": 1042,
+     "said": 63.3,
+     "won": 62.9,
+     "wonRange": [
+      59.1,
+      66.1
+     ]
+    },
+    {
+     "bin": "70-80%",
+     "games": 59,
+     "said": 72.5,
+     "won": 64.4,
+     "wonRange": [
+      53.8,
+      74.4
+     ]
+    },
+    {
+     "bin": "80-90%",
+     "games": 1,
+     "said": 82.8,
+     "won": 0,
+     "wonRange": [
+      0,
+      0
+     ]
+    }
+   ],
+   "resamples": 200
+  }
+ }
+}

@@ -15,15 +15,9 @@ function renderTypes() {
   $('typeMon').innerHTML = mon ? `<span class="t2">Showing <b>${esc(mon.d)}</b> · ability ${esc(ab)}${onTeam ? ' (from your team)' : ''}</span> <button class="btn sm" type="button" data-typesmonx="1">Clear</button>` : '';
   { const q = $('typeQuick'); if (q) q.innerHTML = team.length ? `<span class="lbl">Your team</span>${team.map(m => `<button type="button" class="ttmon${mon && m.p.n === mon.n ? ' on' : ''}" data-typesmon="${esc(m.p.n)}">${esc(m.d)}</button>`).join('')}` : ''; }
   if (!sel.length) { el.innerHTML = '<div class="empty-note">Pick one or two types above, or look up a Pokémon.</div>'; return; }
-  const groups = {q: [], d: [], n: [], h: [], qr: [], z: []};
-  const abNotes = [];
-  for (const atk of TYPES) {
-    const raw = mult(atk, sel, null, false), x = mult(atk, sel, ab, true);
-    if (ab && raw !== x) abNotes.push(`${ab} changes ${atk} from ${raw}× to ${x}×`);
-    (x === 0 ? groups.z : x >= 4 ? groups.q : x >= 2 ? groups.d : x <= .25 ? groups.qr : x <= .5 ? groups.h : groups.n).push(atk);
-  }
+  const {groups, abNotes} = typeGroups(sel, ab); // shared: 20-types-data.js
   const line = (label, arr, cls) => `<div class="prob-row"><span class="sev ${cls}">${label}</span><div class="chips">${arr.length ? arr.map(t => chip(t)).join('') : '<span class="none">None</span>'}</div></div>`;
-  const off = sel.map(atk => { const se = TYPES.filter(d => EFF[atk][d] >= 2), nv = TYPES.filter(d => EFF[atk][d] > 0 && EFF[atk][d] < 1), no = TYPES.filter(d => EFF[atk][d] === 0);
+  const off = typeOffence(sel).map(({atk, se, nv, no}) => { // shared: 20-types-data.js
     return `<div class="plan"><div class="ph"><span class="pt">${chip(atk)} attacks</span></div>
       <div class="prob-row"><span class="sev ok">2× on</span><div class="chips">${se.map(t => chip(t)).join('') || '<span class="none">Nothing</span>'}</div></div>
       <div class="prob-row"><span class="sev mid">½× on</span><div class="chips">${nv.map(t => chip(t)).join('') || '<span class="none">Nothing</span>'}</div></div>
