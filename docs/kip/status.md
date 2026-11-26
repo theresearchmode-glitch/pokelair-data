@@ -45,3 +45,4 @@
 63 | started | - | CDP trace waterfall breakdown for /, /pokemon/garchomp, /team, /meta, /#news on real deploy | Thu Nov 26, 2:58 PM
 63 | done | alt/gemini-speed-trace 03773000 | CDP trace waterfall for 5 routes + top 10 costs in docs/rebuild/test-runs/kip-job63-speed-trace.md; LCP 4.5-4.8s (v2.css 144.8KB gz blocks FCP 2.3-2.5s; sync v2.js 540.2KB gz blocks LCP 4.5-4.8s) | Thu Nov 26, 3:07 PM
 64 | started | - | First-screen static prerender + critical CSS + async v2.css + defer v2.js on alt/gemini-speed-first-screen from origin/alt/speed-review | Thu Nov 26, 3:07 PM
+64 | done | alt/gemini-speed-first-screen 71e1b1c1 | Prerendered first screens + pruned inline crit CSS + CSP-safe async v2.css + defer v2.js + font fallbacks; 10/10 LCP 421-1485ms (was 1770-5080ms) & CLS 0-0.052 on real public-site.mjs deploy; 12/13 byte-identical shots; all public & cross-chunk tests pass (docs/rebuild/test-runs/kip-job64-first-screen.md) | Thu Nov 26, 4:44 PM
