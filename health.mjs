@@ -93,9 +93,17 @@ if (PF) { const want = {tour: ['Limitless table', 2], adj: ['Limitless win share
   for (const L of (PF.outside && PF.outside.lists) || []) old(`Outside tier list ${L.name}`, L.date, 3);
   if (!PF.outside && !inLaunch) problems.push('Ratings inputs: no outside tier lists'); }
 const S = rd('sources.json'); if (S && S.problems && S.problems.length) console.log(`::warning::Outside sources with problems today: ${S.problems.join(' | ')}`);
-// the newest tournament should be recent too (catches Limitless returning nothing new while the file still gets a new date)
-try { const idx = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/index.json'), 'utf8')); const last = Math.max(...Object.values(idx.tournaments).map(t => Date.parse(t.d)));
-  if ((now - last) / DAY > 4) problems.push(`Limitless: newest tournament is ${Math.floor((now - last) / DAY)} days old (limit 4)`); } catch (e) { problems.push('Limitless index (data/index.json) unreadable'); }
+// the newest tournament should be recent too (catches Limitless returning nothing new while the file still gets a new date);
+// during the 14-day launch window (inLaunch), if update.mjs confirmed Limitless answered HTTP 200 recently (apiOk: true),
+// quiet days with zero new events are not an outage (real API failures still fail limitless.json above; Kip job 44)
+const LIM = rd('limitless.json'), limApiFresh = !!(LIM && LIM.apiOk === true && age(LIM.updated) <= 2);
+try { const idx = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/index.json'), 'utf8'));
+  if (!idx || typeof idx.tournaments !== 'object') throw new Error('no tournaments');
+  const ts = Object.values(idx.tournaments).map(t => Date.parse(t.d)).filter(Number.isFinite);
+  const last = ts.length ? Math.max(...ts) : NaN, gap = isFinite(last) ? (now - last) / DAY : Infinity;
+  if (gap > 4) { const msg = isFinite(last) ? `Limitless: newest tournament is ${Math.floor(gap)} days old (limit 4)` : 'Limitless: no tournaments in data/index.json';
+    if (inLaunch && limApiFresh) console.log(`::warning::${msg} (day ${regDay} of ${REG}, API answered ok, quiet launch window)`); else problems.push(msg); }
+} catch (e) { problems.push('Limitless index (data/index.json) unreadable'); }
 // the event calendar should list something still to come (catches Victory Road's calendar page changing shape)
 { const C = rd('calendar.json'); if (C && Array.isArray(C.ev)) { const today = new Date(now).toISOString().slice(0, 10);
   if (!C.ev.some(e => String(e.e || e.s || '') >= today)) problems.push('Event calendar: no upcoming events listed'); } }
