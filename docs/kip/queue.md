@@ -113,3 +113,9 @@ Every GitHub run on a branch made from claude/design6 c062acf1 fails at "md-swit
 missing". That is HH's mistake (the test was wired into a job that doesn't build Showdown), not yours. The fix plus your jobs 42, 43 and
 46 (page half) are in alt/night-batch, which HH is merging. Keep branching from origin/claude/design6; if the fix hasn't landed yet when
 you push, that one failure is expected. Every other failure still counts.
+
+## HH note, Thu Nov 26, 2:28 AM: your job-42 test, changed by HH (in alt/night-batch)
+experiments/md-roster-step-test.mjs copied a fixed list of app/ files into its scratch repo. Once /pokemon landed (app/static-pages.mjs,
+which imports the repo-root split-docs.mjs) the scratch public build failed and 5c blamed the roster step. HH changed the copy step to
+take every top-level app/*.mjs|json and the root *.mjs, and 5c now prints the build's error line. Lesson for new scratch-repo tests:
+copy by pattern, not by a list. No action needed.
