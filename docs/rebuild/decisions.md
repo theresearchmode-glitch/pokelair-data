@@ -2745,3 +2745,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:05 AM: Full v2-minors on alt/rack-fix 2ce12561 (frozen out/): all passed.
 - 11:14 AM: Sim: 'everything above looks good' = OK on: repo stays public for now; A) LICENSE all rights reserved + footer copyright line; latest-online-winner line stays out (HH rec). B) email privacy setting is Sim's 2 clicks.
 - 11:15 AM: Done (Sim OK): LICENSE all rights reserved + package.json UNLICENSED + footer '(c) 2026 NastyPlot. All rights reserved.' on alt/rights 9faa8fcf; goes in after day-batch2. Pictures sent.
+- 11:25 AM: Helper Job U verified by report: missing meta docs with no producer (singles, status) no longer make the page wait 8 s if the host is silent (V2.META_NOWAIT; MD-1 fails before/passes after; MD-2 control); hero box at 1440 = Chromium broken-image frame when 445.webp was deleted by Job T's control run, not a bug. Combined alt/rights + alt/missing-docs as alt/after-batch (merges after day-batch2).
