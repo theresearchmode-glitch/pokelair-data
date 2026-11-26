@@ -4659,3 +4659,11 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .ra.trk.trk2{padding-bottom:var(--s8)}
   .trk.trk2>.k-plan{padding-bottom:var(--s4)}
 }
+/* Sim, Nov 26: the Pokémon page's type matchups, one labelled row per kind (weak / resists / immune), a slanted mark in the kind's colour */
+.pk-tyrows{margin:var(--s5) 0 var(--s2);border-top:1px solid var(--rule)}
+.pk-tyr{display:grid;grid-template-columns:120px minmax(0,1fr);gap:var(--s3);align-items:center;padding:var(--s2) 0;border-bottom:1px solid var(--rule)}
+.pk-tyl{display:flex;align-items:center;gap:var(--s2);font-size:var(--t15);line-height:1.2;color:var(--ink)}
+.pk-tyl::before{content:"";flex:0 0 auto;width:8px;height:20px;transform:skewX(-12deg);background:var(--mk)}
+.pk-tyr.wk{--mk:var(--bad)}.pk-tyr.rs{--mk:var(--good)}.pk-tyr.im{--mk:var(--ink)}
+.pk-tyc{display:flex;flex-wrap:wrap;gap:var(--s2)}
+@media (max-width:429.98px){.pk-tyr{grid-template-columns:minmax(0,1fr);gap:var(--s2)}}
