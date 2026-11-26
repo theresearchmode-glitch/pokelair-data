@@ -474,4 +474,10 @@
 }
 @media (max-width:379.98px){.sdt-grid>.sdt-dc .sdt-pct{font-size:var(--t34)}.sdt-grid>.sdt-dc .sdt-t{font-size:var(--t22)}} /* 320-379: the hit and the title stay inside the band */
 @media (max-width:389.98px){.sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t15)}} /* 320-389: all four card titles one step down together ("Archetypes" fits its half-width card) */
-@media (max-width:359.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:1/-1}} /* 320-359: a half-width card is too narrow for its title; one card per row */
+@media (max-width:389.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:1/-1}} /* 320-389: a half-width card is too narrow for its title, Battle's two 56px sprites and Practice's 44px ones; one card per row */
+@media (max-width:699.98px){ /* Battle and Practice in half-width phone cards (Nov 26): one 56px sprite per side, clear of the VS; Practice's sprites 44px+ */
+  .sdt-grid>.sdt-bt>.sdt-vs{margin-inline:calc((var(--s2) + var(--k) / 2) * -1);padding-inline:0;column-gap:0;grid-template-columns:minmax(0,1fr) var(--s4) minmax(0,1fr)}.sdt-bt .sdt-side{--cap:56px}.sdt-bt .sdt-side .np-mon{--iw:56px}
+  .sdt-grid>.sdt-pr>.sdt-pp{margin-inline:calc((var(--s2) + var(--k) / 2) * -1)}.sdt-pr .sdt-pp6{column-gap:0}.sdt-pr .sdt-pp6 .np-mon{--iw:44px}}
+@media (min-width:700px) and (max-width:899.98px){ /* small iPads (700-899, e.g. iPad mini 744): beside the words the duel's column left the sprites under 64px; the hit stacks as on phones */
+  .sdt-grid>.sdt-dc>.sdt-hit{grid-template-columns:minmax(0,1fr);grid-template-areas:"duel" "words" "bar";row-gap:var(--s2);column-gap:0}
+  .sdt-grid>.sdt-dc .sdt-duel{grid-template-columns:minmax(0,1fr) var(--s12) minmax(0,1fr)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:96px}}
