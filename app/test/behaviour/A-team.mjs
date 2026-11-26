@@ -211,7 +211,7 @@ t('TEAM-02', 'A Pokémon that left the regulation is kept but a note says it\'s 
 
 t('TEAM-03', 'Strength Score: number + band word + win line + rank; "so far" for 1-5; none when empty', async () => {
   const r = await myTeam({fresh: true}); let s = await r.ui.scoreBlock(); ok(s && s.label === 'Strength Score', 'no Strength Score block');
-  ok(s.score === 93 && s.band === 'Top tier', `sample team scores ${s.score} ${s.band}, expected 93 Top tier`);
+  /* bands C (Sim, Nov 25: 80 = beats today's teams 54%, 90 = 60%) moves the sample team from 93 to 90; still Top tier */ ok(s.score === 90 && s.band === 'Top tier', `sample team scores ${s.score} ${s.band}, expected 90 Top tier`);
   const tx = await r.ui.text(); has(tx, /Teams scoring like this win about \d+% against today.s tournament teams/); has(tx, /Top \d+% of tournament teams/); has(tx, 'Why this score?');
   ok(!/\bGrade\b/.test(tx.slice(0, 400)), 'old "Grade" wording shown');
   await r.ui.removeFromTeam('Kingambit'); s = await r.ui.scoreBlock(); ok(s && s.label === 'Strength Score so far', 'five Pokémon not labelled "Strength Score so far"');
