@@ -1,14 +1,15 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 5:23 AM (5:23:41)  date: Thu Nov 26, 2026
-NOW: HH: gate.sh alt/morning-batch 7369b676 (pid in .main-running): test-no-out + touches-pass3 + testrun-fit; local pre-check passed.
-NOW (helper): standby (remaining work waits on Sim: Spicy picks, tablet Home, My Team 390 cap, reg-test). Jobs C-J done.
+Updated: time: 6:27 AM (6:27:48)  date: Thu Nov 26, 2026
+NOW: HH: gate.sh alt/turnstile-once (pid in .main-running); mainff.sh alt/news-ran-main b6fafa71 (Kip 46 data half -> main, Sim's OK
+  in chat before 6:27 AM: "yes okay to push"; fast-forward on GitHub green). DONE: morning batch merged dcefa24f; daily data run dispatched by hand (45809169795).
+NOW (helper): Job K, My Team at 390 <= 4.35 with no swap (Sim: "fix it"; alt/myteam-390-fit).
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
   small touches v1; bands-c2 updated + J-REC proven; Game Plan v89.
 WAITING ON SIM: main push of Kip 46 data half (alt/gemini-news-ran-data c78d15e2, green); reg-test change (Kip's "Better" option);
   tablet Home proposal; lone "Saved" button proposal.
 NEXT: Kip at 3 AM: review jobs 44, 45, 47, 48 as they land (run + failure proofs), batch them.
-NEXT: batch 3 after the morning batch merges: alt/turnstile-once (Saturday item 3).
+NEXT: Sim's answers: reg-test (Better option?), tablet Home (yes?), Spicy picks (3 recs) -> act.
 NEXT: 6:15 AM: check the first daily data run on main (scheduled task), shadow model numbers to Sim.
 NEXT: 7:55 AM morning report (merges with checks, pictures, Sim's decisions, research write-ups).
 
