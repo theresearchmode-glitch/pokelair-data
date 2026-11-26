@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 12:55 AM (12:55:06)  date: Thu Nov 26, 2026
+Updated: time: 1:04 AM (1:04:14)  date: Thu Nov 26, 2026
 NOW: HH: chain.sh (pid in .main-running) gates into design6 one at a time: alt/pokemon-index (conflict fixed, fdc829b5), alt/gemini-news-ran-page
   (Kip 46), alt/gemini-merge-gate (Kip 43), alt/gemini-md-roster (Kip 42); then chain2.sh: alt/bands-c2 3d5a5801 (option C + recScore + J-REC).
 NOW: HH: proving the new My Team move-pill check fails on old pills (local branch touch-moves in scratchpad/st); then push alt/touch-moves.
@@ -9,8 +9,10 @@ DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json 
   small touches v1; bands-c2 updated + J-REC proven; Game Plan v89.
 WAITING ON SIM: main push of Kip 46 data half (alt/gemini-news-ran-data c78d15e2, green); reg-test change (Kip's "Better" option);
   tablet Home proposal; lone "Saved" button proposal.
-NEXT: Preview republish after merges; reinstall pre-push hook after Kip 43 merges; small touches pass 2 (dark, tablets, other pages);
-  7:55 AM morning report.
+NEXT: Preview republish after the chain's merges land (pubprep.sh), then Game Plan.
+NEXT: reinstall the pre-push hook from docs/rebuild/pre-push-hook.sh after Kip 43 merges.
+NEXT: 6:15 AM: check the first daily data run on main (scheduled task), shadow model numbers to Sim.
+NEXT: 7:55 AM morning report (merges with checks, pictures, Sim's decisions, research write-ups).
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
