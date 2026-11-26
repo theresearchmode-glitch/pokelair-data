@@ -181,6 +181,7 @@
   color-scheme:light}
 :root[data-theme="night"]{
   --f3-paper:#FFFDF8; /* Final 3's receipt by night (the mock-up's night paper) */
+  --f3-panel:#232233; /* Final 3's night panel a touch lighter than the page (#12121B) so its slanted edge shows (Sim, Nov 26): 1.2:1 against the page; on it the scale words 5.7:1 and the pink stamp 3.8:1 (20px bold, large text needs 3) */
   /* the Damage Calc board at night (Sim, Q105 B, Nov 21): night blueprint paper; photos, sticky notes and move colours stay the same.
      Contrast on #1B2433 (measured, Nov 21): words 14.0:1, ink-2 8.6:1, off switch words 6.4:1, blue marker 8.6:1, red marker 5.8:1 */
   --pc-paper:#1B2433;--pc-grid:rgba(98,190,247,.22);--pc-grid2:rgba(98,190,247,.09);--pc-ink:#EEF3F8;--pc-ink2:#B5C2D1;--pc-off:#9AA8B8;--pc-line:#7CC8FF;--pc-mark-text:#FF6F86;--pc-dash:rgba(238,243,248,.5);--pc-mark-edge:#1B2433;
