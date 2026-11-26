@@ -2,14 +2,14 @@
 Updated: time: 3:45 AM (3:45:41)  date: Thu Nov 26, 2026
 NOW: HH: watching GitHub's full run on alt/switch-rehearsal2 1039d5ea (main + design6 b96f3a5e + Kip 46 data; pid in .main-running).
   Local: 48 of 48 steps passed (docs/rebuild/test-runs/switch-rehearsal2-nov26.md).
-NOW (helper): Job F, small-touches pass 3 (look + measure, fixes only for clear bugs; alt/touches-pass3). Jobs C, D (merged), E (Spicy proposal, for Sim) done.
+NOW (helper): Job G, Test Run fit at 1100-1440 + Track Record under 3 screens (alt/testrun-fit). Jobs C-F done.
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
   small touches v1; bands-c2 updated + J-REC proven; Game Plan v89.
 WAITING ON SIM: main push of Kip 46 data half (alt/gemini-news-ran-data c78d15e2, green); reg-test change (Kip's "Better" option);
   tablet Home proposal; lone "Saved" button proposal.
 NEXT: Kip at 3 AM: review jobs 44, 45, 47, 48 as they land (run + failure proofs), batch them.
-NEXT: helper Job E (Spicy picks proposal): review pictures, log, show Sim.
+NEXT: morning batch: alt/test-no-out (post-news-test leak fix) + alt/touches-pass3 (event names) + alt/testrun-fit (helper Job G) -> one GitHub run -> gate.
 NEXT: 6:15 AM: check the first daily data run on main (scheduled task), shadow model numbers to Sim.
 NEXT: 7:55 AM morning report (merges with checks, pictures, Sim's decisions, research write-ups).
 
