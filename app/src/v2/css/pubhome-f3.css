@@ -2,7 +2,7 @@
    docs/rebuild/mockups/hh-receipt-nov26/index.html?v=11 (alt/t3-pending). Drawn only by the public build. Tokens only (--f3-*, kit);
    type on the scale; 4px grid. Wide (1280+): words left, the panel right with the receipt and its bars running out across it. Narrow:
    the words, then the panel as a slanted block with the receipt inside and each bar under its name (F3p). */
-.f3{display:block;overflow-x:clip}
+.f3-home{display:block;overflow-x:clip} /* f3-home, not .f3: the Stampede's plates are li.f1-f6 (batch6 overlap check) */
 .f3-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:var(--s6);min-height:calc(100svh - 76px);padding:0 var(--gut) var(--s10);overflow:hidden}
 .f3-panel{position:absolute;z-index:0;top:0;right:0;bottom:0;left:44%;overflow:hidden;background:var(--f3-panel);clip-path:polygon(12% 0,100% 0,100% 100%,0 100%)}
 .f3-rays{position:absolute;left:54%;top:52%;width:2400px;height:2400px;background:repeating-conic-gradient(from 2deg,var(--f3-ray-b) 0 1.5deg,transparent 1.5deg 9deg,var(--f3-ray-p) 9deg 10.5deg,transparent 10.5deg 18deg);transform:translate(-50%,-50%);

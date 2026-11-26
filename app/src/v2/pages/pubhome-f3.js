@@ -56,6 +56,6 @@ V2.f3Page = () => { const E = V2.esc, D = V2.f3Data(), W = V2.f3Words(D);
       ${stamp ? `<p class="u f3-stamp" aria-hidden="true">${stamp}</p>` : ''}</div>
       <p class="f3-scale" aria-hidden="true"><span>Rating 40</span><span>70</span><span>100</span></p></figure>`; }
   else pr = `<figure class="f3-pr f3-empty"><div class="f3-paper" aria-hidden="true"></div><div class="f3-hd"><p class="f3-top"><span class="u">NastyPlot</span><span>Receipt</span></p><p class="f3-meta">No winning team in today's data yet. The receipt prints after the next event.</p></div></figure>`;
-  return `<div class="f3"><section class="f3-hero f3-anim" aria-labelledby="f3-h1"><div class="f3-panel" aria-hidden="true"><i class="f3-rays"></i><i class="f3-dots"></i></div>${W.html}${pr}</section></div>`; };
+  return `<div class="f3-home"><section class="f3-hero f3-anim" aria-labelledby="f3-h1"><div class="f3-panel" aria-hidden="true"><i class="f3-rays"></i><i class="f3-dots"></i></div>${W.html}${pr}</section></div>`; };
 // the static words (Job W, alt/prerender-home): this Home's h1 and line, when that build step is there
 V2.f3Seo = () => { const D = V2.f3Data(), W = V2.f3Words(D); return {h1: `Rate your Pokémon Champions team ${W.before ? 'before' : 'for'} Reg M-D.`, intro: (document.querySelector('#main .f3-lead') || {}).textContent || ''}; };
