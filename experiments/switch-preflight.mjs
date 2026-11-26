@@ -23,6 +23,9 @@ const pass = msg => console.log(`  PASS           ${msg}`);
 const fail = msg => { console.log(`  FAIL           ${msg}`); fails++; };
 const byHand = msg => { console.log(`  CHECK BY HAND  ${msg}`); manual++; };
 
+// A test.yml run that was 'skipped' (the workflow_run trigger after an update.yml run with no change) tested nothing: look past it
+// to the newest run that really ran (HH, Nov 26: main's newest run was skipped on e7e2ad16 while an earlier run on the same commit passed).
+const realRun = runs => (runs || []).find(x => x.conclusion !== 'skipped');
 function hasGh() {
   if (fixture) return fixture.ghAvailable !== false;
   if (NO_GH) return false;
@@ -104,10 +107,11 @@ if (!ghOk) {
   if (!r.ok) {
     byHand(`main latest test.yml: GitHub API unreadable (${r.error}) — check by hand`);
   } else {
-    const last = (r.data?.workflow_runs || [])[0];
-    if (!last) fail('main latest test.yml: no runs found');
+    const last = realRun(r.data?.workflow_runs);
+    if (!last) fail('main latest test.yml: no runs found (other than skipped ones)');
     else if (last.status === 'completed' && last.conclusion === 'success') {
-      pass(`main latest test.yml is green (#${last.id}, sha ${String(last.head_sha || '').slice(0, 8)})`);
+      if (mainSha && last.head_sha !== mainSha) fail(`main's newest real test.yml run (#${last.id}) is for ${String(last.head_sha || '').slice(0, 8)}, not main's tip ${mainSha.slice(0, 8)}`);
+      else pass(`main latest test.yml is green (#${last.id}, sha ${String(last.head_sha || '').slice(0, 8)})`);
     } else {
       fail(`main latest test.yml is NOT green (#${last.id}: ${last.status}/${last.conclusion || 'pending'})`);
     }
@@ -166,8 +170,8 @@ if (!ghOk) {
   if (!r.ok) {
     byHand(`claude/design6 latest test.yml: GitHub API unreadable (${r.error}) — check by hand`);
   } else {
-    const last = (r.data?.workflow_runs || [])[0];
-    if (!last) fail('claude/design6 latest test.yml: no runs found');
+    const last = realRun(r.data?.workflow_runs);
+    if (!last) fail('claude/design6 latest test.yml: no runs found (other than skipped ones)');
     else if (last.status === 'completed' && last.conclusion === 'success') {
       pass(`claude/design6 latest test.yml is green (#${last.id}, sha ${String(last.head_sha || '').slice(0, 8)})`);
     } else {
