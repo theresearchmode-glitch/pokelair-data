@@ -7,3 +7,5 @@
 46 | started | - | news freshness blocker (health.mjs + post-news.mjs ran timestamp) | Wed Nov 25, 11:44 PM
 46 | done | alt/gemini-news-ran-data c78d15e2 (into main) + alt/gemini-news-ran-page bdb62e1c (into design6) | health dates post.json by ran||updated; post-news writes ran on success, keeps old ran on failure; combined proof passes; NOTE one-line edit to existing post-news-test.mjs docOk, see report | Wed Nov 25, 11:53 PM
 43 | started | - | merge-check.sh for main + design6 (resumed after 46) | Wed Nov 25, 11:53 PM
+43 | done | alt/gemini-merge-gate 0d5df189 | merge-check.sh picks the test list by target (main = main's test.yml incl. frozen out/, design6 list unchanged), new wrong-target check, stamp+hook name the branch; merge-gate-test 8 FAILED before, 24/24 after | Wed Nov 25, 11:59 PM
+44 | started | - | quiet launch-day alarms (md-watch regAt + health/md-watch 0-event days) | Wed Nov 25, 11:59 PM
