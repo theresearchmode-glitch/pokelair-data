@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 6:01 PM (6:01:39)  date: Thu Nov 26, 2026
-NOW (time: 6:01 PM (6:01:32)  date: Thu Nov 26, 2026): watching alt/f3-claude GitHub run 45907429763 (99e172ba, Final 3 on both builds); helper running local suite + pictures.
+NOW: (6:01 PM Thu Nov 26) watching alt/f3-claude GitHub run 45907429763 (99e172ba, Final 3 on both builds), watcher pid in .main-running; helper running local suite + pictures.
 NEXT: gate alt/f3-claude into claude/design6 when GitHub green + helper report read.
 NEXT: Preview republish after the merge (Final 3 for Sim's iPhone check); send Sim before/after pictures.
 NEXT: tell Kip 64c may start once Final 3 is in design6 (64b lands after Friday's switch).
 NEXT: Fri 7:30 AM switch prep (trig_01HzJ1ckLPN7LMVpiJ4eUh83).
-NOW: (Kip) working (Sim, 5:33 PM); last push job 64 (wrong base) at 4:44 PM; 64b queued.
+NOW: (Kip) 64b done 5:56 PM (c617c3bd, lands after the switch); 64c queued, starts once Final 3 is in design6.
 NEXT: gate alt/f3-public-rest after batch7; then part 2 when Sim says yes; Preview republish.
 NEXT: Friday switch if Sim OKs the Preview tonight; Kip 62 preflight on the morning.
 NEXT: verify Kip 64b when it lands (LCP claim 0.4-1.5 s) and merge it.
