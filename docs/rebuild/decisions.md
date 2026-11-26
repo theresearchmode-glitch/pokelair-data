@@ -2813,3 +2813,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:40 PM: Sim: switch Friday Nov 27, 8:30-9:00 AM Eastern, together. HH preflight + Friday merge from ~7:30 AM.
 - 5:51 PM: MERGED: alt/batch7 into claude/design6 23520831 (Kip 61 static-page CSS 824->42 KB + route-first data; Kip 62 preflight).
 - 5:53 PM: Preview v268 published (batch7, design6 23520831; data 19:22Z, no-names 0, COPY-OK). alt/f3-public-rest run 45902592785 cancelled: alt/f3-claude 99e172ba supersedes it (helper checked bf778a62 is an ancestor).
+- 6:01 PM: Kip 64b (c617c3bd) reviewed: lands AFTER Friday's switch, not before (it changes shell.js draw paths and fonts on both builds). It conflicts with alt/f3-claude in static-pages.mjs, so Kip's job 64c redoes it on design6 once Final 3 merges. Queued on alt/kip-jobs.
