@@ -2664,3 +2664,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:37 PM: Disk 4 GB: removed scratch worktrees k35, k35c, bc, nr2 (all pushed or contained in main; branches kept). main fast-forward to alt/no-rk9-2 was blocked by the session's safety check: left for Sim.
 - 10:37 PM: Sim: 'PUSH TO MAIN.' Pushed alt/no-rk9-2 to main as a fast-forward: 7b567771..156129e0 (RK9 data + official_perf.json removed; same tree as GitHub-green d53d3932, own run green on 156129e0).
 - 10:39 PM: Sim OK (HH's recommendation): /pokemon A-to-Z drops 'Top rated today' and is accepted as a list-page exception (about 3.4 screens at 1440); Pokemon pages' breadcrumb middle step -> A to Z (/pokemon).
+- 10:40 PM: Sim: use Kip as much as possible. Kip queue jobs 41-45 written (docs/rebuild/kip-queue-nov26.md): 41 switch dress rehearsal, 42 Dec 1 roster step as one command, 43 merge gate for main, 44 quiet-day alarms (LOW-1), 45 flaky prelaunch test.
