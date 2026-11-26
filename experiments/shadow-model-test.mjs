@@ -93,8 +93,15 @@ try {
   const sbPath = path.join(tmp, 'shadow_scoreboard.json');
   const sb1 = runShadowScoreboard({matchesPath, livePath: onPath, shadowPath, outPath: sbPath, today: '2026-11-20', targetDate: '2026-11-18'});
   assert.ok(sb1 && sb1.latest.date === '2026-11-18' && sb1.latest.games === 80);
-  const sb2 = runShadowScoreboard({matchesPath, livePath: onPath, shadowPath, outPath: sbPath, today: '2026-11-20'}); // auto-picks latest < today = 2026-11-19
-  assert.ok(sb2 && sb2.latest.date === '2026-11-19' && sb2.byReg['M-C'].length === 2);
+  // Kip job 35 #1 (Nov 25): automatic grading needs PREV_MATCHES (what the models learned from) and grades only events not in it
+  assert.equal(runShadowScoreboard({matchesPath, livePath: onPath, shadowPath, outPath: sbPath + '.x', today: '2026-11-20'}), null, 'no PREV_MATCHES: grades nothing');
+  const MMfix = JSON.parse(fs.readFileSync(matchesPath, 'utf8')), prevAll = path.join(tmp, 'prev_all.json'), prevOld = path.join(tmp, 'prev_old.json');
+  fs.writeFileSync(prevAll, JSON.stringify(MMfix));
+  assert.equal(runShadowScoreboard({matchesPath, livePath: onPath, shadowPath, outPath: sbPath + '.x', today: '2026-11-20', prevMatchesPath: prevAll}), null, 'every event already seen: grades nothing');
+  fs.writeFileSync(prevOld, JSON.stringify({...MMfix, events: MMfix.events.filter(e => e[1] < '2026-11-19')}));
+  const sb2 = runShadowScoreboard({matchesPath, livePath: onPath, shadowPath, outPath: sbPath, today: '2026-11-20', prevMatchesPath: prevOld}); // only the 2026-11-19 events are new
+  const n19 = MMfix.m.filter(g => g[2] !== 0.5 && g[0] !== g[1] && MMfix.events[g[3]][1] === '2026-11-19').length;
+  assert.ok(sb2 && sb2.latest.date === '2026-11-19' && sb2.latest.unseen === true && sb2.latest.games === n19 && sb2.byReg['M-C'].length === 2, JSON.stringify(sb2 && sb2.latest));
   assert.equal(typeof sb2.latest.delta.logloss, 'number');
 
   // Negative check (S7): removing bc must fail validation
