@@ -381,3 +381,8 @@ Found by HH (checked with git merge-tree): 64b conflicts with alt/f3-claude in a
 6. Rerun: speed-check 10/10, prerender-test, split-routes-cross-test, all 9 public test groups, v2-minors x3, and node experiments/switch-smoke.mjs. Each one by exit code.
 7. Push with a real GitHub run (no [skip ci]) on the top commit; report in alt/gemini-status.
 No design changes. Never main, never claude/design6.
+
+## HH change to JOB 64c (time: 6:04 PM (6:04:27)  date: Thu Nov 26, 2026): start NOW, don't wait
+Steps 1-2 change: branch alt/gemini-speed-first-screen3 from origin/alt/f3-claude (99e172ba = Final 3 + today's design6 23520831), not from design6.
+When HH merges Final 3 into design6 later tonight, merge origin/claude/design6 into your branch once more before your final push.
+Everything else in 64c stays the same. Job 65 comes after 64c, built on top of your 64c branch.
