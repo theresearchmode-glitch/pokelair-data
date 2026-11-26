@@ -42,3 +42,4 @@
 61 | done | alt/gemini-speed-fix3 f01fcaf4 | fixes 4+5 on speed-review measured on real public-site.mjs deploy: static.css 824->42 KB (144.5->12.0 KB gz), /pokemon LCP 1756->1054ms, 14/14 byte-identical shots, 15/15 cross-test, all 8 public tests pass | Thu Nov 26, 2:55 PM
 62 | started | - | experiments/switch-preflight.mjs (read-only runbook step 1 check + fake fail proofs + runbook line) | Thu Nov 26, 2:55 PM
 62 | done | alt/gemini-preflight 57fe28b3 | experiments/switch-preflight.mjs (read-only runbook step 1 check, CHECK BY HAND fallback, live + all 7 fake FAIL paths verified, 1 line in switch-runbook-nov28.md) | Thu Nov 26, 2:57 PM
+63 | started | - | CDP trace waterfall breakdown for /, /pokemon/garchomp, /team, /meta, /#news on real deploy | Thu Nov 26, 2:58 PM
