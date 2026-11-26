@@ -14,8 +14,8 @@ measuring pass (sideways overflow, clipped text, page height in screens). Script
 - Meta and Pokémon pages on a phone: the top-5 strip and the forms row run past the edge on purpose (overflow-x:auto scrollers,
   measured). The cut-off #5 is the hint to swipe. Worth asking Sim if he finds it obvious on his iPhone.
 - "vh" clipped text in the measure = screen-reader-only labels, by design.
-- News "Next event": correct with real data (Stuttgart Regional, Nov 28-29, in 2 days). Not checked: that the live refresh task stores
-  meta/calendar (it's in META_KEYS); check in Saturday's refresh-task step.
+- News "Next event": correct with real data (Stuttgart Regional, Nov 28-29, in 2 days). Checked (read the "NastyPlot data refresh"
+  task's prompt, step 3): it stores meta/calendar from out/calendar.json daily.
 
 ## Page heights (screens; caps: 3 tools/lists, 4 Home/Pokémon/This Week/Meta at 1440x900)
 1440x900: Home 4, Meta 3.8, My Team 3, Pokémon 3.2, Speed 2.9, This Week 1.2, Track 1.1, News 2.4 (all within caps).
