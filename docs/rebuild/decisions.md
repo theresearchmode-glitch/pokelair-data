@@ -2771,3 +2771,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:39 PM: Hourly check: disk 1 GB -> 8.2 GB (removed finished worktrees kip3, b5, pt, livedata; helper's sr-* left alone). Game Plan v100 published.
 - 1:42 PM: Sim PICKED Final 3 (Plot Receipt on the night panel, glow kept) as the public front page. Sim stopped Kip 2's design work (his previews were not good enough).
 - 1:43 PM: Sim: Kip 2 (design Gemini) is gone; no Gemini design work for now. Kip (Kip 1) is the only Gemini helper, working on his queue (59 then 60). HH to say if a second Gemini is worth starting later.
+- 1:45 PM: GitHub queue bottleneck: cancelled 5 superseded runs (public-dataready, public-home-v2/v3, split-routes, design6 post-merge); told helper + Kip to put [skip ci] on report/WIP/proposal pushes.
