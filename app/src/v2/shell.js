@@ -533,8 +533,11 @@ V2.warmDraw = () => { let pre = null; const P = V2.pages[V2.route()], warm = (P 
   const sched = fn => window.__NP_PUBLIC && typeof requestIdleCallback === 'function' ? requestIdleCallback(fn, {timeout: 120}) : setTimeout(fn, 0);
   const next = () => { if (i < steps.length) { try { steps[i++](); } catch (e) { pre = null; } sched(next); } else try { V2.redraw(pre); } finally { V2.prePend = false; } }; sched(next); };
 V2.afterPre = fn => { const go = () => { if (V2.prePend) setTimeout(go, 0); else fn(); }; setTimeout(go, 0); };
+/* Job U (Nov 26): singles and status are read (shared logic) but nothing writes them (no out/ file, no refresh line), so they never hold the
+   numbers back: if the host ever stayed silent for a missing document, every visit would wait the full 8 s (measured 8,460 ms vs 384 ms). */
+V2.META_NOWAIT = new Set(['singles', 'status']);
 V2.dataReady = () => { if (V2._dataOk) return true; let ok = false;
-  try { const c = window.__NP_CLAUDE || window.claude; ok = !c || !c.use || META_NODB || META_KEYS.every(k => META_SEEN.has(k)) || performance.now() > 8000; } catch (e) { ok = true; }
+  try { const c = window.__NP_CLAUDE || window.claude; ok = !c || !c.use || META_NODB || META_KEYS.every(k => META_SEEN.has(k) || V2.META_NOWAIT.has(k)) || performance.now() > 8000; } catch (e) { ok = true; }
   return ok ? (V2._dataOk = true) : false; };
 setTimeout(() => { if (!V2._dataOk) { V2._dataOk = true; fixMetaSrc(); clearCaches(); V2.redraw(); } }, 8000);
 // pre-launch check 1 (Nov 17): shown in the main area until today's numbers are in (V2.dataReady, bridge.js): the logo and one line,

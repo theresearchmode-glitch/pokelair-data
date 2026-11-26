@@ -17,6 +17,7 @@
 //   TP3-1 (Nov 26): long event names are cut at a whole word, never mid-word (ONLY=TP3 runs it alone)
 //   TF-1, TF-2 (Nov 26): Test Run and Track Record at most 3 screens at 1440x900 (ONLY=TF runs them alone)
 //   MT390-1 (Nov 26): My Team at 390 with no optional swap is at most 4.35 screens, its links in one row (ONLY=MT390 runs it alone)
+//   MD-1, MD-2 (Nov 26): documents with no producer (singles, status) never hold the numbers back; a real one still does (ONLY=MD)
 //   SP-1..6 (Nov 26): Spicy picks, an extra on top: off = the normal suggestions as before; on = a labelled group, Apply graded as shown, Search finds it (ONLY=SP)
 //   BR-C1..C7 (Nov 18): behaviour review: the Apply and Remove holds end on any scroll they didn't make and on leaving My Team,
 //              redraws at 1100-1439 don't move My Team, keyboard Apply keeps the focus (ONLY=BR runs these alone)
@@ -397,6 +398,20 @@ const TP3 = async () => { /* TP3-1 (small touches pass 3, Nov 26): a long event 
   ok(r.n >= 1 && !r.bad.length && !r.badRows.length && !r.badLab.length, `TP3-1: long event names end at a whole word (${r.n} cut names, ${r.rows} on Test Run's rows, ${r.labs} in their labels; mid-word: ${[...r.bad, ...r.badRows, ...r.badLab].slice(0, 4).join(' | ') || 'none'})`);
   await c.close(); };
 if (process.env.ONLY === 'TP3') { await TP3(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+const MD = async () => { /* MD-1, MD-2 (Job U, Nov 26): the page draws numbers once every daily document has answered, or after 8 s (shell.js
+  V2.dataReady). meta/singles and meta/status have no producer (no out/ file, no refresh line), so if the host ever stayed silent for them every
+  visit sat on "Getting today's numbers" for 8 s (measured: data ready 8,460 ms at 390 vs 384 ms). MD-1: with those two silent, the numbers are
+  in well before 8 s. MD-2 (control): with a document that does have a producer silent (meta/teams), the page still waits. Failed on day-batch2 5d2d0c72. */
+  const at = async silent => { const c = await b.newContext({viewport: {width: 1440, height: 900}}), q = await c.newPage();
+    await q.addInitScript(sil => { window.__PL_TEST = 1; let w; Object.defineProperty(window, '__NP_CLAUDE', {configurable: true, get: () => w, set: v => {
+      w = v && v.use ? {use: async n => { const r = await v.use(n); if (n !== 'db' || !r) return r;
+        return {doc: x => { const d = r.doc(x); return Object.assign({}, d, {onSnapshot: (cb, er) => sil.includes(x) ? () => {} : d.onSnapshot(cb, er)}); }}; }} : v; }}); }, silent);
+    await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(3000);
+    const r = await q.evaluate(() => ({ok: !!(window.V2 && V2._dataOk), t: Math.round(performance.now()), wait: /Getting today/.test(document.body.innerText)})); await c.close(); return r; };
+  const a = await at(['meta/singles', 'meta/status']), z = await at(['meta/teams']);
+  ok(a.ok && !a.wait, `MD-1: with meta/singles and meta/status silent (no producer), Home has today's numbers within 3 s, not after the 8 s wait (ready ${a.ok}, loading panel ${a.wait}, at ${a.t} ms)`);
+  ok(!z.ok && z.wait, `MD-2 (control): with meta/teams silent, the page still waits for it (ready ${z.ok}, loading panel ${z.wait}, at ${z.t} ms)`); };
+if (process.env.ONLY === 'MD') { await MD(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // TF-1, TF-2 (HH's Job G, Nov 26; rule 15: tools and lists at most 3 screens at 1440x900). Both failed on design6 b96f3a5e:
 //   TF-1 Test Run: 3.23 screens at 1440x900 (light and dark), and 4.93 at 1180x820 (rows beside the open team gave the event name 160px).
 //   TF-2 Track Record: 3.08 screens at 1440x900 (128px of space under its last link).
@@ -2186,6 +2201,7 @@ if (part('groups')) { const bad = [];
     if (r.end == null || r.end > h || r.scrollY !== 0 || r.chips !== 12 || !r.lab) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); await ctx.close(); }
   ok(!bad.length, `Speed Tiers on short laptop windows (Nov 26): the track's first row is on the first screen at 1280x720, 1366x768 and 1440x900, all 12 condition chips kept (${bad.join(' | ') || 'all three'})`); }
 if (part('main2')) await TP3(); /* small touches pass 3 (Nov 26), defined above; ONLY=TP3 runs it alone */
+if (part('main2')) await MD(); /* Job U (Nov 26): no wait for documents with no producer; ONLY=MD runs it alone */
 if (part('groups')) { await HQ(); await wkPair(b, 'file://' + PAGE, ok); }
 await b.close();
 console.log(`v2-minors${PART === 'all' ? '' : ' (' + PART + ')'}:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
