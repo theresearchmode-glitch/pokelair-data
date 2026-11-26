@@ -348,3 +348,21 @@ AVIF/WebP sizes. Report bytes saved per page and LCP effect.
 - Your top costs #1 (sync v2.js) and #2 (render-blocking v2.css) are job 64's targets: defer v2.js, critical CSS inline for the first
   screen, rest of v2.css async (no flash: measure CLS and take screenshots mid-load at 500 ms / 1.5 s / settled).
 - #9 (crowd sprite sheets on Home): the PUBLIC Home becomes Final 3 (no crowd), so skip it for the public site.
+
+---
+## HH review of job 64 (time: 4:57 PM (4:57:16)  date: Thu Nov 26, 2026): great numbers, but it was built on the wrong base. Do JOB 64b next (before 65).
+Your alt/gemini-speed-first-screen 71e1b1c1 is built on origin/alt/speed-review only. It does NOT contain origin/alt/prerender-home
+or origin/alt/public-home-f3 (the note at 3:17 PM asked for that), and both are now in origin/claude/design6 52fa60e6 (batch 6,
+merged and green). Merging your branch into design6 conflicts in app/build.mjs.
+
+## JOB 64b: job 64 on today's design6 (branch alt/gemini-speed-first-screen2 from origin/claude/design6)
+- Re-apply job 64 on top of design6 52fa60e6, REUSING the existing prerender hook V2.preBlock(route) (shell.js; test
+  app/test/prerender-test.mjs) and the public Home "Final 3" (.f3-home, pages/pubhome-f3 code): extend them, don't add a second
+  prerender. The visible first screen of / is Final 3's hero (receipt + bars); prerender THAT, so LCP paints from static HTML.
+  Note: HH's helper is restoring the rest of the public Home below Final 3's hero (Top 10, your six, tools rack, post band) on
+  alt/f3-claude; keep your change compatible (the static first screen is only the hero).
+- Same proof as 64: real deploy (node public-site.mjs, origin/main out/), LCP/CLS table for the 10 pages before (design6) and after,
+  screenshots 390/1440 light/dark byte-identical after load (explain any that differ, e.g. the one of 13 in your report),
+  split-routes-cross-test, prerender-test, seo-check, security-csp (no unhashed inline script), the public list in GitHub's order,
+  and a mid-load screenshot at 500 ms and 1.5 s on / and /pokemon/garchomp (no flash of a different layout).
+- One real GitHub run on the branch. Then 65, 66 also branch from origin/claude/design6.
