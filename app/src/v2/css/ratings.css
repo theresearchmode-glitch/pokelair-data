@@ -83,6 +83,8 @@
 .fb2 .k-sent{margin-top:0;font-size:var(--t28)}
 .fb2-box{display:block;margin:var(--s4) 0 0}
 .fb2-box textarea{display:block;width:100%;min-height:132px;padding:var(--s3) var(--s4);border:3px solid var(--k-plot);border-radius:0;background:var(--k-card);color:var(--k-ink);font:500 var(--t17)/1.5 var(--b);resize:vertical}
+/* Turnstile (Nov 25): takes no room unless Cloudflare asks the visitor to click (feedback.js toggles .on) */
+.fb2-ts:not(.on){position:absolute;width:0;height:0;overflow:hidden} /* out of the form's grid (no gap) until Cloudflare needs a click */
 .fb2-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s5);margin-top:var(--s1)}.fb2-row .k-go{margin-top:var(--s4)}
 .fb2-row .fine:not(.np-errmsg){font-size:var(--t13);font-weight:600;color:var(--k-ink2)}
 .fb2-box textarea[aria-invalid="true"]{border-color:var(--bad-text)} /* Sim's W3b A error look on the new box (v2-formerr) */

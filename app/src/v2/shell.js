@@ -307,7 +307,13 @@ V2.THEME_WORD = {day: 'Day mode', night: 'Night mode', auto: 'Auto: follows your
 V2.REG_END_MC = '2026-12-02T01:59:00Z';
 /* Nov 24 (competitor scan: rivals already mention Reg M-D; we said nothing): until M-C ends, a countdown line, shown in the Home hero's
    text under the herd (as a note above the hero it pushed the start buttons off the first screen: Stampede hero 3b; on Meta, the tabs) */
-V2.mdCountdown = (now = Date.now(), short = false) => { try { const r = typeof regInfo === 'function' && regInfo(), endMs = Date.parse(V2.REG_END_MC); if (!r || r.now || r.id !== 'M-C' || !(now < endMs)) return '';
+V2.REG_START_MD = '2026-12-02T02:00:00Z';
+/* Nov 25 (night plan 1b): M-D starts 02:00 UTC, but our numbers switch only at the next data run (a hand run about 02:05 UTC, else the 09:07 one).
+   In that gap the data still says M-C with nothing about M-D, so the same line says so, for up to 2 days (then the data note's
+   staleness line takes over). It hides as soon as the data knows M-D (r.now or r.id M-D). */
+V2.mdCountdown = (now = Date.now(), short = false) => { try { const r = typeof regInfo === 'function' && regInfo(), endMs = Date.parse(V2.REG_END_MC), stMs = Date.parse(V2.REG_START_MD);
+  if (r && !r.now && r.id === 'M-C' && now >= stMs && now < stMs + 2 * 864e5) return short ? 'Reg M-D has started.' : 'Reg M-D has started: our numbers switch to it at the next data update.';
+  if (!r || r.now || r.id !== 'M-C' || !(now < endMs)) return '';
   /* calendar days in the viewer's own time zone, so the last day says "today" (code review, Nov 24: it said "tomorrow" 59 min before the end) */
   const end = new Date(endMs), day = x => Date.UTC(x.getFullYear(), x.getMonth(), x.getDate()), d = Math.round((day(end) - day(new Date(now))) / 864e5),
     when = end.toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'});
@@ -384,7 +390,7 @@ V2.logo = (foot) => { const L = typeof NP_LOGO === 'object' ? NP_LOGO : null; if
   return foot ? `<img class="np-lg" src="${u.small}" alt="NastyPlot" width="183" height="32" decoding="async">`
     : `<picture class="np-lg"><source media="(max-width:413.98px)" srcset="${u.mark}"><source media="(max-width:999.98px)" srcset="${u.small}"><img src="${u.full}" alt="" width="241" height="44" decoding="async"></picture>`; };
 // say it once (Nov 16): a page's own data date shows only when it differs from the footer's 'Data as of' (V2.otherDay('Nov 10') -> '' when the same)
-V2.otherDay = d => { const a = V2.asOf && V2.asOf(); return d && a && new RegExp('\\b' + d.replace(/\s+/g, '\\s') + '\\b').test(a) ? '' : (d || ''); };
+V2.otherDay = d => { const a = V2.asOf && V2.asOf(); return d && a && new RegExp('\\b' + String(d).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s') + '\\b').test(a) ? '' : (d || ''); }; /* Kip job 36 C #7: a date with ( or . can't break it */
 // the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site
 /* functions stress test (Nov 16): with storage blocked, Save still said "Saved" and nothing survived a reload; one check, and the save words say so */
 V2.canStore = (() => { try { localStorage.setItem('np2.probe', '1'); localStorage.removeItem('np2.probe'); return true; } catch (e) { return false; } })();
@@ -419,7 +425,7 @@ V2.PUB_PATHS = {home: '/', team: '/team', build: '/build', battle: '/battle', ca
 V2.PUB_FROM_PATH = p => { const c = String(p || '/').replace(/\/+$/, '') || '/';
   if (c === '/privacy') return {r: 'about', sub: 'priv'};
   if (c === '/gifts') return {r: V2.pages.gifts ? 'gifts' : (V2.pages.news ? 'news' : 'home'), sub: ''};
-  if (c.startsWith('/pokemon/')) return {r: 'pokemon', sub: decodeURIComponent(c.slice(9))};
+  if (c.startsWith('/pokemon/')) { try { return {r: 'pokemon', sub: decodeURIComponent(c.slice(9))}; } catch (e) { return {r: 'pokemon', sub: ''}; } } /* a bad %-address shows the not-found Pokémon, not a blank page (Kip job 36 C #1) */
   for (const [k, v] of Object.entries(V2.PUB_PATHS)) if (v === c && !k.includes('=')) return {r: k, sub: ''};
   return null; };
 V2.route = () => { let h = (location.hash || '').slice(1).split('=')[0];
@@ -541,7 +547,12 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
 <nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
 /* audit Nov 16 (WCAG 2.4.2): each page has its own browser title, its name as the menu and search show it ("Meta · NastyPlot"); Home keeps "NastyPlot";
    Pokémon pages set their own fuller title (pages/pokemon.js) */
-V2.setTitle = () => { try { const r = V2.route(); if (r === 'pokemon') return; const h = document.querySelector('#main h1'); if (document.querySelector('#main [data-v2nf]')) { if (document.title !== 'Page not found · NastyPlot') document.title = 'Page not found · NastyPlot'; return; } /* Q24: the not-found page, #owner for visitors included */
+/* public site (Nov 25, SEO): a not-found screen (a wrong address, or /pokemon/<unknown>) tells search engines not to index it. Cloudflare
+   already answers 404 there (dist/404.html); this covers a not-found view drawn on a page that answered 200. Removed again on a real page. */
+V2.noindex = on => { try { if (!window.__NP_PUBLIC) return; let m = document.querySelector('meta[name="robots"]');
+  if (on && !m) { m = document.createElement('meta'); m.name = 'robots'; m.content = 'noindex'; m.setAttribute('data-np-nf', ''); document.head.appendChild(m); }
+  else if (!on && m && m.hasAttribute('data-np-nf')) m.remove(); } catch (e) {} };
+V2.setTitle = () => { try { V2.noindex(!!document.querySelector('#main [data-v2nf], #main [data-v2pknf]')); const r = V2.route(); if (r === 'pokemon') return; const h = document.querySelector('#main h1'); if (document.querySelector('#main [data-v2nf]')) { if (document.title !== 'Page not found · NastyPlot') document.title = 'Page not found · NastyPlot'; return; } /* Q24: the not-found page, #owner for visitors included */
   if (window.__NP_PUBLIC && window.__NP_SEO) {
     const sk = location.hash === '#about=priv' || location.pathname === '/privacy' ? 'privacy' : r;
     const seo = window.__NP_SEO[sk];
@@ -679,3 +690,17 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 
 // the skip link (code review A1, Nov 15): moves keyboard focus to the page instead of changing the address (#main sent it to Home)
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2skip]'); if (!a) return; e.preventDefault(); const m = document.getElementById('main'); if (m) { m.setAttribute('tabindex', '-1'); m.focus({preventScroll: false}); m.addEventListener('blur', () => m.removeAttribute('tabindex'), {once: true}); } }); /* tabindex only while focused: a lasting one made <main> read as one big control (6 Meta tests tapped it) */
+/* Real links on the public site (SEO audit Nov 25 #9: 0 real "/..." links on any page, so search engines could only find pages
+   through the sitemap). On nastyplot.org every in-site link that has its own address gets it as href (/meta, /pokemon/garchomp,
+   /privacy...), with the old #hash kept in data-h. A plain click still goes by the hash, exactly as before (same page, no reload);
+   a new tab, a copied link or a search engine gets the real address. The Claude version is untouched. */
+V2.pubPath = h => { const m = /^#([a-z-]+)(?:=(.*))?$/.exec(String(h || '')); if (!m) return null; const [, r, sub] = m;
+  if (r === 'pokemon' && sub && typeof V2.pubSlug === 'function') { let n; try { n = decodeURIComponent(sub); } catch (e) { return null; } const s = V2.pubSlug(n); return s ? '/pokemon/' + s : null; }
+  if (r === 'about' && sub === 'priv') return '/privacy';
+  return sub == null && Object.prototype.hasOwnProperty.call(V2.PUB_PATHS, r) ? V2.PUB_PATHS[r] : null; };
+V2.pubLinks = html => String(html).replace(/href="(#[^"]*)"/g, (m, h) => { const p = V2.pubPath(h.replace(/&amp;/g, '&')); return p ? `href="${p}" data-h="${h}"` : m; });
+if (window.__NP_PUBLIC) {
+  const sh = V2.shell; V2.shell = (...a) => { const o = sh(...a); if (o && typeof o.html === 'string') o.html = V2.pubLinks(o.html); return o; };
+  document.addEventListener('click', e => { if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target && e.target.closest && e.target.closest('a[data-h]'); if (!a || a.target) return;
+    e.preventDefault(); const h = a.getAttribute('data-h'); if (location.hash !== h) location.hash = h; }, true); }

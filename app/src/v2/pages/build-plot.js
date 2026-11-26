@@ -202,4 +202,4 @@ V2.plotLower = end => { const E = V2.esc, picks = V2.plotWinPicks(), lk = ui.abL
   return `<section class="pl pl-low bd-lower${end ? ' pl-low1' : ' pl-low0'}" aria-label="More ways to start">${win}${V2.plotCores(picks.length ? 6 : 5)}${fin}</section>`; };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-plgo]'); if (!b) return; const go = document.querySelector('.pl1 [data-bdgo]'); if (!go || go.disabled) return; go.click();
   /* back up to the plot at once (a smooth scroll was cut short by the redraws a build makes: measured -2,056 px, Nov 20) */
-  requestAnimationFrame(() => scrollTo({top: 0, behavior: 'instant'})); });
+  requestAnimationFrame(() => scrollTo(0, 0)); /* instant everywhere; older Safari refuses behavior 'instant' (Kip job 36 C #6) */ });

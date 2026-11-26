@@ -1705,6 +1705,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ra-tk{flex:none;padding:var(--s1) var(--s3);font:800 var(--t13)/1.4 var(--b);background:var(--plate);color:var(--on-plate);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .ra-row{display:grid;grid-template-columns:40px 64px minmax(0,1fr) 120px 64px 88px 96px;column-gap:var(--s3);align-items:center;width:100%;min-height:72px;padding:var(--s2) 0;text-align:left;border-bottom:1px solid var(--rule)}
 .ra-row:hover,.ra-row:focus-visible{background:var(--wash)}
+a.ra-row,a.gs-mon{color:inherit;text-decoration:none} /* the public site's links look exactly like the buttons (Nov 25, SEO #9) */
 .ra-rk{font-size:var(--t20);color:var(--ink-2)}
 .ra-nm{display:grid;gap:var(--s1);min-width:0}.ra-nm>b{font:700 var(--t17)/1.2 var(--b)}.ra-nm .ra-mine{font-size:var(--t13)}.ra-gem{color:var(--plot-text)}
 .ra-ph{display:none;font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}.ra-ph b{color:var(--ink)}
@@ -3314,6 +3315,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .abt-d{margin:0;font-size:var(--t13);line-height:1.5;color:var(--rc-ink2)}
 .abt-tot{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s4);margin:var(--s4) 0 0;font:800 var(--t17)/1.3 var(--b);color:var(--rc-ink)}.abt-tot b{font-size:var(--t26);color:var(--rc-bad);text-transform:uppercase}
 .abt-end{margin:var(--s3) 0 0;font-size:var(--t13);line-height:1.5;color:var(--rc-ink2)}
+.abt .abt-rc .abtmail{justify-content:flex-end;gap:var(--s2)}.abt .abt-rc .np-link{font:inherit;font-weight:600;color:var(--rc-good);text-decoration:underline;text-underline-offset:3px} /* the public receipt's Contact row: "Show email" (then the address and Copy) in the receipt's blue ink, white paper in both themes */
 .abt-fine .k-h2{margin:0 0 var(--s3)} /* Wave 3: the kit step size, 40 */
 @media (min-width:960px) and (max-width:979.98px){.abt-fine .k-h2{font-size:var(--t28)}} /* the side column is 169px here: at 34px "The fine print." broke into 3 lines (Nov 23) */
 @media (max-width:959.98px){.abt-two{grid-template-columns:minmax(0,1fr)}}

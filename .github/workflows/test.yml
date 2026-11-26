@@ -2,7 +2,7 @@ name: Test NastyPlot page
 on:
   push:
     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
-    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', '*.mjs', 'sources/**', 'experiments/syntax-check.mjs', 'experiments/post-data-test.mjs', 'experiments/post-news-test.mjs', 'post-news.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', 'experiments/plan-cache-test.mjs', 'experiments/rules-fixes-test.mjs', 'experiments/mega-calc-crosscheck.mjs', 'experiments/public-build-test.mjs', 'experiments/pokemon-pages-test.mjs', 'experiments/feedback-worker-test.mjs', 'experiments/feedback-guard-test.mjs', 'experiments/count-worker-test.mjs', 'experiments/teamcheck-count-test.mjs', 'worker/**', 'wrangler.toml', 'experiments/security-csp-test.mjs', '.github/workflows/test.yml', 'package.json', 'package-lock.json', 'experiments/strength-invariants.mjs', 'experiments/a11y-code.mjs', 'formats.mjs', 'reg.mjs', 'reg-guard.mjs', 'reg-stamp.mjs', 'regstate.mjs', 'update.mjs', 'health.mjs', 'experiments/reg-*.mjs', 'experiments/md-day-one-test.mjs', 'experiments/backup-sources-test.mjs', 'sources/**']
+    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/post-data-test.mjs', 'experiments/post-news-test.mjs', 'post-news.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', 'experiments/plan-cache-test.mjs', 'experiments/rules-fixes-test.mjs', 'experiments/mega-calc-crosscheck.mjs', 'experiments/public-build-test.mjs', 'experiments/pokemon-pages-test.mjs', 'experiments/feedback-worker-test.mjs', 'experiments/feedback-guard-test.mjs', 'worker/**', 'wrangler.toml', 'experiments/security-csp-test.mjs', '.github/workflows/test.yml', 'package.json', 'package-lock.json', 'experiments/strength-invariants.mjs', 'experiments/a11y-code.mjs', 'formats.mjs', 'reg.mjs', 'reg-guard.mjs', 'reg-stamp.mjs', 'regstate.mjs', 'update.mjs', 'health.mjs', 'experiments/reg-*.mjs', 'experiments/md-day-one-test.mjs', 'experiments/backup-sources-test.mjs', 'public-site.mjs', 'split-docs.mjs', 'experiments/public-site-test.mjs', 'sources/**', 'experiments/count-worker-test.mjs', 'experiments/teamcheck-count-test.mjs', 'experiments/privacy-public-test.mjs', 'experiments/turnstile-page-test.mjs', 'experiments/pub-links-test.mjs', '*.mjs', 'experiments/syntax-check.mjs']
   workflow_dispatch:
   # Nov 9: commits made by GitHub's own jobs (the daily data, the weekly re-check, the monthly check) never trigger a push run
   # (GitHub rule for its built-in token), so fresh data was never tested and the live branch could not move. Start the tests
@@ -437,12 +437,22 @@ jobs:
       # nothing else in the body, and --cf-analytics adds Cloudflare's Web Analytics script + its two CSP hosts only when given (builds its own)
       - run: node experiments/count-worker-test.mjs && node experiments/teamcheck-count-test.mjs
         if: ${{ !cancelled() }}
+      # Turnstile on Send Feedback (Nov 25): loaded only there on the public site, token sent and used once, CSP allows it
+      - run: node experiments/turnstile-page-test.mjs
+        if: ${{ !cancelled() }}
+      # real links on the public site (SEO #9, Nov 25): /meta, /pokemon/<name> as hrefs, clicks still by hash, Claude build untouched
+      - run: node experiments/pub-links-test.mjs
+        if: ${{ !cancelled() }}
       # Security headers + CSP on the public build (Kip job 24 part 1): the offline self-test (headers parser, hashes, policy rules), then
       # the browser check on the build as it goes live (_headers served, every inline script hashed, no CSP violation, no outside host,
       # no cookie, a crafted #team= link can't run script)
       - run: node experiments/security-csp-test.mjs --self-test
         if: ${{ !cancelled() }}
       - run: node app/build.mjs --v2 --split --one-art-size --art=../src/v2/art/ --public && node experiments/security-csp-test.mjs
+        if: ${{ !cancelled() }}
+      # About → Privacy on the public site (night plan item 7, Nov 25): Sim's approved words, only the rows true today (no Claude account,
+      # no 180 days, no Turnstile, no Export), Show email in the Contact row; the Claude-hosted page keeps today's words (builds both)
+      - run: node experiments/privacy-public-test.mjs
         if: ${{ !cancelled() }}
       # the new site never says "Ready for" / "N% ready" (word list: Matchups; Sim, Nov 12): reads every built page, fold, sheet and "?"
       - run: node app/build.mjs --v2 && node experiments/v2-words.mjs
@@ -509,6 +519,9 @@ jobs:
       # answered with today's documents stored as the refresh stores them; every main route opened: no errors, no empty or no-data
       # page, no NaN text, Strength Score 0-100, ratings filled, every picture loads. About 30 s.
       - run: node app/test/v2-today.mjs
+        if: ${{ !cancelled() }}
+      # the folder that goes to nastyplot.org (public-site.mjs, Nov 25): today's data, no source map, every document the page asks for
+      - run: node experiments/public-site-test.mjs
         if: ${{ !cancelled() }}
   # Live-data audits (Sim, Nov 18: "make sure we have holes like this in our rules and logic covered well and dont need to wait till
   # later to be uncovered"). The code tests run these audits on frozen Nov 9 data only, so holes that only today's teams show stayed

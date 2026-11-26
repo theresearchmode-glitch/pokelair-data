@@ -184,7 +184,7 @@ V2.SDH_PXS = 40; // the ticker's speed, px per second
 V2.sdMotion = () => window.NP_SD_MOTION !== 0;
 V2.sdhTick = (S, prep) => { const U = V2.sdhUi, tk = S.querySelector('.sdh-tick'), ul = tk && tk.querySelector('ul'); if (!ul || !V2.sdMotion()) return;
   const mq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null, run = !!mq && !mq.matches;
-  if (mq && !U.mq) { U.mq = 1; mq.addEventListener('change', () => V2.sdhLayout()); }
+  if (mq && !U.mq) { U.mq = 1; const f = () => V2.sdhLayout(); if (mq.addEventListener) mq.addEventListener('change', f); else if (mq.addListener) mq.addListener(f); }
   let tr = tk.querySelector('.sdh-trk');
   if (!run) { if (tr) { tk.classList.remove('sdh-run', 'sdh-hold'); tr.replaceWith(ul); tk.querySelector('.sdh-tpz').remove(); } return; }
   if (!tr) { if (!prep) return; tr = document.createElement('div'); tr.className = 'sdh-trk'; ul.replaceWith(tr); tr.append(ul);

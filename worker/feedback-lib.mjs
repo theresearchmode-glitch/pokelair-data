@@ -22,6 +22,11 @@ export function originAllowed(request, env = {}) {
   if (origin == null || origin === '') return env.REQUIRE_ORIGIN !== '1';
   return list.includes(origin.replace(/\/+$/, ''));
 }
+// Privacy page row 3 (Sim's approved words): feedback is deleted after 180 days. Runs once a day (wrangler.toml [triggers]);
+// 'at' is the date only (YYYY-MM-DD, UTC), so text dates compare correctly.
+export const KEEP_DAYS = 180;
+export const PURGE_SQL = 'DELETE FROM feedback WHERE at < ?';
+export const purgeCutoff = (now = Date.now()) => new Date(now - KEEP_DAYS * 864e5).toISOString().slice(0, 10);
 export async function readCapped(request, max = MAX_BODY_BYTES) {
   const len = request.headers.get('Content-Length');
   if (len != null && len !== '' && (!/^\d+$/.test(len) || +len > max)) return {tooBig: true};
@@ -46,16 +51,30 @@ const EMAIL_PLAIN_RE = /[a-z0-9._%+-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)+/gi;
 // than keeping a phone number.
 const PHONE_RE = /(?:\+\s?)?(?:\(\s?\d+\s?\)[\s.-]?)?\d(?:[\s.()-]{0,3}\d){9,14}(?!\d)/g;
 const PHONE7_RE = /(?<![\d.,/])\b\d{3}[-.]\d{4}\b(?![\d.,/%])/g;
+// @handles (Kip job 34 #2): the same rule as the page's fbScrub (53-feedback-data.js), so the promise on the Privacy page holds
+// even for a message that didn't come through our page. Runs after the email rules (an email's @ is gone by then).
+const HANDLE_RE = /(^|[\s(\[{"'])@[A-Za-z0-9_.]{2,}/g;
 export function scrubContact(text) {
   let t = String(text || ''), emails = 0, phones = 0;
   t = t.replace(EMAIL_RE, () => { emails++; return '[email removed]'; }).replace(EMAIL_PLAIN_RE, () => { emails++; return '[email removed]'; });
   t = t.replace(PHONE_RE, m => { const d = m.replace(/\D/g, '').length; if (d < 10 || d > 15) return m; phones++; return '[phone removed]'; });
   t = t.replace(PHONE7_RE, () => { phones++; return '[phone removed]'; });
-  return {text: t, emails, phones};
+  let handles = 0; t = t.replace(HANDLE_RE, (m, a) => { handles++; return a + '[handle removed]'; });
+  return {text: t, emails, phones, handles};
 }
 
-export async function verifyTurnstile(token, secret, fetchImpl = fetch) {
-  if (!token || typeof token !== 'string' || !secret) return false;
+// Turnstile (launch review S1/S2, Nov 25): a token only counts if Cloudflare says it is good AND it was made on our own site for
+// the feedback form (hostname + action), so a token solved on another site that uses our public site key is refused.
+export const TS_ACTION = 'feedback';
+export const DEFAULT_TS_HOSTS = ['nastyplot.org', 'www.nastyplot.org'];
+export function turnstileOk(j, env = {}) {
+  const hosts = typeof env.TURNSTILE_HOSTNAMES === 'string' && env.TURNSTILE_HOSTNAMES.trim()
+    ? env.TURNSTILE_HOSTNAMES.split(',').map(s => s.trim()).filter(Boolean) : DEFAULT_TS_HOSTS;
+  return !!(j && j.success === true && hosts.includes(j.hostname) && j.action === TS_ACTION);
+}
+export async function verifyTurnstile(token, secret, fetchImpl = fetch, env = {}) {
+  if (!token || typeof token !== 'string' || token.length > 2048 || !secret) return false;
+  try { /* Kip job 34 #5: a network error or a non-JSON answer from Cloudflare counts as "not verified" (403), never a crash */
   const r = await fetchImpl('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -63,7 +82,8 @@ export async function verifyTurnstile(token, secret, fetchImpl = fetch) {
   });
   if (!r.ok) return false;
   const j = await r.json();
-  return !!(j && j.success);
+  return turnstileOk(j, env);
+  } catch (e) { return false; }
 }
 
 export function validateFeedback(body) {
@@ -74,7 +94,8 @@ export function validateFeedback(body) {
   const page = typeof body.page === 'string' ? body.page.trim() : '';
   const kind = typeof body.kind === 'string' ? body.kind.trim() : '';
   if (text.length < 3 || text.length > 2000) return {error: 'text must be 3..2000 chars'};
-  if (!page || page.length > 40) return {error: 'page must be 1..40 chars'};
+  /* the page you came from: a route or a Pokémon name ("meta", "pokemon=Mr.%20Mime"), so no email, phone or @handle fits in it (Kip job 36 A #4) */
+  if (!/^[A-Za-z0-9=._%\/-]{1,40}$/.test(page)) return {error: 'invalid page'};
   if (!kind || kind.length > 20 || !ALLOWED_KINDS.has(kind)) return {error: 'invalid kind'};
   return {ok: {text, page, kind}};
 }

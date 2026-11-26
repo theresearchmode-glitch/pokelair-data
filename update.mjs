@@ -63,7 +63,9 @@ try {
 // v2 files (full sheets + pairings) are backfilled for older tournaments too, newest first, within MAX_FETCH.
 const now = Date.now(), hasP = id => fs.existsSync(`data/p/${id}.json`);
 const has2 = id => { const T = readJSON(`data/t2/${id}.json`, null); return !!(T && T.v === 3) && hasP(id); };
-const todo = list.filter(t => !index.tournaments[t.id] || !has2(t.id) || (now - new Date(t.date)) < 3 * 864e5)
+/* an event id becomes a file name and a URL part (Kip job 36 A #3): anything else than letters, digits, - and _ is skipped */
+const safeId = id => typeof id === 'string' && /^[A-Za-z0-9_-]{1,80}$/.test(id);
+const todo = list.filter(t => safeId(t && t.id) && (!index.tournaments[t.id] || !has2(t.id) || (now - new Date(t.date)) < 3 * 864e5))
   .sort((a, b) => (index.tournaments[a.id] ? 1 : 0) - (index.tournaments[b.id] ? 1 : 0) || new Date(b.date) - new Date(a.date)).slice(0, MAX_FETCH);
 let fetched = 0, logged = false;
 const mv = m => ({n: m.name || '', i: /^[mfMF]$/.test(m.item || '') ? '' : (m.item || ''), /* data audit Nov 8: one sheet had genders in the item field */ a: m.ability || '', mv: Array.isArray(m.attacks) ? m.attacks.map(String) : Array.isArray(m.moves) ? m.moves.map(String) : [], t: m.tera || '', nt: m.nature || ''});
@@ -98,6 +100,7 @@ if (USE_BACKUPS) {
     const bk = await fetchBackupEvents({format: FORMAT, sdFormat: RG.sd, index, adapters: [victoryRoadAdapter, showdownOtsAdapter], maxFetch: Math.max(1, MAX_FETCH - fetched)});
     const W = w => w == null ? null : String(w) === '0' || String(w) === '-1' ? String(w) : pid(w);
     for (const t of bk.tournaments) {
+      if (!safeId(t && t.id)) continue;
       const s = bk.standingsById.get(t.id) || [], P = bk.pairingsById.get(t.id) || [];
       if (!s.length) continue;
       const e = s.map(x => [pid(x.player || x.name || ''), x.record ? x.record.wins : 0, x.record ? x.record.losses : 0, (x.decklist || []).map(key)]);

@@ -14,6 +14,7 @@ check('W1-reject-extra-field', !!validateFeedback({text: 'Calc off', page: 'calc
 check('W2-reject-legacy-fields', !!validateFeedback({text: 'Calc off', page: 'calc', kind: 'bug', w: 'phone', d: '2026-11-24'}).error);
 check('W3-reject-long-text', !!validateFeedback({text: 'x'.repeat(2001), page: 'calc', kind: 'idea'}).error);
 check('W4-reject-bad-kind', !!validateFeedback({text: 'Calc off', page: 'calc', kind: 'spam'}).error);
+check('W24-page-is-a-route-only', !!validateFeedback({text: 'great site', page: 'kid@gmail.com', kind: 'like'}).error && !!validateFeedback({text: 'great site', page: '555 123 4567', kind: 'like'}).error && !!validateFeedback({text: 'x y z', page: 'pokemon=Mr.%20Mime', kind: 'like'}).ok); /* Kip job 36 A #4 */
 check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page: 'calc', kind: 'mistake'}).ok);
 
 // W6-W10: Worker fetch behavior, Turnstile verification, D1 4-column privacy, /data/ 404
@@ -37,7 +38,7 @@ check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page:
     }), env);
     check('W7-turnstile-fail-403', badTok.status === 403 && bound.length === 0, `status=${badTok.status}`);
 
-    globalThis.fetch = async () => new Response(JSON.stringify({success: true}), {status: 200});
+    globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'nastyplot.org', action: 'feedback'}), {status: 200});
     const okReq = new Request('https://nastyplot.org/api/feedback', {
       method: 'POST',
       headers: {
@@ -54,6 +55,41 @@ check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page:
       /^\d{4}-\d{2}-\d{2}$/.test(bound[0].args[0]) &&
       bound[0].args[1] === 'team' && bound[0].args[2] === 'bug' && bound[0].args[3] === 'Broken button',
       JSON.stringify(bound[0] && bound[0].args));
+
+    // W13-W16 (Nov 25, launch review S1/S2 + Workers rate limit): a good token from another site or another form is refused;
+    // the rate limit answers 429 and saves nothing; its key never reaches D1
+    const post = (h = {}) => new Request('https://nastyplot.org/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json', 'CF-Turnstile-Response': 'tok', 'CF-Connecting-IP': '203.0.113.9', ...h}, body: JSON.stringify({text: 'Broken button', page: 'team', kind: 'bug'})});
+    const n0 = bound.length;
+    globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'evil.example', action: 'feedback'}), {status: 200});
+    const wrongHost = await worker.fetch(post(), env);
+    check('W13-turnstile-other-site-403', wrongHost.status === 403 && bound.length === n0, `status=${wrongHost.status}`);
+    globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'nastyplot.org', action: 'login'}), {status: 200});
+    const wrongAct = await worker.fetch(post(), env);
+    check('W14-turnstile-other-action-403', wrongAct.status === 403 && bound.length === n0, `status=${wrongAct.status}`);
+    globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'nastyplot.org', action: 'feedback'}), {status: 200});
+    const keys = []; const limited = await worker.fetch(post(), {...env, FEEDBACK_RL: {limit: async o => { keys.push(o.key); return {success: false}; }}});
+    check('W15-rate-limit-429-nothing-saved', limited.status === 429 && bound.length === n0 && keys[0] === 'fb:203.0.113.9', `status=${limited.status} keys=${keys}`);
+    const allowed = await worker.fetch(post(), {...env, FEEDBACK_RL: {limit: async () => ({success: true})}});
+    check('W16-rate-limit-pass-saves-no-ip', allowed.status === 201 && bound.length === n0 + 1 && !JSON.stringify(bound[bound.length - 1].args).includes('203.0.113.9'), `status=${allowed.status}`);
+
+    // W17-W21 (Kip job 34, Nov 25): @handles scrubbed on the server; counts rate-limited; a failing D1, Turnstile or body never crashes
+    const before17 = bound.length;
+    await worker.fetch(new Request('https://nastyplot.org/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json', 'CF-Turnstile-Response': 'tok'}, body: JSON.stringify({text: 'add me on discord @kidplayer123 (or @kid.two)', page: 'home', kind: 'idea'})}), env);
+    const saved17 = bound[before17] && bound[before17].args[3];
+    check('W17-handles-scrubbed-on-server', bound.length === before17 + 1 && !/@kid/.test(saved17) && /\[handle removed\]/.test(saved17), JSON.stringify(saved17));
+    const cnt = (e2) => worker.fetch(new Request('https://nastyplot.org/api/count', {method: 'POST', headers: {'Content-Type': 'application/json', 'CF-Connecting-IP': '203.0.113.9'}, body: '{"k":"teamcheck"}'}), e2);
+    const nc = bound.length, ck = []; const lim = await cnt({...env, COUNT_RL: {limit: async o => { ck.push(o.key); return {success: false}; }}});
+    check('W18-count-rate-limit-429', lim.status === 429 && bound.length === nc && ck[0] === 'cnt:203.0.113.9', `status=${lim.status}`);
+    const badDb = {...env, DB: {prepare: () => ({bind: () => ({run: async () => { throw new Error('D1_ERROR: secret internals'); }})})}};
+    const r19 = await worker.fetch(post(), badDb), t19 = await r19.text();
+    check('W19-d1-failure-503-no-details', r19.status === 503 && !/D1_ERROR|internals/.test(t19), `status=${r19.status} body=${t19}`);
+    globalThis.fetch = async () => { throw new Error('network down'); };
+    const r20 = await worker.fetch(post(), env);
+    check('W20-turnstile-unreachable-403', r20.status === 403, `status=${r20.status}`);
+    globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'nastyplot.org', action: 'feedback'}), {status: 200});
+    const broken = new ReadableStream({pull(c) { c.error(new Error('client went away')); }});
+    const r21 = await worker.fetch(new Request('https://nastyplot.org/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: broken, duplex: 'half'}), env);
+    check('W21-cut-off-body-no-crash', r21.status === 503 || r21.status === 400, `status=${r21.status}`);
 
     const data404 = await worker.fetch(new Request('https://nastyplot.org/data/missing.json'), env);
     check('W9-data-missing-404', data404.status === 404, `status=${data404.status}`);
@@ -81,6 +117,21 @@ check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page:
   check('W12-client-public-turnstile',
     fb2.includes('window.__NP_PUBLIC') && fb2.includes('CF-Turnstile-Response') && fb2.includes('__npTurnstileCb') &&
     fb1.includes('window.__NP_PUBLIC') && fb1.includes('CF-Turnstile-Response') && fb1.includes('__npTurnstileCb'));
+}
+
+// W22 (Nov 25): the daily clean-up deletes feedback older than 180 days and nothing newer, on the real schema in SQLite;
+// wrangler.toml runs it once a day
+{
+  const {DatabaseSync} = await import('node:sqlite');
+  const db = new DatabaseSync(':memory:'); db.exec(fs.readFileSync('worker/schema.sql', 'utf8'));
+  const ins = db.prepare('INSERT INTO feedback (at, page, kind, text) VALUES (?, ?, ?, ?)');
+  for (const at of ['2026-05-28', '2026-05-29', '2026-05-30', '2026-11-25']) ins.run(at, 'home', 'idea', 'x');
+  const env = {DB: {prepare: sql => ({bind: (...a) => ({run: async () => db.prepare(sql).run(...a)})})}};
+  await worker.scheduled({scheduledTime: Date.parse('2026-11-25T07:17:00Z')}, env);
+  const left = db.prepare('SELECT at FROM feedback ORDER BY at').all().map(r => r.at);
+  check('W22-daily-delete-after-180-days', JSON.stringify(left) === JSON.stringify(['2026-05-29', '2026-05-30', '2026-11-25']), JSON.stringify(left));
+  const wt = fs.readFileSync('wrangler.toml', 'utf8');
+  check('W23-cleanup-runs-daily', /\[triggers\]\s*\ncrons = \["17 7 \* \* \*"\]/.test(wt));
 }
 
 console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
