@@ -39,7 +39,13 @@ const index = readJSON('data/index.json', {tournaments: {}});
 const RGW = activeReg();
 const ids0 = Object.keys(index.tournaments).filter(id => sameReg(index.tournaments[id], RGW.id) && !offFormat(index.tournaments[id].name)), odd = oddEvents(ids0, id => readJSON(`data/t/${id}.json`, null), () => {});
 const EV = ids0.filter(id => !odd.has(id)).map(id => { const T = readJSON(`data/t2/${id}.json`, null); return T && T.d ? {id, name: T.name || '', day: evDay(T.d), p: T.p || 0, e: T.e || []} : null; }).filter(Boolean);
-if (!EV.length) { console.log('::warning::weekly: no tournament sheets found; out/weekly.json left unchanged'); process.exit(0); }
+if (!EV.length) {
+  const prev = readJSON('out/weekly.json', null);
+  if (prev && prev.reg === RGW.id && prev.a && prev.a.n > 0) { console.log('::warning::weekly: no tournament sheets found; out/weekly.json left unchanged'); process.exit(0); }
+  fs.writeFileSync('out/weekly.json', JSON.stringify(stampReg({v: 1, updated: new Date().toISOString(), src: '', th: TH, a: {from: '', to: '', ev: 0, n: 0}, b: {from: '', to: '', ev: 0, n: 0}, enough: false, cutA: 0, up: [], down: [], top: [], tech: [], sty: {up: [], down: []}, styAll: [], fresh: []}, RGW.id)));
+  console.log(`weekly: no ${RGW.name} tournament sheets yet; wrote empty stamped out/weekly.json`);
+  process.exit(0);
+}
 const end = Math.max(...EV.map(T => dayN(T.day))), inA = n => n > end - 7 && n <= end, inB = n => n > end - 14 && n <= end - 7;
 // 2) per week: teams, Pokémon, each Pokémon's items/moves/abilities, styles; per event too (for the one-event check)
 const week = () => ({n: 0, mon: new Map(), opt: new Map(), sty: new Map(), ev: new Map()});
