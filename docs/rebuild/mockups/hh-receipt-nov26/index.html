@@ -46,7 +46,7 @@ h1 em{font-style:inherit;color:var(--plott)}
 .bars span{font-size:13px;color:#48454F}
 .stamp{position:absolute;left:20px;bottom:22px;z-index:7;border:4px solid var(--pink);color:var(--pink);font-size:20px;padding:4px 12px;transform:rotate(-12deg);background:rgba(255,255,255,.85)}
 .vswitch{position:fixed;bottom:12px;right:12px;z-index:9;display:flex;gap:6px}.vswitch a{background:var(--ink);color:var(--bg);font:700 13px I;padding:6px 10px;text-decoration:none}
-@media (max-width:899.98px){header{padding:16px}header nav{display:none}.hero{grid-template-columns:1fr;padding:8px 16px 40px;min-height:0}.rc{margin:0 auto}}
+@media (max-width:899.98px){header{padding:16px}header nav{display:none}.hero{grid-template-columns:minmax(0,1fr);padding:8px 16px 40px;min-height:0}.rc{margin:0 auto}}
 
 /* ===== V1: TEAM BANNER (six type stripes, each Pokémon big in its own colour) ===== */
 .v1 .stage{position:absolute;inset:0 0 0 46%;display:grid;grid-template-columns:repeat(6,1fr);transform:skewX(-10deg);transform-origin:bottom}
@@ -136,6 +136,36 @@ h1 em{font-style:inherit;color:var(--plott)}
  background:repeating-linear-gradient(90deg,transparent 0 calc(20% - 1px),rgba(23,22,26,.10) calc(20% - 1px) 20%)}
 @media (prefers-color-scheme:dark){.v8 .axis{background:repeating-linear-gradient(90deg,transparent 0 calc(20% - 1px),rgba(255,255,255,.10) calc(20% - 1px) 20%)}}
 @media (max-width:899.98px){.v8 .pr{justify-self:stretch}.v8 .paper,.v8 .hd,.v8 .ft{width:210px}.v8 .pl{grid-template-columns:210px minmax(0,1fr);height:64px}.v8 .pl .lab .t,.v8 .pl .lab img{display:none}.v8 .bar img{width:80px;right:-30px}.v8 .bar .r{font-size:24px}.v8 .ft .big{font-size:64px}.v8 .ft .stamp{right:-120px}}
+
+/* ===== FINALS (Sim, Nov 26): Burst C's treatment everywhere: a slanted panel, thin rays, halftone, the six lit by their own type colour ===== */
+.fin .panel{position:absolute;z-index:0;top:0;bottom:0;right:0;left:var(--pl,44%);background:var(--pbg);clip-path:polygon(12% 0,100% 0,100% 100%,0 100%)}
+.fin .rays{position:absolute;z-index:0;pointer-events:none;left:var(--rx,66%);top:var(--ry,50%);width:2400px;height:2400px;transform:translate(-50%,-50%);background:var(--rays);
+ -webkit-mask:radial-gradient(circle,#000 0 15%,transparent 40%);mask:radial-gradient(circle,#000 0 15%,transparent 40%);clip-path:inset(0 0 0 calc(var(--pl,44%) + 6%))}
+.fin .dots{position:absolute;z-index:1;pointer-events:none;top:0;bottom:0;right:0;left:var(--pl,44%);background-image:radial-gradient(rgba(255,255,255,.16) 1.4px,transparent 1.8px);background-size:14px 14px;
+ -webkit-mask:radial-gradient(circle at 60% 50%,#000 0 22%,transparent 46%);mask:radial-gradient(circle at 60% 50%,#000 0 22%,transparent 46%)}
+.fin .rcwrap{position:relative;z-index:3;justify-self:center;transform:rotate(-3deg);margin:48px 0}
+.fin .bfly{filter:drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(0 0 18px var(--c)) drop-shadow(8px 10px 0 rgba(0,0,0,.3))}
+.v9{--pbg:#14131C;--rays:repeating-conic-gradient(from 2deg,rgba(98,190,247,.55) 0 2deg,transparent 2deg 9deg,rgba(232,54,79,.45) 9deg 11deg,transparent 11deg 18deg)}
+.v10{--pbg:linear-gradient(160deg,#003A66 0%,#0068AD 55%,#035C97 100%);--rays:repeating-conic-gradient(from 0deg,rgba(255,255,255,.45) 0 1.5deg,transparent 1.5deg 8deg,rgba(232,54,79,.55) 8deg 10deg,transparent 10deg 16deg,rgba(98,190,247,.7) 16deg 17.5deg,transparent 17.5deg 24deg)}
+.v11{--pl:40%;--rx:74%;--ry:52%;--pbg:#14131C;--rays:repeating-conic-gradient(from 2deg,rgba(98,190,247,.35) 0 1.5deg,transparent 1.5deg 9deg,rgba(232,54,79,.30) 9deg 10.5deg,transparent 10.5deg 18deg)}
+.v11 .pr{position:relative;z-index:3;width:100%;max-width:800px;justify-self:end;margin:24px 0}
+.v11 .paper{position:absolute;left:0;top:0;bottom:0;width:330px;background:var(--paper);box-shadow:0 0 0 3px rgba(255,255,255,.08),14px 16px 0 rgba(0,0,0,.45);
+ clip-path:polygon(0 12px,4% 0,10% 12px,16% 0,22% 12px,28% 0,34% 12px,40% 0,46% 12px,52% 0,58% 12px,64% 0,70% 12px,76% 0,82% 12px,88% 0,94% 12px,100% 0,100% calc(100% - 12px),94% 100%,88% calc(100% - 12px),82% 100%,76% calc(100% - 12px),70% 100%,64% calc(100% - 12px),58% 100%,52% calc(100% - 12px),46% 100%,40% calc(100% - 12px),34% 100%,28% calc(100% - 12px),22% 100%,16% calc(100% - 12px),10% 100%,4% calc(100% - 12px),0 100%)}
+.v11 .hd{position:relative;width:330px;padding:28px 20px 8px;color:#17161A}.v11 .hd .u{font-size:22px}.v11 .hd small{display:block;font-size:13px;color:#48454F;border-top:2px dashed #cfcac0;margin-top:8px;padding-top:6px}
+.v11 .pl{position:relative;display:grid;grid-template-columns:330px minmax(0,1fr);align-items:center;height:72px}
+.v11 .pl .lab{padding:0 20px;color:#17161A;display:flex;align-items:center;gap:10px;height:100%;border-bottom:1px dotted #cfcac0}
+.v11 .pl .lab .n{font-weight:700;font-size:15px;line-height:1.2}.v11 .pl .lab .n small{display:block;font-weight:400;font-size:13px;color:#48454F}
+.v11 .pl .lab .t{margin-left:auto;font:700 13px/1 I;color:#fff;background:var(--c);padding:4px 8px;transform:skewX(-10deg)}
+.v11 .bar{position:relative;height:44px;width:var(--len);margin-left:16px;background:var(--c);transform:skewX(-14deg);box-shadow:0 0 24px color-mix(in srgb,var(--c) 70%,transparent),6px 6px 0 rgba(0,0,0,.4)}
+.v11 .bar .r{position:absolute;right:14px;top:50%;transform:translateY(-50%) skewX(14deg);color:#fff;font-size:30px;text-shadow:2px 2px 0 rgba(0,0,0,.25)}
+.v11 .bar img{position:absolute;left:calc(100% + 8px);bottom:-18px;height:80px;width:auto;max-width:100px;object-fit:contain;transform:skewX(14deg);filter:drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(0 0 14px var(--c))}
+.v11 .ft{position:relative;width:330px;padding:12px 20px 44px;color:#17161A;display:grid;grid-template-columns:1fr auto;align-items:end}
+.v11 .ft .big{font-size:68px;line-height:.85;color:var(--pink)}.v11 .ft .big small{font-size:22px;color:#17161A}
+.v11 .ft .stamp{position:absolute;left:auto;right:-260px;bottom:52px;background:#14131C;border-color:#E8364F;color:#E8364F}
+.v11 .scale{position:absolute;left:346px;right:0;bottom:6px;display:flex;justify-content:space-between;color:rgba(255,255,255,.55);font:700 13px I}
+@media (max-width:899.98px){.fin .panel,.fin .rays,.fin .dots{display:none}.fin .rcwrap,.v11 .pr{background:var(--pbg);margin:24px -16px 0;padding:40px 16px 48px;transform:none;clip-path:polygon(0 24px,100% 0,100% 100%,0 100%)}.fin .rcwrap .rc{transform:rotate(-3deg)}.fin .bfly,.fin .btag{display:none}
+ .v11 .pr{justify-self:stretch;width:calc(100% + 32px);max-width:none}.v11 .paper{width:auto;right:16px;left:16px;top:40px;bottom:48px}.v11 .hd,.v11 .ft{width:auto;margin:0 16px}.v11 .pl{grid-template-columns:1fr;height:auto;margin:0 16px;padding:8px 0}.v11 .pl .lab{height:auto;border:0;padding:0 16px}.v11 .pl .lab img{display:none}
+ .v11 .bar{margin:6px 72px 6px 16px;height:34px;width:calc((var(--r) - 40) / 60 * (100% - 80px))}.v11 .bar .r{font-size:22px}.v11 .bar img{height:48px;bottom:-10px}.v11 .ft .big{font-size:60px}.v11 .ft .stamp{position:static;display:inline-block;margin-top:12px;grid-column:1/-1;justify-self:start}.v11 .scale{display:none}}
 @media (prefers-reduced-motion:no-preference){
  .anim .rcwrap{animation:up .7s cubic-bezier(.2,1.4,.4,1) both}
  .anim .stamp{animation:slam .35s 1.1s cubic-bezier(.3,1.6,.5,1) both}
@@ -150,11 +180,11 @@ h1 em{font-style:inherit;color:var(--plott)}
 <body>
 <header><img src="logo.svg" alt="NastyPlot"><nav><a href="#">Home</a><a href="#">Build</a><a href="#">My Team</a><a href="#">Battle</a><a href="#">Meta</a></nav></header>
 <main class="hero anim" id="hero"></main>
-<div class="vswitch"><a href="?v=1">1</a><a href="?v=2">2</a><a href="?v=3">3</a><a href="?v=4">4</a><a href="?v=5">5</a><a href="?v=6">6</a><a href="?v=7">7</a><a href="?v=8">8</a></div>
+<div class="vswitch"><a href="?v=1">1</a><a href="?v=2">2</a><a href="?v=3">3</a><a href="?v=4">4</a><a href="?v=5">5</a><a href="?v=6">6</a><a href="?v=7">7</a><a href="?v=8">8</a><a href="?v=9">9</a><a href="?v=10">10</a><a href="?v=11">11</a></div>
 <script>
 const T={Fire:'#f06428',Rock:'#c6a53a',Dragon:'#6a3cee',Psychic:'#f24f80',Fairy:'#f28cc0',Dark:'#5f4536',Flying:'#8b8af2',Ground:'#e2b14a',Normal:'#aba88a',Steel:'#9db0cc'};
 const SIX=[['Mega Charizard Y','Mega Stone','Fire',94,10035],['Mega Aerodactyl','Mega Stone','Rock',66,10042],['Garchomp','Life Orb','Dragon',92,445],['Farigiraf','Sitrus Berry','Psychic',89,981],['Sylveon','Fairy Feather','Fairy',85,700],['Kingambit','Focus Sash','Dark',97,983]];
-const v=+(new URLSearchParams(location.search).get('v')||1);document.body.className='v'+v;
+const v=+(new URLSearchParams(location.search).get('v')||1);document.body.className='v'+v+(v>=9?' fin':'');
 const words=`<div class="words"><span class="kick u"><span>Team builder · Strength Score</span></span>
 <h1 class="u">Rate your Pokémon Champions team <em>before Reg M-D.</em></h1>
 <p class="lede">Add your six. NastyPlot rings it up out of 100 against 17,606 real tournament teams, then shows its Matchups and exactly what to change.</p>
@@ -184,8 +214,14 @@ if(v===6){art=`<div class="panel" aria-hidden="true"></div><div class="rays" ari
 if(v===7){const PK=[[-190,-30,150,-8],[440,-50,110,8],[-205,250,150,6],[450,210,110,-6],[-185,480,140,-5],[445,460,115,7]];
  const stars=[[-60,600,'#E8364F'],[480,150,'#FBFAF7'],[520,400,'#f7c815'],[-110,170,'#0078BF']].map(([x,y,c])=>`<i class="star" style="left:${x}px;top:${y}px;--c:${c}"></i>`).join('');
  art=`<div class="slab" aria-hidden="true"></div><div class="rcwrap">${rc}${stars}${SIX.map((s,i)=>{const[x,y,w,a]=PK[i];return `<span class="sk${i===1?' peel':''}" style="left:${x}px;top:${y}px;--w:${w}px;--a:${a}deg;--c:${T[s[2]]};--d:${i*.1}s"><img src="${s[4]}.webp" alt=""><b class="u">${s[3]}<small>${s[2]}</small></b></span>`}).join('')}</div>`;}
-if(v===8){const rows=SIX.map(s=>`<div class="pl" style="--c:${T[s[2]]};--len:calc(${Math.round((s[3]-40)/60*100)}% - 90px)"><div class="lab"><img src="${s[4]}.webp" alt="" style="width:36px;height:36px;object-fit:contain"><div class="n">${s[0]}<small>${s[1]}</small></div><span class="t">${s[2]}</span></div><div class="bar" role="img" aria-label="${s[0]}, Rating ${s[3]}"><span class="r u">${s[3]}</span><img src="${s[4]}.webp" alt=""></div></div>`).join('');
+if(v===8){const rows=SIX.map(s=>`<div class="pl" style="--c:${T[s[2]]};--r:${s[3]};--len:calc(${Math.round((s[3]-40)/60*100)}% - 90px)"><div class="lab"><img src="${s[4]}.webp" alt="" style="width:36px;height:36px;object-fit:contain"><div class="n">${s[0]}<small>${s[1]}</small></div><span class="t">${s[2]}</span></div><div class="bar" role="img" aria-label="${s[0]}, Rating ${s[3]}"><span class="r u">${s[3]}</span><img src="${s[4]}.webp" alt=""></div></div>`).join('');
  art=`<div class="pr"><div class="paper"></div><div class="axis"></div><div class="hd"><span class="u">NastyPlot</span><span style="float:right;font:700 13px/2 I;letter-spacing:.06em">RECEIPT</span><small>Winning team · Alpensee Tour (Reg M-C) #85 · Nov 25 · 128 players</small></div>${rows}<div class="ft"><div class="u" style="font-size:17px">Strength Score<br><span style="color:var(--plott)">Tournament ready</span></div><div class="u big">87<small>/100</small></div><div class="stamp u">Reg M-D · Dec 2</div></div></div>`;}
+
+const PF=[[-215,-30,170,-10],[440,-20,110,10],[-250,240,165,6],[450,220,110,-8],[-205,470,150,-4],[445,460,115,10]];
+const finFly=()=>SIX.map((s,i)=>{const[x,y,w,a]=PF[i];return `<img class="bfly" src="${s[4]}.webp" alt="" style="left:${x}px;top:${y}px;--w:${w}px;--a:${a}deg;--c:${T[s[2]]};--d:${i*.1}s">`+(x<300?`<span class="btag u" style="left:${x+10}px;top:${y+w-14}px;--a:${-a/3}deg;--c:${T[s[2]]};--d:${i*.1}s">${s[0]} ${s[3]}<i>${s[2]}</i></span>`:'')}).join('');
+if(v===9||v===10){art=`<div class="panel" aria-hidden="true"></div><div class="rays" aria-hidden="true"></div><div class="dots" aria-hidden="true"></div><div class="rcwrap">${rc}${finFly()}</div>`;}
+if(v===11){const rows=SIX.map(s=>`<div class="pl" style="--c:${T[s[2]]};--r:${s[3]};--len:max(130px,calc(${Math.round((s[3]-40)/60*100)}% - 110px))"><div class="lab"><img src="${s[4]}.webp" alt="" style="width:36px;height:36px;object-fit:contain"><div class="n">${s[0]}<small>${s[1]}</small></div><span class="t">${s[2]}</span></div><div class="bar" role="img" aria-label="${s[0]}, Rating ${s[3]}"><span class="r u">${s[3]}</span><img src="${s[4]}.webp" alt=""></div></div>`).join('');
+ art=`<div class="panel" aria-hidden="true"></div><div class="rays" aria-hidden="true"></div><div class="dots" aria-hidden="true"></div><div class="pr"><div class="paper"></div><div class="hd"><span class="u">NastyPlot</span><span style="float:right;font:700 13px/2 I;letter-spacing:.06em">RECEIPT</span><small>Winning team · Alpensee Tour (Reg M-C) #85 · Nov 25 · 128 players</small></div>${rows}<div class="ft"><div class="u" style="font-size:17px">Strength Score<br><span style="color:var(--plott)">Tournament ready</span></div><div class="u big">87<small>/100</small></div><div class="stamp u">Reg M-D · Dec 2</div></div><div class="scale" aria-hidden="true"><span>Rating 40</span><span>70</span><span>100</span></div></div>`;}
 document.getElementById('hero').innerHTML=words+art;
 </script>
 </body>
