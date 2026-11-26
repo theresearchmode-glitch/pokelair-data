@@ -37,3 +37,4 @@
 59 | started | - | Friday switch rehearsal 4 (origin/main + origin/claude/design6 58137089) | Thu Nov 26, 1:28 PM
 60 | started | - | speed fixes 4+5 (static-page trimmed CSS + route-prioritized /data/*.json loading) | Thu Nov 26, 1:32 PM
 60 | done | alt/gemini-speed-fix2 18a67424 | static.css 824->42 KB raw (144.5->12.0 KB gz), /pokemon LCP 1774->1041ms, /gifts 26->13 reqs, 0 changed pixels on all 8 static shots, identical settled numbers, all 8 public tests pass in GitHub order | Thu Nov 26, 1:58 PM
+59 | done | alt/gemini-rehearsal4 577d22ce | Friday switch rehearsal 4 (main 03cd5e41 + design6 58137089 -> merge 3593e4ce): 5/5 expected conflicts only, switch-smoke ALL PASSED (Nov 26), GH test.yml run 45876567395 15/15 GREEN | Thu Nov 26, 2:26 PM
