@@ -2769,3 +2769,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:37 PM: Sim: 'no the glow was fine sorry' - glow restored on the finals.
 - 1:38 PM: 3 final front-page mock-ups sent (glow kept): F1 Night Burst, F2 Plot-blue Burst with C treatment, F3 Plot Receipt on night panel (HH rec); phone + dark shown.
 - 1:39 PM: Hourly check: disk 1 GB -> 8.2 GB (removed finished worktrees kip3, b5, pt, livedata; helper's sr-* left alone). Game Plan v100 published.
+- 1:42 PM: Sim PICKED Final 3 (Plot Receipt on the night panel, glow kept) as the public front page. Sim stopped Kip 2's design work (his previews were not good enough).
