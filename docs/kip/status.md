@@ -25,3 +25,5 @@
 53 | started | - | seo-check.mjs robustness (never crash on broken pages) | Thu Nov 26, 10:39 AM
 53 | done | alt/gemini-seo-test2 a176b544 | seo-check.mjs wraps launch/server/per-route checks in try/catch + waits for .np-load clear; two-page break shows BOTH failures (2 FAILED, exit 1), bad browser shows clean FAIL (no stack trace), real build ALL PASSED | Thu Nov 26, 10:42 AM
 54 | started | - | switch-day smoke test (experiments/switch-smoke.mjs) + runbook step 8 | Thu Nov 26, 10:42 AM
+54 | done | alt/gemini-switch-smoke 0d484879 | experiments/switch-smoke.mjs checks 10 views at 390x844 + 1440x900; design6 + origin/main out/ (Nov 26, 346 rated, 17606 teams, 114 events, 52 stories) ALL PASSED; fails on missing post.json and injected pageerror | Thu Nov 26, 10:51 AM
+55 | started | - | Core Web Vitals speed check (app/test/speed-check.mjs) + top 5 wins | Thu Nov 26, 10:51 AM
