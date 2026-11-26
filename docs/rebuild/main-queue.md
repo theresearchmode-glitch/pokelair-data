@@ -1,12 +1,12 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 11:26 AM (11:26:14)  date: Thu Nov 26, 2026
-NOW: HH: gate.sh alt/day-batch2 5d2d0c72 (pid in .main-running): waits for GitHub's full run, then merge-check into design6.
-  Local: full v2-minors on rack-fix all passed. Queued next: alt/after-batch 802b490c (rights notice, Sim OK + missing-docs, Job U).
-NOW (helper): Job V, 2 directions for the public nastyplot.org home page (proposal, pictures, Sim picks).
-NOW (Kip): jobs 53-56 (seo robustness, switch smoke test, page speed, M-D fixture teams).
-NEXT: after day-batch2 lands: gate after-batch, republish the Preview (daily-data.sh), Game Plan, pictures to Sim.
-NEXT: Friday switch (if Sim's go tonight): runbook nov28 with Job T's fixes (build command, step 7 before 6).
-NEXT: review Kip 51 (undo drill) and 53-56 as they land.
+Updated: time: 12:20 PM (12:20:04)  date: Thu Nov 26, 2026
+NOW: HH: day-batch3 GitHub run 45860745371: only failure so far = phone Home 7.82 > 7.8 (the footer (c) line); Sim chose cap 7.85
+  (e99f1388, not pushed yet). Watching the run to collect every failure, then push day-batch4 + gate.
+NOW (helper): Job X, 3 Receipt variants with WOW (It prints / Your turn / The long receipt) for Sim. Job W (prerender) paused.
+NOW (Kip): job 57 (item pictures out of v2.js, shared css on /), then 58. 53-56 done (56 verified: 72/72 legal).
+NEXT: gate day-batch4 into design6, Preview republish, Game Plan; Friday switch if Sim's go tonight.
+NEXT: review Kip 53/54/55 branches; merge 53 + 54 + 56 in the next batch.
+NEXT: resume Job W (prerender Home) after Sim picks the front page.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
