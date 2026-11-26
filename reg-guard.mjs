@@ -8,11 +8,14 @@ import {activeReg, readReg, SITE_REG} from './formats.mjs';
 
 export const EXEMPT = new Set(['reg.json', 'calendar.json', 'skips.json',
   /* every regulation's history in one file (job 8 byReg): emptying them would lose M-C's history for good (Scout's review, Nov 24) */
-  'ratings_log.json', 'scoreboard.json']);
+  'ratings_log.json', 'scoreboard.json', 'shadow_scoreboard.json',
+  /* regulation-agnostic news and gift suggestion feeds (post-news.mjs) */
+  'post.json', 'post-suggest.json']);
 
 export function emptyFor(file, reg, sd = '', now = new Date().toISOString()) {
   const day = now.slice(0, 10);
   switch (file) {
+    case 'regstate.json': return {reg, day: 1, events: 0, players: 0, games: 0, since: (() => { try { return activeReg().since || day; } catch (e) { return day; } })(), updated: now};
     case 'limitless.json': return {reg, updated: now, tournaments: 0, teams: 0, games: 0, base: 0.5, adj: {label: '', rows: []}, tour: {label: '', split: true, updated: day, rows: [], megas: []}, results: {source: '', teams: 0, base: 0.5, minCore: 40, mons: {}, pairs: {}, cores: [], proven: [], records: []}};
     case 'meta_tour.json': return {reg, format: 'doubles', kind: 'tour', source: '', period: '', updated: now, note: '', top: [], more: []};
     case 'info.json': return {reg, N: 0, source: '', period: '', mv: {}, it: {}, ab: {}, ntN: 0, nt: {}};
@@ -27,6 +30,7 @@ export function emptyFor(file, reg, sd = '', now = new Date().toISOString()) {
     case 'events.json': return {reg, updated: now, source: '', dict: [], events: []};
     case 'weekly.json': return {reg, v: 1, updated: now, src: '', th: {}, a: {from: '', to: '', ev: 0, n: 0}, b: {from: '', to: '', ev: 0, n: 0}, enough: false, cutA: 0, up: [], down: [], top: [], tech: [], sty: {up: [], down: []}, styAll: [], fresh: []};
     case 'model.json': return {reg, updated: now, ships: false, games: 0, events: 0, mons: {}, pairs: {}, sets: {}, team: {}, sixes: {}, leads: {}};
+    case 'model_shadow.json': return {reg, updated: now, ships: false, games: 0, events: 0, shadow: 'combo', mons: {}, pairs: {}, sets: {}, team: {}};
     case 'meta_ladder.json': return {reg, format: 'doubles', kind: 'ladder', month: null, source: '', period: '', battles: 0, updated: now, note: '', top: [], more: [], usage1760: null};
     case 'meta_ingame.json': return {reg, format: 'doubles', kind: 'ingame', source: '', period: '', updated: now, top: [], more: []};
     case 'sources.json': return {reg, updated: now, problems: []};
