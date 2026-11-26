@@ -61,7 +61,7 @@
   --grain:.035;--score-ink:var(--ink);
   --plate-hi:var(--plate);--plate-lo:var(--plate);--main-hi:var(--main);--main-lo:var(--main);--band-glow:none;--floor-line:rgba(23,22,26,.13);--on-type:#FFFFFF;--type-none:#8E908C;--page-wash:none;--scrim:rgba(23,22,26,.28);--scrim-deep:rgba(23,22,26,.55);
   /* type: Unbounded (slanted) for headlines and big numbers at 15px and up; Instrument Sans for the rest */
-  --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif;
+  --u:"Unbounded","Unbounded Fallback","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans","Instrument Sans Fallback",system-ui,sans-serif;
   /* display sizes: the score number and the tagline (design scale "+ display") */
   --d-trkbig:clamp(40px,(100cqi - 96px) / 6.8,64px);--d-trkgo:clamp(17px,(100cqi - 72px) / 12.6,36px); /* Track Record 1100+: the stamp and its button fit their column (cqi: .trk-say2 is the size container there); full 64px / 36px from about 1340 wide */
   --d64:64px;--d96:96px;--d-calc:clamp(56px,5.6vw,88px);--d-calctight:clamp(40px,4.4vw,70px);--d-calcmid:clamp(48px,5vw,80px);--id-card:#F4F0EA;--id-bg:#DCE7F0;--id-bg2:#C9D6E2;--id-staple:#9AA3AD;--id-ink:#17161A;--id-ink2:#48454F;--d120:120px;--d168:168px;--d-hero:clamp(34px,6vw,68px);

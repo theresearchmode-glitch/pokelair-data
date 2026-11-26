@@ -469,7 +469,7 @@ V2.focusKey = el => { if (!el || el === document.body || !el.closest || !el.clos
 // An element whose action markers (data-* attributes) differ is a different control: it is replaced, never changed in place, so a
 // tap that is still being handled can't reach a different action (found Nov 12: "Show 2 more" became "See all" in place and the
 // same click then opened All Suggestions; behaviour test SUG-04).
-V2.dataSig = e => [...e.attributes].filter(a => a.name.startsWith('data-')).map(a => a.name + '=' + a.value).sort().join('&');
+V2.dataSig = e => [...e.attributes].filter(a => a.name.startsWith('data-') && a.name !== 'data-np-pre').map(a => a.name + '=' + a.value).sort().join('&');
 V2.morph = (o, n) => { if (o.nodeType !== n.nodeType || o.nodeName !== n.nodeName || (o.nodeType === 1 && (o.id !== n.id || V2.dataSig(o) !== V2.dataSig(n)))) { o.replaceWith(n); return; }
   if (o.nodeType !== 1) { if (o.nodeValue !== n.nodeValue) o.nodeValue = n.nodeValue; return; }
   /* a node a script owns (data-v2own: the Turnstile widget on Send Feedback) is kept exactly as it is, with what the script put in it;
@@ -546,14 +546,12 @@ V2.loadingHtml = () => `<section class="np-loading" aria-busy="true"><div class=
 V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
   /* Sim, Nov 19 (B): the top bar's Battle opens Damage Calculator, the first of Battle's tabs; it stays lit on every Battle page */
   const nav = V2.places.map(([k, n]) => `<a href="#${k}"${ /* Sim, Nov 20 (scan S26): the top bar's Battle opens the Battle page (was Damage Calculator, Nov 19 B) */ ''}${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
-  return {P, html: `<a class="vh np-skip" href="#main" data-v2skip>Skip to the page</a>
-<header class="np-head">${V2.backBtn()}<a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a>${V2.fwdBtn()}<nav class="np-nav" aria-label="Main">${nav}</nav>
+  const preEl = !V2.dataReady() ? document.getElementById('main') : null;
+  const preHtml = preEl && preEl.dataset && preEl.dataset.npPre === r ? preEl.innerHTML : '';
+  return {P, html: `<a class="vh np-skip" href="#main" data-v2skip>Skip to the page</a><header class="np-head">${V2.backBtn()}<a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a>${V2.fwdBtn()}<nav class="np-nav" aria-label="Main">${nav}</nav>
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <a class="np-theme np-boxlink" href="${r === 'box' ? V2.esc(V2.boxFrom || '#team') : '#box'}" aria-label="${r === 'box' ? 'My Box is open. Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}" title="${r === 'box' ? 'Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
-  <button type="button" class="np-theme" data-v2theme data-mode="${V2.themeMode()}" aria-label="${V2.themeMode() === 'auto' ? `Auto mode is on, following your device (${V2.theme()} now)` : V2.THEME_WORD[V2.themeMode()] + ' is on'}. Switch to ${V2.themeNext() === 'auto' ? 'auto: follow your device' : V2.themeNext() + ' mode'}" title="${V2.THEME_WORD[V2.themeMode()]}">${V2.ICON[V2.themeMode() === 'auto' ? 'auto' : V2.themeMode() === 'night' ? 'moon' : 'sun']}</button></div></header>
-<main class="np-main" id="main">${!V2.dataReady() ? V2.loadingHtml() : `${((place === 'home' || place === 'meta') && r !== 'pokemon') || window.__NP_PVFAIL ? V2.dataNote() : ''}${P ? V2.safeDraw(P) : ''}`}</main>
-<footer class="np-foot">${V2.logo(true)}<div class="np-ftxt">${place === 'home' ? '' : '<p class="np-ftag u">Sharply raise <span>your win rate.</span></p>'}<span>NastyPlot is an unofficial, fan&#8209;made tool, not affiliated with Nintendo, The Pok&eacute;mon Company or Game Freak; Pok&eacute;mon names are trademarks of their owners. &copy; 2026 NastyPlot. All rights reserved.${V2.dataReady() && V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span></div><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#about=priv">Privacy</a><a href="#about=contact">Contact</a>${V2.FB && V2.FB.ok ? '<a href="#feedback">Send Feedback</a>' : ''}${V2.OWN ? `<a href="#owner">Owner</a>` : ``}<button type="button" class="np-fsrcb" data-fsrc aria-expanded="false" aria-controls="np-fsrc">Sources and Credits</button></nav><p class="np-fsrc" id="np-fsrc" hidden>${(() => { try { return DATA_SOURCES.map(x => V2.esc(x.name)).join(' · '); } catch (e) { return ''; } })()}. Type symbols: pokemon-type-icons by James Watkins (MIT). Each used by its own rules; details in <a class="np-link" href="#about=data">About</a>.</p></footer>
-<nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
+  <button type="button" class="np-theme" data-v2theme data-mode="${V2.themeMode()}" aria-label="${V2.themeMode() === 'auto' ? `Auto mode is on, following your device (${V2.theme()} now)` : V2.THEME_WORD[V2.themeMode()] + ' is on'}. Switch to ${V2.themeNext() === 'auto' ? 'auto: follow your device' : V2.themeNext() + ' mode'}" title="${V2.THEME_WORD[V2.themeMode()]}">${V2.ICON[V2.themeMode() === 'auto' ? 'auto' : V2.themeMode() === 'night' ? 'moon' : 'sun']}</button></div></header><main class="np-main" id="main"${preHtml ? ` data-np-pre="${V2.esc(r)}"` : ''}>${!V2.dataReady() ? (preHtml || V2.loadingHtml()) : `${((place === 'home' || place === 'meta') && r !== 'pokemon') || window.__NP_PVFAIL ? V2.dataNote() : ''}${P ? V2.safeDraw(P) : ''}`}</main><footer class="np-foot">${V2.logo(true)}<div class="np-ftxt">${place === 'home' ? '' : '<p class="np-ftag u">Sharply raise <span>your win rate.</span></p>'}<span>NastyPlot is an unofficial, fan&#8209;made tool, not affiliated with Nintendo, The Pok&eacute;mon Company or Game Freak; Pok&eacute;mon names are trademarks of their owners. &copy; 2026 NastyPlot. All rights reserved.${V2.dataReady() && V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span></div><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#about=priv">Privacy</a><a href="#about=contact">Contact</a>${V2.FB && V2.FB.ok ? '<a href="#feedback">Send Feedback</a>' : ''}${V2.OWN ? `<a href="#owner">Owner</a>` : ``}<button type="button" class="np-fsrcb" data-fsrc aria-expanded="false" aria-controls="np-fsrc">Sources and Credits</button></nav><p class="np-fsrc" id="np-fsrc" hidden>${(() => { try { return DATA_SOURCES.map(x => V2.esc(x.name)).join(' · '); } catch (e) { return ''; } })()}. Type symbols: pokemon-type-icons by James Watkins (MIT). Each used by its own rules; details in <a class="np-link" href="#about=data">About</a>.</p></footer><nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
 /* audit Nov 16 (WCAG 2.4.2): each page has its own browser title, its name as the menu and search show it ("Meta · NastyPlot"); Home keeps "NastyPlot";
    Pokémon pages set their own fuller title (pages/pokemon.js) */
 /* public site (Nov 25, SEO): a not-found screen (a wrong address, or /pokemon/<unknown>) tells search engines not to index it. Cloudflare
@@ -607,17 +605,19 @@ V2.warmRoutes = () => { if (V2._warm || !window.__NP_ROUTES) return; V2._warm = 
    feedback.js's own file has arrived (--split-routes); feedback.js replaces this object when it runs */
 V2.FB = V2.FB || {ok: !!window.__NP_PUBLIC};
 V2.draw = () => { const app = document.getElementById('app'); if (!app) return;
-  const r0 = V2.route(); if (window.__NP_ROUTES && window.__NP_ROUTES[r0] && (!V2.pages[r0] || V2._routeLoad[r0] || V2.routeSet(r0).some(k => window.__NP_ROUTES[k] && !(V2._routeJs[k] && V2._routeJs[k].done)))) { V2.loadRoute(r0); if (V2._routeLoad[r0]) { const m = document.getElementById('main'); if (m) m.innerHTML = V2.loadingHtml(); return; } }
+  const r0 = V2.route(); if (window.__NP_ROUTES && window.__NP_ROUTES[r0] && (!V2.pages[r0] || V2._routeLoad[r0] || V2.routeSet(r0).some(k => window.__NP_ROUTES[k] && !(V2._routeJs[k] && V2._routeJs[k].done)))) { V2.loadRoute(r0); if (V2._routeLoad[r0]) { const m = document.getElementById('main'); if (m && !(m.dataset && m.dataset.npPre === r0)) m.innerHTML = V2.loadingHtml(); return; } }
   if (window.__NP_ROUTES && V2._dataOk) V2.warmRoutes(); /* after the first real draw, the other page files in the background */
   V2.drawN = (V2.drawN || 0) + 1; const {P, html} = V2.shell();
   // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
   // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.
-  const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }
-  app.innerHTML = html;
-  if (keep.size) for (const n of app.querySelectorAll('img[src]')) { const l = keep.get(n.getAttribute('src')), o = l && l.shift(); if (!o) continue;
-    for (const a of [...o.attributes]) if (a.name !== 'src' && !n.hasAttribute(a.name)) o.removeAttribute(a.name);
-    for (const a of [...n.attributes]) if (a.name !== 'src' && a.name !== 'loading' && o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
-    o.removeAttribute('loading'); n.replaceWith(o); }
+  const m0 = document.getElementById('main'), isPre = !!(m0 && m0.dataset && m0.dataset.npPre === r0);
+  if (isPre && V2.morphKids) { const t = document.createElement('template'); t.innerHTML = html; V2.morphKids(app, t.content); }
+  else { const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }
+    app.innerHTML = html;
+    if (keep.size) for (const n of app.querySelectorAll('img[src]')) { const l = keep.get(n.getAttribute('src')), o = l && l.shift(); if (!o) continue;
+      for (const a of [...o.attributes]) if (a.name !== 'src' && !n.hasAttribute(a.name)) o.removeAttribute(a.name);
+      for (const a of [...n.attributes]) if (a.name !== 'src' && a.name !== 'loading' && o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
+      o.removeAttribute('loading'); n.replaceWith(o); } }
   if (P && P.after) try { P.after(); } catch (e) { console.error(e); } if (V2.fitWords) try { V2.fitWords(); } catch (e) { console.error(e); } V2.setTitle(); };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2theme]'); if (t) V2.setTheme(V2.themeNext()); });
 // My Box toggles (Sim, Nov 12): the box icon opens My Box; pressed again while in the box, it goes back to the screen you came from

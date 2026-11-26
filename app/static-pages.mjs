@@ -96,9 +96,22 @@ export async function staticPages({dir, h, ph, ownHead, esc, pages, lastmod}) {
   const title = `All ${pages.length} Pokémon in Pokémon Champions, A to Z · NastyPlot`, desc = `Every Pokémon in Pokémon Champions with its own page: best tournament set, rating and best partners, from real tournament results. Free, no account.`;
   const ld = JSON.stringify({'@context': 'https://schema.org', '@graph': [{'@type': 'CollectionPage', '@id': 'https://nastyplot.org/pokemon', url: 'https://nastyplot.org/pokemon', name: title, description: desc, isPartOf: {'@type': 'WebSite', name: 'NastyPlot', url: 'https://nastyplot.org/'}},
     {'@type': 'BreadcrumbList', itemListElement: [{'@type': 'ListItem', position: 1, name: 'NastyPlot', item: 'https://nastyplot.org/'}, {'@type': 'ListItem', position: 2, name: 'Pokémon', item: 'https://nastyplot.org/pokemon'}]}]});
-  fs.writeFileSync(dist + 'pokemon.html', withHtmlClass(docOf(ownHead(baseHead, title, desc, 'https://nastyplot.org/pokemon'), got.idx, ld)));
+  let pokHtml = withHtmlClass(docOf(ownHead(baseHead, title, desc, 'https://nastyplot.org/pokemon'), got.idx, ld));
   /* 2. the light 404: no canonical, no og:url, noindex */
   const h404 = ownHead(baseHead, 'Page not found · NastyPlot', 'This address doesn\'t match a page on NastyPlot.', 'https://nastyplot.org/').replace(/<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>/g, '').replace('<title>', '<meta name="robots" content="noindex"><title>');
-  fs.writeFileSync(dist + '404.html', withHtmlClass(docOf(h404, got.nf, '')));
+  let nfHtml = withHtmlClass(docOf(h404, got.nf, ''));
+  /* Job 64: inline pruned CSS on /pokemon (0 RTT first paint) and serve pruned /static.css for 404.html (keeps 404.html under 30 KB cap) */
+  if (fs.existsSync(dist + 'v2.css')) {
+    const {pruneCss} = await import('./prerender-first-screen.mjs');
+    const v2Css = fs.readFileSync(dist + 'v2.css', 'utf8');
+    const pokCss = pruneCss(v2Css, pokHtml + '\n' + fit);
+    const nfCss = pruneCss(v2Css, nfHtml + '\n' + fit);
+    pokHtml = pokHtml.replace(/<link rel="stylesheet" href="\/v2\.css\?v=[^"]+">/, () => `<style id="np-crit">${pokCss}</style>`);
+    const staticRef = `/static.css?v=${H(nfCss)}`;
+    fs.writeFileSync(dist + 'static.css', nfCss);
+    nfHtml = nfHtml.replace(/href="\/v2\.css\?v=[^"]+"/, `href="${staticRef}"`);
+  }
+  fs.writeFileSync(dist + 'pokemon.html', pokHtml);
+  fs.writeFileSync(dist + '404.html', nfHtml);
   return {underdog: got.dog, asOf: got.asOf, sitemap: `  <url><loc>https://nastyplot.org/pokemon</loc><lastmod>${lastmod}</lastmod></url>`, size404: fs.statSync(dist + '404.html').size, sizeIndex: fs.statSync(dist + 'pokemon.html').size};
 }

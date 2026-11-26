@@ -205,8 +205,8 @@ if (process.argv.includes('--v2')) {
      Security (Kip job 24, Nov 25): moved from an inline onerror attribute into a separate inline <script> right after it, which the
      public CSP allows by its sha256 hash, so script-src needs no 'unsafe-inline' or 'unsafe-hashes'. A plain <script src> blocks the
      parser, so this runs after v2.js has run or failed; !window.V2 means it never arrived. */
-  const v2Fail = `if(!window.V2){window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}}`;
-  const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}"></script>\n<script>${v2Fail}</script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
+  const v2Fail = `document.addEventListener('DOMContentLoaded',function(){if(!window.V2){window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}}})`;
+  const mainTag = SPLIT ? `\n<script defer src="${'v2.js?v=' + hash(jsOut)}"></script>\n<script>${v2Fail}</script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
   const styleTag = SPLIT_CSS ? `\n<link rel="stylesheet" href="${'v2.css?v=' + hash(cssOut)}">\n` : `\n<style>\n${cssOut}\n</style>\n`;
   const page = head.replace('<meta charset="utf-8">', m => m + pubTag + artTag + prevTag) + styleTag + rd(P.body) + mainTag + `</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
@@ -342,6 +342,12 @@ if (process.argv.includes('--v2')) {
     /* "/" (index.html) matches v2.html: on --split both use the shared /v2.css (Job 57); on non-split (--public without --split,
        e.g. v2-public.mjs file:// test) both stay self-contained. */
     fs.writeFileSync(dir + 'dist/index.html', h);
+    /* Job 64 (speed program): prerender each page's above-the-fold first screen + inline critical CSS + async /v2.css on split public builds */
+    if (SPLIT && !process.argv.includes('--no-static')) {
+      const {prerenderFirstScreens} = await import('./prerender-first-screen.mjs');
+      await prerenderFirstScreens({dir, ownFileRows, seen});
+      h = fs.readFileSync(dir + 'dist/v2.html', 'utf8');
+    }
     /* night queue 8 (Nov 26; SEO audit #9, #10): /pokemon, the A-to-Z page of every Pokémon page (plain links, in the sitemap), and a light
        static 404 with today's underdog; a wrong /pokemon/<name> keeps the app's own "No Pokémon here." view (dist/pokemon/404.html:
        Cloudflare serves the nearest 404.html). app/static-pages.mjs; checked by experiments/static-pages-test.mjs */
