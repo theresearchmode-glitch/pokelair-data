@@ -5,7 +5,7 @@ Sim says yes on the day; nothing here runs before that.
 
 ## Must be landed BEFORE Saturday (status as of Wed 11:43 PM is in decisions.md)
 1. Kip job 40 fixes: page side in design6 (a2c7f240), data side on main (f4017535). DONE.
-2. **Kip job 46: the news freshness blocker.** After the merge, main's health.mjs dates out/post.json by `checked` (a person's last
+2. **Kip job 46: the news freshness blocker.** DONE: page half in design6 (night batch b96f3a5e), data half on main b6fafa71 (Nov 26 morning, Sim's OK). After the merge, main's health.mjs dates out/post.json by `checked` (a person's last
    gift check), so every daily run would fail "News & Mystery Gifts: data from 2026-11-18, 8 days old (limit 3)" and freeze live
    data. Fix: post-news.mjs stamps `ran` on each successful run; health dates post.json by `ran`. Two branches + proof on a merge.
 3. Kip job 47 (Turnstile drawn twice): DONE, merged in design6 9bab576f (helper Job I; cause: redraw replaced the widget box).
