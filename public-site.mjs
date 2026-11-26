@@ -20,7 +20,7 @@ if (DIR === ROOT || DIR === DIST) fail('refusing to write over ' + DIR);
 if (fs.existsSync(DIST)) for (const f of fs.readdirSync(DIST, {withFileTypes: true})) fs.rmSync(path.join(DIST, f.name), {recursive: true, force: true});
 /* Web Analytics (Sim's token, once he adds the site in Cloudflare): set CF_ANALYTICS_TOKEN; without it the page loads no analytics */
 const cfa = (process.env.CF_ANALYTICS_TOKEN || '').trim();
-const b = spawnSync(process.execPath, ['app/build.mjs', '--v2', '--split', '--one-art-size', '--item-files', '--art=art/', '--public', ...(cfa ? ['--cf-analytics=' + cfa] : [])], {encoding: 'utf8'});
+const b = spawnSync(process.execPath, ['app/build.mjs', '--v2', '--split', '--split-routes', '--one-art-size', '--item-files', '--art=art/', '--public', ...(cfa ? ['--cf-analytics=' + cfa] : [])], {encoding: 'utf8'});
 if (b.status !== 0) { console.error((b.stdout || '') + (b.stderr || '')); fail('the public build failed'); }
 
 // 2. copy it, only the kinds of files a page needs

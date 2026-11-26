@@ -27,7 +27,7 @@ function keepScroll(fn) { fn(); }
 // today's arena type palette, applied to the logic's TC as today's page does at load (74-arena.js): Dark slate violet, Normal cool grey
 try { Object.assign(TC, AR.TC_FIX); } catch (e) {}
 // box changes from the shared logic (applyBox, 45-team-links.js): the rebuild's toast with the box's own Undo (pages/box.js)
-function toastBox(t) { V2.bxToast(t); }
+function toastBox(t) { V2.needRoute('box', () => V2.bxToast(t)); } /* speed review: box.js may be its own file on the public site */
 /* Sim, Nov 16 (batch 10A; code review A2-I2 + A2-I3): the Strength Score's number, band word and band colour all come from the ONE
    number shown (rounded), with no "sticky" band. Before: 79.5 showed "80 · Solid", and a team could show "81 · Tournament ready" in the
    Solid colour because the colour kept its old band for 1.5 points. New site only; today's live site keeps its own rules. */
