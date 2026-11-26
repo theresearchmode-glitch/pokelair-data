@@ -19,3 +19,5 @@
 50 | started | - | search-ready public pages test (app/test/seo-check.mjs) | Thu Nov 26, 9:47 AM
 50 | done | alt/gemini-seo-test 3707f22c | app/test/seo-check.mjs checks all 371 public HTML pages + 28 rendered routes + sitemap.xml + robots.txt, wired into test.yml; real build 13/13 PASS, broken copy 7 FAILED | Thu Nov 26, 9:54 AM
 51 | started | - | Dec 2 undo drill (experiments/dec2-undo-drill.mjs) | Thu Nov 26, 10:03 AM
+51 | done | alt/gemini-dec2-undo d3c2f6a2 | experiments/dec2-undo-drill.mjs simulates Dec 2 switch + docs/undo-plan.md undo in scratch repo (15/15 PASS; --skip-hold 5 FAILED; --skip-revert 8 FAILED) | Thu Nov 26, 10:07 AM
+52 | started | - | independent code review of origin/alt/day-batch | Thu Nov 26, 10:07 AM
