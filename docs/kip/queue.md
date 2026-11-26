@@ -123,3 +123,39 @@ copy by pattern, not by a list. No action needed.
 ## HH note, Thu Nov 26, 4:56 AM: job 47 is taken
 Job 47 (Turnstile double render) must land before Saturday and you had not started it, so HH's helper is doing it on alt/turnstile-once.
 Skip 47. Your order now: 44, 45, 48.
+
+---
+## HH notes, Thu Nov 26 morning (time: 9:41 AM (9:41:28)  date: Thu Nov 26, 2026)
+- Jobs 44, 45, 48: verified. 45: prelaunch.mjs 3 runs of 3 "ALL PASSED" on design6 + your branch. 48: merge-gate-test "ALL PASSED"
+  (5a-5e incl. both failure cases). 45 + 48 are in HH's batch alt/kip-batch3 -> design6 today. 44 is already on main. Thank you.
+- Sorry for the gap: your queue had nothing after 48. Two new jobs below, in this order. Same rules as always: code, data and tests
+  only, absolutely no design; your own alt/gemini-* branch; one push per job; a failing-before / passing-after proof for every new test;
+  status line in alt/gemini-status when you start and finish.
+
+## JOB 49: Dec 2 balance patch, the hand-written half, ready to merge on the day (branch alt/gemini-patch-dec2, from origin/claude/design6)
+Read docs/rebuild/test-runs/patch-dec2-map.md (the full list, every line checked) and patch-dec2-psychup.md first.
+- Do ONLY the "Hand-written (edit by hand)" rows and the "Tests that must change" rows: data.js LEARN additions (each new pairing in
+  the map), data.js ABIL text for Flash Fire and Stalwart, infosheet.js Rock Slide 30% -> 20%, and the test expectations in the map
+  (e.g. run.mjs Hustle Rock Slide 72 -> 76). Do NOT touch the generated files (move-acc.js, move-meta.js, info-text.js): they need a
+  Showdown commit with the patch, which doesn't exist yet. Say in your report exactly which test lines will still fail until the
+  generated files are rebuilt, and why.
+- New test experiments/patch-dec2-test.mjs: every hand-written change in the map is present (one check per row), and nothing else in
+  LEARN/ABIL changed (compare against origin/claude/design6's copy: only the listed keys differ). Prove it fails on plain design6.
+- If any row in the map is unclear or looks wrong against the official notes (docs/rebuild/test-runs/patch-dec2-official-877.html),
+  STOP that row and write the question in your report; don't guess.
+- This branch is NOT merged before Dec 2. HH keeps it current.
+
+## JOB 50 (after 49): search-ready public pages, a test (SEO is "super duper important" for launch, Sim Nov 24)
+Branch alt/gemini-seo-test from origin/claude/design6. Build the public site the way test.yml does (`node app/build.mjs --v2 --split
+--one-art-size --art=../src/v2/art/ --public` from app/, frozen out/ 0c992f69 checked out first and restored after; never commit out/).
+- New test app/test/seo-check.mjs over every HTML page the public build writes:
+  1. one <title>, unique across pages, 15-65 characters; one meta description, unique, 50-160 characters;
+  2. one <link rel="canonical"> with an absolute https://nastyplot.org/ address that matches the page's own path; no noindex;
+  3. exactly one <h1>; every <img> has alt; html lang set;
+  4. any JSON-LD block parses as JSON and has @context and @type;
+  5. sitemap.xml lists every page once with its canonical address, and nothing that isn't a page; robots.txt allows crawling and names
+     the sitemap. (If the build writes no sitemap/robots, that check FAILS and you report it; don't add them yourself.)
+- Report every failure with the page and the value. You may fix generator CODE only where the fix changes nothing anyone sees
+  (e.g. a missing canonical or a duplicate description from the same template); anything that changes page text or looks: report only,
+  HH decides. Prove the test fails on a deliberately broken page (e.g. a copy with its canonical removed) and passes on the real build.
+- Wire it into test.yml's public job next to v2-public.mjs, add its path to `paths:`.
