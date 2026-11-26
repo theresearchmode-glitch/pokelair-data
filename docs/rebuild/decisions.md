@@ -2789,3 +2789,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:47 PM: Sim: Track Record cap 3 -> 3.05 at 1440 for the footer (c) line. Committed on alt/typerows e92c613c; helper merges into batch6.
 - 2:47 PM: ONLY=TF on alt/typerows e92c613c (fresh frozen build): TF-1 pass 2.632, TF-2 pass 2.629 at 1440 (well under even the old 3.0; the earlier 3.013 came from a stale build in that worktree).
 - 2:49 PM: Sim away 1-2 h from now: HH in charge, best judgement; check Kip's git status every so often (Sim queued his tasks).
+- 3:16 PM: Full v2-minors on a FRESH alt/typerows e92c613c build (frozen out/): all passed. The 3 earlier FAILs (My Team 390 x2, TF-2) came from a stale build in that worktree; corrected. Told helper.
