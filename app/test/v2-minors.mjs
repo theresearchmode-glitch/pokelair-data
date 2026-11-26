@@ -434,7 +434,7 @@ const HQ = async () => {
      own hero (its function mentions sdh) opens Home with that hero (window.__NP_SDHERO), so these answers keep guarding it until Sim's yes;
      every other Home answer runs on today's Home */
   const hq = async (w, h, o = {}) => { if (o.sdh == null) o = {...o, sdh: /sdh/.test(String(o.fn || ''))}; const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700 && !o.desk, hasTouch: w < 700 && !o.desk, /* desk: a desktop window (classic scrollbar) */ reducedMotion: o.rm || 'no-preference'}); const q = await ctx.newPage();
-    await q.addInitScript(o => { window.__PL_TEST = 1; if (o.sdh) window.__NP_SDHERO = 1; try { if (sessionStorage.getItem('hq')) return; sessionStorage.setItem('hq', '1'); /* once: a reload keeps what the page saved */ if (o.fresh) localStorage.clear(); for (const [k, v] of Object.entries(o.ls || {})) localStorage.setItem(k, v); } catch (x) {} }, {fresh: !!o.fresh, ls: o.ls || {}});
+    await q.addInitScript(o => { window.__PL_TEST = 1; if (o.sdh) window.__NP_SDHERO = 1; try { if (sessionStorage.getItem('hq')) return; sessionStorage.setItem('hq', '1'); /* once: a reload keeps what the page saved */ if (o.fresh) localStorage.clear(); for (const [k, v] of Object.entries(o.ls || {})) localStorage.setItem(k, v); } catch (x) {} }, {fresh: !!o.fresh, ls: o.ls || {}, sdh: !!o.sdh});
     await q.goto('file://' + PAGE + (o.hash || '#home')); await q.waitForTimeout(o.wait || 2500); if (o.night) { await q.evaluate(() => V2.setTheme('night')); await q.waitForTimeout(300); }
     const r = o.fn ? await q.evaluate(o.fn) : null; if (o.keep) return {q, ctx, r}; await ctx.close(); return r; };
   // Q6 A: the hero's motion is on by default (no flag): the surge on arrival, the moving ticker with its pause button; reduced motion: none of it
@@ -1569,7 +1569,7 @@ if (part('main2')) {
 /* Home, The Stampede: motion (Nov 18; css/sd-motion.css, V2.sdhTick in stampede-hero.js). A watcher records, every frame from the first
    draw for 1.5 s, every animation or transition running inside the hero, so a surge, a marquee or a stray transition is caught. */
 { const watch = async (w, h, rm, after) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: rm}); const q = await ctx.newPage();
-    await q.addInitScript(() => { window.__PL_TEST = 1; window.NP_SD_MOTION = 1; /* motion is off until Sim's yes; the checks turn it on */ const seen = window.__sdhSeen = {n: 0, names: {}, ends: 0, first: ''}; const t0 = performance.now();
+    await q.addInitScript(() => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; /* the Stampede's own hero (Job DD) */ window.NP_SD_MOTION = 1; /* motion is off until Sim's yes; the checks turn it on */ const seen = window.__sdhSeen = {n: 0, names: {}, ends: 0, first: ''}; const t0 = performance.now();
       const tick = () => { const S = document.querySelector('#main .sdh'); if (S) { if (!seen.first) seen.first = S.className; for (const a of S.getAnimations({subtree: true})) if (a.playState === 'running') { seen.n++; const nm = a.animationName || a.transitionProperty || 'anim'; seen.names[nm] = 1;
         if (a.animationName && a.animationName.startsWith('sdh-surge')) { const t = a.effect.getComputedTiming(); seen.ends = Math.max(seen.ends, t.endTime); } } } if (performance.now() - t0 < 6000) requestAnimationFrame(tick); };
       requestAnimationFrame(tick); });
@@ -1598,7 +1598,7 @@ if (part('main2')) {
   // 4. a keyboard user: tabbing into the ticker stops it at its start, so the focused name is on screen
   const k = await (async () => {
     /* Nov 23 (Home length): at 1100+ the ticker steps aside for the top 10 on the red flag, so the keyboard check runs at 1024 (a mouse-and-keyboard laptop width where it shows) */
-    const ctx = await b.newContext({viewport: {width: 1024, height: 768}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; window.NP_SD_MOTION = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+    const ctx = await b.newContext({viewport: {width: 1024, height: 768}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; window.NP_SD_MOTION = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
     await q.evaluate(() => document.querySelector('#main .sdh-tick').scrollIntoView({block: 'center'})); await q.waitForTimeout(1500); await q.focus('#main .sdh-go a:last-child'); await q.keyboard.press('Tab'); await q.waitForTimeout(200);
     const r = await q.evaluate(() => { const a = document.activeElement, x = a.getBoundingClientRect(); return {inTick: !!a.closest('.sdh-trk ul:not([aria-hidden])'), tf: (t => t ? getComputedStyle(t).transform : 'no track')(document.querySelector('#main .sdh-trk')), on: x.left >= 0 && x.right <= innerWidth}; }); await ctx.close(); return r; })();
   ok(k.inTick && k.tf === 'none' && k.on, `Stampede motion 4: Tab from the start buttons lands on the ticker's first name, the ticker stops at its start and the name is on screen (${JSON.stringify(k)})`); }

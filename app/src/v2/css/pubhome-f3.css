@@ -99,7 +99,10 @@
   .f3-bar{width:max(56px,calc(var(--len) * 1%));min-width:0;height:28px;margin:0 var(--s3) 0 0;box-shadow:0 0 12px color-mix(in srgb,var(--c) 60%,transparent),3px 3px 0 var(--f3-bar-shade)}
   .f3-r{right:var(--s2);font-size:var(--t17)}
   .f3-art{display:none}
-  .f3-ft{padding:var(--s2) var(--s4) 36px}
-  .f3-band{font-size:var(--t15)}
+  .f3-ft{align-items:center;padding:var(--s2) var(--s4) 32px}
+  .f3-band{font-size:var(--t13)}
+  .f3-band br{display:none}
+  .f3-band span{display:block}
+  .f3-big{font-size:var(--t34)}
   .f3-stamp{position:absolute;right:var(--s2);bottom:-12px;margin:0;font-size:var(--t15);transform:rotate(-8deg)} /* on the receipt's torn edge, under the score */}
 @media (max-width:429.98px){.f3-h1{font-size:var(--t28)}}
