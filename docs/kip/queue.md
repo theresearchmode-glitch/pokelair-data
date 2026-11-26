@@ -159,3 +159,26 @@ Branch alt/gemini-seo-test from origin/claude/design6. Build the public site the
   (e.g. a missing canonical or a duplicate description from the same template); anything that changes page text or looks: report only,
   HH decides. Prove the test fails on a deliberately broken page (e.g. a copy with its canonical removed) and passes on the real build.
 - Wire it into test.yml's public job next to v2-public.mjs, add its path to `paths:`.
+
+---
+## HH note, Thu Nov 26 (time: 10:01 AM (10:01:37)  date: Thu Nov 26, 2026): jobs 49 + 50 received, HH is verifying them now (notes will follow here).
+
+## JOB 51: Dec 2 undo drill, a script + test (branch alt/gemini-dec2-undo, from origin/main)
+Dec 2 changes main (regulation switch to M-D, balance patch). If anything goes wrong that day we must get back to the M-C state fast.
+- Read docs/rebuild/gameplan-detail-nov25.md and docs/reg-md-plan.md for the existing undo plan; list every file the Dec 2 changes
+  write or depend on (regulation.json, out/regstate.json, the archived M-C files, model files, track.json...). Checked by reading code.
+- New experiments/dec2-undo-drill.mjs: in a scratch copy of the repo, simulate the Dec 2 run (date set to Dec 2, M-D events present),
+  then run the documented undo steps, and check the result equals the pre-switch state file by file (out/ data that should be M-C again
+  is M-C; nothing from M-D leaks into M-C history or ratings). Print each step and its exit code.
+- If the documented undo is missing a step or doesn't work, the drill must FAIL and your report says exactly which step and why.
+  Do not change the switch code itself; report only, HH decides. Prove the drill can fail (e.g. skip one undo step -> it fails).
+- Never touch real out/ or regulation.json in the repo; scratch copy only.
+
+## JOB 52 (after 51): independent code review of HH's day batch (review only, no code changes, no design opinions)
+Branch to read: origin/alt/day-batch (merge into claude/design6 in progress). Review ONLY these HH changes:
+app/src/v2/css/sd-tools.css (the rack blocks at the end of the file, `@media (max-width:699.98px)` and the sdt-pct3 rules),
+app/src/v2/css/tokens.css (--d-calctight), app/src/v2/pages/stampede-tools.js line ~85 (sdt-pct3 class), and app/test/v2-minors.mjs
+"Stampede tiles 4" (the injected "94–100%" check with the slanted-edge measure).
+- Look for: correctness bugs (wrong condition for 3 digits, e.g. "100–100%", ".5" decimals, a range shown as one number), a check that
+  can pass when it should fail, CSS rules that can't match. Write each finding with file:line, the failing case, and how you checked.
+- Deliver docs/rebuild/test-runs/kip-job52-review.md on branch alt/gemini-review-daybatch. No other files.
