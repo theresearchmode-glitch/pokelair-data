@@ -1,12 +1,12 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 10:36 AM (10:36:50)  date: Thu Nov 26, 2026
-NOW: HH: full v2-minors on alt/rack-fix 2ce12561 (frozen out/, pid in .main-running). rack-fix = day-batch + calc shapes (Kip 52 fixes)
-  + v2-q72 updated to the rack + 1280 chips stack + tokens-doc. day-batch gate stopped: GitHub failure (expected, rack tests).
-NOW (helper): Job S, the last 2 rack failures on GitHub: behaviour A-team HOME-09 (Champion's six line) and v2-q23 at 768 -> alt/rack-fix2.
-NOW (Kip): jobs 53-56 queued (seo robustness, switch smoke test, page speed, M-D fixture teams). 49 verified (holds to Dec 2), 50 verified, 51 to review.
-NEXT: merge rack-fix2 + Kip 50 (seo-check) into one batch, GitHub green, gate into design6, Preview republish, pictures to Sim.
-NEXT: switch moved to FRIDAY Nov 27 morning if green (HH rec; Sim open to early): runbook dates, preflight list.
-NEXT: review Kip 51 (Dec 2 undo drill) and 53-56 as they land.
+Updated: time: 11:26 AM (11:26:14)  date: Thu Nov 26, 2026
+NOW: HH: gate.sh alt/day-batch2 5d2d0c72 (pid in .main-running): waits for GitHub's full run, then merge-check into design6.
+  Local: full v2-minors on rack-fix all passed. Queued next: alt/after-batch 802b490c (rights notice, Sim OK + missing-docs, Job U).
+NOW (helper): Job V, 2 directions for the public nastyplot.org home page (proposal, pictures, Sim picks).
+NOW (Kip): jobs 53-56 (seo robustness, switch smoke test, page speed, M-D fixture teams).
+NEXT: after day-batch2 lands: gate after-batch, republish the Preview (daily-data.sh), Game Plan, pictures to Sim.
+NEXT: Friday switch (if Sim's go tonight): runbook nov28 with Job T's fixes (build command, step 7 before 6).
+NEXT: review Kip 51 (undo drill) and 53-56 as they land.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
