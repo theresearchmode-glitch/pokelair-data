@@ -8,7 +8,7 @@ Sim says yes on the day; nothing here runs before that.
 2. **Kip job 46: the news freshness blocker.** After the merge, main's health.mjs dates out/post.json by `checked` (a person's last
    gift check), so every daily run would fail "News & Mystery Gifts: data from 2026-11-18, 8 days old (limit 3)" and freeze live
    data. Fix: post-news.mjs stamps `ran` on each successful run; health dates post.json by `ran`. Two branches + proof on a merge.
-3. Kip job 47: experiments/turnstile-page-test.mjs fails on plain design6 (widget drawn twice). Fix or mark, before the merge gate.
+3. Kip job 47 (Turnstile drawn twice): DONE, merged in design6 9bab576f (helper Job I; cause: redraw replaced the widget box).
 4. The score batch: score fix on main (alt/score-ebfix4, auto fast-forward on green), option C + gate threshold + recScore on design6
    (alt/bands-c2 + dea859e4). Under C the accuracy gate counts teams favoured to win (CH.ssOfE(.5)), so it keeps its baseline.
 4b. Kip job 48: merge-check.sh target main must run BOTH lists (main's and design6's) on Saturday's merge. Job 43's main list is
