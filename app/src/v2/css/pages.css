@@ -4559,6 +4559,18 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .sp2 .sp2-ctl{margin-top:var(--s4)}
   .sp2 .sp2-cut{margin-top:var(--s2)}
 }
+/* Short laptop windows (Nov 26, pre-launch list; rule 15: the main thing on the first screen): at 1280x720 the conditions filled the first
+   screen and the track began at its bottom edge. 1100+ and under 940px tall: each group's label sits beside its chips (YOU · chips vs
+   THEM · chips on one row, FIELD and WEATHER on the next, as before), the kicker and the step title come up, so the track's first rows
+   show on the first screen. After the 1280-1439 rules below, which it overrides. Same chips, same order (the label stays first in each group, so keyboard order = visual order) */
+@media (min-width:1100px) and (max-height:939.98px){
+  .sp2 .bt-tools{margin-bottom:var(--s4)}
+  .sp2 .sp2-h .k-kicker{margin-top:0}
+  .sp2 .sp2-ctl{margin-top:var(--s3);row-gap:var(--s2);align-items:center}
+  .sp2 .k-plan>.k-step>.k-sec{margin-top:var(--s6)}
+}
+/* labels beside their chips under 1680 only: from 1680 the four groups already share one row, and with the labels beside them the weather strip ran off the page */
+@media (min-width:1100px) and (max-width:1679.98px) and (max-height:939.98px){.sp2 .sp2-g{grid-auto-flow:column;align-items:center;column-gap:var(--s3)}}
 /* Test Run at 1280-1439 (alt/len1280, Nov 23: the desktop length rule; 1280x800 was 3.36 screens, cap 3): the piles already sit beside
    the side panel, so only the spacing tightens: 40px over each step (was 64px), 24px between the piles (was 40px), and the plan ends 16px
    over the note under it (was 40px). Nothing is hidden; 1440 and up, 1100-1279 and phones are unchanged. Still over the cap (see

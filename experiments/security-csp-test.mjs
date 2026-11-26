@@ -104,6 +104,12 @@ const html = fs.readFileSync(htmlPath, 'utf8');
 const hdrsText = fs.readFileSync(hdrsPath, 'utf8');
 const {inlineCount} = verifyCspAndHtml(html, hdrsText);
 const rules = parseHeadersFile(hdrsText);
+/* the static pages (Nov 26, night queue 8: /pokemon and the light 404) live under the same CSP: every inline script on them must be
+   hashed in it too (only the page's theme script is inline there; JSON-LD data blocks don't run and need none) */
+const STATIC = ['pokemon.html', '404.html'].filter(f => fs.existsSync(path.join(distDir, f)));
+{ const ss = ((headersForPath(rules, '/v2.html')['Content-Security-Policy'] || '').match(/script-src\s+([^;]+)/) || ['', ''])[1];
+  for (const f of STATIC) for (const m of fs.readFileSync(path.join(distDir, f), 'utf8').matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) { if (/\bsrc\s*=|application\/ld\+json/i.test(m[1])) continue;
+    const h = `'sha256-${crypto.createHash('sha256').update(m[2], 'utf8').digest('base64')}'`; assert.ok(ss.includes(h), `${f}: inline <script> hash ${h} missing from script-src`); } }
 
 const MIME = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml'};
 
@@ -167,7 +173,12 @@ try {
   const xssFired = await page.evaluate(() => Boolean(window.__XSS));
   assert.equal(xssFired, false, 'XSS payload executed via #team= link!');
 
-  console.log(`security-csp-test: PASS (${inlineCount} hashed inline scripts, 0 CSP violations, 0 external requests, 0 cookies, XSS blocked)`);
+  // 3. the static pages (/pokemon, the light 404) under the same CSP
+  for (const f of STATIC) { await page.goto(`${origin}/${f}`, {waitUntil: 'networkidle'}); const v = await page.evaluate(() => window.__cspViolations);
+    assert.equal(v.length, 0, `CSP violations on /${f}: ${JSON.stringify(v)}`); assert.equal(cspViolations.length, 0, `Console CSP errors on /${f}: ${JSON.stringify(cspViolations)}`);
+    assert.equal(externalReqs.length, 0, `External requests on /${f}: ${JSON.stringify(externalReqs)}`); }
+
+  console.log(`security-csp-test: PASS (${inlineCount} hashed inline scripts, static pages ${STATIC.join(' + ') || 'none'}, 0 CSP violations, 0 external requests, 0 cookies, XSS blocked)`);
 } finally {
   await browser.close();
   server.close();
