@@ -10,8 +10,13 @@ while read -r lref lsha rref rsha; do
   # Kip job 30 F2: only merges on the branch's own line (first parent), not old merges inside a merged branch's history;
   # F3b: if the range can't be listed (remote moved, not fetched), refuse instead of passing silently
   merges=$(git rev-list --merges --first-parent "$range") || { echo "pre-push REFUSED: cannot list commits in $range (git fetch first)"; exit 1; }
+  # Kip job 43: the stamp must be for THIS branch (merge-check.sh writes "<sha> <target>"), so a merge checked with design6's list
+  # can't go to main, nor the reverse
+  br="${rref#refs/heads/}"
   for m in $merges; do
-    [ -f "$D/$m" ] || { echo "pre-push REFUSED: merge $(git log --oneline -1 "$m" | cut -c1-80) has no merge-check stamp. Run: REPORT_OK=1 bash docs/rebuild/merge-check.sh origin/<branch>"; bad=1; }
+    t=""; [ -f "$D/$m" ] && read -r _ t < "$D/$m"
+    [ -f "$D/$m" ] || { echo "pre-push REFUSED: merge $(git log --oneline -1 "$m" | cut -c1-80) has no merge-check stamp. Run: REPORT_OK=1 bash docs/rebuild/merge-check.sh origin/<branch> $br"; bad=1; continue; }
+    [ "$t" = "$br" ] || { echo "pre-push REFUSED: merge $(git log --oneline -1 "$m" | cut -c1-80) was checked for '${t:-no branch (old stamp)}', not $br. Run: REPORT_OK=1 bash docs/rebuild/merge-check.sh origin/<branch> $br"; bad=1; }
   done
 done
 exit $bad
