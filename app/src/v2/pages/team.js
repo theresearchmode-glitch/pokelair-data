@@ -47,7 +47,11 @@ if (!V2._scrollWatch) { V2._scrollWatch = 1; addEventListener('scroll', () => { 
 V2.sugData = (ms, RD) => { if (ms.length < 1) return null; V2.planStart(ms); const P = V2.plan.key === V2.planKey() ? V2.plan.plans : null; if (!P) return {pending: true};
   let g0 = P.gBase != null ? P.gBase : null; if (g0 == null) { try { g0 = ms.length === 6 ? gradeTeam(ms) : null; } catch (e) {} }
   const base = RD ? RD.score : null; let list = planListOf(P, RD ? {score: RD.score} : null, []), side = false;
-  if (!P.length && Array.isArray(P.more) && P.more.length) { side = true; list = CH.sideGrades(P.more, g0, base); }
+  // Spicy picks (Job E, Nov 26): a swap that brings in a rare Pokémon (under 5% of teams) is kept out of the normal list (the Spicy picks group
+  // shows it, labelled); when that leaves no plan, the side options stand in, as they do when the planner finds none (5 of 6: AS-11)
+  const more = (Array.isArray(P.more) ? P.more : []).filter(pl => !V2.spRarePl(pl));
+  V2.spMain = [...list, ...(Array.isArray(P.more) ? P.more : [])].filter(V2.spRarePl); list = list.filter(pl => !V2.spRarePl(pl));
+  if (!list.length && more.length) { side = true; list = CH.sideGrades(more, g0, base); }
   const top = list.slice(0, 3).map(pl => { const g1 = planGrade(pl), ok = g0 != null && g1 != null, r0 = ok ? Math.round(g0) : null, r1 = ok ? Math.round(g1) : null;
     return {pl, g0, g1, d: ok ? r1 - r0 : null, r0, r1, word: ok && CH.wordOf(g0) !== CH.wordOf(g1) ? CH.wordOf(g1) : ''}; });
   ui.planList = list; return {top, side, none: !top.length};

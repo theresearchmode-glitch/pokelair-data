@@ -269,7 +269,7 @@ V2.places = [['home', 'Home'], ['build', 'Build'], ['team', 'My Team'], ['battle
 // search finds these too: rebuilt places inside My Team (audit JUMP-05; today's search finds them); pages are links, sheets open over
 // My Team as their buttons do. Search only: the top bar stays the five above.
 V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], ['team', 'Saved Teams', () => V2.openSavedTeams && V2.openSavedTeams()],
-  ['team', 'Team Sheet', () => V2.openTeamSheet && V2.openTeamSheet()], ['team', 'All Suggestions', () => V2.openAllSugs && V2.openAllSugs()],
+  ['team', 'Team Sheet', () => V2.openTeamSheet && V2.openTeamSheet()], ['team', 'All Suggestions', () => V2.openAllSugs && V2.openAllSugs()], ['team', 'Spicy Picks', () => V2.spicyOpen && V2.spicyOpen()] /* Job E, Nov 26: Search finds the toggle and turns it on */,
   /* Nov 15 (parity with today's search): every page can be found, by its name or a word of its line */
   ['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['natures', 'Natures'], ['tournaments', 'Winning Teams'], ['events', 'Events'], ['archetypes', 'Archetypes'], ['weekly', 'This Week'],
   ['speed', 'Speed Tiers'], ['calc', 'Damage Calculator'], ['types', 'Type Chart'], ['practice', 'Team Preview Practice'], ['gauntlet', 'Test Run'],
@@ -280,7 +280,7 @@ V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], 
   ['build', 'Build Me a Team'], ['build', 'Build Around a Core', () => { V2.bdUi.jtab = 'cores'; V2.bdUi.toCores = true; V2.redraw(); }]]; /* the same way Home's core cards open Build at the cores (CORES-13) */
 // today's site's menu names and plurals still find the new page (returning players), shown under the new name
 V2.placeAlias = {'Damage Calculator': ['damage calc', 'calc', 'calculator'], 'Build Me a Team': ['build for me'], 'Build Around a Core': ['cores', 'winning cores'], Battle: ['battle a team'], Ratings: ['pokémon ratings', 'pokemon ratings', 'meta rankings'],
-  Natures: ['stat alignment', 'stat alignments', 'nature chart', 'all natures'] /* Pokémon Champions' own word (Natures page, Nov 23) */, 'Mystery Gifts': ['gifts', 'codes', 'gift codes', 'serial codes', 'post room'], 'Champions News': ['news', 'dispatch', 'champions dispatch']};
+  Natures: ['stat alignment', 'stat alignments', 'nature chart', 'all natures'] /* Pokémon Champions' own word (Natures page, Nov 23) */, 'Mystery Gifts': ['gifts', 'codes', 'gift codes', 'serial codes', 'post room'], 'Champions News': ['news', 'dispatch', 'champions dispatch'], 'Spicy Picks': ['rare picks', 'off-meta', 'off meta']};
 V2.findOk = () => V2.findPlaces.filter(([k]) => k !== 'feedback' || (V2.FB && V2.FB.ok)); /* Send Feedback only where it can send (function sweep, Nov 15: listed in the Preview) */
 // one line per page, shown when the search box is empty (today's search lists its tools) and searched too ("speed", "damage")
 V2.TOOLS = ['home', 'build', 'team', 'battle', 'meta', 'tournaments', 'sets', 'speed', 'calc', 'types', 'practice', 'gauntlet', 'compare', 'box']; // the empty search's list (14, Home first)

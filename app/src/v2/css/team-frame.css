@@ -204,6 +204,9 @@
   .tmk-work .tm-sug > li > .sg2-ln{grid-area:ln}
   .tmk-work .tm-sug > li > .np-btn,.tmk-work .tm-sug > li > .np-btn2{grid-area:ap;margin:0}
   .tmk-work .tm-sug > li > .sg2-why{grid-area:wy;align-self:start}
+  /* Spicy picks (Job E, Nov 26): the rare pick's label and receipt line under the swaps */
+  .tmk-work .tm-sug.sg2-spo > li:not([hidden]){grid-template-areas:"k mv" "sw sw" "sp sp" "ln ln" "ap wy"}
+  .tmk-work .tm-sug > li > .sg2-spf{grid-area:sp}
   .tmk-work .tm-sug > li > .sg2-why[open]{grid-column:1 / -1;grid-row:auto}
   .tmk-work .mtf-do{gap:0 var(--s4)}
   .tmk-work .tm-sec > h2{font-size:var(--t17)}
