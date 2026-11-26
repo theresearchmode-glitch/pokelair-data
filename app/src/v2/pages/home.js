@@ -199,3 +199,8 @@ document.addEventListener('click', async e => { const L = e.target.closest('[dat
   if (P) { const x = evTeam(P.dataset.hmprep); if (!x) return; const ns = x.t.mons.map(m => m.n); V2.needRoute('battle', () => { V2.btSetOpp(ns, {who: x.t.player, label: teamWho(x.t), key: ns.slice().sort().join('|'), ev: evShort(x.ev.name)}); /* remembered in recent opponents too, today's rule (HOME-10) */ location.hash = '#battle'; toast(`Opponent set: ${teamWho(x.t)}`); }); } });
 // "Import from Showdown" (HOME-07): My Team with the Import box open, as today
 document.addEventListener('click', e => { if (!e.target.closest('[data-v2homeimport]')) return; location.hash = '#team'; setTimeout(() => V2.openImport({fromHome: true}), 120); });
+/* Job W (Nov 26): Home's words for its static HTML (shell.js V2.preBlock), read from the drawn page so they can never differ: its h1 and the
+   first line under it. Works for whichever front page draws Home: The Stampede (.sdh-say) or a new one with a kit lead (.k-lead; the
+   public-home proposals' A uses it, B's .ph-b-lead). The h1's parts are joined with a space (innerText would bring the kicker's capitals). */
+V2.pages.home.seo = () => { const h = document.querySelector('#main h1'), say = document.querySelector('#main .sdh-say, #main .k-lead, #main .ph-b-lead');
+  return {h1: h ? [...h.childNodes].map(n => n.textContent).join(' ') : '', intro: say ? say.textContent.replace(/All Ratings\s*›/, '').replace(/\s*\(updated [^)]*\)/, '') : ''}; }; /* no '(updated 5 h ago)': static words outlive the hour */
