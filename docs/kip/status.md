@@ -9,3 +9,5 @@
 43 | started | - | merge-check.sh for main + design6 (resumed after 46) | Wed Nov 25, 11:53 PM
 43 | done | alt/gemini-merge-gate 0d5df189 | merge-check.sh picks the test list by target (main = main's test.yml incl. frozen out/, design6 list unchanged), new wrong-target check, stamp+hook name the branch; merge-gate-test 8 FAILED before, 24/24 after | Wed Nov 25, 11:59 PM
 44 | started | - | quiet launch-day alarms (md-watch regAt + health/md-watch 0-event days) | Wed Nov 25, 11:59 PM
+44 | done | alt/gemini-quiet-alarms 91911b8d | md-watch uses regAt and skips paused on quiet API-200 days; update stamps apiOk:true and health warns instead of failing on quiet launch days; quiet-launch-alarms-test 5 FAILED before, 13/13 after; md-day-one 22/22 | Thu Nov 26, 6:29 AM
+45 | started | - | flaky app/test/prelaunch.mjs (run.mjs) diagnosis & fix | Thu Nov 26, 6:29 AM
