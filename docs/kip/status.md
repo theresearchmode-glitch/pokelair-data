@@ -14,3 +14,4 @@
 45 | done | alt/gemini-flaky-prelaunch efb7aaa6 | replaced blind sleeps in prelaunch.mjs with readiness/DOM/store condition waits (all 27 assertions untouched); 3.2s delay fails OLD and passes NEW; 20/20 idle + 3/3 load-6 pass after | Thu Nov 26, 7:44 AM
 48 | started | - | merge-check.sh target main runs both test lists when test.yml has v2 steps | Thu Nov 26, 7:44 AM
 48 | done | alt/gemini-merge-both 51cf6b51 | merge-check.sh target main automatically runs tests_main + tests_design6 when test.yml has app/test/v2-public.mjs; merge-gate-test 2 FAILED before, 29/29 after | Thu Nov 26, 7:47 AM
+49 | started | - | Dec 2 balance patch hand-written half + patch-dec2-test.mjs | Thu Nov 26, 9:43 AM
