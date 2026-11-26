@@ -30,3 +30,4 @@
 55 | done | alt/gemini-speed-check 139d4fec | app/test/speed-check.mjs (390x844, 4x CPU, Fast 3G): /pokemon PASS (1.77s, 266 KB, CLS 0); 9 SPA pages FAIL (LCP 10.9-11.5s, 2.07-2.30 MB, dominated by 1.79 MB gz v2.js with 1.56 MB inlined base64 ITEM_IMG); top 5 fixes with file:line in report | Thu Nov 26, 11:15 AM
 56 | started | - | 12 Reg M-D fixture teams + experiments/md-fixtures-test.mjs | Thu Nov 26, 11:15 AM
 56 | done | alt/gemini-md-fixtures 6af5a0b6 | 12 Reg M-D fixture teams + md-fixtures-test.mjs (72/72 legal, all scored 73.5-88.9; broken fixture 13 FAILED exit 1) | Thu Nov 26, 11:24 AM
+57 | started | - | public speed fixes 1+3 (external item webp files + shared v2.css on index.html) | Thu Nov 26, 12:20 PM
