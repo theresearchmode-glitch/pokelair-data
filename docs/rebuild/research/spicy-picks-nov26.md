@@ -23,15 +23,23 @@ PROVEN = used by under 5% of teams and still above 50% wins at a cautious 95% lo
 aren't independent; that factor is my assumption). MAYBE = above 50% wins, but too few games to say (rule 21: "unknown").
 For scale: the 7 most-used Pokémon average 51.8% wins.
 
+## Player skill, tested (checked: experiments/spicy-same-player.mjs on data/t2, Reg M-C)
+Same player, with the Pokémon vs without it (players with 5+ games both ways; weighted):
+- Annihilape: 51 players, +0.9 points (raw 56.9% wins)   - Glimmora: 73 players, +2.7 points
+- Kommo-o: 51 players, -2.3 points                         - Rillaboom (most used, for comparison): 285 players, -1.4 points
+- Basculegion-F: can't be told apart from Basculegion in the team files (no form field), so not tested.
+These samples are small (about 500-1,000 games with each), so each number is give-or-take a few points.
+
 ## What it means, plainly
-- Yes, there is something real: 4 Pokémon (Annihilape, Basculegion-F, Kommo-o, Glimmora) are rarely used but win as much as or more
-  than the top picks, and our model's "own share of the win" (teammates accounted for) agrees they help.
-- Player skill is the honest caveat Sim named: a rare pick may be brought by stronger players. Not checked yet: win rate by player
-  strength for these 4 (the data has player IDs; a later run can compare the same players with and without them).
+- Sim's hunch was right: the big raw win rates of rare picks are mostly WHO brings them. With the same player, they're about even
+  with that player's usual picks: not better, not worse.
+- That is still good news for a fun mode: a rare pick costs about nothing for the same player. "As good as the usual pick" is the
+  honest claim; "secretly better" is not supported.
 
 ## Recommendation (for Sim to decide)
 - Spicy picks = a Suggestions toggle that allows Pokémon under 5% usage, shown with a plain label:
-  PROVEN -> "Rare pick that wins: used by few, beats the field in N games"; MAYBE -> "Spicy: fewer games, we're less sure".
+  wording that matches the test: "Rare pick, about as good as the usual one for the same players" (when the same-player test is
+  within a few points), or "Spicy: too few games to tell" otherwise. Never "better than the meta".
   Reason: it's fun and it's honest (each card says how sure we are), and it fits rule 21 (unknowns are called unknown).
 - Never mix spicy cards into the normal list without the label; the Strength Score of the changed six is graded exactly as chosen.
 - Needs Sim's yes on wording and look (design) before it's built; target before the ~Dec 18 announcement (agreed list).
