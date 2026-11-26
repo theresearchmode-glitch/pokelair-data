@@ -52,7 +52,7 @@ function rankEdge(p) { const k = lairRank(p), r = ratings().get(p.n); if (!k || 
   if (xs.length < 2) return ''; const i = xs.findIndex(x => x.p.n === p.n), lv = xs.filter(x => x.p.n !== p.n && lairRank(x.p).rank === k.rank);
   if (lv.length) return `${lv.map(x => x.p.d).join(' and ')} ${lv.length > 1 ? 'are' : 'is'} exactly level with it on our full rating, so they share #${k.rank}.`;
   if (xs.length === 2) { const o = xs[1 - i]; return `${o.p.d} also rates ${rs}. Before rounding, our rating has ${p.d} a hair ${i ? 'behind' : 'ahead'}, so it\u2019s #${k.rank}.`; }
-  const ord = ['1st', '2nd', '3rd'][i] || `${i + 1}th`; return `${xs.length} Pokémon rate ${rs}. Before rounding, our rating puts ${p.d} ${ord} of them, so it\u2019s #${k.rank}.`; }
+  const n1 = i + 1, ord = n1 + (n1 % 100 >= 11 && n1 % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n1 % 10] || 'th'); /* 21st, 22nd, 23rd (Kip job 39) */ return `${xs.length} Pokémon rate ${rs}. Before rounding, our rating puts ${p.d} ${ord} of them, so it\u2019s #${k.rank}.`; }
 /* what the N in "of N" counts (Sim, Nov 4): the long form says it in full, 'cap' is the short form for tight spots,
    short (1) is just "#20"; '' when it has no results yet */
 const rankTxt = (p, short) => { const k = lairRank(p); return k ? (short === 'cap' ? `#${k.rank} of ${k.of} with results` : short ? `#${k.rank}` : `#${k.rank} of ${k.of} Pokémon with tournament results`) : ''; };
