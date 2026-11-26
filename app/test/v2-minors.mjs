@@ -2029,6 +2029,17 @@ if (part('main2')) { /* Sim, Nov 25 (MacBook, Claude app, about 1000x650): on a 
     const big = w >= 1440 && h >= 900;
     if (r.none || !r.crowd || r.fr.length < 4 || r.fr.some(f => f.h < 88) || r.fr.filter(f => f.k === 'f1' || f.k === 'f2').some(f => f.cov > 45) || (big && r.inl)) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); }
   await ctx.close(); ok(!bad.length, `Home hero on short desktop windows (Sim, Nov 25): crowd showing, front four 88px+, #1/#2 plates cover 45% at most, tall windows unchanged (${bad.join(' | ') || 'all as planned'})`); }
+// Speed Tiers on short laptop windows (Nov 26, pre-launch list; rule 15: the main thing on the first screen): at 1280x720, 1366x768 and 1440x900
+// the track's first row ends inside the first screen, with every condition chip still there (12) and each group's label before its chips.
+// On design6 c062acf1 the first row ended at 728 in a 720 window (the conditions filled the screen).
+if (part('groups')) { const bad = [];
+  for (const [w, h] of [[1280, 720], [1366, 768], [1440, 900]]) { const ctx = await b.newContext({viewport: {width: w, height: h}}), q = await ctx.newPage();
+    await q.goto('file://' + PAGE + '#speed'); await q.waitForTimeout(2500); await q.evaluate(() => document.fonts.ready);
+    const r = await q.evaluate(() => { const li = [...document.querySelectorAll('#main .sp2-lad li')].find(e => e.getClientRects().length), ch = [...document.querySelectorAll('#main .sp2-ctl button')].filter(e => e.getClientRects().length);
+      const lab = [...document.querySelectorAll('#main .sp2-g')].every(g => { const l = g.querySelector('.sp2-gl'), c = g.querySelector('button'); return l && c && (l.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING); });
+      return {end: li ? Math.round(li.getBoundingClientRect().bottom) : null, scrollY: Math.round(scrollY), chips: ch.length, lab}; });
+    if (r.end == null || r.end > h || r.scrollY !== 0 || r.chips !== 12 || !r.lab) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); await ctx.close(); }
+  ok(!bad.length, `Speed Tiers on short laptop windows (Nov 26): the track's first row is on the first screen at 1280x720, 1366x768 and 1440x900, all 12 condition chips kept (${bad.join(' | ') || 'all three'})`); }
 if (part('groups')) { await HQ(); await wkPair(b, 'file://' + PAGE, ok); }
 await b.close();
 console.log(`v2-minors${PART === 'all' ? '' : ' (' + PART + ')'}:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
