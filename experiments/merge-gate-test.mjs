@@ -132,6 +132,22 @@ try {
   ok(r.code === 0 && p.code === 0 && remoteTip('main') === must('git rev-parse HEAD'), `4e. hook lets the stamped merge into main through (exit ${p.code})`);
   must('git fetch -q origin && git switch -q -C alt/side origin/alt/m2 && git merge -q --no-ff --no-edit origin/alt/m1'); p = sh('git push origin alt/side');
   ok(p.code === 0, `4f. hook ignores branches other than main / claude/design6 (exit ${p.code})`);
+
+  // 5. Kip job 48: Saturday merge into main (merge's own test.yml has design6's v2 step) runs BOTH test lists
+  must('git fetch -q origin && git switch -q -c alt/sat-switch origin/main');
+  fs.appendFileSync(path.join(W, '.github/workflows/test.yml'), '      - run: node app/test/v2-public.mjs\n');
+  must('git add .github/workflows/test.yml && git commit -qm sat-switch && git push -q origin alt/sat-switch && git fetch -q origin');
+  unstamp(); mergeInto('main', 'alt/sat-switch');
+  r = gate('alt/sat-switch');
+  ok(r.code === 0 && stampOf() === `${must('git rev-parse HEAD')} main`, `5a. Saturday merge into main (test.yml has v2-public.mjs): exit ${r.code}, stamp "${stampOf()}"`);
+  ok(same(r.ran, [...MAIN_FROZEN, ...MAIN_TODAY, ...D6]), `5b. Saturday merge runs BOTH lists (main + design6) ${firstDiff(r.ran, [...MAIN_FROZEN, ...MAIN_TODAY, ...D6])}`);
+  ok(clean(), '5c. after Saturday merge run the tree is clean');
+  unstamp(); mergeInto('main', 'alt/sat-switch');
+  r = gate('alt/sat-switch', {GATE_FAIL: 'app/test/v2-public.mjs'});
+  ok(r.code === 1 && stampOf() === null, `5d. Saturday merge: failing design6-list test (v2-public.mjs) blocks main stamp (exit ${r.code}, stamp=${stampOf()})`);
+  unstamp(); mergeInto('main', 'alt/sat-switch');
+  r = gate('alt/sat-switch', {GATE_FAIL: 'experiments/golden.mjs'});
+  ok(r.code === 1 && stampOf() === null, `5e. Saturday merge: failing main-list test (golden.mjs) still blocks main stamp (exit ${r.code}, stamp=${stampOf()})`);
 } catch (e) { ok(false, 'setup: ' + e.message); }
 
 fs.rmSync(tmp, {recursive: true, force: true});
