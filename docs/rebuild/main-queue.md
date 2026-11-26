@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 11:05 PM (11:05:47)  date: Wed Nov 25, 2026
-NOW: HH: mgk.sh waits for alt/gemini-md-page green, then merges it into design6 via the gate (+ wire md-switch-page-gaps-test into test.yml after).
-NOW (helper): score batch prep (score-ebfix2 + bands-c2). NOW (Kip via alt/kip-jobs): job 41 started 10:45 PM.
-IN GITHUB: design6 250e56e2 (phone speed); alt/gemini-md-data2 f4017535 (-> main with Sim's OK); alt/pokemon-index 4dc051ef (-> design6 gate).
-NEXT: helper after score batch: tablet Home proposal (compact tools + post band at 700-1099; about -2,500 px; pictures for Sim's morning look).
-NEXT: sample-six band at 1100-1279 (stacks, 1,898 px): needs a smaller name layout to go 3 columns (names cut when tested): proposal.
-NEXT: Preview after the merges; Game Plan; Kip status checks; 7:55 AM morning report.
+Updated: time: 11:20 PM (11:20:28)  date: Wed Nov 25, 2026
+NOW: HH: gate.sh alt/pokemon-index (wait green -> merge into design6 -> merge-check -> push if ALL PASSED and design6 unmoved); log in scratchpad gate-pidx.out.
+NOW (helper): score batch prep (score-ebfix2 + bands-c2). NOW (Kip via alt/kip-jobs): job 41.
+DONE: Kip job-40 page fixes in design6 (a2c7f240) + their test wired (c062acf1); phone speed in design6; RK9 removal on main.
+NEXT: alt/gemini-md-data2 (Kip data fixes) -> main when green, only with Sim's OK.
+NEXT: score batch merges (design6 + main) after the helper's report; accuracy baseline only with Sim's OK.
+NEXT: helper: tablet Home proposal (pictures, no merge). Preview after merges; Game Plan; Kip reviews; 7:55 AM report.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
