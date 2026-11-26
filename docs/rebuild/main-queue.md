@@ -1,12 +1,12 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 4:25 PM (4:25:27)  date: Thu Nov 26, 2026
-NOW: HH: gate.sh alt/batch6 074c0f36 (pid in .main-running): GitHub full run in progress, then merge-check into design6.
-  batch7 candidate (Kip 61 + 62) ready locally: v2-minors all passed (BR-C1 flaky once), WebKit static pages OK. Friday conflicts unchanged (5).
-NOW (helper): Job CC local rerun of batch6 (report -> alt/batch6-report); found + fixed .f3 leak and a test double-count.
-NOW (Kip): job 64 since 3:07 PM, no push for 78 min (flag to Sim if no change at 4:56 PM).
-NEXT: after batch6 lands: Preview republish (Final 3 in the Preview is public-build only; the Preview = Claude build), Game Plan, pictures.
-NEXT: merge batch6 into batch7, push, gate.
-NEXT: Friday switch if Sim OKs the Preview tonight.
+Updated: time: 5:29 PM (5:29:22)  date: Thu Nov 26, 2026
+NOW: HH: gate.sh alt/batch7 (Kip 61 static-page CSS + route-first data, Kip 62 preflight; local 10/10), pid in .main-running.
+  batch6 MERGED (design6 52fa60e6); Preview v267 published.
+NOW (helper): Job DD part 2: Final 3 hero for the Claude build (behind V2.F3_CLAUDE, waits for Sim's yes) + shorter phone hero
+  (public phone Home 9.30 screens -> target <= 7.85) + bar labels start with the number (pl-5d). Part 1 alt/f3-public-rest in GitHub.
+NOW (Kip): idle since 4:44 PM after job 64 (wrong base); 64b queued; needs Sim's go.
+NEXT: gate alt/f3-public-rest after batch7; then part 2 when Sim says yes; Preview republish.
+NEXT: Friday switch if Sim OKs the Preview tonight; Kip 62 preflight on the morning.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
