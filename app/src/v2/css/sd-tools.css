@@ -156,7 +156,7 @@
 .sdt-pp{position:relative;flex:1 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:var(--s2)}
 .sdt-pp6{display:grid;grid-template-columns:repeat(3,max-content);justify-content:center;align-items:end;column-gap:var(--s3);row-gap:0}
 .sdt-pp6 .np-mon{--iw:max(44px,min(21cqi,68px))} /* two clean rows of three, as a team preview; small enough that the plate is no taller than its neighbours */
-@media (min-width:700px) and (max-width:1099.98px){.sdt-pp6 .np-mon{--iw:max(44px,min(17cqi,56px))}} /* beside Popular Sets on tablets */
+ /* beside Popular Sets on tablets */
 .sdt-pick{position:relative;z-index:1;padding:var(--s1) var(--s3);background:var(--sd-race);color:var(--sd-on-race);font-size:var(--t15);line-height:1.3;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .sdt-set .sdt-m{flex-direction:row;align-items:flex-end;justify-content:flex-start;gap:var(--s3);text-align:left}
 .sdt-set .np-mon{flex:0 0 auto;width:auto}
@@ -177,11 +177,11 @@
 
 /* desktop order: Winning Teams, Battle, then Damage Calc (it follows Ratings in the page, as phones show them side by side) */
 /* desktop (Sim, Nov 18: A): Speed Tiers; Type Chart | Ratings | Damage Calc; Winning Teams | Battle as halves; the small plates */
-@media (min-width:1100px){.sdt-speed{order:-4}.sdt-tc{order:-3}.sdt-ra{order:-2}.sdt-dc{order:-1;grid-column:span 4}.sdt-wt,.sdt-bt{grid-column:span 6}.sdt-sm{order:2}}
-@media (min-width:1100px) and (max-width:1379.98px){.sdt-speed{grid-template-columns:minmax(180px,220px) minmax(0,1fr)}.sdt-race{gap:0}.sdt-run .np-mon{--iw:112px}}
+@media (min-width:700px){.sdt-speed{order:-4}.sdt-tc{order:-3}.sdt-ra{order:-2}.sdt-dc{order:-1;grid-column:span 4}.sdt-wt,.sdt-bt{grid-column:span 6}.sdt-sm{order:2}}
+@media (min-width:700px) and (max-width:1379.98px){.sdt-speed{grid-template-columns:minmax(180px,220px) minmax(0,1fr)}.sdt-race{gap:0}.sdt-run .np-mon{--iw:112px}}
 
 /* tablets: Type Chart full width, Ratings beside Damage Calc, Winning Teams beside Battle; seven runners, the words above them */
-@media (max-width:1099.98px){
+@media (max-width:699.98px){
   .sdt-speed{grid-template-columns:minmax(0,1fr)}.sdt-speed .sdt-tx{order:2;padding-bottom:0}.sdt-race{margin-top:calc(var(--s16) * -1)}
   .sdt-run[data-k="8"],.sdt-run[data-k="9"]{display:none}.sdt-run .np-mon{--iw:104px}
   .sdt-tc{grid-column:1/-1}.sdt-ra,.sdt-dc{grid-column:span 6}
@@ -190,7 +190,7 @@
   .sdt-ends{grid-template-columns:minmax(0,1fr);gap:var(--s4);margin-top:var(--s8)}
   .sdt-end,.sdt-end.hw{flex-direction:row;text-align:left;border-left:0;padding:0;align-items:flex-end}.sdt-end.hw .sdt-big{align-items:flex-start}
   .sdt-big{width:min(42%,280px)}}
-@media (max-width:1099.98px){.sdt-sm{grid-column:span 6}}
+@media (max-width:699.98px){.sdt-sm{grid-column:span 6}}
 
 /* phones (brief): four runners; the Type Chart 6 by 3 without names; Ratings beside Damage Calc; Winning Teams and Battle as
    short full-width strips; the small plates 2 by 2; Events and How We Calculate as two matching rows; short descriptions */
@@ -217,8 +217,7 @@
   .sdt-big{width:42%}.sdt-big b{font-size:var(--t34)}.sdt-big small{font-size:var(--t13)}.sdt-end .sdt-t{font-size:var(--t20)}}
 /* the strips side by side where there is room for both halves; on tablets too (polish Nov 18 night: beside Winning Teams, Battle's
    five-twelfths left its four sprites under 50px, too small to read) */
-@media (min-width:700px) and (max-width:1099.98px){.sdt-wt,.sdt-bt{grid-column:1/-1}}
-@media (min-width:520px) and (max-width:1099.98px){
+@media (min-width:520px) and (max-width:699.98px){
   .sdt-wt,.sdt-bt{flex-direction:row;align-items:center;gap:var(--s4)}.sdt-wt>.sdt-tx,.sdt-bt>.sdt-tx{flex:0 0 38%}
   .sdt-wt .sdt-pic,.sdt-bt .sdt-vs{flex:1;margin:0;padding:0}.sdt-wt .sdt-acts,.sdt-wt .wt-sure{flex-basis:100%}}
 @media (max-width:519.98px){.sdt-side{--cap:64px}.sdt-six .np-mon{--iw:56px}.sdt-blk b{font-size:var(--t20)}}
@@ -244,7 +243,7 @@
 @media (max-width:379.98px){.sdt-spe{font-size:var(--t20)}.sdt-ra,.sdt-dc,.sdt-sm{grid-column:1/-1}.sdt-sm .sdt-t{font-size:var(--t22)}.sdt-pod{max-width:280px;margin-inline:auto;width:100%}}
 @media (max-width:379.98px){.sdt-tc{padding-inline:calc(var(--s2) + var(--k))}.sdt-types{column-gap:2px}.sdt-flag>span{letter-spacing:-.02em}}
 /* More tools in even rows: one row on desktop, 3 by 2 on tablets, 2 by 3 on phones (no lone link) */
-@media (max-width:1099.98px){.sdt-more{display:block}.sdt-more ul{display:grid;grid-template-columns:repeat(3,max-content);gap:0 var(--s6)}}
+@media (max-width:699.98px){.sdt-more{display:block}.sdt-more ul{display:grid;grid-template-columns:repeat(3,max-content);gap:0 var(--s6)}}
 @media (max-width:519.98px){.sdt-more ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s4)}}
 
 /* ---- Shorter phone Home, Tools B (Sim, Nov 18; docs/rebuild/short-home-options.md, toolsA/toolsB as built there): under 700, six big
@@ -252,7 +251,7 @@
    six picture chips (Type Chart, Winning Cores, Archetypes, Popular Sets, Events, How We Calculate), then More tools ---- */
 .sdt-chips{display:none}
 /* iPads too (Sim, Nov 18: A): twelve plates made Home on an iPad (8,180px at 820) longer than on a phone, so under 1100 Tools B */
-@media (max-width:1099.98px){
+@media (max-width:699.98px){
   .sd-tools.sd-band{padding-top:calc(var(--s10) + var(--sd-cut))}
   .sdt-h{margin-bottom:var(--s2)}.sdt-desc{margin-bottom:var(--s3)}
   .sdt-grid{gap:var(--s3)}
@@ -317,33 +316,24 @@
 /* iPads (700-1099), Sim Nov 18 ('the iPad loadout is too plain', took the recommendation): the six big plates of the phone layout, then
    no chips: the Type Chart as a strip (words left, the 18 flags 6 by 3), Winning Cores | Archetypes | Popular Sets as three picture
    plates, and Events and How We Calculate as their two number rows. Ratings and Damage Calc pictures 96px tall (the half tiles are wide) */
-@media (min-width:700px) and (max-width:1099.98px){.sdt-chips{display:none}
-  .sdt-tc{display:flex;flex-direction:row;align-items:center;gap:var(--s6);grid-column:1/-1;order:10}
-  .sdt-tc>.sdt-tx{flex:0 0 30%}.sdt-tc .sdt-types{flex:1;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2);margin:0}
-  .sdt-grid>.sdt-sm:not(.sdt-pr){display:flex;grid-column:span 4;order:11;margin-top:var(--s10)}
-  .sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}
-  .sdt-ends{display:grid}
-  .sdt-ra>:last-child,.sdt-dc>:last-child{flex-basis:96px;height:96px}.sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:60px}.sdt-duel .np-mon{--iw:76px}}
 /* 700-899: the Type Chart strip's words above its flags (beside them, the flag names were cut: "Norma", "Fightin") */
 @media (min-width:700px) and (max-width:899.98px){.sdt-tc{flex-direction:column;align-items:stretch;gap:var(--s3)}.sdt-tc>.sdt-tx{flex:none}}
-@media (max-width:1099.98px){.sdt-cpic>b:only-child{flex:none}.sdt-chp:has(.sdt-cpic>b){padding-left:var(--s3)}.sdt-chp:has(.sdt-cpic>b) .sdt-cpic{flex:0 0 auto;min-width:40px}}
+@media (max-width:699.98px){.sdt-cpic>b:only-child{flex:none}.sdt-chp:has(.sdt-cpic>b){padding-left:var(--s3)}.sdt-chp:has(.sdt-cpic>b) .sdt-cpic{flex:0 0 auto;min-width:40px}}
 
 /* 1100-1379: Popular Sets stacks its item under the name (the plate is narrow) */
-@media (min-width:1100px) and (max-width:1379.98px){.sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}}
+@media (min-width:700px) and (max-width:1379.98px){.sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}}
 
 /* ---- Q72 C (Sim chose the recommended option, Nov 20, 8:17 AM; docs/rebuild/research/audit-nov20-options.md section C): Home on
    iPads and small laptops. 700-1099: the Events row loses its card padding and both big numbers get one 280px column, so the Events
    and How We Calculate titles share one left edge; the six More tools links in one row spread across the full width. 700-1279: the
    headline breaks after "herd." ("Twelve tools." whole on line 2, as phones), not "Same herd. Twelve / tools." ---- */
-@media (min-width:700px) and (max-width:1099.98px){.sdt-end.ev{padding-left:0}.sdt-big{width:280px}
-  .sdt-more ul{display:flex;justify-content:space-between;gap:0 var(--s4)}}
 @media (min-width:700px) and (max-width:1279.98px){.sdt-h span{display:block}}
 /* Team Preview Practice's chip shows only on the desktop rack below (under 1100 Practice keeps its own plate) */
 .sdt-chips li.sdt-chd,.sdt-chips li.sdt-chs,.sdt-chips li.sdt-chw{display:none}
 /* ---- Home length (Nov 23, direction for Sim): the desktop rack, 1100 and wider. Tools B (the phone and iPad layout Sim chose, Nov 18)
    laid out for a wide screen: the Speed Tiers race, then Ratings, Damage Calc, Winning Teams and Battle in one row with their short lines,
    then the other seven tools as picture chips in one row (Practice joins them here), then More tools ---- */
-@media (min-width:1100px){
+@media (min-width:700px){
   .sdt-tc,.sdt-grid>.sdt-sm,.sdt-ends{display:none}
   .sdt-grid{gap:var(--s5)}
   .sdt-ra,.sdt-dc,.sdt-wt,.sdt-bt{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s3)}.sdt-dc{grid-column:span 2}.sdt-wt{grid-column:span 4}
@@ -379,7 +369,7 @@
    the HP bar. Then four big white cards (Ratings, Battle, Archetypes, Team Preview Practice), each Pokémon picture standing on a
    slanted ground in its tool's colour (no black cards: Sim, "it looks like its missing its background"). Speed Tiers and Winning
    Teams join the chips ---- */
-@media (min-width:1100px){
+@media (min-width:700px){
   .sdt-grid>.sdt-speed{display:none}
   .sdt-grid>.sdt-dc{--k:24px;order:-5;grid-column:1/-1;display:grid;grid-template-columns:minmax(200px,260px) minmax(0,1fr);align-items:end;column-gap:var(--s10);
     margin-top:var(--s4);padding:var(--s4) calc(var(--s10) + var(--k)) var(--s4) calc(var(--s12) + var(--k));color:var(--sd-on-band)}
@@ -438,7 +428,26 @@
   .sdt-chips ul{grid-template-columns:repeat(7,minmax(0,1fr))}.sdt-chips{margin-top:var(--s4)}
 }
 /* hP4 Nov 24: 1100-1279 keeps the seven chips in one row (was 4 + 3, one empty slot): picture over name, so each fits a seventh */
-@media (min-width:1100px) and (max-width:1279.98px){.sdt-chp{flex-direction:column;justify-content:center;gap:var(--s1);padding:var(--s2) var(--s3);text-align:center}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:136px}.sdt-grid>.sdt-dc{column-gap:var(--s6)}}
-@media (min-width:1100px) and (max-width:1365.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{padding-inline:calc(var(--s3) + var(--k))}.sdt-grid{column-gap:var(--s4)}} /* narrower card padding so Battle's two stand 56px+ */
+@media (min-width:700px) and (max-width:1279.98px){.sdt-chp{flex-direction:column;justify-content:center;gap:var(--s1);padding:var(--s2) var(--s3);text-align:center}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:136px}.sdt-grid>.sdt-dc{column-gap:var(--s6)}}
+@media (min-width:700px) and (max-width:1365.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{padding-inline:calc(var(--s3) + var(--k))}.sdt-grid{column-gap:var(--s4)}} /* narrower card padding so Battle's two stand 56px+ */
 /* podium names whole at 1100-1279 (Nov 25): the card is 179px there, so the steps lose the side padding and take a 4px gap (49px to 60px each; 'Kingam…' came out cut) */
-@media (min-width:1100px) and (max-width:1279.98px){.sdt-ra>.sdt-pod{column-gap:var(--s1);padding-inline:0}}
+@media (min-width:700px) and (max-width:1279.98px){.sdt-ra>.sdt-pod{column-gap:var(--s1);padding-inline:0}}
+
+/* ---- Tablet Home (Nov 26, proposal for Sim: Home was 6.4 screens at 820x1180 and 5.5 at 1024x1366, cap 4): from 700, not 1100, the tools
+   band is the desktop rack (the Damage Calculator band, four big cards, seven picture chips, More tools) and the post band is Post X beside
+   the parcel. Fitted to a tablet: the calc's words sit above its hit (side by side the number ran off the band), the four cards are 2 by 2
+   under 1000 (four across, their titles and the podium names ran out of 165-210px cards) and four across with smaller titles from 1000, the chips keep their picture over the name (one row of seven), every target 44px+.
+   Nothing leaves: each tool keeps its card or chip, as on desktop ---- */
+@media (min-width:700px) and (max-width:1099.98px){
+  .sdt-grid>.sdt-dc{grid-template-columns:minmax(0,1fr);row-gap:var(--s4);padding:var(--s6) calc(var(--s8) + var(--k))}
+  .sdt-grid>.sdt-dc .sdt-t{font-size:var(--t28)}
+  .sdt-grid>.sdt-dc>.sdt-hit{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--s6)}
+  .sdt-grid>.sdt-dc .sdt-duel{margin-top:0}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:120px}
+  .sdt-grid>.sdt-dc .sdt-pct{font-size:var(--d64)}
+  .sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t20)}
+}
+@media (min-width:700px) and (max-width:999.98px){
+  .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:span 6;margin-top:var(--s12)}
+  .sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t24)}
+  .sdt-grid>.sdt-dc>.sdt-hit{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);column-gap:var(--s4)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:96px}
+}
