@@ -14,6 +14,9 @@
 import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path'; import {execFileSync} from 'node:child_process';
 import {load, toNews, DOC_LIMIT} from '../post-news.mjs';
 const root = (await import('node:url')).fileURLToPath(new URL('../', import.meta.url)), tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'post-news-'));
+/* Nov 26 (HH): the test must never write the repo's own out/post.json (one run here had no POST_OUT and rewrote it, with a fresh
+   "ran" since Kip job 46). Snapshot it now; the last check compares. */
+const realDoc = path.join(root, 'out/post.json'), realBefore = fs.existsSync(realDoc) ? fs.readFileSync(realDoc) : null;
 let fails = 0; const ok = (c, m) => { console.log((c ? '  ok   ' : '  FAIL ') + m); if (!c) fails++; };
 const src0 = fs.readFileSync(path.join(root, 'app/src/data/post.js'), 'utf8'), P0 = load(src0);
 const feedOf = news => ({hash: 'x', list: news.map(n => ({id: Number(n.id.slice(1)), title: n.title, infoKind: n.kind, stAt: Date.parse(n.date) / 1000, endAt: Date.parse(n.date) / 1000 + 864e3, banner: '/en/img/x.png', link: new URL(n.url).pathname}))});
@@ -43,7 +46,7 @@ const dataTest = pf => { try { execFileSync('node', [path.join(root, 'experiment
   ok(r.sug && r.sug.length === 1 && r.sug[0].id === 'n902', `only the Campaign item is suggested as a possible gift, for a person to check; the Battle Pass item is news only (${r.sug && r.sug.map(x => x.id)})`);
   const pf = path.join(tmp, 'after.js'); fs.writeFileSync(pf, r.src); ok(dataTest(pf), 'the updated post.js passes experiments/post-data-test.mjs');
   const again = path.join(tmp, 'feed2.json'); fs.writeFileSync(again, JSON.stringify(feed)); const pf2 = path.join(tmp, 'post.js'); fs.writeFileSync(pf2, r.src);
-  execFileSync('node', [path.join(root, 'post-news.mjs')], {env: {...process.env, FEED_FILE: again, POST_FILE: pf2, SUGGEST_FILE: path.join(tmp, 's2.json')}, stdio: 'pipe'});
+  execFileSync('node', [path.join(root, 'post-news.mjs')], {env: {...process.env, FEED_FILE: again, POST_FILE: pf2, SUGGEST_FILE: path.join(tmp, 's2.json'), POST_OUT: path.join(tmp, 'post2.json')}, stdio: 'pipe'});
   ok(fs.readFileSync(pf2, 'utf8') === r.src, 'run twice on the same feed: the second run adds nothing'); }
 // 3. fail safe
 for (const [name, feed] of [['not JSON', '<html>blocked</html>'], ['not a list', {hash: 'x', message: 'moved'}], ['items with other fields', {list: [{uid: 1, name: 'x'}, {uid: 2, name: 'y'}]}]]) {
@@ -61,4 +64,6 @@ const code = fs.readFileSync(path.join(root, 'post-news.mjs'), 'utf8');
 ok(!/serial-web|redeem|redemption-api|rewards\.pokemon/i.test(code.replace(/^\/\/.*$/gm, '')), 'the script never calls the code redemption site or its API');
 ok(/from '\.\/http\.mjs'/.test(code) && /politeFetch\(FEED/.test(code), 'it reads the feed through http.mjs (the one NastyPlot-data User-Agent, paced)');
 fs.rmSync(tmp, {recursive: true, force: true});
+{ const after = fs.existsSync(realDoc) ? fs.readFileSync(realDoc) : null;
+  ok(realBefore === null ? after === null : (after !== null && Buffer.compare(realBefore, after) === 0), 'the repo\'s own out/post.json is untouched by this test (every run writes to a temp POST_OUT)'); }
 console.log(fails ? `FAILED: ${fails}` : 'ALL PASS'); process.exit(fails ? 1 : 0);
