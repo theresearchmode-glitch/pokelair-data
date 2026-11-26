@@ -57,15 +57,17 @@ CH.recStats = (G, RD, hd, c) => { const cell = (v, l, t) => `<span class="wdc"><
 // CH.LETTERS moved to 58-strength.js (R4, Nov 11) so the new build shares it
 CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
   if (G.v === 2) { const W = CH.whyData(G), L2 = `<b class="npgw" style="color:${CH.gcol(W.letter)}">${W.s} \u00b7 ${W.word}</b>`, a = W.base, m = W.mu, r = W.own;
-    const su = W.sure, top = `${L2}. Teams scoring like this win about ${W.e}% against today\u2019s tournament teams (${W.rank.replace(/^Top/, 'top').replace(/^Bottom/, 'bottom')} by rank).`;
+    const top = `${L2}. Teams scoring like this win about ${W.e}% against today\u2019s tournament teams (${W.rank.replace(/^Top/, 'top').replace(/^Bottom/, 'bottom')} by rank).`;
     /* short (Sim, Nov 7: "just what they should and need to"): what the number means, the three things it's made of, the letters */
     const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
     if (W.partial) { const k = W.k, e = 6 - k;
       return `<div class="chgwhy" id="chGwhy">${L2} so far, with ${k} of 6 picked.<ul class="chgwl"><li>From how your ${k} Pokémon, their pairs and their sets do in real tournament games</li><li>Each of the ${e} empty slot${e === 1 ? '' : 's'} counts as an average tournament pick, so a strong pick raises it and a weak one lowers it</li><li>Matchups and real results join once all six are in</li></ul>${W.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span></div>`; }
     return `<div class="chgwhy" id="chGwhy">${top}<ul class="chgwl"><li><b>${a}</b> from how its Pokémon, pairs and sets do in real tournament games</li>`
       + `<li><b>${sg(m)}</b> for its matchups (ready for ${W.ready} top threats). They count a little, since players often play around a shaky matchup</li>`
+      /* Sim, Nov 25 (option A): no "How sure" word (tested on 34,430 later results: High was never more accurate than Medium);
+         this line, the six's own real games, is the plain fact instead */
       + (W.hasSix ? `<li><b>${sg(r)}</b> from this exact six's own ${W.ownGames.toLocaleString('en-US')} real games, with its players' skill taken out</li>` : `<li>This exact six hasn’t been played in tournaments yet, so the rest is our estimate</li>`)
-      + `</ul><p class="chsure">${CH.WHY_TEST}</p>${su ? `<p class="chsure">How sure: <b>${su.w}</b>. ${su.t[0].toUpperCase() + su.t.slice(1)}.</p>` : ''}${W.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span>${W.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
+      + `</ul><p class="chsure">${CH.WHY_TEST}</p>${W.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span>${W.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
   const L = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, hd = G.h ? ` (handles ${G.h.x} of ${G.h.n})` : '', mp = G.mp != null ? Math.round(G.mp) : null;
   const realTxt = G.rec ? ` These exact six also won ${pct1(G.rec.wr)} of ${G.rec.g.toLocaleString('en-US')} real tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'}), which counts as ${G.real}; with that many games, real results make up ${Math.round(G.w * 100)}% of the grade (more games, more weight).` : ' This exact six hasn\u2019t been played in tournaments yet, so the grade is our own check alone.';
   if (o && o.short) return `<div class="chgwhy" id="chGwhy">${L} · ${G.s} out of 100.${realTxt}<br><span class="t2">A 90+, B 80+, C 70+, D 60+.</span></div>`;
