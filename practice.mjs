@@ -17,7 +17,13 @@ import {stampReg} from './reg-stamp.mjs';
 import {activeReg} from './formats.mjs';
 const MIN_R = 1300, ROUND_R = 1450, MAX_OPP = 160, PER_OPP = 3, LIMIT = 250 * 1024;
 const src = (() => { try { return JSON.parse(fs.readFileSync('out/replays.json', 'utf8')); } catch (e) { return null; } })();
-if (!src || !Array.isArray(src.games) || !src.games.length) { console.log('practice: no replays, out/practice.json left as it was'); process.exit(0); }
+if (!src || !Array.isArray(src.games) || !src.games.length) {
+  const rg = activeReg(), prev = (() => { try { return JSON.parse(fs.readFileSync('out/practice.json', 'utf8')); } catch (e) { return null; } })();
+  if (prev && prev.reg === rg.id && Array.isArray(prev.rounds) && prev.rounds.length > 0) { console.log('practice: no replays, out/practice.json left as it was'); process.exit(0); }
+  fs.writeFileSync('out/practice.json', JSON.stringify(stampReg({updated: new Date().toISOString(), source: '', from: null, to: null, minR: MIN_R, roundR: ROUND_R, dict: [], opp: [], rounds: []}, rg.id)));
+  console.log(`practice: no ${rg.name} replays yet; wrote empty stamped out/practice.json`);
+  process.exit(0);
+}
 const base = n => String(n).replace(/-Mega.*$/, '');
 const shared = (a, b) => { let n = 0; for (const x of a) if (b.includes(x)) n++; return n; };
 const ok = g => g && Array.isArray(g.p) && g.p.length === 2 && g.p.every(s => Array.isArray(s) && s.length === 6) && Array.isArray(g.b) && Array.isArray(g.l) && (g.w === 0 || g.w === 1);
