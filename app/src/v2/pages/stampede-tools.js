@@ -44,8 +44,9 @@ V2.sdtData = () => { const D = V2.sdData(), day = typeof CAL !== 'undefined' ? C
     if (n) out.next = {short: V2.evShort(n), place: n.t === 'online' ? '' : (n.city && n.city !== n.n ? n.city : ''), when: CAL.range(n)}; } catch (e) {}
   return out; };
 // a named Pokémon: its own button over the plate's link (opens its info, as everywhere); o.iw <= 80 asks for the small sprite file
-// a shared rank, as the Ratings page counts it (ties on the shown rating share a rank: 1, 1, 3, 3)
-V2.sdtRank = (rows, i) => 1 + rows.filter(y => y.r > rows[i].r).length;
+// the rank, as the Ratings page counts it (Sim, Nov 25: one rank each, ties broken by the full rating, so the podium reads 2, 1, 3);
+// the shown-rating count is only the fallback when the rank can't be read
+V2.sdtRank = (rows, i) => { try { const k = lairRank(byName.get(rows[i].n)); if (k) return k.rank; } catch (e) {} return 1 + rows.filter(y => y.r > rows[i].r).length; };
 V2.sdtMon = (n, o = {}) => { const E = V2.esc, d = V2.disp(n);
   return `<button type="button" class="sdt-m${o.cls ? ' ' + o.cls : ''}" data-v2mon="${E(n)}" aria-label="${E(d)}${o.say ? ', ' + E(o.say) : ''}: open its info">${o.pre || ''}${V2.mon(n, {bare: true, iw: o.iw})}${o.name === false ? '' : `<b class="sdt-mn">${V2.keepForm(E(d))}</b>`}${o.sub || ''}</button>`; };
 // a picture only (Archetypes, Test Run): no name, no figure, hidden from screen readers

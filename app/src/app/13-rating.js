@@ -168,7 +168,7 @@ function v3Apply(map) { const E = v3Evidence(map); if (E.size < 30) { for (const
     // thin evidence (a handful of games) leans on the same placeholder a never-used Pokémon gets, so being brought twice
     // and missing top cut can't rate below never being tried
     if (e) { const t = R.top + R.slope * (sc.get(n) - smax), fl = Math.min(30, 6 + .24 * (v.intrinsic || 0)), w = e.g / (e.g + 300);
-      v.total = Math.max(1, Math.min(99, Math.round(w * t + (1 - w) * Math.max(t, fl)))); v.tc = e; v.band = Math.round(3 + 15 * (1 - e.g / (e.g + R.K)));
+      v.exact = +Math.max(1, Math.min(99, w * t + (1 - w) * Math.max(t, fl))).toFixed(4); v.total = Math.round(v.exact); v.tc = e; /* exact: the rating before rounding, kept to break ties in the rank (Sim, Nov 25) */ v.band = Math.round(3 + 15 * (1 - e.g / (e.g + R.K)));
       v.parts = {top: pTop.get(n), rw: pRw.get(n), lift: e.full ? pLift.get(n) : null, wr: pWr.get(n)}; }
     // no tournament results: a rough floor from stats, typing and tools, never above the bottom of C
     else { v.total = Math.max(1, Math.min(30, Math.round(6 + .24 * (v.intrinsic || 0)))); v.tc = null; v.band = 18; v.parts = null; } } }

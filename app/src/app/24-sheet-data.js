@@ -36,14 +36,23 @@ const LTIERS = [{k: 'S', min: 80, show: 90, c: '#ffb400', d: 'Top of the format'
   {k: 'C', min: 50, show: 60, c: '#2f9bff', d: 'Niche or team-dependent'}, {k: 'D', min: 35, show: 50, c: '#22b58a', d: 'Needs a specific plan'}, {k: 'F', min: 0, show: 1, c: '#8a90a6', d: 'Rarely worth a slot'}];
 const lTier = t => LTIERS.find(x => t >= x.min) || LTIERS[LTIERS.length - 1];
 function lairRows() { const R = ratings();
-  return ROSTER.map(p => ({p, r: R.get(p.n)})).filter(x => x.r).sort((a, b) => b.r.total - a.r.total || a.p.d.localeCompare(b.p.d)); }
-/* Rank next to the score (Nov 2): position among the Pokémon WITH results (a placeholder rating has no rank); ties share
-   a rank (1 + how many rate strictly higher). Ties are judged on the SHOWN rating (RS): two Pokémon both showing 97 are both #1
-   (player review 3b, Nov 17: the raw score made 97/97 rank #1/#2 while 96/96 shared #3). Cached per ratings map. */
+  return ROSTER.map(p => ({p, r: R.get(p.n)})).filter(x => x.r).sort((a, b) => b.r.total - a.r.total || rEx(b.r) - rEx(a.r) || a.p.d.localeCompare(b.p.d)); }
+const rEx = r => r.exact != null ? r.exact : r.total;
+/* Rank next to the score (Nov 2): position among the Pokémon WITH results (a placeholder rating has no rank). Every Pokémon
+   gets its own rank (Sim, Nov 25: no two #1s or three #7s): ties on the shown rating are broken by our full rating before
+   rounding (r.exact); only an exactly equal full rating shares a rank. This replaces the Nov 17 shared ranks (player review 3b
+   found 97/97 as #1/#2 confusing): the Pokémon page now says why with rankEdge. Cached per ratings map. */
 let lairRankCache = {R: null, m: null, of: 0};
 function lairRank(p) { if (!p) return null; const R = ratings(); if (lairRankCache.R !== R) { const xs = lairRows().filter(x => x.r.tc), m = new Map();
-    xs.forEach((x, i) => m.set(x.p.n, i && RS(xs[i - 1].r.total) === RS(x.r.total) ? m.get(xs[i - 1].p.n) : i + 1)); lairRankCache = {R, m, of: xs.length}; }
+    xs.forEach((x, i) => m.set(x.p.n, i && xs[i - 1].r.total === x.r.total && rEx(xs[i - 1].r) === rEx(x.r) ? m.get(xs[i - 1].p.n) : i + 1)); lairRankCache = {R, m, of: xs.length}; }
   const k = lairRankCache.m.get(p.n); return k ? {rank: k, of: lairRankCache.of} : null; }
+/* rankEdge (Sim, Nov 25): when others show the same rating, one plain line on why this one sits where it does, e.g.
+   "Rillaboom also rates 97. Before rounding, our rating has Sneasler a hair ahead, so it's #1." '' when it shares no rating. */
+function rankEdge(p) { const k = lairRank(p), r = ratings().get(p.n); if (!k || !r) return ''; const rs = RS(r.total), xs = lairRows().filter(x => x.r.tc && RS(x.r.total) === rs);
+  if (xs.length < 2) return ''; const i = xs.findIndex(x => x.p.n === p.n), lv = xs.filter(x => x.p.n !== p.n && lairRank(x.p).rank === k.rank);
+  if (lv.length) return `${lv.map(x => x.p.d).join(' and ')} ${lv.length > 1 ? 'are' : 'is'} exactly level with it on our full rating, so they share #${k.rank}.`;
+  if (xs.length === 2) { const o = xs[1 - i]; return `${o.p.d} also rates ${rs}. Before rounding, our rating has ${p.d} a hair ${i ? 'behind' : 'ahead'}, so it\u2019s #${k.rank}.`; }
+  const ord = ['1st', '2nd', '3rd'][i] || `${i + 1}th`; return `${xs.length} Pokémon rate ${rs}. Before rounding, our rating puts ${p.d} ${ord} of them, so it\u2019s #${k.rank}.`; }
 /* what the N in "of N" counts (Sim, Nov 4): the long form says it in full, 'cap' is the short form for tight spots,
    short (1) is just "#20"; '' when it has no results yet */
 const rankTxt = (p, short) => { const k = lairRank(p); return k ? (short === 'cap' ? `#${k.rank} of ${k.of} with results` : short ? `#${k.rank}` : `#${k.rank} of ${k.of} Pokémon with tournament results`) : ''; };

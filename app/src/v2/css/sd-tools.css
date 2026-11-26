@@ -68,7 +68,7 @@
 .sdt-step .np-mon .st,.sdt-six .np-mon .st{max-width:none;margin-left:calc(50% - var(--iw) / 2)}
 .sdt-blk{display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;min-height:var(--s24);padding:var(--s2) var(--s1);background:var(--sd-pod);color:var(--sd-on-feat)}
 .sdt-step.s1 .sdt-blk{min-height:calc(var(--s24) + var(--s10));background:var(--sd-pod-top);color:var(--sd-on-race)}
-.sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:calc(var(--s24) - var(--s4))} /* ranks 1 share the top step (ties share a rank, as on Ratings) */
+.sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:calc(var(--s24) - var(--s4))} /* the steps follow the Ratings rank (one each since Nov 25; an exact tie still shares a step) */
 .sdt-blk b{font-size:var(--t34)}
 .sdt-blk span{font:700 var(--t13)/1.25 var(--b)}
 
@@ -416,6 +416,9 @@
   .sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:60px}.sdt-blk small,.sdt-step .sdt-mn{display:none}
   /* design critique (Nov 23, recognition over recall): the podium keeps each Pokémon's name under its number, narrow letters to fit */
   .sdt-ra .sdt-blk>span{display:block;font:700 var(--t13)/1.2 var(--b);font-stretch:75%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  /* podium (Nov 25): #1 stands tallest. The 80px base step for #2 and #3 outranked this card's short steps, so #2/#3 stood above #1
+     (hidden while #1 and #2 shared the step) */
+  .sdt-step.s1 .sdt-blk{min-height:var(--s16)}.sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:var(--s5)}
   /* and the big damage number says whose HP it is */
   .sdt-grid>.sdt-dc .sdt-of{display:block;margin-top:var(--s1);font:700 var(--t17)/1.3 var(--b)}
   /* Battle on desktop: one of yours against one of theirs, big (four sprites in a quarter-width card came out 26-50px) */
@@ -437,3 +440,5 @@
 /* hP4 Nov 24: 1100-1279 keeps the seven chips in one row (was 4 + 3, one empty slot): picture over name, so each fits a seventh */
 @media (min-width:1100px) and (max-width:1279.98px){.sdt-chp{flex-direction:column;justify-content:center;gap:var(--s1);padding:var(--s2) var(--s3);text-align:center}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:136px}.sdt-grid>.sdt-dc{column-gap:var(--s6)}}
 @media (min-width:1100px) and (max-width:1365.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{padding-inline:calc(var(--s3) + var(--k))}.sdt-grid{column-gap:var(--s4)}} /* narrower card padding so Battle's two stand 56px+ */
+/* podium names whole at 1100-1279 (Nov 25): the card is 179px there, so the steps lose the side padding and take a 4px gap (49px to 60px each; 'Kingam…' came out cut) */
+@media (min-width:1100px) and (max-width:1279.98px){.sdt-ra>.sdt-pod{column-gap:var(--s1);padding-inline:0}}
