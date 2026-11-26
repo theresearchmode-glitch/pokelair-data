@@ -43,3 +43,5 @@
 62 | started | - | experiments/switch-preflight.mjs (read-only runbook step 1 check + fake fail proofs + runbook line) | Thu Nov 26, 2:55 PM
 62 | done | alt/gemini-preflight 57fe28b3 | experiments/switch-preflight.mjs (read-only runbook step 1 check, CHECK BY HAND fallback, live + all 7 fake FAIL paths verified, 1 line in switch-runbook-nov28.md) | Thu Nov 26, 2:57 PM
 63 | started | - | CDP trace waterfall breakdown for /, /pokemon/garchomp, /team, /meta, /#news on real deploy | Thu Nov 26, 2:58 PM
+63 | done | alt/gemini-speed-trace 03773000 | CDP trace waterfall for 5 routes + top 10 costs in docs/rebuild/test-runs/kip-job63-speed-trace.md; LCP 4.5-4.8s (v2.css 144.8KB gz blocks FCP 2.3-2.5s; sync v2.js 540.2KB gz blocks LCP 4.5-4.8s) | Thu Nov 26, 3:07 PM
+64 | started | - | First-screen static prerender + critical CSS + async v2.css + defer v2.js on alt/gemini-speed-first-screen from origin/alt/speed-review | Thu Nov 26, 3:07 PM
