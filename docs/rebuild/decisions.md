@@ -2783,3 +2783,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:38 PM: switch-smoke (Kip 54) on batch5 build with today's main data: ALL PASSED (346 rated, 17,676 teams, 114 events, Data as of Nov 26). Game Plan v101.
 - 2:39 PM: Local full v2-minors on a design6 58137089 build: 3 FAILs (My Team 390 4.83>4.78, MT390-1 4.423>4.35, TF-2 Track Record 3.013>3) that GitHub's design6 run did not show; flagged to helper's batch6 run; caps are Sim's.
 - 2:40 PM: Sim: speed is a big deal; Kip's main line after 61/62. Queued SPEED PROGRAM 63 (measure where 4.6 s goes), 64 (static first screen before the app), 65 (less JS up front), 66 (pictures); goal LCP < 2.5 s on the real deploy.
+- 2:42 PM: WebKit type-rows check: 60 of 60 OK for Incineroar, Garchomp, Sylveon, Gholdengo, Farigiraf (375-1440, light/dark: no chip past the rows, no sideways scroll, no errors); Dondozo has no page in the frozen M-C data (12 'none', expected).
