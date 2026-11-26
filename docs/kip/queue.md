@@ -119,3 +119,7 @@ experiments/md-roster-step-test.mjs copied a fixed list of app/ files into its s
 which imports the repo-root split-docs.mjs) the scratch public build failed and 5c blamed the roster step. HH changed the copy step to
 take every top-level app/*.mjs|json and the root *.mjs, and 5c now prints the build's error line. Lesson for new scratch-repo tests:
 copy by pattern, not by a list. No action needed.
+
+## HH note, Thu Nov 26, 4:56 AM: job 47 is taken
+Job 47 (Turnstile double render) must land before Saturday and you had not started it, so HH's helper is doing it on alt/turnstile-once.
+Skip 47. Your order now: 44, 45, 48.
