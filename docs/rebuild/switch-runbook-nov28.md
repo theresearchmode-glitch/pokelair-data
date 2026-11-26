@@ -11,9 +11,10 @@ Sim says yes on the day; nothing here runs before that.
 3. Kip job 47 (Turnstile drawn twice): DONE, merged in design6 9bab576f (helper Job I; cause: redraw replaced the widget box).
 4. The score batch: score fix on main (alt/score-ebfix4, auto fast-forward on green), option C + gate threshold + recScore on design6
    (alt/bands-c2 + dea859e4). Under C the accuracy gate counts teams favoured to win (CH.ssOfE(.5)), so it keeps its baseline.
-4b. Kip job 48: merge-check.sh target main must run BOTH lists (main's and design6's) on Saturday's merge. Job 43's main list is
-   main's old tests only (HH, Thu Nov 26 12:13 AM review). Until job 48 lands, run merge-check twice on the scratch merge: target main, then
-   the design6 list (`bash docs/rebuild/merge-check.sh origin/claude/design6 claude/design6` on a copy branch), and record both.
+4b. Kip job 48: merge-check.sh target main runs BOTH lists. DONE (Kip, verified by HH Thu Nov 26 morning: merge-gate-test ALL PASSED
+   incl. 5d/5e, a failing test from either list blocks the main stamp). It switches on by itself when the merge's own test.yml has
+   app/test/v2-public.mjs, so on Saturday ONE run of `REPORT_OK=1 bash docs/rebuild/merge-check.sh <scratch> main` covers both lists.
+   In alt/day-batch (gate running Thu morning); rehearsal 3 (helper Job R, alt/switch-rehearsal3) checks it on a real scratch merge.
 5. experiments/reg-test.mjs: 3 failures once main's regulation.json meets design6 (Kip job 40 MEDIUM-3; job 41 section 5 has the
    proposed change). It is not in test.yml, so it doesn't block; decide with Sim whether to update it.
 
@@ -34,8 +35,8 @@ Report: docs/rebuild/test-runs/switch-rehearsal2-nov26.md. On Saturday, redo the
    - **official.mjs: main's regulation.json-driven header. Taking design6's copy would revert it to a hard-coded REG = 'M-C'.**
    - update.mjs: main's nTeams zero-division guard AND design6's `megaN: MG`.
    Then: 0 conflict markers (rg), `node --check` on the .mjs files, both YAML files load.
-3. **Gate:** the merge gate for a merge INTO main (Kip job 43 makes merge-check.sh handle main; until it lands, run the steps of
-   test.yml by hand and record each exit code). Push main only when everything passes.
+3. **Gate:** `REPORT_OK=1 bash docs/rebuild/merge-check.sh <scratch branch> main` (Kip 43 + 48: main's list AND design6's list,
+   automatically). Record the step count and every exit code. Push main only when everything passes.
 4. **GitHub:** "Test NastyPlot page" green on main, then "Promote to live" advances `live`.
 5. **First merged data run:** dispatch "Update Limitless data" on main, so out/regstate.json, out/post.json (with `ran`), ckwin,
    megaN and track.json bands land. Tests green again, live advances. (regstate.json is missing until this run: expected, job 41 #2.)
