@@ -27,3 +27,5 @@
 54 | started | - | switch-day smoke test (experiments/switch-smoke.mjs) + runbook step 8 | Thu Nov 26, 10:42 AM
 54 | done | alt/gemini-switch-smoke 0d484879 | experiments/switch-smoke.mjs checks 10 views at 390x844 + 1440x900; design6 + origin/main out/ (Nov 26, 346 rated, 17606 teams, 114 events, 52 stories) ALL PASSED; fails on missing post.json and injected pageerror | Thu Nov 26, 10:51 AM
 55 | started | - | Core Web Vitals speed check (app/test/speed-check.mjs) + top 5 wins | Thu Nov 26, 10:51 AM
+55 | done | alt/gemini-speed-check 139d4fec | app/test/speed-check.mjs (390x844, 4x CPU, Fast 3G): /pokemon PASS (1.77s, 266 KB, CLS 0); 9 SPA pages FAIL (LCP 10.9-11.5s, 2.07-2.30 MB, dominated by 1.79 MB gz v2.js with 1.56 MB inlined base64 ITEM_IMG); top 5 fixes with file:line in report | Thu Nov 26, 11:15 AM
+56 | started | - | 12 Reg M-D fixture teams + experiments/md-fixtures-test.mjs | Thu Nov 26, 11:15 AM
