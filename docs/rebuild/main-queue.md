@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 10:22 PM (10:22:48)  date: Wed Nov 25, 2026
-NOW: HH: merge-check of alt/phone-speed2 into design6 (worktree mgps, merge 37d4d67a; GitHub green on 0c897a0d); push when ALL PASSED.
+NOW: HH: merge-check of alt/phone-speed2 into design6 (worktree mgps, merge 250e56e2 on design6 c4033cc4; GitHub green on 0c897a0d); push when ALL PASSED.
 NOW (helper): score batch prep: alt/score-ebfix2 onto main + alt/bands-c2 onto design6, tests + pictures. NOW (Kip): job 40 switch audit.
 IN GITHUB: design6 603be872 (tonight's push); alt/no-rk9-2 156129e0 (then main fast-forward; same tree as green d53d3932).
 NEXT: main fast-forward to alt/no-rk9-2 when green (no merge commit, no stamp needed).
