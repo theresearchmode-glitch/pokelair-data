@@ -436,18 +436,14 @@
 /* ---- Tablet Home (Nov 26, proposal for Sim: Home was 6.4 screens at 820x1180 and 5.5 at 1024x1366, cap 4): from 700, not 1100, the tools
    band is the desktop rack (the Damage Calculator band, four big cards, seven picture chips, More tools) and the post band is Post X beside
    the parcel. Fitted to a tablet: the calc's words sit above its hit (side by side the number ran off the band), the four cards are 2 by 2
-   under 1000 (four across, their titles and the podium names ran out of 165-210px cards) and four across with smaller titles from 1000, the chips keep their picture over the name (one row of seven), every target 44px+.
+   (four across, 165-240px wide, their titles, the podium names and Battle's 56px sprites didn't fit), the chips keep their picture over the name (one row of seven), every target 44px+.
    Nothing leaves: each tool keeps its card or chip, as on desktop ---- */
 @media (min-width:700px) and (max-width:1099.98px){
   .sdt-grid>.sdt-dc{grid-template-columns:minmax(0,1fr);row-gap:var(--s4);padding:var(--s6) calc(var(--s8) + var(--k))}
   .sdt-grid>.sdt-dc .sdt-t{font-size:var(--t28)}
-  .sdt-grid>.sdt-dc>.sdt-hit{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--s6)}
-  .sdt-grid>.sdt-dc .sdt-duel{margin-top:0}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:120px}
+  .sdt-grid>.sdt-dc>.sdt-hit{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);column-gap:var(--s4)}
+  .sdt-grid>.sdt-dc .sdt-duel{margin-top:0}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:96px}
   .sdt-grid>.sdt-dc .sdt-pct{font-size:var(--d64)}
-  .sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t20)}
-}
-@media (min-width:700px) and (max-width:999.98px){
   .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:span 6;margin-top:var(--s12)}
   .sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t24)}
-  .sdt-grid>.sdt-dc>.sdt-hit{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);column-gap:var(--s4)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:96px}
 }
