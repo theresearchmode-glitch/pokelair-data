@@ -1,6 +1,6 @@
 // Sim's Nov 20 picks from the outside audit (docs/rebuild/research/audit-nov20-options.md; Sim took every recommended option, 8:17 AM):
-//  C  (Q72) Home 700-1279: the Events and How We Calculate titles share one left edge (700-1099); the six "More tools" links sit in one
-//     row (700-1279) spread across the full width (700-1099); the headline "Same herd. Twelve tools." breaks after "herd." with
+//  C  (Q72) Home 700-1279: the six "More tools" links sit in one row (700+); (Nov 26: the rack replaced the 700-1099 end tiles, so the
+//     title-edge and full-width checks became: the 7 tool chips' words on 2 lines at most, inside the chip); the headline "Same herd. Twelve tools." breaks after "herd." with
 //     "Twelve tools." whole on line 2 (700-1279, and phones as before); one line from 1280 as before.
 //  D1 (Q73) Usage podium benches (since the kit reskin proposal, Nov 22: the top-ten rows, see the D1 block), 320-599: a Mega name puts "MEGA" on the tag line (.gs-mg, as "Usually alongside" does), so every
 //     bench row's numbers sit level (0px spread); 600+ keeps "Mega Charizard Y" on the name line and level rows.
@@ -38,15 +38,21 @@ for (const th of ['light', 'dark']) {
       return {span: sp ? {txt: sp.textContent, words} : null,
         ev: vis(ev) ? ev.getBoundingClientRect().left : null, hw: vis(hw) ? hw.getBoundingClientRect().left : null,
         n: li.length, tops: li.map(r => Math.round(r.top)), l0: li.length ? li[0].left - (mr.left + parseFloat(cs.paddingLeft)) : null,
-        rEnd: li.length ? (mr.right - parseFloat(cs.paddingRight)) - li[li.length - 1].right : null}; });
+        rEnd: li.length ? (mr.right - parseFloat(cs.paddingRight)) - li[li.length - 1].right : null,
+        /* Nov 26: each tool chip's words, lines and overflow past the chip (the rack: chips at every width) */
+        chips: [...document.querySelectorAll('#main .sdt-chp')].filter(vis).map(c => { const C = c.getBoundingClientRect(), b = c.querySelector(':scope>b') || c, rg = document.createRange(); rg.selectNodeContents(b);
+          const L = [...rg.getClientRects()].filter(r => r.width), tops = new Set(L.map(r => Math.round(r.top))); return [b.textContent.trim(), tops.size, Math.round(Math.max(0, ...L.map(r => Math.max(r.right - C.right, C.left - r.left))))]; })}; });
     const S = R.span, top = k => { const x = S && S.words.find(([t]) => t === k); return x ? x[1] : null; }, rows = S ? S.words.map(([t, y]) => `${t}@${y}`).join(' ') : 'no headline';
     const [tS, tH, tW, tT] = ['Same', 'herd.', 'Twelve', 'tools.'].map(top), seen = [tS, tH, tW, tT].every(v => v != null);
     if (W < 1280) ok(S && S.txt === 'Twelve tools.' && seen && tS === tH && tW > tH && tW === tT, `${tag}: headline breaks after "herd.", "Twelve tools." whole on line 2 (${rows})`);
     else ok(seen && tS === tH && tH === tW && tW === tT, `${tag}: headline on one line as before (${rows})`);
-    if (W >= 700 && W < 1100) ok(R.ev != null && R.hw != null && Math.abs(R.ev - R.hw) <= 0.5, `${tag}: Events and How We Calculate titles share one left edge (${R.ev != null ? r1(R.ev) : '-'} / ${R.hw != null ? r1(R.hw) : '-'})`);
+    /* Nov 26 (Sim approved one Home tools rack at every width): Events and How We Calculate are chips now, not the 700-1099 end tiles,
+       so their title check (Q72) is replaced by: every chip's words on at most 2 lines and inside the chip (at 1280 "How We Calculate"
+       took 3 lines and was cut). The More tools row keeps one row, laid out as at 1100+ (it no longer spreads to the full width at 700-1099). */
+    if (W >= 700) { const badChip = R.chips.filter(([, n, o]) => n > 2 || o > 0.5);
+      ok(R.chips.length === 7 && !badChip.length, `${tag}: the 7 tool chips' words on 2 lines at most, inside the chip (${R.chips.length} chips${badChip.length ? '; ' + badChip.map(([t, n, o]) => `${t}: ${n} lines, ${o}px out`).join(', ') : ''})`); }
     if (W >= 700) { const one = R.n === 6 && Math.max(...R.tops) - Math.min(...R.tops) <= 1;
-      ok(one, `${tag}: the six More tools links in one row (${R.n} links, tops ${[...new Set(R.tops)].join('/')})`);
-      if (W < 1100) ok(one && Math.abs(R.l0) <= 1 && Math.abs(R.rEnd) <= 1, `${tag}: the row spans the full width (first link ${r1(R.l0)}px from the left edge, last ${r1(R.rEnd)}px from the right)`); }
+      ok(one, `${tag}: the six More tools links in one row (${R.n} links, tops ${[...new Set(R.tops)].join('/')})`); }
     await done(P, tag); }
 
   // D1 + E1: Usage

@@ -487,3 +487,4 @@
    cut). Such a range (.sdt-pct3, set in stampede-tools.js) takes the smaller fluid display size where the band is tight; iPads keep 64px */
 @media (max-width:699.98px),(min-width:1100px){.sdt-grid>.sdt-dc .sdt-pct.sdt-pct3{font-size:var(--d-calctight)}.sdt-grid>.sdt-dc .sdt-pct.sdt-pct2{font-size:var(--d-calcmid)}} /* Kip's review: a wide 2-digit range ("88–99%") ran past the slant at 380-390 and 1180-1280 */
 @media (max-width:379.98px){.sdt-grid>.sdt-dc .sdt-pct.sdt-pct3,.sdt-grid>.sdt-dc .sdt-pct.sdt-pct2{font-size:var(--t34)}} /* 320-379: the 34px step, as for two digits */
+@media (min-width:1280px) and (max-width:1365.98px){.sdt-chp{flex-direction:column;justify-content:center;gap:var(--s1);padding:var(--s2) var(--s3);text-align:center}} /* Nov 26: at 1280 "How We Calculate" took 3 lines beside its number and its end was cut by the chip's slant; stacked as at 700-1279 */
