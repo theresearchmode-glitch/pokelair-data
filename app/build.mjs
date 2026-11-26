@@ -259,7 +259,7 @@ if (process.argv.includes('--v2')) {
        so a remaining rule targets /v2; /<tool>/ answers 301 to /<tool> (it gave 404); the old /data/*, /art/*, /art-s/*, /fonts/*, /routes/*
        rules rewrote to themselves and are gone (files are served as they are; /data/* goes through the Worker). No splat lines left. */
     fs.writeFileSync(dir + 'dist/_redirects', pubPaths.map(p => `${p}/ ${p} 301\n`).join('') + pubPaths.filter(p => !ownFile.has(p)).map(p => `${p} /v2 200\n`).join(''));
-    const cacheHeaders = '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n';
+    const cacheHeaders = '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/static.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n';
     writeHeaders = html => fs.writeFileSync(dir + 'dist/_headers', securityHeaders(html) + cacheHeaders);
     writeHeaders(page);
   }
