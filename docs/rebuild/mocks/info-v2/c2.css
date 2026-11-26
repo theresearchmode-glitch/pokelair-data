@@ -1,0 +1,15 @@
+/* Concept 2: Trading Card (mock-up only) */
+.ms-head{display:block!important;position:relative}
+.mk-card{position:relative;box-sizing:border-box;width:100%;margin:var(--s8) 0 var(--s4);padding:10px;border-radius:18px;background:linear-gradient(135deg,var(--t1),var(--t2));box-shadow:0 18px 40px -18px rgba(0,0,0,.7)}
+.mk-in{position:relative;border-radius:12px;overflow:hidden;background:radial-gradient(120% 90% at 50% 75%,rgba(var(--own),.55),rgba(var(--own),.12) 55%,#15151F 100%);padding:14px 14px 12px}
+.mk-in::before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.18) 45%,transparent 60%);pointer-events:none}
+.mk-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;position:relative;z-index:2}
+.mk-top h2{margin:0!important;font-size:30px!important;color:#fff!important;line-height:1}
+.mk-badge{flex:none;text-align:right;color:#fff}.mk-badge b{display:block;font:900 40px/.85 var(--u);font-style:italic;letter-spacing:-.04em}.mk-badge span{font:900 15px/1 var(--u);font-style:italic;color:#9ED8FF}
+.mk-ty{display:flex;gap:6px;margin-top:8px;position:relative;z-index:2}
+.mk-card .ms-art{display:flex;justify-content:center;margin:0!important;position:relative;z-index:1}.mk-card .ms-art .np-mon,.mk-card .ms-art .np-mon .st{--iw:210px!important}
+.mk-foot{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.mk-foot div{background:rgba(10,10,18,.62);border-radius:8px;padding:8px 8px 7px;color:#fff}.mk-foot b{display:block;font:900 22px/1 var(--u);font-style:italic}.mk-foot small{font:600 12px/1.2 var(--b);color:#D8D4E6}
+.mk-rank{position:relative;z-index:2;margin-top:8px;font:600 12px/1.3 var(--b);color:#E6E2F2;text-align:center}
+.ms-hd .ms-rate,.ms-hd>h2,.ms-hd .ms-ty,.ms-hd .ms-nums{display:none!important}
+.mk-foot small{display:block}

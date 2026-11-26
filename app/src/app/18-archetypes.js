@@ -100,9 +100,7 @@ function renderMatchup() {
   const monLine = (i, tag) => { const hs = handles(i);
     return `<div class="muline"><span class="mutag ${tag === 'Lead' ? 'lead' : ''}">${tag}</span><span class="in">${nm(i)}</span><span class="chips">${mine[i].types.map(t => chip(t)).join('')}</span><span class="t2">${hs.length ? 'Good into ' + hs.map(th).join(', ') : 'Flexible pick, no standout matchup'}</span></div>`; };
   // their biggest threats: who hits several of your picks super effectively
-  const threats = theirs.map((o, j) => { const hit = r.chosen.filter(i => r.h.def[i][j] && r.h.def[i][j].x >= 2);
-    const ans = r.chosen.filter(i => r.h.M[i][j] >= 1); return {j, hit, ans, move: hit.length ? r.h.def[hit[0]][j].e.move : ''}; })
-    .filter(t => t.hit.length >= 2 || (t.hit.length && !t.ans.length)).sort((a, b) => b.hit.length - a.hit.length).slice(0, 4);
+  const threats = deeperThreats(r, theirs); // shared with the rebuild's Battle (Nov 12)
   const grid = `<details class="foot"><summary>Full matchup grid</summary><div class="tablewrap" style="margin-top:8px"><table><tr><th class="t">You ↓ / Them →</th>${theirs.map(o => `<th title="${esc(o.d)}">${esc(o.d.replace('Mega ', 'M·').slice(0, 12))}</th>`).join('')}</tr>
     ${mine.map((m, i) => `<tr><td class="t">${nm(i)}</td>${theirs.map((o, j) => { const v = r.h.M[i][j]; const c = v >= 1.5 ? 'mq' : v >= .75 ? 'mh' : v <= -1.5 ? 'm4' : v <= -.75 ? 'm2' : ''; return `<td><span class="m ${c}">${v > 0 ? '+' : ''}${Math.round(v * 4) / 4}</span></td>`; }).join('')}</tr>`).join('')}</table></div>
     <p>Plus means you hit them harder than they hit you, using each side's most common moves and abilities. Speed breaks ties.</p></details>`;
@@ -112,7 +110,7 @@ function renderMatchup() {
       ${notes.map(n => `<div class="prob-row"><span class="sev ${n.tone === 'good' ? 'ok' : n.tone === 'bad' ? 'hi' : 'mid'}">${n.tone === 'good' ? 'Edge' : n.tone === 'bad' ? 'Watch' : 'Note'}</span><div><b>${esc(n.t)}</b>: ${esc(n.d)}</div></div>`).join('')}
       ${ll.length === 2 ? `<p class="t2" style="margin:0">Likely lead: <b>${esc(ll[0].d)}</b> + <b>${esc(ll[1].d)}</b> (their speed and field setters, then Fake Out).</p>` : ''}</div>`; })() : '';
   // Battle mode (47-battle-mode.js) shows the four, the leads and turn 1; this is the deeper read underneath it
-  const thr = `<div class="plan"><div class="ph"><span class="pt">Their threats</span><span class="vsub">to your four</span></div><div class="problems">${threats.length ? threats.map(t => `<div class="prob-row"><span class="sev ${t.ans.length ? 'mid' : 'hi'}">Watch</span><div><b>${th(t.j)}</b>: ${esc(t.move)} hits ${t.hit.map(nm).join(', ')} super effectively. ${t.ans.length ? 'Answer: ' + t.ans.map(nm).join(', ') + '.' : 'No clean answer in your 4, so keep it in check with speed control or double-targeting.'}</div></div>`).join('')
+  const thr = `<div class="plan"><div class="ph"><span class="pt">Their threats</span><span class="vsub">to your four</span></div><div class="problems">${threats.length ? threats.map(t => `<div class="prob-row"><span class="sev ${t.ans.length ? 'mid' : 'hi'}">Watch</span><div><b>${th(t.j)}</b>: ${t.by.map(g => `${esc(g.move)} hits ${g.hit.map(nm).join(', ')}`).join('; ')} (super effective). ${t.ans.length ? 'Answer: ' + t.ans.map(nm).join(', ') + '.' : 'No clean answer in your 4, so keep it in check with speed control or double-targeting.'}</div></div>`).join('')
       : '<div class="prob-row"><span class="sev ok">Clear</span><div>None of their Pokémon threatens several of your picks at once.</div></div>'}</div></div>`;
   el.innerHTML = archBlock + thr + grid;
   if (typeof view !== 'undefined' && view === 'matchup') safe('battle', renderBattle);
@@ -121,21 +119,13 @@ function renderMatchup() {
 // Biggest threats to your team from the current meta list.
 function renderThreats(ms, useA) {
   const el = $('threats'); if (!el) return;
-  const d = metaDoc();
   if (!ms.length) { el.innerHTML = '<div class="empty-note">Add Pokémon to see which meta threats hit your team hardest.</div>'; return; }
-  if (!d || !d.top || !d.top.length) { el.innerHTML = '<div class="empty-note">Threats appear once meta data has loaded.</div>'; return; }
-  let RDx = null; try { RDx = prepOf(ms); } catch (e) {} const rdLv = n => { if (!RDx) return null; const b = (byName.get(n) || {}).b; const row = RDx.rows.find(x => x.t && x.t.n === n) || RDx.rows.find(x => x.t && (byName.get(x.t.n) || {}).b === b); return row ? row.level : null; }; const rdName = (n, d) => { if (!RDx) return d; const b = (byName.get(n) || {}).b, row = RDx.rows.find(x => x.t && x.t.n === n) || RDx.rows.find(x => x.t && (byName.get(x.t.n) || {}).b === b); return row ? row.t.d : d; };
-  const theirs = d.top.slice(0, 20).map(t => { const p = byName.get(t.n); return p ? oppMember(megaFormFor(p, t)) : null; }).filter(Boolean);
-  const h = headToHead(ms, theirs, useA);
-  const rows = theirs.map((o, j) => { const hit = ms.map((m, i) => i).filter(i => h.def[i][j] && h.def[i][j].x >= 2);
-    const ans = ms.map((m, i) => i).filter(i => h.M[i][j] >= 1);
-    return {o, j, hit, ans, danger: hit.length * 2 + (ans.length ? 0 : 3) - ans.length * .5 + viability(o.p) / 50}; })
-    .filter(r => r.hit.length >= 2 || !r.ans.length).sort((a, b) => b.danger - a.danger).slice(0, 8);
+  /* the rows are worked out in 59-matchup-data.js (biggestThreats), shared with the new build */
+  const rows = biggestThreats(ms, useA); if (!rows) { el.innerHTML = '<div class="empty-note">Threats appear once meta data has loaded.</div>'; return; }
   const allRows = rows.length; if (PHONE() && !ui.threatsAll) rows.length = Math.min(rows.length, 4);
-  el.innerHTML = rows.length ? rows.map(r => `<div class="item"><div style="min-width:0"><div class="t1">${esc(rdName(r.o.p.n, (byName.get(r.o.p.n) || r.o).d))} <span class="chips" style="display:inline-flex;vertical-align:middle">${r.o.types.map(t => chip(t)).join('')}</span></div>
-      <div class="t2">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => esc(ms[i].d)).join(', ') : rdLv(r.o.p.n) >= 2 ? 'Answered by your scouting report (speed control, support or a combined KO), not 1-on-1' : '<span class="no">No clean answer</span>'}${(() => { try { let b = null; ms.forEach(m => { const x = bestHitOn(r.o.p, r.o.moves || [], m.p, null, m); if (x && (!b || x.r.max / x.r.hp > b.x.r.max / b.x.r.hp)) b = {x, m}; });
-        return b ? `<br>Hardest hit: ${esc(b.x.mv.name)} does up to ${Math.round(100 * b.x.r.max / b.x.r.hp)}% to ${esc(b.m.d)}.` : ''; } catch (e) { return ''; } })()}</div></div>
-      ${(() => { const lv = rdLv(r.o.p.n); return lv != null ? `<span class="pill ${['b3', 'b2', 'b1', 'b1'][lv]}">${['No answer', 'Shaky', 'Handles it', 'Beats it'][lv]}</span>` : `<span class="pill ${r.ans.length ? (r.hit.length >= 3 ? 'b2' : 'b1') : 'b3'}">${r.ans.length ? (r.hit.length >= 3 ? 'Dangerous' : 'Manageable') : 'No answer'}</span>`; })()}</div>`).join('')
+  el.innerHTML = rows.length ? rows.map(r => `<div class="item"><div style="min-width:0"><div class="t1">${esc(r.name)} <span class="chips" style="display:inline-flex;vertical-align:middle">${r.o.types.map(t => chip(t)).join('')}</span></div>
+      <div class="t2">${r.hit.length ? `Hits ${r.hit.length} of yours super effectively (${r.hit.map(i => esc(ms[i].d)).join(', ')})` : 'Hard to hit back'}. ${r.ans.length ? 'Your answers: ' + r.ans.map(i => esc(ms[i].d)).join(', ') : r.lv >= 2 ? 'Answered by your scouting report (speed control, support or a combined KO), not 1-on-1' : '<span class="no">No clean answer</span>'}${r.hard ? `<br>Hardest hit: ${esc(r.hard.mv)} does up to ${r.hard.pct}% to ${esc(r.hard.m.d)}.` : ''}</div></div>
+      ${r.lv != null ? `<span class="pill ${['b3', 'b2', 'b1', 'b1'][r.lv]}">${['No answer', 'Shaky', 'Handles it', 'Beats it'][r.lv]}</span>` : `<span class="pill ${r.ans.length ? (r.hit.length >= 3 ? 'b2' : 'b1') : 'b3'}">${r.ans.length ? (r.hit.length >= 3 ? 'Dangerous' : 'Manageable') : 'No answer'}</span>`}</div>`).join('')
     : '<div class="empty-note">No top meta Pokémon hits several of yours super effectively while going unanswered. Nice.</div>';
   if (allRows > rows.length) el.innerHTML += `<div class="morebar"><button class="btn sm" type="button" id="threatsAllBtn">Show all ${allRows}</button></div>`;
 }
@@ -211,7 +201,7 @@ function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) r
 // Trends: compare each Pokémon's rank today with about a week ago.
 function cleanHistory(d) { if (!d || !Array.isArray(d.days)) return null;
   const obj = o => { const out = {}; if (o && typeof o === 'object') for (const k of Object.keys(o).slice(0, 80)) { const v = num(o[k]); if (v != null && typeof k === 'string') out[k] = v; } return out; };
-  return {days: d.days.slice(-40).filter(x => x && typeof x.d === 'string').map(x => ({d: x.d.slice(0, 10), ing: obj(x.ing), tour: obj(x.tour), lad: obj(x.lad)}))}; }
+  return {days: d.days.slice(-40).filter(x => x && typeof x.d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.d.slice(0, 10)) && !isNaN(Date.parse(x.d.slice(0, 10) + 'T12:00:00Z'))).map(x => ({d: x.d.slice(0, 10), ing: obj(x.ing), tour: obj(x.tour), lad: obj(x.lad)}))}; } /* code review B10: a malformed day is dropped (trendFor's toISOString threw on it), as cleanWeekly does */
 function trendKey() { return {ingame: 'ing', tour: 'tour', ladder: 'lad'}[ui.metaView]; }
 function trendFor(name, rank) {
   const h = META.history; if (!h || h.days.length < 2) return null;
@@ -235,3 +225,21 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ttvs]'); if (!b) return;
   const t = META.teams && META.teams.teams[+b.dataset.ttvs]; if (!t) return;
   S.opp = t.mons.slice(0, 6); while (S.opp.length < 6) S.opp.push(''); ui.oppFrom = {who: t.player, key: S.opp.slice().sort().join('|')}; persist(); setView('matchup'); toast(`Opponent set: ${teamWho(t)}`); });
+
+// ---------- the team's weather or terrain word ("Sun team"), shared (R4, Nov 11; was in 66-extras-b.js) ----------
+const WXFX = {rain: {n: 'Rain', p: 22}, sun: {n: 'Sun', p: 2}, sand: {n: 'Sand', p: 26}, snow: {n: 'Snow', p: 22},
+  grassy: {n: 'Grassy Terrain', p: 9}, psy: {n: 'Psychic Terrain', p: 3}, elec: {n: 'Electric Terrain', p: 10}, misty: {n: 'Misty Terrain', p: 12}};
+function wxKeyOf(ms) { if (!ms || !ms.length) return null; let a = null; try { a = teamArchetype(ms); } catch (e) {} if (!a || !a.field) return null;
+  /* a weather beats a terrain; within each, one the team uses (active) beats a setter on its own */
+  const pick = keys => { const f = a.field.filter(x => keys.includes(x.key)); const x = f.find(y => y.active) || f[0]; return x ? x.key : null; };
+  return pick(WEATHER_KEYS) || pick(TERRAIN_KEYS); }
+const wxName = k => WXFX[k] ? WXFX[k].n + ' team' : '';
+
+// their biggest threats to your four: who hits several of your picks super effectively (moved out of renderMatchup, Nov 12, so the
+// rebuild's Battle "Deeper read" shows the same list). r = planMatchup(mine, theirs, ...).
+function deeperThreats(r, theirs) {
+  return theirs.map((o, j) => { const hit = r.chosen.filter(i => r.h.def[i][j] && r.h.def[i][j].x >= 2);
+    const ans = r.chosen.filter(i => r.h.M[i][j] >= 1), by = []; /* by: each move with the Pokémon it hits (Sim, Nov 12: one move named for all was misleading) */
+    for (const i of hit) { const mv = r.h.def[i][j].e.move, g = by.find(x => x.move === mv); if (g) g.hit.push(i); else by.push({move: mv, hit: [i]}); }
+    return {j, hit, ans, by, move: hit.length ? r.h.def[hit[0]][j].e.move : ''}; })
+    .filter(t => t.hit.length >= 2 || (t.hit.length && !t.ans.length)).sort((a, b) => b.hit.length - a.hit.length).slice(0, 4); }

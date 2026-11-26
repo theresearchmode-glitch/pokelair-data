@@ -1,0 +1,1252 @@
+{
+ "N": 7870,
+ "slots": 47220,
+ "withNat": 47207,
+ "noNat": 13,
+ "odd": [
+  [
+   "Adament",
+   9
+  ],
+  [
+   "Admanant",
+   1
+  ],
+  [
+   "adamat",
+   1
+  ],
+  [
+   "Modeste",
+   1
+  ],
+  [
+   "Adaman",
+   1
+  ]
+ ],
+ "first": "2026-10-21",
+ "last": "2026-11-18",
+ "nat": {
+  "Hardy": {
+   "mons": 4,
+   "pctMons": 0,
+   "teams": 4,
+   "pctTeams": 0.1,
+   "nUsers": 2,
+   "users": [
+    [
+     "Emboar",
+     3,
+     75,
+     4
+    ],
+    [
+     "Salamence",
+     1,
+     0,
+     906
+    ]
+   ]
+  },
+  "Lonely": {
+   "mons": 8,
+   "pctMons": 0,
+   "teams": 8,
+   "pctTeams": 0.1,
+   "nUsers": 6,
+   "users": [
+    [
+     "Basculegion",
+     2,
+     0,
+     1564
+    ],
+    [
+     "Salamence",
+     2,
+     0,
+     906
+    ],
+    [
+     "Rillaboom",
+     1,
+     0,
+     2955
+    ],
+    [
+     "Sneasler",
+     1,
+     0,
+     3118
+    ],
+    [
+     "Gallade",
+     1,
+     2,
+     60
+    ],
+    [
+     "Swampert",
+     1,
+     0,
+     267
+    ]
+   ]
+  },
+  "Brave": {
+   "mons": 791,
+   "pctMons": 1.7,
+   "teams": 640,
+   "pctTeams": 8.1,
+   "nUsers": 53,
+   "users": [
+    [
+     "Incineroar",
+     267,
+     11,
+     2517
+    ],
+    [
+     "Kingambit",
+     91,
+     4,
+     2339
+    ],
+    [
+     "Rillaboom",
+     83,
+     3,
+     2955
+    ],
+    [
+     "Golisopod",
+     68,
+     9,
+     777
+    ],
+    [
+     "Mawile",
+     48,
+     59,
+     82
+    ],
+    [
+     "Kangaskhan",
+     28,
+     37,
+     76
+    ],
+    [
+     "Araquanid",
+     20,
+     65,
+     31
+    ],
+    [
+     "Scrafty",
+     17,
+     43,
+     40
+    ]
+   ]
+  },
+  "Adamant": {
+   "mons": 12440,
+   "pctMons": 26.4,
+   "teams": 6940,
+   "pctTeams": 88.2,
+   "nUsers": 109,
+   "users": [
+    [
+     "Rillaboom",
+     2584,
+     87,
+     2955
+    ],
+    [
+     "Sneasler",
+     2245,
+     72,
+     3118
+    ],
+    [
+     "Kingambit",
+     2212,
+     95,
+     2339
+    ],
+    [
+     "Garchomp",
+     966,
+     37,
+     2634
+    ],
+    [
+     "Basculegion",
+     864,
+     55,
+     1564
+    ],
+    [
+     "Golisopod",
+     694,
+     89,
+     777
+    ],
+    [
+     "Excadrill",
+     516,
+     81,
+     635
+    ],
+    [
+     "Incineroar",
+     376,
+     15,
+     2517
+    ]
+   ]
+  },
+  "Naughty": {
+   "mons": 14,
+   "pctMons": 0,
+   "teams": 13,
+   "pctTeams": 0.2,
+   "nUsers": 11,
+   "users": [
+    [
+     "Sandaconda",
+     3,
+     75,
+     4
+    ],
+    [
+     "Empoleon",
+     2,
+     13,
+     15
+    ],
+    [
+     "Kingambit",
+     1,
+     0,
+     2339
+    ],
+    [
+     "Conkeldurr",
+     1,
+     6,
+     17
+    ],
+    [
+     "Toxicroak",
+     1,
+     25,
+     4
+    ],
+    [
+     "Dragonite",
+     1,
+     0,
+     431
+    ],
+    [
+     "Ceruledge",
+     1,
+     1,
+     72
+    ],
+    [
+     "Basculegion",
+     1,
+     0,
+     1564
+    ]
+   ]
+  },
+  "Bold": {
+   "mons": 3011,
+   "pctMons": 6.4,
+   "teams": 2723,
+   "pctTeams": 34.6,
+   "nUsers": 58,
+   "users": [
+    [
+     "Pelipper",
+     638,
+     53,
+     1208
+    ],
+    [
+     "Sinistcha",
+     562,
+     71,
+     793
+    ],
+    [
+     "Farigiraf",
+     488,
+     44,
+     1121
+    ],
+    [
+     "Indeedee ♀",
+     369,
+     45,
+     820
+    ],
+    [
+     "Archaludon",
+     256,
+     19,
+     1355
+    ],
+    [
+     "Volcarona",
+     98,
+     15,
+     658
+    ],
+    [
+     "Milotic",
+     83,
+     12,
+     699
+    ],
+    [
+     "Scovillain",
+     75,
+     65,
+     116
+    ]
+   ]
+  },
+  "Docile": {
+   "mons": 3,
+   "pctMons": 0,
+   "teams": 3,
+   "pctTeams": 0,
+   "nUsers": 3,
+   "users": [
+    [
+     "Incineroar",
+     1,
+     0,
+     2517
+    ],
+    [
+     "Sylveon",
+     1,
+     0,
+     860
+    ],
+    [
+     "Gholdengo",
+     1,
+     0,
+     1272
+    ]
+   ]
+  },
+  "Relaxed": {
+   "mons": 825,
+   "pctMons": 1.7,
+   "teams": 776,
+   "pctTeams": 9.9,
+   "nUsers": 51,
+   "users": [
+    [
+     "Indeedee ♀",
+     335,
+     41,
+     820
+    ],
+    [
+     "Farigiraf",
+     140,
+     12,
+     1121
+    ],
+    [
+     "Incineroar",
+     104,
+     4,
+     2517
+    ],
+    [
+     "Sinistcha",
+     60,
+     8,
+     793
+    ],
+    [
+     "Toxapex",
+     40,
+     42,
+     95
+    ],
+    [
+     "Snorlax",
+     38,
+     70,
+     54
+    ],
+    [
+     "Grimmsnarl",
+     13,
+     3,
+     498
+    ],
+    [
+     "Pelipper",
+     13,
+     1,
+     1208
+    ]
+   ]
+  },
+  "Impish": {
+   "mons": 887,
+   "pctMons": 1.9,
+   "teams": 863,
+   "pctTeams": 11,
+   "nUsers": 38,
+   "users": [
+    [
+     "Incineroar",
+     623,
+     25,
+     2517
+    ],
+    [
+     "Grimmsnarl",
+     88,
+     18,
+     498
+    ],
+    [
+     "Corviknight",
+     34,
+     30,
+     113
+    ],
+    [
+     "Chesnaught",
+     26,
+     68,
+     38
+    ],
+    [
+     "Maushold",
+     19,
+     19,
+     102
+    ],
+    [
+     "Sableye",
+     14,
+     16,
+     87
+    ],
+    [
+     "Kingambit",
+     7,
+     0,
+     2339
+    ],
+    [
+     "Metagross",
+     7,
+     4,
+     187
+    ]
+   ]
+  },
+  "Lax": {
+   "mons": 12,
+   "pctMons": 0,
+   "teams": 12,
+   "pctTeams": 0.2,
+   "nUsers": 6,
+   "users": [
+    [
+     "Victreebel",
+     4,
+     57,
+     7
+    ],
+    [
+     "Indeedee ♀",
+     4,
+     0,
+     820
+    ],
+    [
+     "Incineroar",
+     1,
+     0,
+     2517
+    ],
+    [
+     "Dragonite",
+     1,
+     0,
+     431
+    ],
+    [
+     "Sneasler",
+     1,
+     0,
+     3118
+    ],
+    [
+     "Basculegion",
+     1,
+     0,
+     1564
+    ]
+   ]
+  },
+  "Timid": {
+   "mons": 6957,
+   "pctMons": 14.7,
+   "teams": 5073,
+   "pctTeams": 64.5,
+   "nUsers": 93,
+   "users": [
+    [
+     "Raichu",
+     1419,
+     68,
+     2078
+    ],
+    [
+     "Whimsicott",
+     1081,
+     86,
+     1258
+    ],
+    [
+     "Charizard",
+     588,
+     31,
+     1881
+    ],
+    [
+     "Delphox",
+     452,
+     93,
+     487
+    ],
+    [
+     "Salamence",
+     417,
+     46,
+     906
+    ],
+    [
+     "Froslass",
+     357,
+     74,
+     480
+    ],
+    [
+     "Volcarona",
+     260,
+     40,
+     658
+    ],
+    [
+     "Gholdengo",
+     249,
+     20,
+     1272
+    ]
+   ]
+  },
+  "Hasty": {
+   "mons": 87,
+   "pctMons": 0.2,
+   "teams": 84,
+   "pctTeams": 1.1,
+   "nUsers": 16,
+   "users": [
+    [
+     "Salamence",
+     36,
+     4,
+     906
+    ],
+    [
+     "Raichu",
+     16,
+     1,
+     2078
+    ],
+    [
+     "Starmie",
+     15,
+     65,
+     23
+    ],
+    [
+     "Hydreigon",
+     3,
+     3,
+     86
+    ],
+    [
+     "Lucario",
+     2,
+     3,
+     74
+    ],
+    [
+     "Dragapult",
+     2,
+     3,
+     72
+    ],
+    [
+     "Staraptor",
+     2,
+     0,
+     1042
+    ],
+    [
+     "Pelipper",
+     2,
+     0,
+     1208
+    ]
+   ]
+  },
+  "Serious": {
+   "mons": 62,
+   "pctMons": 0.1,
+   "teams": 52,
+   "pctTeams": 0.7,
+   "nUsers": 35,
+   "users": [
+    [
+     "Garchomp",
+     7,
+     0,
+     2634
+    ],
+    [
+     "Sneasler",
+     5,
+     0,
+     3118
+    ],
+    [
+     "Rillaboom",
+     4,
+     0,
+     2955
+    ],
+    [
+     "Incineroar",
+     4,
+     0,
+     2517
+    ],
+    [
+     "Raichu",
+     3,
+     0,
+     2078
+    ],
+    [
+     "Gengar",
+     2,
+     0,
+     453
+    ],
+    [
+     "Whimsicott",
+     2,
+     0,
+     1258
+    ],
+    [
+     "Froslass",
+     2,
+     0,
+     480
+    ]
+   ]
+  },
+  "Jolly": {
+   "mons": 5922,
+   "pctMons": 12.5,
+   "teams": 4520,
+   "pctTeams": 57.4,
+   "nUsers": 86,
+   "users": [
+    [
+     "Staraptor",
+     944,
+     91,
+     1042
+    ],
+    [
+     "Sneasler",
+     843,
+     27,
+     3118
+    ],
+    [
+     "Garchomp",
+     773,
+     29,
+     2634
+    ],
+    [
+     "Basculegion",
+     666,
+     43,
+     1564
+    ],
+    [
+     "Raichu",
+     577,
+     28,
+     2078
+    ],
+    [
+     "Tyranitar",
+     499,
+     66,
+     757
+    ],
+    [
+     "Hisuian Arcanine",
+     420,
+     83,
+     503
+    ],
+    [
+     "Aerodactyl",
+     190,
+     93,
+     204
+    ]
+   ]
+  },
+  "Naive": {
+   "mons": 58,
+   "pctMons": 0.1,
+   "teams": 58,
+   "pctTeams": 0.7,
+   "nUsers": 13,
+   "users": [
+    [
+     "Sneasler",
+     16,
+     1,
+     3118
+    ],
+    [
+     "Salamence",
+     11,
+     1,
+     906
+    ],
+    [
+     "Infernape",
+     9,
+     64,
+     14
+    ],
+    [
+     "Jolteon",
+     9,
+     64,
+     14
+    ],
+    [
+     "Talonflame",
+     5,
+     4,
+     121
+    ],
+    [
+     "Basculegion",
+     1,
+     0,
+     1564
+    ],
+    [
+     "Blaziken",
+     1,
+     1,
+     179
+    ],
+    [
+     "Aerodactyl",
+     1,
+     0,
+     204
+    ]
+   ]
+  },
+  "Modest": {
+   "mons": 10653,
+   "pctMons": 22.6,
+   "teams": 6686,
+   "pctTeams": 85,
+   "nUsers": 100,
+   "users": [
+    [
+     "Charizard",
+     1234,
+     66,
+     1881
+    ],
+    [
+     "Gholdengo",
+     996,
+     78,
+     1272
+    ],
+    [
+     "Eternal Flower Floette",
+     907,
+     83,
+     1089
+    ],
+    [
+     "Sylveon",
+     777,
+     90,
+     860
+    ],
+    [
+     "Garchomp",
+     647,
+     25,
+     2634
+    ],
+    [
+     "Venusaur",
+     584,
+     88,
+     661
+    ],
+    [
+     "Primarina",
+     563,
+     84,
+     673
+    ],
+    [
+     "Basculegion ♀",
+     425,
+     95,
+     449
+    ]
+   ]
+  },
+  "Mild": {
+   "mons": 28,
+   "pctMons": 0.1,
+   "teams": 27,
+   "pctTeams": 0.3,
+   "nUsers": 14,
+   "users": [
+    [
+     "Greninja",
+     8,
+     16,
+     49
+    ],
+    [
+     "Garchomp",
+     5,
+     0,
+     2634
+    ],
+    [
+     "Charizard",
+     2,
+     0,
+     1881
+    ],
+    [
+     "Raichu",
+     2,
+     0,
+     2078
+    ],
+    [
+     "Basculegion ♀",
+     2,
+     0,
+     449
+    ],
+    [
+     "Gholdengo",
+     1,
+     0,
+     1272
+    ],
+    [
+     "Salamence",
+     1,
+     0,
+     906
+    ],
+    [
+     "Milotic",
+     1,
+     0,
+     699
+    ]
+   ]
+  },
+  "Quiet": {
+   "mons": 1239,
+   "pctMons": 2.6,
+   "teams": 889,
+   "pctTeams": 11.3,
+   "nUsers": 60,
+   "users": [
+    [
+     "Camerupt",
+     317,
+     92,
+     346
+    ],
+    [
+     "Torkoal",
+     242,
+     83,
+     291
+    ],
+    [
+     "Farigiraf",
+     160,
+     14,
+     1121
+    ],
+    [
+     "Primarina",
+     82,
+     12,
+     673
+    ],
+    [
+     "Hatterene",
+     78,
+     86,
+     91
+    ],
+    [
+     "Sylveon",
+     68,
+     8,
+     860
+    ],
+    [
+     "Armarouge",
+     52,
+     19,
+     271
+    ],
+    [
+     "Drampa",
+     46,
+     60,
+     77
+    ]
+   ]
+  },
+  "Bashful": {
+   "mons": 0,
+   "pctMons": 0,
+   "teams": 0,
+   "pctTeams": 0,
+   "nUsers": 0,
+   "users": []
+  },
+  "Rash": {
+   "mons": 11,
+   "pctMons": 0,
+   "teams": 11,
+   "pctTeams": 0.1,
+   "nUsers": 9,
+   "users": [
+    [
+     "Gardevoir",
+     3,
+     1,
+     350
+    ],
+    [
+     "Primarina",
+     1,
+     0,
+     673
+    ],
+    [
+     "Clefable",
+     1,
+     2,
+     44
+    ],
+    [
+     "Greninja",
+     1,
+     2,
+     49
+    ],
+    [
+     "Gholdengo",
+     1,
+     0,
+     1272
+    ],
+    [
+     "Garchomp",
+     1,
+     0,
+     2634
+    ],
+    [
+     "Sylveon",
+     1,
+     0,
+     860
+    ],
+    [
+     "Salamence",
+     1,
+     0,
+     906
+    ]
+   ]
+  },
+  "Calm": {
+   "mons": 1888,
+   "pctMons": 4,
+   "teams": 1763,
+   "pctTeams": 22.4,
+   "nUsers": 43,
+   "users": [
+    [
+     "Archaludon",
+     730,
+     54,
+     1355
+    ],
+    [
+     "Milotic",
+     436,
+     62,
+     699
+    ],
+    [
+     "Farigiraf",
+     136,
+     12,
+     1121
+    ],
+    [
+     "Politoed",
+     130,
+     43,
+     303
+    ],
+    [
+     "Sinistcha",
+     127,
+     16,
+     793
+    ],
+    [
+     "Pelipper",
+     73,
+     6,
+     1208
+    ],
+    [
+     "Indeedee ♀",
+     41,
+     5,
+     820
+    ],
+    [
+     "Volcarona",
+     31,
+     5,
+     658
+    ]
+   ]
+  },
+  "Gentle": {
+   "mons": 5,
+   "pctMons": 0,
+   "teams": 4,
+   "pctTeams": 0.1,
+   "nUsers": 4,
+   "users": [
+    [
+     "Basculegion",
+     2,
+     0,
+     1564
+    ],
+    [
+     "Venusaur",
+     1,
+     0,
+     661
+    ],
+    [
+     "Mr. Mime",
+     1,
+     13,
+     8
+    ],
+    [
+     "Dragonite",
+     1,
+     0,
+     431
+    ]
+   ]
+  },
+  "Sassy": {
+   "mons": 896,
+   "pctMons": 1.9,
+   "teams": 730,
+   "pctTeams": 9.3,
+   "nUsers": 53,
+   "users": [
+    [
+     "Incineroar",
+     294,
+     12,
+     2517
+    ],
+    [
+     "Rillaboom",
+     156,
+     5,
+     2955
+    ],
+    [
+     "Grimmsnarl",
+     133,
+     27,
+     498
+    ],
+    [
+     "Farigiraf",
+     96,
+     9,
+     1121
+    ],
+    [
+     "Indeedee ♀",
+     43,
+     5,
+     820
+    ],
+    [
+     "Slowbro",
+     32,
+     70,
+     46
+    ],
+    [
+     "Sableye",
+     24,
+     28,
+     87
+    ],
+    [
+     "Sinistcha",
+     17,
+     2,
+     793
+    ]
+   ]
+  },
+  "Careful": {
+   "mons": 1405,
+   "pctMons": 3,
+   "teams": 1323,
+   "pctTeams": 16.8,
+   "nUsers": 42,
+   "users": [
+    [
+     "Incineroar",
+     822,
+     33,
+     2517
+    ],
+    [
+     "Grimmsnarl",
+     221,
+     44,
+     498
+    ],
+    [
+     "Rillaboom",
+     72,
+     2,
+     2955
+    ],
+    [
+     "Hippowdon",
+     70,
+     63,
+     111
+    ],
+    [
+     "Corviknight",
+     54,
+     48,
+     113
+    ],
+    [
+     "Sableye",
+     18,
+     21,
+     87
+    ],
+    [
+     "Archaludon",
+     13,
+     1,
+     1355
+    ],
+    [
+     "Overqwil",
+     11,
+     65,
+     17
+    ]
+   ]
+  },
+  "Quirky": {
+   "mons": 1,
+   "pctMons": 0,
+   "teams": 1,
+   "pctTeams": 0,
+   "nUsers": 1,
+   "users": [
+    [
+     "Ditto",
+     1,
+     17,
+     6
+    ]
+   ]
+  }
+ }
+}

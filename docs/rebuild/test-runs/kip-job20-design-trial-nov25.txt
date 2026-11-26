@@ -1,0 +1,876 @@
+KIP JOB 20 — DESIGN TRIAL: "Day N of Reg M-D" Note
+Date: 2026-11-24
+
+================================================================================
+FILES IN THIS ZIP
+================================================================================
+- README.txt                   This summary, rationale, height math, and kit.js/kit.css code
+- option-a-live-stamp.html     Standalone HTML mock: Option A (Slanted Two-Part Live Stamp)
+- option-b-data-tape.html      Standalone HTML mock: Option B (Amber-Notched Data Tape)
+- code/tokens.css              Exact tokens.css from kipdesign/ (linked via relative path)
+- code/kit.css                 Exact kit.css from kipdesign/ (linked via relative path)
+
+Open either HTML file in any browser after unzipping (relative links to code/tokens.css
+and code/kit.css work directly from this folder OR when copied into kipdesign/).
+
+================================================================================
+RECOMMENDATION (1 LINE)
+================================================================================
+Recommend Option A (Slanted Two-Part Live Stamp): it stays bold (Rule 14), feels
+unmistakably NastyPlot rather than a generic warning banner, separates "live new season"
+from stale-data errors (.np-dnote), and costs 0px above Meta's tabs on phones.
+
+================================================================================
+OPTION A — SLANTED TWO-PART LIVE STAMP (.k-reg) [RECOMMENDED]
+================================================================================
+1. The one creative idea:
+   Split the approved sentence ("Day 3 of Reg M-D: 12 events, 840 players so far") at
+   the colon into a two-part slanted ticket/stamp: a solid Nasty pink (--k-go) left stub
+   in Unbounded slanted ("Day 3 of Reg M-D") joined flush to a crisp 2px-bordered body
+   ("12 events, 840 players so far") in Instrument Sans, skewed -8deg with counter-skewed
+   inner spans.
+
+2. Why it is NastyPlot and not "any other site" (Rule 11):
+   - Directly extends NastyPlot's signature -8deg slanted ticket/slab grammar (the pink
+     #1 podium tags on Meta, .k-tag.k-live, .k-kicker, and .k-go buttons).
+   - Pairs Unbounded slanted (display stub) with Instrument Sans (data count) using only
+     NastyPlot's --k-go pink, --surface / --sd-ink, and --k-on-go tokens.
+   - Zero generic AI/SaaS rounded warning pills, zero amber alert boxes, zero icons/emoji.
+
+3. How it meets the hard height limits (numbers):
+   - Meta on 390x844 (limit: Pokémon/Tournaments tabs <= 456px from top):
+     Instead of stacking above the tabs (where np-dnote already pushes tabs near 460px),
+     .k-reg REPLACES the existing "Reg M-C doubles · 13,631 tournament teams" line that
+     already sits BELOW the tabs on 390px phones (and beside the [?] button).
+     Height added above Pokémon/Tournaments tabs on 390x844: +0px.
+     On 1440px desktop, it replaces that same metadata line under the lead (~28px height
+     for a ~24px line: +4px net).
+   - Home on 390x844 & 390x664 (limit: both start buttons on first screen at 390x844 and
+     within 80px at 390x664):
+     In the dark hero ledge, .k-reg.k-reg-ink REPLACES the existing "Reg M-D in 7 days."
+     (390px) / "Reg M-D is coming..." (1440px) countdown sentence inside the hero copy
+     block (28px single-line height replacing 1–2 wrapped lines of countdown text: ~0px
+     net change, keeping Score My Team and Build Me a Team in the exact same position).
+
+4. Proposed code change (kit.js + kit.css):
+   --- kit.js (new shared helper) ---
+   V2.kRegNote = (r, o = {}) => {
+     if (!r || !r.reg || !r.day) return '';
+     const lead = `Day ${r.day} of Reg ${r.reg}`;
+     const tail = `${Number(r.events || 0).toLocaleString('en-US')} events, ${Number(r.players || 0).toLocaleString('en-US')} players so far`;
+     const full = `${lead}: ${tail}`;
+     return `<p class="k-reg${o.ink ? ' k-reg-ink' : ''}" role="status" aria-label="${V2.esc(full)}"><span class="k-reg-stub"><span>${V2.esc(lead)}</span></span><span class="k-reg-body"><span>${V2.esc(tail)}</span></span></p>`;
+   };
+
+   --- kit.css (new rules, tokens.css only) ---
+   .k-reg{display:inline-flex;flex-wrap:wrap;align-items:stretch;max-width:100%;margin:0;font-family:var(--b);font-size:var(--t13);line-height:1.5;transform:skewX(-8deg)}
+   .k-reg-stub{display:inline-flex;align-items:center;padding:2px var(--s2);background:var(--k-go);color:var(--k-on-go);font-family:var(--u);font-size:var(--t13);font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+   .k-reg-stub>span,.k-reg-body>span{transform:skewX(8deg);display:inline-block}
+   .k-reg-body{display:inline-flex;align-items:center;padding:2px var(--s3);background:var(--surface);color:var(--ink);border:2px solid var(--k-go);border-left:0;font-weight:600}
+   .k-reg.k-reg-ink .k-reg-body{background:var(--sd-ink);color:var(--on-plate);border-color:var(--k-go)}
+
+================================================================================
+OPTION B — AMBER-NOTCHED DATA TAPE (.k-regt)
+================================================================================
+1. The one creative idea:
+   Evolve the existing .np-dnote slanted amber dash (--mid) into a compact inline data-tape
+   strip: a -24deg (--slant) amber dash, Unbounded slanted bold "Day 3 of Reg M-D:", and
+   Instrument Sans "12 events, 840 players so far" resting on a 2px --mid bottom tick rule
+   with a subtle 10% --mid wash.
+
+2. Why it is NastyPlot and not "any other site" (Rule 11):
+   - Directly inherits .np-dnote's signature -24deg slanted amber dash (the yellow dash at
+     the top of meta-390-light.png), so players immediately recognize it as a data-freshness
+     sibling rather than a marketing badge.
+   - Uses Unbounded slanted for the regulation stamp and NastyPlot's flat architectural tape
+     rules (zero border-radius, crisp bottom accent rule) instead of a rounded warning card.
+
+3. How it meets the hard height limits (numbers):
+   - Uses the exact same replacement slots as Option A:
+     - Meta 390x844: replaces "Reg M-C doubles · 13,631 tournament teams" below the tabs
+       -> +0px above Pokémon/Tournaments tabs (tabs stay <= 456px).
+     - Home 390x844 & 390x664: replaces the "Reg M-D in 7 days." countdown inside the dark
+       hero ledge -> ~0px net height, keeping both start buttons on the first screen.
+
+4. Proposed code change (kit.js + kit.css):
+   --- kit.js ---
+   V2.kRegTape = (r, o = {}) => {
+     if (!r || !r.reg || !r.day) return '';
+     const lead = `Day ${r.day} of Reg ${r.reg}:`;
+     const tail = `${Number(r.events || 0).toLocaleString('en-US')} events, ${Number(r.players || 0).toLocaleString('en-US')} players so far`;
+     return `<p class="k-regt${o.ink ? ' k-regt-ink' : ''}" role="status"><i class="k-regt-dash" aria-hidden="true"></i><span><b>${V2.esc(lead)}</b> ${V2.esc(tail)}</span></p>`;
+   };
+
+   --- kit.css ---
+   .k-regt{display:inline-flex;align-items:baseline;gap:var(--s2);margin:0;padding:var(--s1) var(--s3) var(--s1) var(--s2);background:color-mix(in srgb,var(--mid) 10%,var(--surface));border-top:1px solid var(--rule);border-bottom:2px solid var(--mid);font-family:var(--b);font-size:var(--t13);line-height:1.5;color:var(--ink-2)}
+   .k-regt-dash{flex:none;display:inline-block;width:12px;height:6px;background:var(--mid);transform:skewX(-24deg) translateY(-1px)}
+   .k-regt b{font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t13);color:var(--ink);letter-spacing:-.01em}
+   .k-regt.k-regt-ink{background:color-mix(in srgb,var(--mid) 14%,var(--sd-ink));border-top-color:var(--pl-band-rule);color:var(--pl-band-2)}
+   .k-regt.k-regt-ink b{color:var(--on-plate)}
+
+================================================================================
+WHAT I'M UNSURE ABOUT
+================================================================================
+1. On 320px–359px narrow phones (e.g., iPhone SE), Option A's two-part stamp ("Day 3 of
+   Reg M-D" + "12 events, 840 players so far") wraps onto 2 stacked slanted bars when
+   width < ~340px; I'm unsure whether Sim prefers the wrapped two-row stub look or wants
+   the border-left restored on the wrapped second line (easily solved with a small
+   @media (max-width:359.98px) tweak once tested in a real browser).
+2. On Meta 390px, placing the note in the existing "Reg M-C doubles · 13,631 tournament
+   teams" slot below the tabs guarantees +0px above the 456px tab limit, but means the
+   note sits below the tabs rather than above the H1. If Sim wants it visible *above* the
+   tabs on phones, it would have to replace the "META · THE LINE-UP" kicker itself during
+   the first 14 days (also +0px height).
+3. Singular/plural grammar when day === 1 or events === 1 ("1 event" vs "12 events") was
+   not shown in the example sentence; HH/Sim should confirm exact singular phrasing.
+
+================================================================================
+CHECKED VS NOT CHECKED
+================================================================================
+- CHECKED:
+  - Both HTML files link code/tokens.css and code/kit.css via relative paths.
+  - Component CSS (.k-reg and .k-regt) uses ONLY tokens.css variables, 13px (--t13) type,
+    4px grid spacing, 1.5 line-height, zero emoji, zero mascot, zero new fonts.
+  - Exact approved sentence used verbatim ("Day 3 of Reg M-D: 12 events, 840 players so far").
+- NOT CHECKED:
+  - Live browser rendering / exact pixel measurement in Playwright Chromium (not installed
+    in this offline VM); height figures are derived from the screenshots and CSS rules.
+
+================================================================================
+STANDALONE HTML FILES (drop into kipdesign/ beside code/tokens.css & code/kit.css)
+================================================================================
+
+----- BEGIN option-a-live-stamp.html -----
+&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;Job 20 · Option A — Slanted Two-Part Live Stamp (Day 3 of Reg M-D)&lt;/title&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;code/tokens.css&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;code/kit.css&quot;&gt;
+&lt;style&gt;
+  /* Preview gallery chrome (outside the component itself) */
+  *{box-sizing:border-box}
+  body{margin:0;padding:var(--s6);background:var(--wash);color:var(--ink);font-family:var(--b);font-size:var(--t15);line-height:1.5}
+  .gal-hd{max-width:1480px;margin:0 auto var(--s6);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s3);border-bottom:2px solid var(--rule);padding-bottom:var(--s4)}
+  .gal-hd h1{margin:0;font-family:var(--u);font-size:var(--t22);font-style:italic;letter-spacing:-.02em}
+  .gal-hd p{margin:var(--s1) 0 0;color:var(--ink-2);font-size:var(--t15)}
+  .gal-sec{max-width:1480px;margin:0 auto var(--s8)}
+  .gal-sec&gt;h2{margin:0 0 var(--s3);font-family:var(--u);font-size:var(--t15);font-style:italic;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2)}
+  .gal-row{display:flex;flex-wrap:wrap;gap:var(--s6);align-items:flex-start}
+  .frame{background:var(--bg);color:var(--ink);border:1px solid var(--rule);border-radius:var(--r-m);overflow:hidden;box-shadow:var(--shadow-lift)}
+  .frame-lbl{padding:var(--s2) var(--s3);background:var(--plate);color:var(--on-plate);font-size:var(--t13);font-weight:700;display:flex;justify-content:space-between;gap:var(--s3)}
+  .frame-lbl span{opacity:.8;font-weight:500}
+  .w390{width:390px;max-width:100%}
+  .w1440{width:1440px;max-width:100%}
+
+  /* Night scope inside preview frames (mirrors :root[data-theme="night"] from tokens.css) */
+  .night{
+    --bg:#12121B;--surface:#1B1A26;--wash:#171622;--ink:#F4F2EE;--ink-2:#C4C0CE;--ink-3:#9E9AA8;--rule:rgba(244,242,238,.12);
+    --plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--pick-text:#F58DA1;
+    --k-paper:#12121B;--k-card:#1B1A26;--k-ink:#F4F2EE;--k-ink2:#9E9AA8;--k-rule:rgba(244,242,238,.12);
+    --k-plot:#62BEF7;--k-plot-text:#62BEF7;--k-on-plot:#12121B;--k-go:#DA2C48;--k-on-go:#FFFFFF;
+    --k-chip:#E4E0DA;--k-on-chip:#12121B;--k-neutral:rgba(244,242,238,.45);
+    --mid:#F0C768;--mid-text:#F0C768;--sd-hero:#0078BF;--sd-ink:#17161B;--sd-link:#62BEF7;
+    background:var(--bg);color:var(--ink);
+  }
+
+  /* =========================================================================
+     PROPOSED COMPONENT CSS (kit.css addition: .k-reg — Option A Live Stamp)
+     Uses ONLY tokens.css variables, 4px grid, 13px type, 1.5 line-height, -8deg skew.
+     ========================================================================= */
+  .k-reg{
+    display:inline-flex;
+    flex-wrap:wrap;
+    align-items:stretch;
+    max-width:100%;
+    margin:0;
+    font-family:var(--b);
+    font-size:var(--t13);
+    line-height:1.5;
+    transform:skewX(-8deg);
+  }
+  .k-reg-stub{
+    display:inline-flex;
+    align-items:center;
+    padding:2px var(--s2);
+    background:var(--k-go);
+    color:var(--k-on-go);
+    font-family:var(--u);
+    font-size:var(--t13);
+    font-weight:800;
+    letter-spacing:-.01em;
+    white-space:nowrap;
+  }
+  .k-reg-stub>span,.k-reg-body>span{transform:skewX(8deg);display:inline-block}
+  .k-reg-body{
+    display:inline-flex;
+    align-items:center;
+    padding:2px var(--s3);
+    background:var(--surface);
+    color:var(--ink);
+    border:2px solid var(--k-go);
+    border-left:0;
+    font-weight:600;
+  }
+  /* On dark ink bands (Home hero ledge), keep crisp high-contrast ink surface */
+  .k-reg.k-reg-ink .k-reg-body{
+    background:var(--sd-ink);
+    color:var(--on-plate);
+    border-color:var(--k-go);
+  }
+
+  /* =========================================================================
+     CONTEXT MOCKUPS (matching pictures/home-*.png and pictures/meta-*.png)
+     ========================================================================= */
+  .np-head-m{height:56px;padding:0 var(--s4);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--rule);background:var(--bg)}
+  .np-logo-m{font-family:var(--u);font-weight:900;font-style:italic;font-size:var(--t17);letter-spacing:-.03em}
+  .np-logo-m .pk{color:var(--logo-pink)}
+  .np-logo-m .bl{color:var(--logo-blue)}
+  .np-nav-m{display:flex;gap:var(--s5);font-size:var(--t15);font-weight:600;color:var(--ink-2)}
+  .np-nav-m .on{color:var(--ink);border-bottom:3px solid var(--plot);padding-bottom:2px}
+  .np-bar-m{height:56px;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;text-align:center;font-size:var(--t13);font-weight:600;color:var(--ink-2);border-top:1px solid var(--rule);background:var(--bg)}
+  .np-bar-m .on{color:var(--ink);position:relative}
+  .np-bar-m .on::before{content:"";position:absolute;top:0;left:25%;right:25%;height:3px;background:var(--plot)}
+
+  /* Home Stampede hero context */
+  .sd-hero-m{background:var(--sd-hero);color:var(--sd-on-band);padding:var(--s4) var(--s4) 0;position:relative;overflow:hidden}
+  .sd-kick-m{display:inline-block;padding:var(--s1) var(--s3);background:var(--sd-ink);color:var(--sd-on-band);font-family:var(--u);font-size:var(--t13);font-style:italic;font-weight:800;transform:skewX(-8deg);margin-bottom:var(--s2)}
+  .sd-title-m{margin:0;font-family:var(--u);font-style:italic;font-weight:900;line-height:.98;letter-spacing:-.03em;text-shadow:0 3px 0 var(--sd-ink)}
+  .w390 .sd-title-m{font-size:var(--t34)}
+  .w1440 .sd-title-m{font-size:var(--d64);text-align:center}
+  .sd-title-m .l2{color:var(--sd-line2);display:block}
+  .sd-plates-m{display:flex;gap:var(--s3);margin-top:var(--s4);padding-bottom:var(--s2);justify-content:center}
+  .sd-plate-m{background:var(--sd-plate);color:var(--sd-plate-ink);padding:var(--s2) var(--s3);transform:skewX(-8deg);display:flex;align-items:baseline;gap:var(--s2);font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t15)}
+  .sd-plate-m b{color:var(--sd-plate-num);font-size:var(--t24)}
+  .sd-ledge-m{background:var(--sd-ink);color:var(--on-plate);padding:var(--s4);display:grid;gap:var(--s3)}
+  .w1440 .sd-ledge-m{grid-template-columns:1.2fr 1fr;align-items:center;padding:var(--s6) var(--s12)}
+  .sd-copy-m{margin:0;font-size:var(--t15);line-height:1.5;color:var(--pl-band-2)}
+  .sd-copy-m a{color:var(--sd-link);text-decoration:none;font-weight:600}
+  .sd-reg-wrap{margin-top:var(--s2)}
+  .sd-btns-m{display:flex;gap:var(--s3);flex-wrap:wrap;justify-content:flex-end}
+  .w390 .sd-btns-m{display:grid;grid-template-columns:1fr 1fr}
+  .sd-b1,.sd-b2{padding:var(--s3) var(--s4);font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t15);transform:skewX(-8deg);text-align:center;text-decoration:none}
+  .sd-b1{background:var(--sd-btn);color:var(--sd-btn-ink)}
+  .sd-b2{background:transparent;color:var(--sd-on-band);border:2px solid var(--sd-on-band)}
+
+  /* Meta / Ratings context */
+  .mt-wrap{padding:var(--s4)}
+  .w1440 .mt-wrap{padding:var(--s6) var(--s12)}
+  .mt-top{display:grid;gap:var(--s4)}
+  .w1440 .mt-top{grid-template-columns:1fr 1fr;align-items:center}
+  .mt-kicker{display:inline-block;padding:var(--s1) var(--s3);background:var(--k-chip);color:var(--k-on-chip);font-family:var(--u);font-size:var(--t13);font-style:italic;font-weight:800;transform:skewX(-8deg);margin-bottom:var(--s3)}
+  .mt-h1{margin:0;font-family:var(--u);font-style:italic;font-weight:900;line-height:1;letter-spacing:-.03em;color:var(--k-ink)}
+  .w390 .mt-h1{font-size:var(--t34)}
+  .w1440 .mt-h1{font-size:var(--d64)}
+  .mt-h1 em{color:var(--k-plot-text);font-style:inherit;display:block}
+  .mt-lead{margin:var(--s3) 0 0;font-size:var(--t16);line-height:1.5;color:var(--k-ink2);max-width:460px}
+  .mt-meta-row{margin-top:var(--s3);display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+  .mt-qbtn{width:28px;height:28px;border:0;background:var(--surface);color:var(--plot-text);font-weight:800;font-size:var(--t13);transform:skewX(-8deg);display:inline-grid;place-items:center;border:1px solid var(--rule)}
+  .mt-links{margin:var(--s3) 0 0;display:flex;gap:var(--s4);font-size:var(--t15);font-weight:600;color:var(--plot-text)}
+  .mt-tabs-bar{margin-top:var(--s5);border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s3);flex-wrap:wrap}
+  .mt-ptabs{display:flex;gap:var(--s5);font-size:var(--t16);font-weight:700}
+  .mt-ptabs .on{color:var(--ink);border-bottom:3px solid var(--plot);padding-bottom:var(--s2)}
+  .mt-ptabs span:not(.on){color:var(--ink-2);padding-bottom:var(--s2)}
+  .mt-subtabs{display:flex;background:var(--wash);transform:skewX(-8deg)}
+  .mt-subtabs span{padding:var(--s2) var(--s4);font-size:var(--t15);font-weight:600;color:var(--ink-2);transform:skewX(8deg)}
+  .mt-subtabs .on{background:color-mix(in srgb,var(--plot) 16%,var(--surface));color:var(--plot-text);border-bottom:2px solid var(--plot)}
+  .mt-spot{padding:var(--s4);border:1px solid var(--rule);background:var(--surface);display:flex;justify-content:space-between;align-items:center;gap:var(--s4)}
+  .mt-spot-num{font-family:var(--u);font-style:italic;font-weight:900;font-size:var(--d64);line-height:1}
+  .h-badge{display:inline-block;padding:2px var(--s2);background:var(--good);color:var(--on-mark);font-size:var(--t13);font-weight:700;border-radius:var(--r-s)}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;header class=&quot;gal-hd&quot;&gt;
+  &lt;div&gt;
+    &lt;h1&gt;Option A — Slanted Two-Part Live Stamp (&lt;code&gt;.k-reg&lt;/code&gt;)&lt;/h1&gt;
+    &lt;p&gt;Recommended · Replaces the Regulation countdown on Home and the Regulation line on Meta · &lt;strong&gt;+0px above Meta tabs on 390×844&lt;/strong&gt;&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;span class=&quot;h-badge&quot;&gt;Exact sentence: &quot;Day 3 of Reg M-D: 12 events, 840 players so far&quot;&lt;/span&gt;
+&lt;/header&gt;
+
+&lt;!-- ==================== META / RATINGS: 390px LIGHT &amp; DARK ==================== --&gt;
+&lt;section class=&quot;gal-sec&quot;&gt;
+  &lt;h2&gt;1. Meta / Ratings — 390px Phone (Light &amp;amp; Dark) · Tabs stay at ~368px (strictly &amp;le; 456px; +0px added above tabs)&lt;/h2&gt;
+  &lt;div class=&quot;gal-row&quot;&gt;
+    &lt;!-- Meta 390 Light --&gt;
+    &lt;div class=&quot;frame w390&quot;&gt;
+      &lt;div class=&quot;frame-lbl&quot;&gt;Meta · 390px · Day (Light) &lt;span&gt;Tabs top: ~368px (&amp;le; 456px)&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;np-head-m&quot;&gt;&lt;span class=&quot;np-logo-m&quot;&gt;&lt;span class=&quot;pk&quot;&gt;NP&lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;font-size:var(--t13);color:var(--ink-2)&quot;&gt;Search · Box · Theme&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;mt-wrap&quot;&gt;
+        &lt;div class=&quot;mt-kicker&quot;&gt;META · THE LINE-UP&lt;/div&gt;
+        &lt;h2 class=&quot;mt-h1&quot;&gt;Who wins&lt;em&gt;right now.&lt;/em&gt;&lt;/h2&gt;
+        &lt;p class=&quot;mt-lead&quot;&gt;Every Pokémon rated 0–100 from real tournament results, not opinion. Updated today.&lt;/p&gt;
+        &lt;div class=&quot;mt-tabs-bar&quot;&gt;
+          &lt;div class=&quot;mt-ptabs&quot;&gt;&lt;span class=&quot;on&quot;&gt;Pokémon&lt;/span&gt;&lt;span&gt;Tournaments&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;mt-subtabs&quot; style=&quot;margin-top:var(--s3)&quot;&gt;&lt;span class=&quot;on&quot;&gt;Ratings&lt;/span&gt;&lt;span&gt;Usage&lt;/span&gt;&lt;span&gt;Sets&lt;/span&gt;&lt;span&gt;Natures&lt;/span&gt;&lt;/div&gt;
+        &lt;!-- Replaces &quot;Reg M-C doubles · 13,631 tournament teams [?]&quot; below tabs on phones --&gt;
+        &lt;div class=&quot;mt-meta-row&quot;&gt;
+          &lt;p class=&quot;k-reg&quot; role=&quot;status&quot; aria-label=&quot;Day 3 of Reg M-D: 12 events, 840 players so far&quot;&gt;
+            &lt;span class=&quot;k-reg-stub&quot;&gt;&lt;span&gt;Day 3 of Reg M-D&lt;/span&gt;&lt;/span&gt;
+            &lt;span class=&quot;k-reg-body&quot;&gt;&lt;span&gt;12 events, 840 players so far&lt;/span&gt;&lt;/span&gt;
+          &lt;/p&gt;
+          &lt;span class=&quot;mt-qbtn&quot; aria-hidden=&quot;true&quot;&gt;?&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;np-bar-m&quot;&gt;&lt;span&gt;Home&lt;/span&gt;&lt;span&gt;Build&lt;/span&gt;&lt;span&gt;My Team&lt;/span&gt;&lt;span&gt;Battle&lt;/span&gt;&lt;span class=&quot;on&quot;&gt;Meta&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    <!-- Meta 390 Dark -->
+    <div class="frame w390 night">
+      <div class="frame-lbl">Meta · 390px · Night (Dark) <span>Tabs top: ~368px (&le; 456px)</span></div>
+      <div class="np-head-m"><span class="np-logo-m"><span class="pk">NP</span></span><span style="font-size:var(--t13);color:var(--ink-2)">Search · Box · Theme</span></div>
+      <div class="mt-wrap">
+        <div class="mt-kicker">META · THE LINE-UP</div>
+        <h2 class="mt-h1">Who wins<em>right now.</em></h2>
+        <p class="mt-lead">Every Pokémon rated 0–100 from real tournament results, not opinion. Updated today.</p>
+        <div class="mt-tabs-bar">
+          <div class="mt-ptabs"><span class="on">Pokémon</span><span>Tournaments</span></div>
+        </div>
+        <div class="mt-subtabs" style="margin-top:var(--s3)"><span class="on">Ratings</span><span>Usage</span><span>Sets</span><span>Natures</span></div>
+        <div class="mt-meta-row">
+          <p class="k-reg" role="status" aria-label="Day 3 of Reg M-D: 12 events, 840 players so far">
+            <span class="k-reg-stub"><span>Day 3 of Reg M-D</span></span>
+            <span class="k-reg-body"><span>12 events, 840 players so far</span></span>
+          </p>
+          <span class="mt-qbtn" aria-hidden="true">?</span>
+        </div>
+      </div>
+      <div class="np-bar-m"><span>Home</span><span>Build</span><span>My Team</span><span>Battle</span><span class="on">Meta</span></div>
+    </div>
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- ==================== HOME: 390px LIGHT &amp; DARK ==================== --&gt;
+&lt;section class=&quot;gal-sec&quot;&gt;
+  &lt;h2&gt;2. Home — 390px Phone (Light &amp;amp; Dark) · Replaces &quot;Reg M-D in 7 days.&quot; inside the hero ledge (+0px net; both buttons on first screen)&lt;/h2&gt;
+  &lt;div class=&quot;gal-row&quot;&gt;
+    &lt;!-- Home 390 Light --&gt;
+    &lt;div class=&quot;frame w390&quot;&gt;
+      &lt;div class=&quot;frame-lbl&quot;&gt;Home · 390px · Day (Light) &lt;span&gt;Both start buttons on first screen&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;np-head-m&quot;&gt;&lt;span class=&quot;np-logo-m&quot;&gt;&lt;span class=&quot;pk&quot;&gt;NP&lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;font-size:var(--t13);color:var(--ink-2)&quot;&gt;Search · Box · Theme&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;sd-hero-m&quot;&gt;
+        &lt;div class=&quot;sd-kick-m&quot;&gt;THE POKÉMON CHAMPIONS COACH&lt;/div&gt;
+        &lt;h2 class=&quot;sd-title-m&quot;&gt;Sharply raise&lt;span class=&quot;l2&quot;&gt;your win rate.&lt;/span&gt;&lt;/h2&gt;
+        &lt;div class=&quot;sd-plates-m&quot;&gt;
+          &lt;div class=&quot;sd-plate-m&quot;&gt;Sneasler &lt;b&gt;97&lt;/b&gt;&lt;/div&gt;
+          &lt;div class=&quot;sd-plate-m&quot;&gt;Rillaboom &lt;b&gt;97&lt;/b&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;sd-ledge-m&quot;&gt;
+        &lt;div&gt;
+          &lt;p class=&quot;sd-copy-m&quot;&gt;Every one of the 346 Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating. &lt;a href=&quot;#meta&quot;&gt;All Ratings &amp;rsaquo;&lt;/a&gt;&lt;/p&gt;
+          &lt;div class=&quot;sd-reg-wrap&quot;&gt;
+            &lt;p class=&quot;k-reg k-reg-ink&quot; role=&quot;status&quot; aria-label=&quot;Day 3 of Reg M-D: 12 events, 840 players so far&quot;&gt;
+              &lt;span class=&quot;k-reg-stub&quot;&gt;&lt;span&gt;Day 3 of Reg M-D&lt;/span&gt;&lt;/span&gt;
+              &lt;span class=&quot;k-reg-body&quot;&gt;&lt;span&gt;12 events, 840 players so far&lt;/span&gt;&lt;/span&gt;
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;sd-btns-m&quot;&gt;
+          &lt;a class=&quot;sd-b1&quot; href=&quot;#team&quot;&gt;Score My Team&lt;/a&gt;
+          &lt;a class=&quot;sd-b2&quot; href=&quot;#build&quot;&gt;Build Me a Team&lt;/a&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;np-bar-m&quot;&gt;&lt;span class=&quot;on&quot;&gt;Home&lt;/span&gt;&lt;span&gt;Build&lt;/span&gt;&lt;span&gt;My Team&lt;/span&gt;&lt;span&gt;Battle&lt;/span&gt;&lt;span&gt;Meta&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    <!-- Home 390 Dark -->
+    <div class="frame w390 night">
+      <div class="frame-lbl">Home · 390px · Night (Dark) <span>Both start buttons on first screen</span></div>
+      <div class="np-head-m"><span class="np-logo-m"><span class="pk">NP</span></span><span style="font-size:var(--t13);color:var(--ink-2)">Search · Box · Theme</span></div>
+      <div class="sd-hero-m">
+        <div class="sd-kick-m">THE POKÉMON CHAMPIONS COACH</div>
+        <h2 class="sd-title-m">Sharply raise<span class="l2">your win rate.</span></h2>
+        <div class="sd-plates-m">
+          <div class="sd-plate-m">Sneasler <b>97</b></div>
+          <div class="sd-plate-m">Rillaboom <b>97</b></div>
+        </div>
+      </div>
+      <div class="sd-ledge-m">
+        <div>
+          <p class="sd-copy-m">Every one of the 346 Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating. <a href="#meta">All Ratings &rsaquo;</a></p>
+          <div class="sd-reg-wrap">
+            <p class="k-reg k-reg-ink" role="status" aria-label="Day 3 of Reg M-D: 12 events, 840 players so far">
+              <span class="k-reg-stub"><span>Day 3 of Reg M-D</span></span>
+              <span class="k-reg-body"><span>12 events, 840 players so far</span></span>
+            </p>
+          </div>
+        </div>
+        <div class="sd-btns-m">
+          <a class="sd-b1" href="#team">Score My Team</a>
+          <a class="sd-b2" href="#build">Build Me a Team</a>
+        </div>
+      </div>
+      <div class="np-bar-m"><span class="on">Home</span><span>Build</span><span>My Team</span><span>Battle</span><span>Meta</span></div>
+    </div>
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- ==================== META 1440 LIGHT &amp; DARK ==================== --&gt;
+&lt;section class=&quot;gal-sec&quot;&gt;
+  &lt;h2&gt;3. Meta / Ratings — 1440px Desktop (Light &amp;amp; Dark) · Replaces the Reg M-C line directly under the lead&lt;/h2&gt;
+  &lt;div class=&quot;gal-row&quot;&gt;
+    &lt;div class=&quot;frame w1440&quot;&gt;
+      &lt;div class=&quot;frame-lbl&quot;&gt;Meta · 1440px · Day (Light)&lt;/div&gt;
+      &lt;div class=&quot;np-head-m&quot;&gt;&lt;span class=&quot;np-logo-m&quot;&gt;&lt;span class=&quot;pk&quot;&gt;NASTY&lt;/span&gt; &lt;span class=&quot;bl&quot;&gt;PLOT&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;np-nav-m&quot;&gt;&lt;span&gt;Home&lt;/span&gt;&lt;span&gt;Build&lt;/span&gt;&lt;span&gt;My Team&lt;/span&gt;&lt;span&gt;Battle&lt;/span&gt;&lt;span class=&quot;on&quot;&gt;Meta&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-size:var(--t13);color:var(--ink-2)&quot;&gt;Search /&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;mt-wrap&quot;&gt;
+        &lt;div class=&quot;mt-top&quot;&gt;
+          &lt;div&gt;
+            &lt;div class=&quot;mt-kicker&quot;&gt;META · THE LINE-UP&lt;/div&gt;
+            &lt;h2 class=&quot;mt-h1&quot;&gt;Who wins&lt;em&gt;right now.&lt;/em&gt;&lt;/h2&gt;
+            &lt;p class=&quot;mt-lead&quot;&gt;Every Pokémon rated 0–100 from real tournament results, not opinion. Updated today.&lt;/p&gt;
+            &lt;div class=&quot;mt-meta-row&quot;&gt;
+              &lt;p class=&quot;k-reg&quot; role=&quot;status&quot; aria-label=&quot;Day 3 of Reg M-D: 12 events, 840 players so far&quot;&gt;
+                &lt;span class=&quot;k-reg-stub&quot;&gt;&lt;span&gt;Day 3 of Reg M-D&lt;/span&gt;&lt;/span&gt;
+                &lt;span class=&quot;k-reg-body&quot;&gt;&lt;span&gt;12 events, 840 players so far&lt;/span&gt;&lt;/span&gt;
+              &lt;/p&gt;
+              &lt;span class=&quot;mt-qbtn&quot; aria-hidden=&quot;true&quot;&gt;?&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;mt-links&quot;&gt;&lt;span&gt;How Ratings Work &amp;rsaquo;&lt;/span&gt;&lt;span&gt;Track Record &amp;rsaquo;&lt;/span&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;mt-spot&quot;&gt;
+            &lt;div&gt;&lt;span class=&quot;k-tag k-good&quot;&gt;#1 right now&lt;/span&gt;&lt;div style=&quot;font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t28);margin-top:var(--s2)&quot;&gt;Sneasler&lt;/div&gt;&lt;/div&gt;
+            &lt;div class=&quot;mt-spot-num&quot;&gt;97&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;mt-tabs-bar&quot;&gt;
+          &lt;div class=&quot;mt-ptabs&quot;&gt;&lt;span class=&quot;on&quot;&gt;Pokémon&lt;/span&gt;&lt;span&gt;Tournaments&lt;/span&gt;&lt;/div&gt;
+          &lt;div class=&quot;mt-subtabs&quot;&gt;&lt;span class=&quot;on&quot;&gt;Ratings&lt;/span&gt;&lt;span&gt;Usage&lt;/span&gt;&lt;span&gt;Popular Sets&lt;/span&gt;&lt;span&gt;Natures&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    <div class="frame w1440 night">
+      <div class="frame-lbl">Meta · 1440px · Night (Dark)</div>
+      <div class="np-head-m"><span class="np-logo-m"><span class="pk">NASTY</span> <span class="bl">PLOT</span></span><div class="np-nav-m"><span>Home</span><span>Build</span><span>My Team</span><span>Battle</span><span class="on">Meta</span></div><span style="font-size:var(--t13);color:var(--ink-2)">Search /</span></div>
+      <div class="mt-wrap">
+        <div class="mt-top">
+          <div>
+            <div class="mt-kicker">META · THE LINE-UP</div>
+            <h2 class="mt-h1">Who wins<em>right now.</em></h2>
+            <p class="mt-lead">Every Pokémon rated 0–100 from real tournament results, not opinion. Updated today.</p>
+            <div class="mt-meta-row">
+              <p class="k-reg" role="status" aria-label="Day 3 of Reg M-D: 12 events, 840 players so far">
+                <span class="k-reg-stub"><span>Day 3 of Reg M-D</span></span>
+                <span class="k-reg-body"><span>12 events, 840 players so far</span></span>
+              </p>
+              <span class="mt-qbtn" aria-hidden="true">?</span>
+            </div>
+            <div class="mt-links"><span>How Ratings Work &rsaquo;</span><span>Track Record &rsaquo;</span></div>
+          </div>
+          <div class="mt-spot">
+            <div><span class="k-tag k-good">#1 right now</span><div style="font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t28);margin-top:var(--s2)">Sneasler</div></div>
+            <div class="mt-spot-num">97</div>
+          </div>
+        </div>
+        <div class="mt-tabs-bar">
+          <div class="mt-ptabs"><span class="on">Pokémon</span><span>Tournaments</span></div>
+          <div class="mt-subtabs"><span class="on">Ratings</span><span>Usage</span><span>Popular Sets</span><span>Natures</span></div>
+        </div>
+      </div>
+    </div>
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;!-- ==================== HOME 1440 LIGHT &amp; DARK ==================== --&gt;
+&lt;section class=&quot;gal-sec&quot;&gt;
+  &lt;h2&gt;4. Home — 1440px Desktop (Light &amp;amp; Dark) · Replaces the Reg M-D countdown line inside the dark hero ledge&lt;/h2&gt;
+  &lt;div class=&quot;gal-row&quot;&gt;
+    &lt;div class=&quot;frame w1440&quot;&gt;
+      &lt;div class=&quot;frame-lbl&quot;&gt;Home · 1440px · Day (Light)&lt;/div&gt;
+      &lt;div class=&quot;np-head-m&quot;&gt;&lt;span class=&quot;np-logo-m&quot;&gt;&lt;span class=&quot;pk&quot;&gt;NASTY&lt;/span&gt; &lt;span class=&quot;bl&quot;&gt;PLOT&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;np-nav-m&quot;&gt;&lt;span class=&quot;on&quot;&gt;Home&lt;/span&gt;&lt;span&gt;Build&lt;/span&gt;&lt;span&gt;My Team&lt;/span&gt;&lt;span&gt;Battle&lt;/span&gt;&lt;span&gt;Meta&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-size:var(--t13);color:var(--ink-2)&quot;&gt;Search /&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;sd-hero-m&quot; style=&quot;text-align:center&quot;&gt;
+        &lt;div class=&quot;sd-kick-m&quot;&gt;THE POKÉMON CHAMPIONS COACH&lt;/div&gt;
+        &lt;h2 class=&quot;sd-title-m&quot;&gt;Sharply raise&lt;span class=&quot;l2&quot;&gt;your win rate.&lt;/span&gt;&lt;/h2&gt;
+        &lt;div class=&quot;sd-plates-m&quot;&gt;
+          &lt;div class=&quot;sd-plate-m&quot;&gt;Kingambit &lt;b&gt;96&lt;/b&gt;&lt;/div&gt;
+          &lt;div class=&quot;sd-plate-m&quot;&gt;Sneasler &lt;b&gt;97&lt;/b&gt;&lt;/div&gt;
+          &lt;div class=&quot;sd-plate-m&quot;&gt;Rillaboom &lt;b&gt;97&lt;/b&gt;&lt;/div&gt;
+          &lt;div class=&quot;sd-plate-m&quot;&gt;Incineroar &lt;b&gt;95&lt;/b&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;sd-ledge-m&quot;&gt;
+        &lt;div&gt;
+          &lt;p class=&quot;sd-copy-m&quot;&gt;Every one of the 346 Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating. &lt;a href=&quot;#meta&quot;&gt;All Ratings &amp;rsaquo;&lt;/a&gt;&lt;/p&gt;
+          &lt;div class=&quot;sd-reg-wrap&quot;&gt;
+            &lt;p class=&quot;k-reg k-reg-ink&quot; role=&quot;status&quot; aria-label=&quot;Day 3 of Reg M-D: 12 events, 840 players so far&quot;&gt;
+              &lt;span class=&quot;k-reg-stub&quot;&gt;&lt;span&gt;Day 3 of Reg M-D&lt;/span&gt;&lt;/span&gt;
+              &lt;span class=&quot;k-reg-body&quot;&gt;&lt;span&gt;12 events, 840 players so far&lt;/span&gt;&lt;/span&gt;
+            &lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;sd-btns-m&quot;&gt;
+          &lt;a class=&quot;sd-b1&quot; href=&quot;#team&quot;&gt;Score My Team&lt;/a&gt;
+          &lt;a class=&quot;sd-b2&quot; href=&quot;#build&quot;&gt;Build Me a Team&lt;/a&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    <div class="frame w1440 night">
+      <div class="frame-lbl">Home · 1440px · Night (Dark)</div>
+      <div class="np-head-m"><span class="np-logo-m"><span class="pk">NASTY</span> <span class="bl">PLOT</span></span><div class="np-nav-m"><span class="on">Home</span><span>Build</span><span>My Team</span><span>Battle</span><span>Meta</span></div><span style="font-size:var(--t13);color:var(--ink-2)">Search /</span></div>
+      <div class="sd-hero-m" style="text-align:center">
+        <div class="sd-kick-m">THE POKÉMON CHAMPIONS COACH</div>
+        <h2 class="sd-title-m">Sharply raise<span class="l2">your win rate.</span></h2>
+        <div class="sd-plates-m">
+          <div class="sd-plate-m">Kingambit <b>96</b></div>
+          <div class="sd-plate-m">Sneasler <b>97</b></div>
+          <div class="sd-plate-m">Rillaboom <b>97</b></div>
+          <div class="sd-plate-m">Incineroar <b>95</b></div>
+        </div>
+      </div>
+      <div class="sd-ledge-m">
+        <div>
+          <p class="sd-copy-m">Every one of the 346 Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating. <a href="#meta">All Ratings &rsaquo;</a></p>
+          <div class="sd-reg-wrap">
+            <p class="k-reg k-reg-ink" role="status" aria-label="Day 3 of Reg M-D: 12 events, 840 players so far">
+              <span class="k-reg-stub"><span>Day 3 of Reg M-D</span></span>
+              <span class="k-reg-body"><span>12 events, 840 players so far</span></span>
+            </p>
+          </div>
+        </div>
+        <div class="sd-btns-m">
+          <a class="sd-b1" href="#team">Score My Team</a>
+          <a class="sd-b2" href="#build">Build Me a Team</a>
+        </div>
+      </div>
+    </div>
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+----- END option-a-live-stamp.html -----
+
+----- BEGIN option-b-data-tape.html -----
+&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;Job 20 · Option B — Amber-Notched Data Tape (Day 3 of Reg M-D)&lt;/title&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;code/tokens.css&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;code/kit.css&quot;&gt;
+&lt;style&gt;
+  *{box-sizing:border-box}
+  body{margin:0;padding:var(--s6);background:var(--wash);color:var(--ink);font-family:var(--b);font-size:var(--t15);line-height:1.5}
+  .gal-hd{max-width:1480px;margin:0 auto var(--s6);display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s3);border-bottom:2px solid var(--rule);padding-bottom:var(--s4)}
+  .gal-hd h1{margin:0;font-family:var(--u);font-size:var(--t22);font-style:italic;letter-spacing:-.02em}
+  .gal-hd p{margin:var(--s1) 0 0;color:var(--ink-2);font-size:var(--t15)}
+  .gal-sec{max-width:1480px;margin:0 auto var(--s8)}
+  .gal-sec&gt;h2{margin:0 0 var(--s3);font-family:var(--u);font-size:var(--t15);font-style:italic;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-2)}
+  .gal-row{display:flex;flex-wrap:wrap;gap:var(--s6);align-items:flex-start}
+  .frame{background:var(--bg);color:var(--ink);border:1px solid var(--rule);border-radius:var(--r-m);overflow:hidden;box-shadow:var(--shadow-lift)}
+  .frame-lbl{padding:var(--s2) var(--s3);background:var(--plate);color:var(--on-plate);font-size:var(--t13);font-weight:700;display:flex;justify-content:space-between;gap:var(--s3)}
+  .frame-lbl span{opacity:.8;font-weight:500}
+  .w390{width:390px;max-width:100%}
+  .w1440{width:1440px;max-width:100%}
+
+  .night{
+    --bg:#12121B;--surface:#1B1A26;--wash:#171622;--ink:#F4F2EE;--ink-2:#C4C0CE;--ink-3:#9E9AA8;--rule:rgba(244,242,238,.12);
+    --plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--pick-text:#F58DA1;
+    --k-paper:#12121B;--k-card:#1B1A26;--k-ink:#F4F2EE;--k-ink2:#9E9AA8;--k-rule:rgba(244,242,238,.12);
+    --k-plot:#62BEF7;--k-plot-text:#62BEF7;--k-on-plot:#12121B;--k-go:#DA2C48;--k-on-go:#FFFFFF;
+    --k-chip:#E4E0DA;--k-on-chip:#12121B;--k-neutral:rgba(244,242,238,.45);
+    --mid:#F0C768;--mid-text:#F0C768;--sd-hero:#0078BF;--sd-ink:#17161B;--sd-link:#62BEF7;
+    background:var(--bg);color:var(--ink);
+  }
+
+  /* =========================================================================
+     PROPOSED COMPONENT CSS (kit.css addition: .k-regt — Option B Data Tape)
+     Direct visual sibling to np-dnote's slanted amber dash (--mid), upgraded to
+     NastyPlot's slanted tape-rule grammar. Uses ONLY tokens.css variables.
+     ========================================================================= */
+  .k-regt{
+    display:inline-flex;
+    align-items:baseline;
+    gap:var(--s2);
+    margin:0;
+    padding:var(--s1) var(--s3) var(--s1) var(--s2);
+    background:color-mix(in srgb,var(--mid) 10%,var(--surface));
+    border-top:1px solid var(--rule);
+    border-bottom:2px solid var(--mid);
+    font-family:var(--b);
+    font-size:var(--t13);
+    line-height:1.5;
+    color:var(--ink-2);
+  }
+  .k-regt-dash{
+    flex:none;
+    display:inline-block;
+    width:12px;
+    height:6px;
+    background:var(--mid);
+    transform:skewX(-24deg) translateY(-1px);
+  }
+  .k-regt b{
+    font-family:var(--u);
+    font-style:italic;
+    font-weight:800;
+    font-size:var(--t13);
+    color:var(--ink);
+    letter-spacing:-.01em;
+  }
+  /* On dark ink ledges (Home hero) */
+  .k-regt.k-regt-ink{
+    background:color-mix(in srgb,var(--mid) 14%,var(--sd-ink));
+    border-top-color:var(--pl-band-rule);
+    color:var(--pl-band-2);
+  }
+  .k-regt.k-regt-ink b{color:var(--on-plate)}
+
+  /* Context mockups */
+  .np-head-m{height:56px;padding:0 var(--s4);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--rule);background:var(--bg)}
+  .np-logo-m{font-family:var(--u);font-weight:900;font-style:italic;font-size:var(--t17);letter-spacing:-.03em}
+  .np-logo-m .pk{color:var(--logo-pink)}
+  .np-logo-m .bl{color:var(--logo-blue)}
+  .np-nav-m{display:flex;gap:var(--s5);font-size:var(--t15);font-weight:600;color:var(--ink-2)}
+  .np-nav-m .on{color:var(--ink);border-bottom:3px solid var(--plot);padding-bottom:2px}
+  .np-bar-m{height:56px;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;text-align:center;font-size:var(--t13);font-weight:600;color:var(--ink-2);border-top:1px solid var(--rule);background:var(--bg)}
+  .np-bar-m .on{color:var(--ink);position:relative}
+  .np-bar-m .on::before{content:"";position:absolute;top:0;left:25%;right:25%;height:3px;background:var(--plot)}
+
+  .sd-hero-m{background:var(--sd-hero);color:var(--sd-on-band);padding:var(--s4) var(--s4) 0;position:relative;overflow:hidden}
+  .sd-kick-m{display:inline-block;padding:var(--s1) var(--s3);background:var(--sd-ink);color:var(--sd-on-band);font-family:var(--u);font-size:var(--t13);font-style:italic;font-weight:800;transform:skewX(-8deg);margin-bottom:var(--s2)}
+  .sd-title-m{margin:0;font-family:var(--u);font-style:italic;font-weight:900;line-height:.98;letter-spacing:-.03em;text-shadow:0 3px 0 var(--sd-ink)}
+  .w390 .sd-title-m{font-size:var(--t34)}
+  .w1440 .sd-title-m{font-size:var(--d64);text-align:center}
+  .sd-title-m .l2{color:var(--sd-line2);display:block}
+  .sd-plates-m{display:flex;gap:var(--s3);margin-top:var(--s4);padding-bottom:var(--s2);justify-content:center}
+  .sd-plate-m{background:var(--sd-plate);color:var(--sd-plate-ink);padding:var(--s2) var(--s3);transform:skewX(-8deg);display:flex;align-items:baseline;gap:var(--s2);font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t15)}
+  .sd-plate-m b{color:var(--sd-plate-num);font-size:var(--t24)}
+  .sd-ledge-m{background:var(--sd-ink);color:var(--on-plate);padding:var(--s4);display:grid;gap:var(--s3)}
+  .w1440 .sd-ledge-m{grid-template-columns:1.2fr 1fr;align-items:center;padding:var(--s6) var(--s12)}
+  .sd-copy-m{margin:0;font-size:var(--t15);line-height:1.5;color:var(--pl-band-2)}
+  .sd-copy-m a{color:var(--sd-link);text-decoration:none;font-weight:600}
+  .sd-reg-wrap{margin-top:var(--s2)}
+  .sd-btns-m{display:flex;gap:var(--s3);flex-wrap:wrap;justify-content:flex-end}
+  .w390 .sd-btns-m{display:grid;grid-template-columns:1fr 1fr}
+  .sd-b1,.sd-b2{padding:var(--s3) var(--s4);font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t15);transform:skewX(-8deg);text-align:center;text-decoration:none}
+  .sd-b1{background:var(--sd-btn);color:var(--sd-btn-ink)}
+  .sd-b2{background:transparent;color:var(--sd-on-band);border:2px solid var(--sd-on-band)}
+
+  .mt-wrap{padding:var(--s4)}
+  .w1440 .mt-wrap{padding:var(--s6) var(--s12)}
+  .mt-top{display:grid;gap:var(--s4)}
+  .w1440 .mt-top{grid-template-columns:1fr 1fr;align-items:center}
+  .mt-kicker{display:inline-block;padding:var(--s1) var(--s3);background:var(--k-chip);color:var(--k-on-chip);font-family:var(--u);font-size:var(--t13);font-style:italic;font-weight:800;transform:skewX(-8deg);margin-bottom:var(--s3)}
+  .mt-h1{margin:0;font-family:var(--u);font-style:italic;font-weight:900;line-height:1;letter-spacing:-.03em;color:var(--k-ink)}
+  .w390 .mt-h1{font-size:var(--t34)}
+  .w1440 .mt-h1{font-size:var(--d64)}
+  .mt-h1 em{color:var(--k-plot-text);font-style:inherit;display:block}
+  .mt-lead{margin:var(--s3) 0 0;font-size:var(--t16);line-height:1.5;color:var(--k-ink2);max-width:460px}
+  .mt-meta-row{margin-top:var(--s3);display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+  .mt-qbtn{width:28px;height:28px;border:1px solid var(--rule);background:var(--surface);color:var(--plot-text);font-weight:800;font-size:var(--t13);transform:skewX(-8deg);display:inline-grid;place-items:center}
+  .mt-links{margin:var(--s3) 0 0;display:flex;gap:var(--s4);font-size:var(--t15);font-weight:600;color:var(--plot-text)}
+  .mt-tabs-bar{margin-top:var(--s5);border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s3);flex-wrap:wrap}
+  .mt-ptabs{display:flex;gap:var(--s5);font-size:var(--t16);font-weight:700}
+  .mt-ptabs .on{color:var(--ink);border-bottom:3px solid var(--plot);padding-bottom:var(--s2)}
+  .mt-ptabs span:not(.on){color:var(--ink-2);padding-bottom:var(--s2)}
+  .mt-subtabs{display:flex;background:var(--wash);transform:skewX(-8deg)}
+  .mt-subtabs span{padding:var(--s2) var(--s4);font-size:var(--t15);font-weight:600;color:var(--ink-2);transform:skewX(8deg)}
+  .mt-subtabs .on{background:color-mix(in srgb,var(--plot) 16%,var(--surface));color:var(--plot-text);border-bottom:2px solid var(--plot)}
+  .mt-spot{padding:var(--s4);border:1px solid var(--rule);background:var(--surface);display:flex;justify-content:space-between;align-items:center;gap:var(--s4)}
+  .mt-spot-num{font-family:var(--u);font-style:italic;font-weight:900;font-size:var(--d64);line-height:1}
+  .h-badge{display:inline-block;padding:2px var(--s2);background:var(--mid);color:var(--ink);font-size:var(--t13);font-weight:700;border-radius:var(--r-s)}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;header class=&quot;gal-hd&quot;&gt;
+  &lt;div&gt;
+    &lt;h1&gt;Option B — Amber-Notched Data Tape (&lt;code&gt;.k-regt&lt;/code&gt;)&lt;/h1&gt;
+    &lt;p&gt;Direct sibling of &lt;code&gt;.np-dnote&lt;/code&gt; · Replaces the Regulation line on Meta and countdown on Home · &lt;strong&gt;+0px above Meta tabs on 390×844&lt;/strong&gt;&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;span class=&quot;h-badge&quot;&gt;Exact sentence: &quot;Day 3 of Reg M-D: 12 events, 840 players so far&quot;&lt;/span&gt;
+&lt;/header&gt;
+
+&lt;section class=&quot;gal-sec&quot;&gt;
+  &lt;h2&gt;1. Meta / Ratings — 390px Phone (Light &amp;amp; Dark) · Tabs stay at ~368px (strictly &amp;le; 456px; +0px added above tabs)&lt;/h2&gt;
+  &lt;div class=&quot;gal-row&quot;&gt;
+    &lt;div class=&quot;frame w390&quot;&gt;
+      &lt;div class=&quot;frame-lbl&quot;&gt;Meta · 390px · Day (Light) &lt;span&gt;Tabs top: ~368px (&amp;le; 456px)&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;np-head-m&quot;&gt;&lt;span class=&quot;np-logo-m&quot;&gt;&lt;span class=&quot;pk&quot;&gt;NP&lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;font-size:var(--t13);color:var(--ink-2)&quot;&gt;Search · Box · Theme&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;mt-wrap&quot;&gt;
+        &lt;div class=&quot;mt-kicker&quot;&gt;META · THE LINE-UP&lt;/div&gt;
+        &lt;h2 class=&quot;mt-h1&quot;&gt;Who wins&lt;em&gt;right now.&lt;/em&gt;&lt;/h2&gt;
+        &lt;p class=&quot;mt-lead&quot;&gt;Every Pokémon rated 0–100 from real tournament results, not opinion. Updated today.&lt;/p&gt;
+        &lt;div class=&quot;mt-tabs-bar&quot;&gt;&lt;div class=&quot;mt-ptabs&quot;&gt;&lt;span class=&quot;on&quot;&gt;Pokémon&lt;/span&gt;&lt;span&gt;Tournaments&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;div class=&quot;mt-subtabs&quot; style=&quot;margin-top:var(--s3)&quot;&gt;&lt;span class=&quot;on&quot;&gt;Ratings&lt;/span&gt;&lt;span&gt;Usage&lt;/span&gt;&lt;span&gt;Sets&lt;/span&gt;&lt;span&gt;Natures&lt;/span&gt;&lt;/div&gt;
+        &lt;div class=&quot;mt-meta-row&quot;&gt;
+          &lt;p class=&quot;k-regt&quot; role=&quot;status&quot;&gt;&lt;i class=&quot;k-regt-dash&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;&lt;b&gt;Day 3 of Reg M-D:&lt;/b&gt; 12 events, 840 players so far&lt;/span&gt;&lt;/p&gt;
+          &lt;span class=&quot;mt-qbtn&quot; aria-hidden=&quot;true&quot;&gt;?&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;np-bar-m&quot;&gt;&lt;span&gt;Home&lt;/span&gt;&lt;span&gt;Build&lt;/span&gt;&lt;span&gt;My Team&lt;/span&gt;&lt;span&gt;Battle&lt;/span&gt;&lt;span class=&quot;on&quot;&gt;Meta&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    <div class="frame w390 night">
+      <div class="frame-lbl">Meta · 390px · Night (Dark) <span>Tabs top: ~368px (&le; 456px)</span></div>
+      <div class="np-head-m"><span class="np-logo-m"><span class="pk">NP</span></span><span style="font-size:var(--t13);color:var(--ink-2)">Search · Box · Theme</span></div>
+      <div class="mt-wrap">
+        <div class="mt-kicker">META · THE LINE-UP</div>
+        <h2 class="mt-h1">Who wins<em>right now.</em></h2>
+        <p class="mt-lead">Every Pokémon rated 0–100 from real tournament results, not opinion. Updated today.</p>
+        <div class="mt-tabs-bar"><div class="mt-ptabs"><span class="on">Pokémon</span><span>Tournaments</span></div></div>
+        <div class="mt-subtabs" style="margin-top:var(--s3)"><span class="on">Ratings</span><span>Usage</span><span>Sets</span><span>Natures</span></div>
+        <div class="mt-meta-row">
+          <p class="k-regt" role="status"><i class="k-regt-dash" aria-hidden="true"></i><span><b>Day 3 of Reg M-D:</b> 12 events, 840 players so far</span></p>
+          <span class="mt-qbtn" aria-hidden="true">?</span>
+        </div>
+      </div>
+      <div class="np-bar-m"><span>Home</span><span>Build</span><span>My Team</span><span>Battle</span><span class="on">Meta</span></div>
+    </div>
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;gal-sec&quot;&gt;
+  &lt;h2&gt;2. Home — 390px Phone (Light &amp;amp; Dark) · Replaces countdown inside hero ledge (+0px net; both buttons on first screen)&lt;/h2&gt;
+  &lt;div class=&quot;gal-row&quot;&gt;
+    &lt;div class=&quot;frame w390&quot;&gt;
+      &lt;div class=&quot;frame-lbl&quot;&gt;Home · 390px · Day (Light) &lt;span&gt;Both start buttons on first screen&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;np-head-m&quot;&gt;&lt;span class=&quot;np-logo-m&quot;&gt;&lt;span class=&quot;pk&quot;&gt;NP&lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;font-size:var(--t13);color:var(--ink-2)&quot;&gt;Search · Box · Theme&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;sd-hero-m&quot;&gt;
+        &lt;div class=&quot;sd-kick-m&quot;&gt;THE POKÉMON CHAMPIONS COACH&lt;/div&gt;
+        &lt;h2 class=&quot;sd-title-m&quot;&gt;Sharply raise&lt;span class=&quot;l2&quot;&gt;your win rate.&lt;/span&gt;&lt;/h2&gt;
+        &lt;div class=&quot;sd-plates-m&quot;&gt;&lt;div class=&quot;sd-plate-m&quot;&gt;Sneasler &lt;b&gt;97&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sd-plate-m&quot;&gt;Rillaboom &lt;b&gt;97&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;sd-ledge-m&quot;&gt;
+        &lt;div&gt;
+          &lt;p class=&quot;sd-copy-m&quot;&gt;Every one of the 346 Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating. &lt;a href=&quot;#meta&quot;&gt;All Ratings &amp;rsaquo;&lt;/a&gt;&lt;/p&gt;
+          &lt;div class=&quot;sd-reg-wrap&quot;&gt;
+            &lt;p class=&quot;k-regt k-regt-ink&quot; role=&quot;status&quot;&gt;&lt;i class=&quot;k-regt-dash&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;&lt;b&gt;Day 3 of Reg M-D:&lt;/b&gt; 12 events, 840 players so far&lt;/span&gt;&lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;sd-btns-m&quot;&gt;&lt;a class=&quot;sd-b1&quot; href=&quot;#team&quot;&gt;Score My Team&lt;/a&gt;&lt;a class=&quot;sd-b2&quot; href=&quot;#build&quot;&gt;Build Me a Team&lt;/a&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;np-bar-m&quot;&gt;&lt;span class=&quot;on&quot;&gt;Home&lt;/span&gt;&lt;span&gt;Build&lt;/span&gt;&lt;span&gt;My Team&lt;/span&gt;&lt;span&gt;Battle&lt;/span&gt;&lt;span&gt;Meta&lt;/span&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    <div class="frame w390 night">
+      <div class="frame-lbl">Home · 390px · Night (Dark) <span>Both start buttons on first screen</span></div>
+      <div class="np-head-m"><span class="np-logo-m"><span class="pk">NP</span></span><span style="font-size:var(--t13);color:var(--ink-2)">Search · Box · Theme</span></div>
+      <div class="sd-hero-m">
+        <div class="sd-kick-m">THE POKÉMON CHAMPIONS COACH</div>
+        <h2 class="sd-title-m">Sharply raise<span class="l2">your win rate.</span></h2>
+        <div class="sd-plates-m"><div class="sd-plate-m">Sneasler <b>97</b></div><div class="sd-plate-m">Rillaboom <b>97</b></div></div>
+      </div>
+      <div class="sd-ledge-m">
+        <div>
+          <p class="sd-copy-m">Every one of the 346 Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating. <a href="#meta">All Ratings &rsaquo;</a></p>
+          <div class="sd-reg-wrap">
+            <p class="k-regt k-regt-ink" role="status"><i class="k-regt-dash" aria-hidden="true"></i><span><b>Day 3 of Reg M-D:</b> 12 events, 840 players so far</span></p>
+          </div>
+        </div>
+        <div class="sd-btns-m"><a class="sd-b1" href="#team">Score My Team</a><a class="sd-b2" href="#build">Build Me a Team</a></div>
+      </div>
+      <div class="np-bar-m"><span class="on">Home</span><span>Build</span><span>My Team</span><span>Battle</span><span>Meta</span></div>
+    </div>
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;gal-sec&quot;&gt;
+  &lt;h2&gt;3. Meta / Ratings — 1440px Desktop (Light &amp;amp; Dark)&lt;/h2&gt;
+  &lt;div class=&quot;gal-row&quot;&gt;
+    &lt;div class=&quot;frame w1440&quot;&gt;
+      &lt;div class=&quot;frame-lbl&quot;&gt;Meta · 1440px · Day (Light)&lt;/div&gt;
+      &lt;div class=&quot;np-head-m&quot;&gt;&lt;span class=&quot;np-logo-m&quot;&gt;&lt;span class=&quot;pk&quot;&gt;NASTY&lt;/span&gt; &lt;span class=&quot;bl&quot;&gt;PLOT&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;np-nav-m&quot;&gt;&lt;span&gt;Home&lt;/span&gt;&lt;span&gt;Build&lt;/span&gt;&lt;span&gt;My Team&lt;/span&gt;&lt;span&gt;Battle&lt;/span&gt;&lt;span class=&quot;on&quot;&gt;Meta&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-size:var(--t13);color:var(--ink-2)&quot;&gt;Search /&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;mt-wrap&quot;&gt;
+        &lt;div class=&quot;mt-top&quot;&gt;
+          &lt;div&gt;
+            &lt;div class=&quot;mt-kicker&quot;&gt;META · THE LINE-UP&lt;/div&gt;
+            &lt;h2 class=&quot;mt-h1&quot;&gt;Who wins&lt;em&gt;right now.&lt;/em&gt;&lt;/h2&gt;
+            &lt;p class=&quot;mt-lead&quot;&gt;Every Pokémon rated 0–100 from real tournament results, not opinion. Updated today.&lt;/p&gt;
+            &lt;div class=&quot;mt-meta-row&quot;&gt;
+              &lt;p class=&quot;k-regt&quot; role=&quot;status&quot;&gt;&lt;i class=&quot;k-regt-dash&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;&lt;b&gt;Day 3 of Reg M-D:&lt;/b&gt; 12 events, 840 players so far&lt;/span&gt;&lt;/p&gt;
+              &lt;span class=&quot;mt-qbtn&quot; aria-hidden=&quot;true&quot;&gt;?&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;mt-links&quot;&gt;&lt;span&gt;How Ratings Work &amp;rsaquo;&lt;/span&gt;&lt;span&gt;Track Record &amp;rsaquo;&lt;/span&gt;&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;mt-spot&quot;&gt;
+            &lt;div&gt;&lt;span class=&quot;k-tag k-good&quot;&gt;#1 right now&lt;/span&gt;&lt;div style=&quot;font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t28);margin-top:var(--s2)&quot;&gt;Sneasler&lt;/div&gt;&lt;/div&gt;
+            &lt;div class=&quot;mt-spot-num&quot;&gt;97&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;mt-tabs-bar&quot;&gt;
+          &lt;div class=&quot;mt-ptabs&quot;&gt;&lt;span class=&quot;on&quot;&gt;Pokémon&lt;/span&gt;&lt;span&gt;Tournaments&lt;/span&gt;&lt;/div&gt;
+          &lt;div class=&quot;mt-subtabs&quot;&gt;&lt;span class=&quot;on&quot;&gt;Ratings&lt;/span&gt;&lt;span&gt;Usage&lt;/span&gt;&lt;span&gt;Popular Sets&lt;/span&gt;&lt;span&gt;Natures&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    <div class="frame w1440 night">
+      <div class="frame-lbl">Meta · 1440px · Night (Dark)</div>
+      <div class="np-head-m"><span class="np-logo-m"><span class="pk">NASTY</span> <span class="bl">PLOT</span></span><div class="np-nav-m"><span>Home</span><span>Build</span><span>My Team</span><span>Battle</span><span class="on">Meta</span></div><span style="font-size:var(--t13);color:var(--ink-2)">Search /</span></div>
+      <div class="mt-wrap">
+        <div class="mt-top">
+          <div>
+            <div class="mt-kicker">META · THE LINE-UP</div>
+            <h2 class="mt-h1">Who wins<em>right now.</em></h2>
+            <p class="mt-lead">Every Pokémon rated 0–100 from real tournament results, not opinion. Updated today.</p>
+            <div class="mt-meta-row">
+              <p class="k-regt" role="status"><i class="k-regt-dash" aria-hidden="true"></i><span><b>Day 3 of Reg M-D:</b> 12 events, 840 players so far</span></p>
+              <span class="mt-qbtn" aria-hidden="true">?</span>
+            </div>
+            <div class="mt-links"><span>How Ratings Work &rsaquo;</span><span>Track Record &rsaquo;</span></div>
+          </div>
+          <div class="mt-spot">
+            <div><span class="k-tag k-good">#1 right now</span><div style="font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t28);margin-top:var(--s2)">Sneasler</div></div>
+            <div class="mt-spot-num">97</div>
+          </div>
+        </div>
+        <div class="mt-tabs-bar">
+          <div class="mt-ptabs"><span class="on">Pokémon</span><span>Tournaments</span></div>
+          <div class="mt-subtabs"><span class="on">Ratings</span><span>Usage</span><span>Popular Sets</span><span>Natures</span></div>
+        </div>
+      </div>
+    </div>
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section class=&quot;gal-sec&quot;&gt;
+  &lt;h2&gt;4. Home — 1440px Desktop (Light &amp;amp; Dark)&lt;/h2&gt;
+  &lt;div class=&quot;gal-row&quot;&gt;
+    &lt;div class=&quot;frame w1440&quot;&gt;
+      &lt;div class=&quot;frame-lbl&quot;&gt;Home · 1440px · Day (Light)&lt;/div&gt;
+      &lt;div class=&quot;np-head-m&quot;&gt;&lt;span class=&quot;np-logo-m&quot;&gt;&lt;span class=&quot;pk&quot;&gt;NASTY&lt;/span&gt; &lt;span class=&quot;bl&quot;&gt;PLOT&lt;/span&gt;&lt;/span&gt;&lt;div class=&quot;np-nav-m&quot;&gt;&lt;span class=&quot;on&quot;&gt;Home&lt;/span&gt;&lt;span&gt;Build&lt;/span&gt;&lt;span&gt;My Team&lt;/span&gt;&lt;span&gt;Battle&lt;/span&gt;&lt;span&gt;Meta&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-size:var(--t13);color:var(--ink-2)&quot;&gt;Search /&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;sd-hero-m&quot; style=&quot;text-align:center&quot;&gt;
+        &lt;div class=&quot;sd-kick-m&quot;&gt;THE POKÉMON CHAMPIONS COACH&lt;/div&gt;
+        &lt;h2 class=&quot;sd-title-m&quot;&gt;Sharply raise&lt;span class=&quot;l2&quot;&gt;your win rate.&lt;/span&gt;&lt;/h2&gt;
+        &lt;div class=&quot;sd-plates-m&quot;&gt;&lt;div class=&quot;sd-plate-m&quot;&gt;Kingambit &lt;b&gt;96&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sd-plate-m&quot;&gt;Sneasler &lt;b&gt;97&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sd-plate-m&quot;&gt;Rillaboom &lt;b&gt;97&lt;/b&gt;&lt;/div&gt;&lt;div class=&quot;sd-plate-m&quot;&gt;Incineroar &lt;b&gt;95&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;sd-ledge-m&quot;&gt;
+        &lt;div&gt;
+          &lt;p class=&quot;sd-copy-m&quot;&gt;Every one of the 346 Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating. &lt;a href=&quot;#meta&quot;&gt;All Ratings &amp;rsaquo;&lt;/a&gt;&lt;/p&gt;
+          &lt;div class=&quot;sd-reg-wrap&quot;&gt;
+            &lt;p class=&quot;k-regt k-regt-ink&quot; role=&quot;status&quot;&gt;&lt;i class=&quot;k-regt-dash&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;&lt;b&gt;Day 3 of Reg M-D:&lt;/b&gt; 12 events, 840 players so far&lt;/span&gt;&lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;sd-btns-m&quot;&gt;&lt;a class=&quot;sd-b1&quot; href=&quot;#team&quot;&gt;Score My Team&lt;/a&gt;&lt;a class=&quot;sd-b2&quot; href=&quot;#build&quot;&gt;Build Me a Team&lt;/a&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    <div class="frame w1440 night">
+      <div class="frame-lbl">Home · 1440px · Night (Dark)</div>
+      <div class="np-head-m"><span class="np-logo-m"><span class="pk">NASTY</span> <span class="bl">PLOT</span></span><div class="np-nav-m"><span class="on">Home</span><span>Build</span><span>My Team</span><span>Battle</span><span>Meta</span></div><span style="font-size:var(--t13);color:var(--ink-2)">Search /</span></div>
+      <div class="sd-hero-m" style="text-align:center">
+        <div class="sd-kick-m">THE POKÉMON CHAMPIONS COACH</div>
+        <h2 class="sd-title-m">Sharply raise<span class="l2">your win rate.</span></h2>
+        <div class="sd-plates-m"><div class="sd-plate-m">Kingambit <b>96</b></div><div class="sd-plate-m">Sneasler <b>97</b></div><div class="sd-plate-m">Rillaboom <b>97</b></div><div class="sd-plate-m">Incineroar <b>95</b></div></div>
+      </div>
+      <div class="sd-ledge-m">
+        <div>
+          <p class="sd-copy-m">Every one of the 346 Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating. <a href="#meta">All Ratings &rsaquo;</a></p>
+          <div class="sd-reg-wrap">
+            <p class="k-regt k-regt-ink" role="status"><i class="k-regt-dash" aria-hidden="true"></i><span><b>Day 3 of Reg M-D:</b> 12 events, 840 players so far</span></p>
+          </div>
+        </div>
+        <div class="sd-btns-m"><a class="sd-b1" href="#team">Score My Team</a><a class="sd-b2" href="#build">Build Me a Team</a></div>
+      </div>
+    </div>
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+----- END option-b-data-tape.html -----

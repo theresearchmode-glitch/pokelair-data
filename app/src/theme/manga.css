@@ -362,7 +362,7 @@
 @R .mgst.mgon{border-width:5px!important;border-color:var(--mgink)!important;outline:none!important;box-shadow:none!important}
 @R #chTeam .chthead{padding-top:0!important;margin-top:0!important}@R .chmhero{padding-top:0!important}@R .chmh{padding-top:0!important}
 
-/* ===================== Round 3 (Sim on her iPhone): soften a little, fix the rough edges ===================== */
+/* ===================== Round 3 (Sim on his iPhone): soften a little, fix the rough edges ===================== */
 /* one border weight and two radii, site-wide: frames 2.5px; panels and boxes 6px; controls, captions, tags 4px */
 @R{--mgbw:2.5px;--mgr:6px;--mgr2:4px;--tr-bw:2.5px;--tr-r:6px}
 @R .mgpn{border-width:var(--mgbw)!important;border-radius:var(--mgr)!important}

@@ -1,0 +1,701 @@
+KIP JOB 26 — STRENGTH SCORE RESEARCH, ROUND 3: NEXT GAINS & FALSIFICATION
+Date: 2026-11-24 | BASE: c95e73d2 (alt/gemini-v3lab: experiments/v3-lab.mjs)
+Scope: Hard research + read-only lab code (ZERO design changes, ZERO edits to model.mjs or page).
+Governing rule (CLAUDE.md Rule 21): "A change is done only when an independent check passes (real later results, Sim's review),
+never the score that drove it. A test only counts if it could have failed; too few teams = unknown. Single games first; best-of-3 later and separate."
+
+================================================================================
+1-PAGE SUMMARY
+================================================================================
+WHERE WE STAND (real 38,477-game 8-cut walk-forward):
+- Baseline reproduced identically (`0.00000` difference vs `model.mjs` on 32,562/5,951 split).
+- `combo` (clean ridge + recency-aligned six delta + Blade-Chest `d=4`) beats today's model across ALL 4 robustness slices:
+  `+0.48 pts` acc `[0.16%, 0.80%]`, `-0.00125` log-loss `[-0.0017, -0.0008]`, strongest on familiar teams (`+0.99 pts`, `-0.00219` LL).
+- Ceiling reminder (`docs/strength-score.md`): player skill alone picks ~59.5% vs team alone ~53.7%. Every next gain on team-only
+  prediction is incremental (`0.0003`–`0.0015` LL) and must clear paired tournament-clustered 95% CIs on top of `combo`.
+
+WHAT THIS PACKAGE DELIVERS:
+1. PART A — Deep evidence-backed research across all 6 requested fronts (Bring-4 / team preview, hierarchical set features,
+   speed-control / archetype interactions, component-specific recency & drift detection, segment calibration & honest uncertainty,
+   and small-data regulation warm starts) with verified links, dates, tiers, expected gains, overfitting risks, and data gaps.
+2. PART B — 8 candidate ideas ranked by `(Expected Gain x Confidence) / Effort`, selecting the top 4 to stack on top of `combo`.
+3. PART C — All 4 top ideas implemented in `experiments/v3-lab.mjs` (BASE `c95e73d2`) as `--ideas` flags (`--round3` shortcut):
+   `combo-skillhalf`, `combo-archetype`, `combo-hier-sets`, `combo-seg-cal`. Each prints paired 95% CIs against BOTH `baseline`
+   AND `combo`, preserves all 4 robustness slices and `<500 games = UNKNOWN`, and defines its S7 rejection rule.
+4. PART D — 3 falsification checks of `combo` itself implemented as CLI flags (`--falsify-all` shortcut):
+   `--falsify-shuffle` (within-event team-label permutation), `--falsify-reverse` (time-reversed diagnostic split), and
+   `--falsify-loeo` (leave-one-event-out influence audit).
+
+COMMANDS FOR HH TO RUN ON THE FULL 38,513-GAME DATASET:
+  git apply kip-job26.patch
+  node experiments/v3-lab.mjs --round3 --falsify-all --weeks=8 --boots=200 --json=out/v3-lab-round3.json
+
+================================================================================
+PART A — HARD RESEARCH (6 FRONTS; LINK + DATE + TIER ON EVERY CLAIM)
+================================================================================
+Tier scale: T1 (peer-reviewed / official docs) > T2 (well-known open-source code) > T3 (blogs / technical reports) > T4 (forums).
+
+--- A1. TEAM PREVIEW / BRING-4 & LEAD CHOICE (EXPECTED-VALUE-OVER-BRINGS VS WHOLE-SIX) ---
+- What the evidence says:
+  - `VGC-Bench` (arXiv:2506.10326v1, Jun 12, 2025, T1: https://arxiv.org/html/2506.10326v1) formalizes VGC team preview as a
+    combinatorial subteam selection problem with `(6 choose 2) * (4 choose 2) = 90` ordered lead/back configurations per player
+    (15 unordered Bring-4 subsets). Generalizing across diverse 6-Pokémon toolboxes is identified as a primary bottleneck.
+  - Carli (Journal of Geek Studies, Jul 11, 2025, T1/T3: https://jgeekstudies.org/2025/07/11/predicting-competitive-pokemon-vgc-leads-using-latent-semantic-analysis-a-data-driven-approach-to-team-matchups/)
+    trained Latent Semantic Analysis on >5,000 Showdown logs (1,174 filtered) and evaluated on all 32 NAIC 2025 Masters Top 8 games:
+    top-3 predicted leads achieved 62.50% Hard Prediction (both leads exact) and 81.25% Soft Prediction (at least 1 lead; 83.33% /
+    91.66% in Finals) — proving the opponent's 6 strongly constrains Bring-4 choice.
+  - Open-source VGC agents (`EliteFurretAI`, T2: https://github.com/caymansimpson/EliteFurretAI; `pokechamp`, Aug 16, 2025, T2:
+    https://github.com/sethkarten/pokechamp/releases) separate Team Preview selection from in-battle play.
+  - NastyPlot's own `docs/strength-score.md` (Nov 9, 2026, Internal): on 13,265 Showdown ladder replays (`four-synergy.mjs`),
+    "Two lead Pokémon together: nothing beyond which four were brought" and "Synergy inside the brought four: unknown (too little data)".
+- Can expected-value-over-brings `E[x(B4_A) - x(B4_B)]` beat whole-six modeling?
+  - Theoretically YES for head-to-head matchup prediction (a niche 6th tech mon like Gastrodon or Amoonguss shouldn't drag down a
+    six when it sits on the bench 60% of games). Practically, for our Limitless tournament `out/matches.json`, we do NOT observe
+    which 4 were brought — only `out/replays.json` (Showdown ladder, ~13k games) has brought/lead data, with distribution shift
+    between ladder Bo1 and Limitless open-sheet tournaments.
+- Expected gain range: `-0.0002` to `-0.0008` LL if bring-rate-weighted species weights `p_bring(mon | team)` are transferred from
+  ladder replays; up to `-0.0015` LL only if tournament replay bring-4 logs become available.
+- Overfitting risk: HIGH if fitting a full 15x15 subteam matchup matrix; MEDIUM if restricted to marginal bring probability `p(bring_i | team)`.
+- Data we have vs lack: Have ladder replays (`out/replays.json`, `leads.mjs`); LACK brought-4 / lead labels on Limitless tournament rows.
+
+--- A2. SET-LEVEL FEATURES BEYOND TODAY'S CENTERED SETS (HIERARCHICAL SHRINKAGE BY SPECIES) ---
+- What the evidence says:
+  - Today's `model.mjs` uses flat `lc = 60` across all `Mon@Item`, `Mon#Ability`, `Mon:Move` features passing `>= 40` decks, with
+    unweighted season-long centering `freq[j]`.
+  - Live Champions Reg M-C usage (MunchStats, Nov 2026, T3: https://www.munchstats.com/) shows extreme skew: staple moves like
+    Sneasler Close Combat appear on 99.9% of sets (near-zero variance), while tech items/moves vary sharply between staples
+    (2,000+ decks) and niche species (50 decks).
+  - High-dimensional logistic regression theory (Bai et al., ICML 2021, T1: https://proceedings.mlr.press/v139/bai21c/bai21c.pdf)
+    shows flat L2 regularization under-shrinks low-count groups while over-shrinking high-count groups, inflating logit variance.
+  - Hierarchical empirical-Bayes shrinkage scales each set feature's penalty inversely with species sample size (`lc_j ~ lc * sqrt(medSp / spDecks[sp])`),
+    and recency-weighted centering (`freq_t[j]` with 14d half-life) stops mid-season set shifts (e.g., an item moving from 20% to 70%
+    usage) from leaking into species intercept `b[sp]`.
+  - Stat points / Tera: Champions has NO Terastallization (Tera absent by rule), and Limitless open team sheets do NOT publish
+    EV/stat-point spreads (only Showdown ladder usage dumps have spreads).
+- Expected gain range: `-0.0003` to `-0.0009` LL on top of `combo` (largest mid-to-late regulation when meta builds evolve).
+- Overfitting risk: LOW (adds 0 new free parameters; only refines centering weights and per-species shrinkage scaling).
+- Data we have vs lack: Have items, abilities, and moves per deck in `M.feats`/`M.decks`; LACK stat-point spreads on Limitless sheets.
+
+--- A3. SPEED-CONTROL & ARCHETYPE INTERACTIONS (LOW-RANK VS EXPLICIT FEATURES) ---
+- What the evidence says:
+  - Chen & Joachims Blade-Chest (ACM WSDM 2016, T1: https://www.cs.cornell.edu/~shuochen/pubs/wsdm16_chen.pdf) proves low-rank
+    antisymmetric bilinear forms `u(A).v(B) - u(B).v(A)` capture arbitrary rock-paper-scissors cycles. Our Run 2 already confirmed
+    Blade-Chest `d=4` delivers `-0.00075` LL standalone and `-0.00125` LL inside `combo`.
+  - However, Blade-Chest in `v3-lab.mjs` operates on SPECIES (`tf[A].f`), NOT deck-level moves/abilities! A Farigiraf or Tornadus
+    carrying Trick Room vs Imprison, or a team with Tailwind + Sun vs Hard Trick Room, is a DECK-level archetype property.
+  - NastyPlot's `docs/strength-score.md` (Nov 9, 2026) showed marginal main effects for speed control (`-0.6 pts`) were flat because
+    ~92% of teams carry *some* speed control — the real signal is the **interaction** (Trick Room vs Tailwind vs Rain vs Sun vs Snow).
+  - An explicit 6-dim deck archetype vector `[TR, TW, Sun, Rain, Sand, Snow]` with an antisymmetric 6x6 matchup matrix `W` has ONLY
+    `6 * 5 / 2 = 15` free parameters (vs `~300 * 8 = 2,400` in species Blade-Chest), making it ultra-low-variance and interpretable.
+- Expected gain range: `-0.0003` to `-0.0010` LL on top of `combo` (captures move-level TR/TW/weather matchups invisible to species-only `U, V`).
+- Overfitting risk: VERY LOW (only 15 antisymmetric parameters with L2=20).
+- Data we have vs lack: Have exact moves and abilities in `M.feats`/`M.decks` (`:Trick Room`, `:Tailwind`, `#Drought`, `#Drizzle`, `#Sand Stream`, `#Snow Warning`, `#Mega Sol`).
+
+--- A4. TIME: RECENCY HALF-LIFE PER COMPONENT & META DRIFT DETECTION ---
+- What the evidence says:
+  - Dynamic Bradley-Terry literature (Ley et al., arXiv:1807.01623v2, Aug 3, 2018, T1: https://arxiv.org/html/1807.01623v2;
+    Bong et al., AISTATS 2020, T1: https://proceedings.mlr.press/v108/bong20a/bong20a.pdf; Coulom WHR, 2008, T1:
+    https://www.remi-coulom.fr/WHR/WHR.pdf) finds time-varying models consistently beat static BT, AND different latent factors
+    evolve on different timescales.
+  - In `model.mjs` / `combo`, player skill `s[p]` currently shares the 14-day half-life (`half = 14`) used for Pokémon meta shifts.
+    When a strong player takes 3 weeks off, their prior games drop to `0.5^(21/14) = 0.35x` weight — leaking their skill into their
+    Pokémon! Decoupling `skillHalf = 60` days (slow skill drift) from `half = 14` days (fast meta drift) fixes this cleanly without
+    the online-update instability that hurt Glicko-2 in Run 1 (`+0.00139` LL).
+  - Meta drift detection: ADWIN (Bifet & Gavaldà, SDM 2007, T1: https://www.researchgate.net/publication/220907178_Learning_from_Time-Changing_Data_with_Adaptive_Windowing;
+    River docs, T2: https://riverml.xyz/dev/api/drift/ADWIN/; window-dilemma analysis arXiv:2602.06456v1, Feb 6, 2026, T1:
+    https://arxiv.org/html/2602.06456v1) monitors rolling prediction log-loss or top-20 usage KL-divergence to flag sudden meta
+    shifts (e.g., post-Regional breakout team or balance patch) and shorten `half` dynamically.
+- Expected gain range: `-0.0003` to `-0.0010` LL for decoupled `skillHalf=60` on top of `combo`; drift detection is mainly a monitoring/stability win.
+- Overfitting risk: VERY LOW (1 hyperparameter `skillHalf`, zero added model parameters).
+- Data we have vs lack: Have exact tournament dates `evDates` and persistent Limitless account IDs `pa, pb`.
+
+--- A5. CALIBRATION BY SEGMENT & COMMUNICATING UNCERTAINTY HONESTLY ---
+- What the evidence says:
+  - Guo et al. (ICML 2017, T1: https://proceedings.mlr.press/v70/guo17a.html) established single-parameter temperature scaling as
+    the gold-standard baseline, while Bai et al. (ICML 2021, T1: https://proceedings.mlr.press/v139/bai21c/bai21c.pdf) showed
+    high-dimensional logistic models are systematically overconfident on rarer feature combinations.
+  - Semantic-Aware Group Calibration GC+TS (arXiv:2306.04985v2, Oct 21, 2023, T1: https://arxiv.org/html/2306.04985v2) proves
+    Theorem 1: group-wise temperature scaling is strictly **accuracy-preserving** while reducing Expected Calibration Error (ECE)
+    and log-loss across subgroups with different signal-to-noise ratios.
+  - Look at our Run 2 robustness splits: `combo` had `acc = 55.50%+0.42` (`ll = 0.6804`) on `<64` events vs `53.79%+0.54` (`ll = 0.6854`)
+    on `64+` events, and `+0.99 pts` (`-0.00219` LL) on familiar teams (`bothCommon`) vs `+0.42 pts` on rarer teams, with overall
+    `calSlope = 0.904` (slightly overconfident!). Regularized 4-segment temperature scaling `(common/rare x small/big)` shrunk toward
+    global `w0` lets `innerCal` temper overconfident rare-team matchups while keeping sharp odds on familiar matchups.
+  - Communicating uncertainty: van der Bles et al. (PNAS, Mar 2020, T1: https://www.pnas.org/doi/10.1073/pnas.1913678117) proved
+    showing a numeric range alongside a point estimate ("82, likely 78–86") communicates uncertainty honestly WITHOUT lowering user trust.
+- Expected gain range: `-0.0002` to `-0.0007` LL on top of `combo` (pure calibration improvement, zero accuracy regression by Theorem 1).
+- Overfitting risk: VERY LOW (4 slopes strongly L2-shrunk toward `w0` with `lamSeg = 15`, fitted strictly on `innerCal`).
+- Data we have vs lack: Have exact `evPlayers` and train-only `trTeamCnt` inside every walk-forward cut.
+
+--- A6. SMALL-DATA REGULATION STARTS (WHY WEEKS 1–2 FAILED & WHAT LITERATURE SAYS) ---
+- What the evidence says:
+  - In Run 1 `--md-sim`, `cold-start` beat `heavy-ridge`, `usage-prior`, and self-contained `l2-sp-decay` in Weeks 1–2 (`dLL = +0.00063`
+    in Week 1), while `l2-sp-decay` beat `cold-start` in Weeks 3–4 (`-0.00069` and `-0.00053` LL).
+  - WHY did `l2-sp-decay` lose in Week 1? Because in the self-contained M-C replay, there was NO real prior-regulation model (`--prior-model`
+    was empty!), so `v3-lab.mjs` fell back to a crude Week-1 raw win-rate prior (double-dipping the same noisy 2,456 games!).
+  - Real transfer learning literature — Li et al. L2-SP (ICML 2018, T1: https://arxiv.org/abs/1802.01483) and Glicko-2 RD inflation
+    (Glickman 2013, T1: https://glicko.net/glicko/glicko2.pdf) — shows warm-start priors ONLY beat cold start when the prior carries
+    **genuinely external information** (here: the real M-C `out/model.json` weights for unchanged Pokémon, with `priorB[j] = 0` for
+    the 24 newly added Reg M-D Pokémon + 4 new Megas + Dec 2 balance-patched Pokémon, and `lambda_sp` decaying as `lambda_0 / (1 + n / 2500)`).
+  - Second real warm-start source for brand-new M-D Pokémon (Heatran, Mega Heatran, Dondozo, Tatsugiri): **feature-based Empirical Bayes
+    prior** from base-stat total + Mega flag + Showdown ladder early usage (available days before 20 Limitless tournaments finish).
+- Expected gain range: `-0.0030` to `-0.0100` LL during Reg M-D Weeks 1–2 when fed real M-C `out/model.json` via `--prior-model`;
+  cannot be proven inside M-C alone without an M-B `model_mb.json` snapshot.
+- Overfitting risk: MEDIUM if prior weight `lambda_0` is too stiff when meta shifts (e.g. Dondozo/Tatsugiri + Heatran reshaping Reg M-D).
+- Data we have vs lack: Have M-C `out/model.json` for Dec 2 launch; LACK an M-B `model_mb.json` archive to backtest cross-reg transfer on M-C Week 1.
+
+================================================================================
+PART B — RANKED 8 IDEAS BY (EXPECTED GAIN x CONFIDENCE) / EFFORT
+================================================================================
+Scale: Expected Gain = expected -dLL in units of 0.0001 (e.g. 6 = -0.0006 LL); Confidence = 0.0–1.0; Effort = 1 (trivial) to 5 (major).
+
+| Rank | Idea (stacked on `combo`) | Exp Gain (1e-4 LL) | Conf | Effort | Score `(G*C)/E` | Test First? |
+|---|---|---:|---:|---:|---:|---|
+| 1 | **Decoupled player-skill half-life (`skillHalf=60d` vs `half=14d`)** (`combo-skillhalf`) | 6 | 0.70 | 1 | **4.20** | **YES (#1)** — 10 LOC, fixes known skill-decay leakage without Glicko instability. |
+| 2 | **Explicit archetype / speed-control matchup matrix (TR/TW/weather, 15 params)** (`combo-archetype`) | 7 | 0.65 | 1.5 | **3.03** | **YES (#2)** — captures move-level TR/TW/weather RPS invisible to species Blade-Chest. |
+| 3 | **Recency-weighted set centering + hierarchical species-volume set shrinkage** (`combo-hier-sets`) | 5 | 0.65 | 1.5 | **2.17** | **YES (#3)** — 0 new params; stops stale set frequencies leaking into species `b[j]`. |
+| 4 | **Segment-aware regularized calibration (`common/rare x <64/64+`)** (`combo-seg-cal`) | 4 | 0.70 | 1.5 | **1.87** | **YES (#4)** — accuracy-preserving by Theorem 1; directly targets `calSlope=0.904`. |
+| 5 | **Real M-C -> M-D L2-SP warm start (zeroed for Dec 2 patched/new mons)** (existing `--md-sim --prior-model`) | 40 (W1–2 only) | 0.55 | 2.5 | 1.76* | Defer to Dec 2 / M-B archive (*only active 2 weeks/quarter, amortized ~0.2x). |
+| 6 | **Bo1-only vs Bo3-only stratified training & eval** (once Job 24 Part 2 tags `m[i][9]`) | 6 | 0.60 | 2.5 | 1.44 | Blocked until `update.mjs` populates `m[i][9]` on live `matches.json`. |
+| 7 | **Bring-4 marginal weight `p(bring | team)` transferred from `out/replays.json`** | 5 | 0.45 | 3.5 | 0.64 | Later — ladder-to-tournament shift + needs replay join pipeline. |
+| 8 | **ADWIN / KL-divergence dynamic `half` controller** | 3 | 0.40 | 3.0 | 0.40 | Later — monitoring tool first; high risk of over-reacting to single big event. |
+
+WHY TEST THESE 4 FIRST:
+All 4 run cleanly on our existing `out/matches.json` with zero new external data, zero schema changes, ultra-low parameter count
+(0 to 15 new parameters total!), zero leakage, and each attacks an orthogonal residual left untouched by `combo` (player skill
+timescale, deck-level archetype matchups, set-level shrinkage/centering, and post-hoc subgroup calibration).
+
+================================================================================
+PART C — 4 IDEAS STACKED ON TOP OF COMBO (S7 REJECTION CRITERIA)
+================================================================================
+Implemented in `experiments/v3-lab.mjs` (run all 4 + `combo` + `baseline` via `--round3`, or individually via `--ideas=...`).
+Every variant prints paired 95% tournament-clustered bootstrap CIs vs BOTH `baseline` AND `combo`, plus all 4 robustness slices
+(`ev_under_64`, `ev_64_plus`, `teams_common_30`, `teams_rarer`) with `<500 games = UNKNOWN`.
+
+1. `--ideas=combo,combo-skillhalf` (Decoupled Player-Skill Half-Life, `skillHalf = 60d`):
+   - S7 rejection rule: Reject if paired 95% bootstrap CI of `(LL_combo_skillhalf - LL_combo)` is NOT strictly `< 0` (i.e. upper bound >= 0),
+     OR if it regresses any robustness slice with >= 500 games.
+2. `--ideas=combo,combo-archetype` (Explicit 6-Dim Archetype Antisymmetric Matchup Matrix on top of `combo`):
+   - S7 rejection rule: Reject if paired 95% bootstrap CI of `(LL_combo_archetype - LL_combo)` is NOT strictly `< 0`, OR if it hurts the
+     `teams_rarer` slice (overfitting small archetype counts).
+3. `--ideas=combo,combo-hier-sets` (Recency-Centered Set Frequencies + Species-Volume Hierarchical Set Shrinkage):
+   - S7 rejection rule: Reject if paired 95% bootstrap CI of `(LL_combo_hier_sets - LL_combo)` is NOT strictly `< 0`.
+4. `--ideas=combo,combo-seg-cal` (Regularized 4-Segment Temperature Scaling on `innerCal`):
+   - S7 rejection rule: Reject if paired 95% bootstrap CI of `(LL_combo_seg_cal - LL_combo)` is NOT strictly `< 0`, OR if overall
+     `calSlope` moves further from `1.0` than `combo`.
+
+================================================================================
+PART D — FALSIFICATION CHECKS OF COMBO ITSELF
+================================================================================
+Implemented in `experiments/v3-lab.mjs` (run via `--falsify-all`, or individually):
+1. `--falsify-shuffle` (Within-Event Team-Label Permutation):
+   - Permutes `(team, deck)` assignments across games within each event while preserving event dates, player IDs, and outcomes,
+     then runs full walk-forward `baseline` vs `combo`.
+   - S7 falsification criterion: `combo`'s gain MUST vanish (`95% CI` includes `0` or `|dLL| <= 0.0003`). If `combo` still beats
+     `baseline` with `dLL < -0.0003` and CI `< 0`, there is hidden leakage or a player-skill artifact.
+2. `--falsify-reverse` (Time-Reversed Split — DIAGNOSTIC ONLY, NOT PRIMARY EVIDENCE):
+   - Trains strictly on LATER events `> cut` and tests strictly on EARLIER events `(cut - 7d, cut]`.
+   - S7 diagnostic interpretation: Helps distinguish genuine structural matchup/shrinkage signal (which should remain positive in
+     reverse) from a lucky late-season regime fluke. Never used as primary ship evidence (Rule 21 requires strictly future games).
+3. `--falsify-loeo` (Leave-One-Event-Out Influence):
+   - Computes exact per-event `deltaLL` contribution across all pooled test events, prints Top-5 most favorable and Top-5 least
+     favorable events, and checks `maxSingleEventShare = max_e(-contrib_e) / (-totalDeltaLL)`.
+   - S7 falsification criterion: Flags `WARN` if any single tournament drives `> 25%` of `combo`'s total log-loss gain, or if
+     dropping the single most favorable event flips `loeo_dLL >= 0`.
+
+VERIFICATION ON SYNTHETIC 1,920-GAME / 24-EVENT FIXTURE (`--round3 --falsify-all --weeks=4 --boots=30 --iters=40`):
+- `node --check experiments/v3-lab.mjs` -> Syntax OK.
+- `--round3` -> All 4 stacked variants ran cleanly, reported paired `delta vs baseline` AND `delta vs combo`, plus robustness slices (`<500 = UNKNOWN`).
+- `--falsify-shuffle` -> `dLL=+0.00018 [-0.0011, 0.0008]`, `VERDICT: PASS (combo gain vanished under shuffled team labels)`.
+- `--falsify-reverse` -> Ran cleanly, labeled `DIAGNOSTIC ONLY — NOT PRIMARY EVIDENCE`.
+- `--falsify-loeo` -> `maxShare=19.2%`, `VERDICT: PASS (no single event drives >25% of combo gain)`.
+
+================================================================================
+UNIFIED DIFF (BASE: c95e73d2 — SINGLE git-apply-READY BLOCK)
+================================================================================
+diff --git a/experiments/v3-lab.mjs b/experiments/v3-lab.mjs
+index e7e5e57..541eae4 100644
+--- a/experiments/v3-lab.mjs
++++ b/experiments/v3-lab.mjs
+@@ -39,11 +39,18 @@ const ITERS = Math.max(20, Number(arg('iters', process.env.ITERS || '250')) || 2
+ const RUN_MD_SIM = process.argv.includes('--md-sim');
+ const VERIFY_BASELINE = process.argv.includes('--verify-baseline');
+ const SENSITIVITY = process.argv.includes('--sensitivity');
++const ROUND3 = process.argv.includes('--round3');
++const FALSIFY_ALL = process.argv.includes('--falsify-all');
++const FALSIFY_SHUFFLE = FALSIFY_ALL || process.argv.includes('--falsify-shuffle');
++const FALSIFY_REVERSE = FALSIFY_ALL || process.argv.includes('--falsify-reverse');
++const FALSIFY_LOEO = FALSIFY_ALL || process.argv.includes('--falsify-loeo');
+ const JSON_OUT = arg('json', '');
+ const CORE_IDEAS = ['fm', 'matchup', 'glicko', 'no-evid-hier', 'mega-cap', 'combo'];
+ const SENS_IDEAS = ['matchup-d2', 'matchup-d4', 'matchup-d8', 'no-evid-hier', 'combo-d2', 'combo-d4', 'combo-d8'];
+-const ALL_IDEAS = [...new Set([...CORE_IDEAS, ...SENS_IDEAS])];
++const ROUND3_IDEAS = ['combo', 'combo-skillhalf', 'combo-archetype', 'combo-hier-sets', 'combo-seg-cal'];
++const ALL_IDEAS = [...new Set([...CORE_IDEAS, ...SENS_IDEAS, ...ROUND3_IDEAS])];
+ const IDEAS = (() => {
++  if (ROUND3) return ROUND3_IDEAS;
+   if (SENSITIVITY) return SENS_IDEAS;
+   const raw = arg('ideas', 'all');
+   if (raw === 'none' || raw === '') return [];
+@@ -160,11 +167,31 @@ function buildContext(data, trainGames, opts = {}) {
+     deckF = M.decks.map(fs_ => (fs_ || []).map(f => keep.get(f)).filter(j => j != null));
+     freq = new Float64Array(setNames.length);
+     const spDecks = new Map(), fd = new Float64Array(setNames.length);
+-    for (const d of used) {
+-      if (!M.decks[d]) continue;
+-      for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1);
+-      for (const j of deckF[d]) fd[j]++;
++    if (opts.recencySetFreq) {
++      let lastD = -Infinity;
++      for (const g of trainGames) lastD = Math.max(lastD, dayNum(data.evDates[g[3]]));
++      const half = data.S.half ?? 14;
++      const deckW = new Map();
++      for (const g of trainGames) {
++        const w = half ? Math.pow(0.5, (lastD - dayNum(data.evDates[g[3]])) / half) : 1;
++        if (g[7] != null) deckW.set(g[7], (deckW.get(g[7]) || 0) + w);
++        if (g[8] != null) deckW.set(g[8], (deckW.get(g[8]) || 0) + w);
++      }
++      for (const d of used) {
++        if (!M.decks[d]) continue;
++        const w = deckW.get(d) || 1;
++        for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + w);
++        for (const j of deckF[d]) fd[j] += w;
++      }
++    } else {
++      for (const d of used) {
++        if (!M.decks[d]) continue;
++        for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1);
++        for (const j of deckF[d]) fd[j]++;
++      }
+     }
++    const spCounts = [...spDecks.values()].sort((a, b) => a - b);
++    const medSp = spCounts.length ? spCounts[Math.floor(spCounts.length / 2)] : 1;
+     setNames.forEach((f, j) => {
+       const sp = f.split(/[@:#]/)[0];
+       featSp.push(sp);
+@@ -172,7 +199,27 @@ function buildContext(data, trainGames, opts = {}) {
+       if (!spFeats.has(sp)) spFeats.set(sp, []);
+       spFeats.get(sp).push(j);
+     });
++    var featLcMult = Float64Array.from(featSp, sp => {
++      const ratio = Math.sqrt(medSp / Math.max(1, spDecks.get(sp) || 1));
++      return Math.max(0.5, Math.min(2.5, ratio));
++    });
+   }
++  // Archetype / speed-control 6-dim vector per deck (TR, TW, Sun, Rain, Sand, Snow) from M.feats (zero leakage)
++  const ARCH_DIM = 6;
++  const deckArch = hasSets ? M.decks.map(fs_ => {
++    const v = new Float64Array(ARCH_DIM);
++    if (!fs_) return v;
++    for (const f of fs_) {
++      const s = M.feats[f] || '';
++      if (/:Trick Room$/i.test(s)) v[0] = 1;
++      else if (/:Tailwind$/i.test(s)) v[1] = 1;
++      else if (/#(Drought|Mega Sol)$|:Sunny Day$/i.test(s)) v[2] = 1;
++      else if (/#Drizzle$|:Rain Dance$/i.test(s)) v[3] = 1;
++      else if (/#Sand Stream$|:Sandstorm$/i.test(s)) v[4] = 1;
++      else if (/#Snow Warning$|:Snowscape$/i.test(s)) v[5] = 1;
++    }
++    return v;
++  }) : [];
+ 
+   const teamFeatNames = opts.teamFeats || ['noMega', 'protectLow'];
+   const tvCache = new Map();
+@@ -189,7 +236,7 @@ function buildContext(data, trainGames, opts = {}) {
+     return v;
+   };
+ 
+-  return {monIx, mons, pairIx, pairs, tf, setNames, deckF, featSp, spFeats, freq, teamFeatNames, teamVec, nP: M.players};
++  return {monIx, mons, pairIx, pairs, tf, setNames, deckF, featSp, spFeats, freq, featLcMult: typeof featLcMult !== 'undefined' ? featLcMult : null, deckArch, ARCH_DIM, teamFeatNames, teamVec, nP: M.players};
+ }
+ 
+ // ============================================================================
+@@ -202,6 +249,8 @@ function fitBaseline(data, ctx, games, opt = {}) {
+   const K = opt.shrink ?? data.S.shrink ?? 3;
+   const half = opt.half ?? data.S.half ?? 14;
+   const teamHalf = opt.teamHalf ?? (data.S.teamHalf != null ? data.S.teamHalf : half);
++  const skillHalf = opt.skillHalf ?? half;
++  const hierSets = !!opt.hierSets;
+   const skillMult = opt.skill ?? data.S.skill ?? 1;
+   const useSkill = opt.useSkill ?? (skillMult > 0);
+   const usePairs = opt.usePairs ?? true;
+@@ -234,6 +283,8 @@ function fitBaseline(data, ctx, games, opt = {}) {
+   const Wn = games.length / (W.reduce((a, x) => a + x, 0) || 1);
+   const WT = teamHalf === half ? W : games.map(g => teamHalf ? Math.pow(0.5, (last - dayNum(evDates[g[3]])) / teamHalf) : 1);
+   const WTn = games.length / (WT.reduce((a, x) => a + x, 0) || 1);
++  const WS = skillHalf === half ? W : games.map(g => skillHalf ? Math.pow(0.5, (last - dayNum(evDates[g[3]])) / skillHalf) : 1);
++  const WSn = games.length / (WS.reduce((a, x) => a + x, 0) || 1);
+ 
+   const dv = new Map();
+   const deckVec = (t, d) => {
+@@ -264,14 +315,14 @@ function fitBaseline(data, ctx, games, opt = {}) {
+       const sk = (useSkill ? s[pa] - s[pb] : 0) + (skillOffset ? skillOffset[gi] : 0);
+       const eta = x(A, dA) - x(B, dB) + sk;
+       const e0 = sig(eta) - r;
+-      const d = e0 * W[gi] * Wn, dT = e0 * WT[gi] * WTn;
++      const d = e0 * W[gi] * Wn, dT = e0 * WT[gi] * WTn, dS = e0 * WS[gi] * WSn;
+       for (const j of tf[A].f) Gr[0][j] += d;
+       for (const j of tf[B].f) Gr[0][j] -= d;
+       if (usePairs) {
+         for (const j of tf[A].p) Gr[1][j] += d;
+         for (const j of tf[B].p) Gr[1][j] -= d;
+       }
+-      if (useSkill) { Gr[2][pa] += d; Gr[2][pb] -= d; }
++      if (useSkill) { Gr[2][pa] += dS; Gr[2][pb] -= dS; }
+       for (const [j, w] of deckVec(A, dA)) Gr[3][j] += d * w;
+       for (const [j, w] of deckVec(B, dB)) Gr[3][j] -= d * w;
+       if (teamFeatNames.length) {
+@@ -283,7 +334,7 @@ function fitBaseline(data, ctx, games, opt = {}) {
+     for (let k = 0; k < P.length; k++) {
+       const a = P[k], g = Gr[k], m = Mm[k], v = V[k];
+       for (let j = 0; j < a.length; j++) {
+-        let reg = 2 * L[k] * a[j];
++        let reg = 2 * L[k] * (k === 3 && hierSets && ctx.featLcMult ? ctx.featLcMult[j] : 1) * a[j];
+         if (k === 0 && priorB && priorLam > 0) reg = 2 * L[k] * a[j] + 2 * priorLam * (a[j] - (priorB[j] || 0));
+         const gg = g[j] + reg;
+         m[j] = 0.9 * m[j] + 0.1 * gg;
+@@ -326,8 +377,33 @@ function fitCalib(model, games) {
+   return Math.max(0.05, Math.min(10, w));
+ }
+ 
++// Regularized segment calibration (shrunk toward global slope w0) strictly inside innerCal (zero leakage).
++function fitSegCalib(model, calGames, innerTeamCnt, evPlayers, w0, lamSeg = 15) {
++  const segOf = g => {
++    const big = (evPlayers[g[3]] || 0) >= 64 ? 1 : 0;
++    const com = innerTeamCnt[g[0]] >= 30 && innerTeamCnt[g[1]] >= 30 ? 1 : 0;
++    return com * 2 + big; // 0=rare_small, 1=rare_big, 2=common_small, 3=common_big
++  };
++  const buckets = [[], [], [], []];
++  for (const g of calGames) buckets[segOf(g)].push([model.predictLogit(g[0], g[1], g[7], g[8]), g[2] === 1 ? 1 : 0]);
++  const slopes = [w0, w0, w0, w0];
++  for (let b = 0; b < 4; b++) {
++    const pts = buckets[b];
++    if (pts.length < 30) continue;
++    let w = w0;
++    for (let k = 0; k < 25; k++) {
++      let gr = 2 * lamSeg * (w - w0), h = 2 * lamSeg;
++      for (const [e, r] of pts) { const p = sig(w * e); gr += (p - r) * e; h += p * (1 - p) * e * e; }
++      w -= gr / (h || 1);
++      if (!Number.isFinite(w) || Math.abs(w) > 20) { w = w0; break; }
++    }
++    slopes[b] = Math.max(0.05, Math.min(10, w));
++  }
++  return slopes;
++}
++
+ // Fit model + calibration strictly inside trainGames (last 20% of train events for calib, matching production).
+-function fitWithCalib(data, trainGames, fitFn, ctxOpts = {}) {
++function fitWithCalib(data, trainGames, fitFn, ctxOpts = {}, {segCal = false} = {}) {
+   const ctx = buildContext(data, trainGames, ctxOpts);
+   const trEv = [...new Set(trainGames.map(g => g[3]))].filter(i => !data.isSD(i)).sort((a, b) => data.evDates[a] < data.evDates[b] ? -1 : 1);
+   const splitAt = Math.max(1, Math.floor(trEv.length * 0.8));
+@@ -336,11 +412,26 @@ function fitWithCalib(data, trainGames, fitFn, ctxOpts = {}) {
+   const innerCal = trainGames.filter(g => calEv.has(g[3]));
+   const calModel = innerTrain.length >= 100 && innerCal.length >= 50 ? fitFn(data, ctx, innerTrain) : null;
+   const calib = calModel ? fitCalib(calModel, innerCal) : 1;
++  let segSlopes = null;
++  const fullTeamCnt = new Int32Array(data.M.teams.length);
++  for (const g of trainGames) { fullTeamCnt[g[0]]++; fullTeamCnt[g[1]]++; }
++  if (segCal && calModel) {
++    const innerTeamCnt = new Int32Array(data.M.teams.length);
++    for (const g of innerTrain) { innerTeamCnt[g[0]]++; innerTeamCnt[g[1]]++; }
++    segSlopes = fitSegCalib(calModel, innerCal, innerTeamCnt, data.evPlayers, calib);
++  }
+   const full = fitFn(data, ctx, trainGames);
+   return {
+     model: full,
+     calib,
+-    predictProb: g => sig(calib * full.predictLogit(g[0], g[1], g[7], g[8])),
++    segSlopes,
++    predictProb: g => {
++      const logit = full.predictLogit(g[0], g[1], g[7], g[8]);
++      if (!segSlopes) return sig(calib * logit);
++      const big = (data.evPlayers[g[3]] || 0) >= 64 ? 1 : 0;
++      const com = fullTeamCnt[g[0]] >= 30 && fullTeamCnt[g[1]] >= 30 ? 1 : 0;
++      return sig(segSlopes[com * 2 + big] * logit);
++    },
+   };
+ }
+ 
+@@ -492,8 +583,66 @@ function fitMatchup(data, ctx, games, D = 4, lbc = 15) {
+ }
+ 
+ // Combined winner candidate: clean ridge + fixed six delta (no-evid-hier) + Blade-Chest rank-D matchup term.
+-function fitCombo(data, ctx, games, D = 4, lbc = 15) {
+-  return fitBladeChestOn(fitNoEvidHier(data, ctx, games), data, ctx, games, D, lbc);
++function fitCombo(data, ctx, games, D = 4, lbc = 15, baseOpt = {}) {
++  return fitBladeChestOn(fitNoEvidHier(data, ctx, games, baseOpt), data, ctx, games, D, lbc);
++}
++
++// ROUND 3 IDEA 1 (--ideas=combo-skillhalf): Decoupled player-skill half-life (60d vs 14d meta half-life) on top of combo.
++function fitComboSkillHalf(data, ctx, games) {
++  return fitCombo(data, ctx, games, 4, 15, {skillHalf: 60});
++}
++
++// ROUND 3 IDEA 2 (--ideas=combo-archetype): Explicit antisymmetric archetype/speed-control matchup matrix on top of combo.
++function fitComboArchetype(data, ctx, games, lArch = 20) {
++  const base = fitCombo(data, ctx, games, 4, 15);
++  const {deckArch, ARCH_DIM} = ctx;
++  if (!deckArch || !deckArch.length) return base;
++  const K = ARCH_DIM;
++  // Upper-triangular antisymmetric matrix W (15 free parameters for K=6)
++  const pairs = [];
++  for (let i = 0; i < K; i++) for (let j = i + 1; j < K; j++) pairs.push([i, j]);
++  const w = new Float64Array(pairs.length), mw = new Float64Array(pairs.length), vw = new Float64Array(pairs.length);
++  const half = data.S.half ?? 14;
++  let last = -Infinity; for (const g of games) last = Math.max(last, dayNum(data.evDates[g[3]]));
++  const Wt = games.map(g => half ? Math.pow(0.5, (last - dayNum(data.evDates[g[3]])) / half) : 1);
++  const Wn = games.length / (Wt.reduce((a, x) => a + x, 0) || 1);
++  const baseEta = games.map(([A, B, , , pa, pb, , dA, dB]) => base.predictLogit(A, B, dA, dB) + base.s[pa] - base.s[pb]);
++  const archDot = (dA, dB) => {
++    if (dA == null || dB == null || !deckArch[dA] || !deckArch[dB]) return 0;
++    const a = deckArch[dA], b = deckArch[dB];
++    let val = 0;
++    for (let p = 0; p < pairs.length; p++) {
++      const [i, j] = pairs[p];
++      val += w[p] * (a[i] * b[j] - a[j] * b[i]);
++    }
++    return val;
++  };
++  for (let it = 1; it <= Math.min(100, ITERS); it++) {
++    const gr = new Float64Array(pairs.length);
++    for (let gi = 0; gi < games.length; gi++) {
++      const [, , r, , , , , dA, dB] = games[gi];
++      if (dA == null || dB == null || !deckArch[dA] || !deckArch[dB]) continue;
++      const e = (sig(baseEta[gi] + archDot(dA, dB)) - r) * Wt[gi] * Wn;
++      const a = deckArch[dA], b = deckArch[dB];
++      for (let p = 0; p < pairs.length; p++) {
++        const [i, j] = pairs[p];
++        const diff = a[i] * b[j] - a[j] * b[i];
++        if (diff) gr[p] += e * diff;
++      }
++    }
++    const c1 = 1 - 0.9 ** it, c2 = 1 - 0.999 ** it;
++    for (let p = 0; p < pairs.length; p++) {
++      const gg = gr[p] + 2 * lArch * w[p];
++      mw[p] = 0.9 * mw[p] + 0.1 * gg; vw[p] = 0.999 * vw[p] + 0.001 * gg * gg;
++      w[p] -= 0.02 * (mw[p] / c1) / (Math.sqrt(vw[p] / c2) + 1e-8);
++    }
++  }
++  return {...base, wArch: w, predictLogit: (A, B, dA, dB) => base.predictLogit(A, B, dA, dB) + archDot(dA, dB)};
++}
++
++// ROUND 3 IDEA 3 (--ideas=combo-hier-sets): Recency-weighted set centering + species-volume hierarchical set shrinkage on top of combo.
++function fitComboHierSets(data, ctx, games) {
++  return fitCombo(data, ctx, games, 4, 15, {hierSets: true});
+ }
+ 
+ // IDEA 3 (--idea=glicko): Strictly Causal Pre-Match Glicko-2 Player Skill Offset (Glickman 2013).
+@@ -546,13 +695,14 @@ function fitGlicko(data, ctx, games) {
+ // IDEA 4 (--idea=no-evid-hier): Remove Post-Hoc EVID_K Double Shrinkage + Recency-Aligned Team-Aware Six Deviation.
+ // Replaces post-hoc b *= n/(n+1000) with clean in-objective ridge (lb * 2.5, lp * 2, evidK=0, evidKp=0),
+ // and adds a recency-weighted, team-basics-aware exact-six residual delta (fixing six.mjs Part E #2).
+-function fitNoEvidHier(data, ctx, games) {
++function fitNoEvidHier(data, ctx, games, baseOpt = {}) {
+   const K = data.S.shrink ?? 3;
+   const base = fitBaseline(data, ctx, games, {
+     lb: 4 * K * 2.5,
+     lp: 15 * K * (data.S.pairShrink ?? 4) * 1.5,
+     evidK: 0,
+     evidKp: 0,
++    ...baseOpt,
+   });
+   // Recency-weighted exact-six deviation delta (tau = 0.1) with FULL base.x (including team basics!).
+   const {evDates, M} = data;
+@@ -689,6 +839,10 @@ function runWalkForward(data) {
+     ...(IDEAS.includes('combo-d2') ? [{id: 'combo-d2', label: 'COMBO: no-evid-hier + Blade-Chest (d=2)', fn: (d, c, gs) => fitCombo(d, c, gs, 2), ctxOpts: {}}] : []),
+     ...(IDEAS.includes('combo-d4') ? [{id: 'combo-d4', label: 'COMBO: no-evid-hier + Blade-Chest (d=4)', fn: (d, c, gs) => fitCombo(d, c, gs, 4), ctxOpts: {}}] : []),
+     ...(IDEAS.includes('combo-d8') ? [{id: 'combo-d8', label: 'COMBO: no-evid-hier + Blade-Chest (d=8)', fn: (d, c, gs) => fitCombo(d, c, gs, 8), ctxOpts: {}}] : []),
++    ...(IDEAS.includes('combo-skillhalf') ? [{id: 'combo-skillhalf', label: 'R3-1: combo + decoupled player skillHalf=60d', fn: (d, c, gs) => fitComboSkillHalf(d, c, gs), ctxOpts: {}}] : []),
++    ...(IDEAS.includes('combo-archetype') ? [{id: 'combo-archetype', label: 'R3-2: combo + explicit archetype matchup matrix', fn: (d, c, gs) => fitComboArchetype(d, c, gs), ctxOpts: {}}] : []),
++    ...(IDEAS.includes('combo-hier-sets') ? [{id: 'combo-hier-sets', label: 'R3-3: combo + recency-centered hierarchical sets', fn: (d, c, gs) => fitComboHierSets(d, c, gs), ctxOpts: {recencySetFreq: true}}] : []),
++    ...(IDEAS.includes('combo-seg-cal') ? [{id: 'combo-seg-cal', label: 'R3-4: combo + segment-aware calibration', fn: (d, c, gs) => fitCombo(d, c, gs, 4), ctxOpts: {}, segCal: true}] : []),
+   ];
+ 
+   const pooled = Object.fromEntries(variants.map(v => [v.id, {probs: [], ys: [], evs: [], perCut: []}]));
+@@ -714,7 +868,7 @@ function runWalkForward(data) {
+     const rowLine = [`  cut ${cut}->${to} (n=${test.length}${test.length < 500 ? ' UNKNOWN' : ''}):`];
+ 
+     for (const v of variants) {
+-      const fitted = fitWithCalib(data, train, v.fn, v.ctxOpts);
++      const fitted = fitWithCalib(data, train, v.fn, v.ctxOpts, {segCal: !!v.segCal});
+       const probs = test.map(fitted.predictProb);
+       const m = metricsOf(probs, ys);
+       pooled[v.id].probs.push(...probs);
+@@ -749,6 +903,15 @@ function runWalkForward(data) {
+       const bm = metricsOf(baseP.probs, baseP.ys);
+       console.log(`  delta vs baseline: dAcc=${((m.acc - bm.acc) * 100 >= 0 ? '+' : '')}${((m.acc - bm.acc) * 100).toFixed(2)} pts ${fPctCI(ci.dAccCI)} | dLL=${(m.ll - bm.ll >= 0 ? '+' : '')}${(m.ll - bm.ll).toFixed(5)} ${fCI(ci.dLlCI)} | dBrier=${(m.brier - bm.brier >= 0 ? '+' : '')}${(m.brier - bm.brier).toFixed(5)} ${fCI(ci.dBrierCI)}`);
+     }
++    if (v.id.startsWith('combo-') && pooled.combo && pooled.combo.probs.length === p.probs.length) {
++      const cm = metricsOf(pooled.combo.probs, pooled.combo.ys);
++      const ciC = bootstrapCI(p.probs, p.ys, p.evs, pooled.combo.probs);
++      const vCombo = m.unknown ? 'UNKNOWN' : (ciC && ciC.dLlCI[1] < 0 ? 'BEATS COMBO' : ciC && ciC.dLlCI[0] > 0 ? 'WORSE THAN COMBO' : 'NO ADDED VALUE');
++      summary[v.id].vsCombo = {dAcc: m.acc - cm.acc, dLL: m.ll - cm.ll, ci: ciC, verdict: vCombo};
++      if (ciC && ciC.dLlCI) {
++        console.log(`  delta vs combo   : [${vCombo}] dAcc=${((m.acc - cm.acc) * 100 >= 0 ? '+' : '')}${((m.acc - cm.acc) * 100).toFixed(2)} pts ${fPctCI(ciC.dAccCI)} | dLL=${(m.ll - cm.ll >= 0 ? '+' : '')}${(m.ll - cm.ll).toFixed(5)} ${fCI(ciC.dLlCI)}`);
++      }
++    }
+   }
+   // Robustness splits (Rule 21: "too few teams = unknown" under 500 games)
+   const slices = [
+@@ -788,7 +951,7 @@ function runWalkForward(data) {
+       }
+     }
+   }
+-  return {summary, robustness};
++  return {summary, robustness, pooled};
+ }
+ 
+ // ============================================================================
+@@ -943,6 +1106,137 @@ function verifyBaselineRepro(data) {
+   if (!ok) process.exit(1);
+ }
+ 
++
++// ============================================================================
++// 8. PART D (JOB 26): FALSIFICATION SUITE FOR COMBO
++//    --falsify-shuffle : Permute team/deck labels within each event; combo gain must vanish.
++//    --falsify-reverse : Time-reversed split (train later, test earlier; diagnostic ONLY, not primary evidence).
++//    --falsify-loeo    : Leave-one-event-out influence on pooled combo vs baseline predictions.
++// ============================================================================
++function runFalsifyShuffle(data) {
++  const {evDates, isSD, G} = data;
++  const rng = makeRng(4242);
++  // Group games by event, collect all (team, deck) appearances within each event, shuffle them, and reassign
++  const byEv = new Map();
++  for (let i = 0; i < G.length; i++) {
++    const e = G[i][3];
++    if (!byEv.has(e)) byEv.set(e, []);
++    byEv.get(e).push(i);
++  }
++  const shufG = G.map(g => g.slice());
++  for (const idxs of byEv.values()) {
++    const pool = [];
++    for (const i of idxs) { pool.push([G[i][0], G[i][7]]); pool.push([G[i][1], G[i][8]]); }
++    for (let k = pool.length - 1; k > 0; k--) {
++      const j = Math.floor(rng() * (k + 1));
++      const tmp = pool[k]; pool[k] = pool[j]; pool[j] = tmp;
++    }
++    let p = 0;
++    for (const i of idxs) {
++      shufG[i][0] = pool[p][0]; shufG[i][7] = pool[p][1]; p++;
++      shufG[i][1] = pool[p][0]; shufG[i][8] = pool[p][1]; p++;
++    }
++  }
++  const shufData = {...data, G: shufG.filter(g => g[0] !== g[1])};
++  const tourDates = data.M.events.map((e, i) => isSD(i) ? null : e[1]).filter(Boolean).sort();
++  const maxDate = tourDates[tourDates.length - 1];
++  const cuts = [];
++  for (let k = WEEKS; k >= 1; k--) cuts.push(addDays(maxDate, -7 * k));
++  const pBase = [], pCombo = [], ys = [], evs = [];
++  for (const cut of cuts) {
++    const to = addDays(cut, 7);
++    const tr = shufData.G.filter(g => evDates[g[3]] <= cut);
++    const te = shufData.G.filter(g => evDates[g[3]] > cut && evDates[g[3]] <= to && !isSD(g[3]));
++    if (!tr.length || !te.length) continue;
++    const fB = fitWithCalib(shufData, tr, (d, c, gs) => fitBaseline(d, c, gs));
++    const fC = fitWithCalib(shufData, tr, (d, c, gs) => fitCombo(d, c, gs, 4));
++    for (const g of te) {
++      pBase.push(fB.predictProb(g)); pCombo.push(fC.predictProb(g));
++      ys.push(g[2] === 1 ? 1 : 0); evs.push(`${cut}:${g[3]}`);
++    }
++  }
++  const mb = metricsOf(pBase, ys), mc = metricsOf(pCombo, ys);
++  const ci = bootstrapCI(pCombo, ys, evs, pBase);
++  const dLL = mc.ll - mb.ll, dAcc = (mc.acc - mb.acc) * 100;
++  const vanished = mb.unknown || (ci && ci.dLlCI[1] >= 0) || Math.abs(dLL) <= 0.0003;
++  console.log('\n=== FALSIFICATION 1: WITHIN-EVENT TEAM-LABEL SHUFFLE ===');
++  console.log(`  games=${mb.n}${mb.unknown ? ' (UNKNOWN)' : ''} | baseline ll=${mb.ll.toFixed(5)} acc=${(mb.acc * 100).toFixed(2)}% | combo ll=${mc.ll.toFixed(5)} acc=${(mc.acc * 100).toFixed(2)}%`);
++  console.log(`  combo - baseline: dAcc=${(dAcc >= 0 ? '+' : '')}${dAcc.toFixed(2)} pts | dLL=${(dLL >= 0 ? '+' : '')}${dLL.toFixed(5)} ${ci ? `[${ci.dLlCI[0].toFixed(4)}, ${ci.dLlCI[1].toFixed(4)}]` : ''}`);
++  console.log(`  VERDICT: ${vanished ? 'PASS (combo gain vanished under shuffled team labels)' : 'FAIL (spurious combo gain persisted under shuffle!)'}`);
++  return {games: mb.n, baseline: mb, combo: mc, dLL, dAcc, ci, pass: vanished};
++}
++
++function runFalsifyReverse(data) {
++  const {evDates, isSD, G} = data;
++  const tourDates = data.M.events.map((e, i) => isSD(i) ? null : e[1]).filter(Boolean).sort();
++  const minDate = tourDates[0];
++  const cuts = [];
++  for (let k = 1; k <= WEEKS; k++) cuts.push(addDays(minDate, 7 * k));
++  const pBase = [], pCombo = [], ys = [], evs = [];
++  for (const cut of cuts) {
++    const from = addDays(cut, -7);
++    // Time-reversed: train strictly AFTER cut, test strictly BEFORE/ON cut in (from, cut]
++    const tr = G.filter(g => evDates[g[3]] > cut);
++    const te = G.filter(g => evDates[g[3]] > from && evDates[g[3]] <= cut && !isSD(g[3]));
++    if (tr.length < 100 || !te.length) continue;
++    const fB = fitWithCalib(data, tr, (d, c, gs) => fitBaseline(d, c, gs));
++    const fC = fitWithCalib(data, tr, (d, c, gs) => fitCombo(d, c, gs, 4));
++    for (const g of te) {
++      pBase.push(fB.predictProb(g)); pCombo.push(fC.predictProb(g));
++      ys.push(g[2] === 1 ? 1 : 0); evs.push(`${cut}:${g[3]}`);
++    }
++  }
++  const mb = metricsOf(pBase, ys), mc = metricsOf(pCombo, ys);
++  const ci = bootstrapCI(pCombo, ys, evs, pBase);
++  const dLL = mc.ll - mb.ll, dAcc = (mc.acc - mb.acc) * 100;
++  console.log('\n=== FALSIFICATION 2: TIME-REVERSED SPLIT (DIAGNOSTIC ONLY — NOT PRIMARY EVIDENCE) ===');
++  console.log(`  games=${mb.n}${mb.unknown ? ' (UNKNOWN)' : ''} | baseline ll=${mb.ll.toFixed(5)} acc=${(mb.acc * 100).toFixed(2)}% | combo ll=${mc.ll.toFixed(5)} acc=${(mc.acc * 100).toFixed(2)}%`);
++  console.log(`  combo - baseline: dAcc=${(dAcc >= 0 ? '+' : '')}${dAcc.toFixed(2)} pts | dLL=${(dLL >= 0 ? '+' : '')}${dLL.toFixed(5)} ${ci ? `[${ci.dLlCI[0].toFixed(4)}, ${ci.dLlCI[1].toFixed(4)}]` : ''}`);
++  return {games: mb.n, baseline: mb, combo: mc, dLL, dAcc, ci};
++}
++
++function runFalsifyLOEO(data, pooled) {
++  if (!pooled || !pooled.baseline || !pooled.combo || !pooled.combo.probs.length) {
++    console.log('\n=== FALSIFICATION 3: LEAVE-ONE-EVENT-OUT INFLUENCE ===');
++    console.log('  Skipped: include `combo` in --ideas to run leave-one-event-out influence.');
++    return null;
++  }
++  const bP = pooled.baseline.probs, cP = pooled.combo.probs, ys = pooled.baseline.ys, evs = pooled.baseline.evs;
++  const N = ys.length;
++  const byEv = new Map();
++  let totBaseLL = 0, totComboLL = 0;
++  for (let i = 0; i < N; i++) {
++    const y = ys[i];
++    const pb = Math.min(1 - 1e-9, Math.max(1e-9, bP[i]));
++    const pc = Math.min(1 - 1e-9, Math.max(1e-9, cP[i]));
++    const lb = -(y ? Math.log(pb) : Math.log(1 - pb));
++    const lc = -(y ? Math.log(pc) : Math.log(1 - pc));
++    totBaseLL += lb; totComboLL += lc;
++    const evId = evs[i].split(':')[1];
++    let o = byEv.get(evId); if (!o) byEv.set(evId, o = {evIdx: +evId, id: (data.M.events[+evId] || ['?'])[0], date: (data.M.events[+evId] || ['', ''])[1], n: 0, sumBaseLL: 0, sumComboLL: 0});
++    o.n++; o.sumBaseLL += lb; o.sumComboLL += lc;
++  }
++  const totalDeltaLL = (totComboLL - totBaseLL) / N;
++  const rows = [...byEv.values()].map(o => {
++    const loeoDeltaLL = ((totComboLL - o.sumComboLL) - (totBaseLL - o.sumBaseLL)) / Math.max(1, N - o.n);
++    const contrib = (o.sumComboLL - o.sumBaseLL) / N;
++    return {...o, contrib, loeoDeltaLL, shareOfGain: totalDeltaLL < 0 ? (contrib / totalDeltaLL) : 0};
++  }).sort((a, b) => a.contrib - b.contrib); // most negative = most favorable to combo
++  const topFav = rows[0];
++  const broad = !(totalDeltaLL < 0 && topFav && topFav.shareOfGain > 0.25);
++  console.log('\n=== FALSIFICATION 3: LEAVE-ONE-EVENT-OUT INFLUENCE (COMBO VS BASELINE) ===');
++  console.log(`  events=${rows.length}, games=${N}, pooled dLL=${totalDeltaLL.toFixed(5)}`);
++  if (topFav) {
++    console.log(`  Most favorable single event: ${topFav.id} (${topFav.date}, n=${topFav.n}) contrib=${topFav.contrib.toFixed(5)} (${(topFav.shareOfGain * 100).toFixed(1)}% of total gain) | dLL without it=${topFav.loeoDeltaLL.toFixed(5)}`);
++  }
++  console.log('  Top 5 most favorable events to combo:');
++  for (const r of rows.slice(0, 5)) console.log(`    ${r.id} (${r.date}, n=${r.n}): contrib=${r.contrib.toFixed(5)} (${(r.shareOfGain * 100).toFixed(1)}%), loeo_dLL=${r.loeoDeltaLL.toFixed(5)}`);
++  console.log('  Top 5 least favorable events to combo:');
++  for (const r of rows.slice(-5).reverse()) console.log(`    ${r.id} (${r.date}, n=${r.n}): contrib=${r.contrib.toFixed(5)}, loeo_dLL=${r.loeoDeltaLL.toFixed(5)}`);
++  console.log(`  VERDICT: ${broad ? 'PASS (no single event drives >25% of combo gain)' : 'WARN (single event drives >25% of combo gain!)'}`);
++  return {events: rows.length, games: N, totalDeltaLL, maxShare: topFav ? topFav.shareOfGain : 0, loeoWorstDrop: topFav ? topFav.loeoDeltaLL : totalDeltaLL, pass: broad, top5Fav: rows.slice(0, 5), top5Unfav: rows.slice(-5).reverse()};
++}
++
+ // ============================================================================
+ // MAIN
+ // ============================================================================
+@@ -964,7 +1258,12 @@ if (!data.bo3Info.available) {
+ 
+ const mdSummary = RUN_MD_SIM ? runMdDayOneSim(data) : null;
+ 
++const falsify = {};
++if (FALSIFY_SHUFFLE) falsify.shuffle = runFalsifyShuffle(data);
++if (FALSIFY_REVERSE) falsify.reverse = runFalsifyReverse(data);
++if (FALSIFY_LOEO) falsify.loeo = runFalsifyLOEO(data, wfOut.pooled);
++
+ if (JSON_OUT) {
+-  fs.writeFileSync(JSON_OUT, JSON.stringify({wfSummary: wfOut.summary, robustness: wfOut.robustness, mdSummary, bo3Info: data.bo3Info}, null, 2));
++  fs.writeFileSync(JSON_OUT, JSON.stringify({wfSummary: wfOut.summary, robustness: wfOut.robustness, mdSummary, falsify, bo3Info: data.bo3Info}, null, 2));
+   console.log(`\nWrote ${JSON_OUT}`);
+ }

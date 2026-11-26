@@ -3,10 +3,12 @@
 // Legality + data check: the page's roster, moves, items, Mega stones vs Smogon's Champions data (@smogon/calc gen 0)
 // and vs what real Reg M-C tournament teams actually register. Usage: node legality.mjs
 import fs from 'node:fs'; import {createRequire} from 'node:module';
+import {withFixtures, withFixturesOfficial} from './md-fixtures.mjs';
 const require = createRequire(process.env.SMOGCALC ? process.env.SMOGCALC.replace(/\\/g, '/').replace(/\/?$/, '/x.js') : import.meta.url), {chromium} = createRequire(import.meta.url)('playwright');
 const {Generations} = require('@smogon/calc'); const G0 = Generations.get(0);
 const APP = new URL('../app/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json'), DOCS = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
+withFixtures(DOCS); /* Reg M-D day (gap G11): no real teams yet -> the fixture teams, with a "fixture teams" line (experiments/md-fixtures.mjs) */
 const page = APP + 'verify-legal.html'; fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(APP + 'dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const b = await chromium.launch(), pg = await (await b.newContext()).newPage();
 await pg.addInitScript(D => { window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false})})} : null}; }, DOCS);
@@ -50,7 +52,7 @@ for (const k of ['Choice Band', 'Choice Specs', 'Assault Vest', 'Life Orb', 'Cho
 const stoneMiss = P.STONES.filter(([n, s]) => !s || !G0.items.get(id(s)));
 out.push(`Mega stones not in Smogon Champions items (${stoneMiss.length}): ${stoneMiss.map(x => x.join('@')).join(', ')}`);
 // real tournament teams: species/items registered
-const T = rd('official.json'), seen = new Map(), its = new Map();
+const T = withFixturesOfficial(rd('official.json')), seen = new Map(), its = new Map();
 for (const e of T.events) for (const t of e.teams) for (const m of t.mons) { seen.set(m.n, (seen.get(m.n) || 0) + 1); if (m.i) its.set(m.i, (its.get(m.i) || 0) + 1); }
 const notOnPage = [...seen.keys()].filter(n => !pageSet.has(id(n)));
 out.push(`species on official RK9 team sheets not on the page: ${notOnPage.join(', ') || 'none'}`);

@@ -1,0 +1,13 @@
+diff --git a/app/src/v2/pages/box.js b/app/src/v2/pages/box.js
+index de30d6e..5778a54 100644
+--- a/app/src/v2/pages/box.js
++++ b/app/src/v2/pages/box.js
+@@ -43,7 +43,7 @@ V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs
+   return `<div class="bx-sum${o.sheet ? ' in-sheet' : ''}"><div class="bx-art" style="--cp:${V2.cp(F)}">${V2.mon(F, {sel: true, iw: o.sheet ? 180 : 240, bare: true})}<p class="bx-plate"><b>Rated ${rs}</b> · ${E(T.k)} tier</p></div>
+     <div class="bx-sumb"><h2 class="u">${V2.nameHtml(V2.disp(F))}</h2><div class="bx-ty">${(p.t || []).map(V2.typeChip).join('')}${onTeam ? '<span class="np-chip bx-chip">On your team</span>' : ''}</div>${forms}
+     <div class="bx-nums">${num(E(V2.shareTxt(H)), 'of teams')}${num(H.hW != null && H.hG >= 30 ? E(pctFmt(H.hW)) : '–', 'win rate', H.hW != null && H.hG >= 30 ? '' : H.hG ? 'only ' + Math.round(H.hG) + ' games' : 'no tournament games yet')}${num(p.st[5], 'base Speed')}</div>
+-    <div class="bx-acts"><button type="button" class="np-btn" data-v2mon="${E(F)}">Info Sheet</button>${onTeam ? '' : `<button type="button" class="np-btn2" data-bxteam="${E(F)}"><span>${full ? 'Swap Into My Team' : 'Add to My Team'}</span></button>`}<button type="button" class="np-btn2" data-hmaround="${E(F)}"><span>Build Around It</span></button><button type="button" class="np-btn2" data-bxrm="${E(n)}"><span>Remove from Box</span></button></div></div></div>`; }; // Build Around It: Sim, Nov 13 (My Box Q2 B, as the approved mock-up); Home's handler (ui.abLock, then Build)
++    <div class="bx-acts">${onTeam ? '' : `<button type="button" class="np-btn" data-bxteam="${E(F)}">${full ? 'Swap Into My Team' : 'Add to My Team'}</button>`}<button type="button" class="${onTeam ? 'np-btn' : 'np-btn2'}" data-v2mon="${E(F)}">${onTeam ? 'Info Sheet' : '<span>Info Sheet</span>'}</button><button type="button" class="np-btn2" data-hmaround="${E(F)}"><span>Build Around It</span></button><button type="button" class="np-btn2" data-bxrm="${E(n)}"><span>Remove from Box</span></button></div></div></div>`; }; // Build Around It: Sim, Nov 13 (My Box Q2 B, as the approved mock-up); Home's handler (ui.abLock, then Build)
+ 
+ // E20 proposal (Sim's check, Nov 12): the shared syncText names the Claude account, which can't be on the public site; the new site
+ // says it in plain words (today's site keeps its wording). Local = this browser's storage, so "browser", not "device".

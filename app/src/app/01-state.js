@@ -1,14 +1,21 @@
 // ---------- state ----------
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+/* pre-launch check 6e (Nov 17): saved data that can't be read used to fall back to the sample team without a word, and the next save
+   overwrote it. Now it is copied to cc2.state.unreadable first (never overwritten by a save) and the page says so once (V2 shell). */
+var STATE_UNREADABLE=false;(()=>{try{const v=localStorage.getItem('cc2.state');if(!v)return;let ok=false;try{const o=JSON.parse(v);ok=!!o&&typeof o==='object'&&!Array.isArray(o)}catch(e){}
+  if(!ok){STATE_UNREADABLE=true;localStorage.setItem('cc2.state.unreadable',v)}}catch(e){}})();
 let S=LS.get('cc2.state',null);
-if(S&&(!Array.isArray(S.teams)||!Array.isArray(S.box)||!Array.isArray(S.slots)))S=null;
+// Nov 15 (code review A3): a damaged field is repaired on its own; the rest of a player's saved state (teams, log, choices) is kept.
+// Only something that isn't a saved state at all starts fresh. fixSlots/fixTeams/fixLog then check each entry.
+if(S&&(typeof S!=='object'||Array.isArray(S)))S=null;
+if(S){if(!Array.isArray(S.teams))S.teams=[];if(!Array.isArray(S.box))S.box=DEFAULT_BOX.slice();if(!Array.isArray(S.slots))S.slots=[]}
 if(!S){S={slots:DEFAULT_TEAM.slots.map(s=>({...s})),box:DEFAULT_BOX.slice(),teams:[{id:'t'+Date.now(),name:DEFAULT_TEAM.name,slots:DEFAULT_TEAM.slots,format:'doubles',saved:Date.now()}],loadedId:null,format:'doubles'};S.loadedId=S.teams[0].id}
 S.format='doubles'; // NastyPlot is doubles only. Teams saved under the retired singles mode stay stored but aren't shown.
 // Off-meta search: when true, the planner and auto-build score power and fit over popularity. Only the hidden-gem and
 // "fresh take" searches turn it on, through withOffMeta(); it is never a user setting.
 let OFFMETA=false;
 // META.singles stays: popular-set lookups fall back to singles data when doubles has none (setFor(p,OTHER())).
-const META={doubles:null,doubles_ingame:null,doubles_tour:null,singles:null,status:null,teams:null,history:null,perf:null,results:null,events:null,weekly:null,calendar:null};
+const META={doubles:null,doubles_ingame:null,doubles_tour:null,singles:null,status:null,teams:null,history:null,perf:null,results:null,events:null,weekly:null,calendar:null,info:null};
 // meta/perf: raw outside performance tables from the daily refresh; anything malformed is dropped and the built-in snapshot is used
 function cleanPerf(v){if(!v||typeof v!=='object')return null;const okRows=x=>Array.isArray(x)&&x.length<=600;const t=v.tour;if(!t||!okRows(t.rows)||t.rows.length<20)return null;return v}
 const SRC={ingame:'doubles_ingame',tour:'doubles_tour',ladder:'doubles'};
@@ -22,13 +29,15 @@ const pairs=(a,max=10)=>{if(!Array.isArray(a))return[];const M=new Map();for(con
   return [...M.values()].sort((x,y)=>(y[1]||0)-(x[1]||0)).slice(0,max)};
 function cleanMeta(d){if(!d||typeof d!=='object')return null;
   const row=t=>t&&typeof t.n==='string'?{r:Math.max(1,Math.round(num(t.r)||0)),n:t.n.slice(0,60),u:num(t.u),teams:num(t.teams),w:num(t.w),ab:pairs(t.ab),it:pairs(t.it),mv:pairs(t.mv,12),na:pairs(t.na),tm:pairs(t.tm),cc:pairs(t.cc,6),sp:pairs(t.sp,3).filter(([k])=>/^[A-Z][a-z]+:\d+(\/\d+){5}$/.test(k)),cs:t.cs&&typeof t.cs==='object'&&Array.isArray(t.cs.mv)?{it:str(t.cs.it,60),ab:str(t.cs.ab,60),mv:t.cs.mv.slice(0,4).map(x=>str(x,40)).filter(Boolean),pct:num(t.cs.pct)}:undefined}:null;
-  const out={format:str(d.format,20),kind:str(d.kind,20),source:str(d.source),period:str(d.period),note:str(d.note,300),battles:num(d.battles),updated:str(d.updated,40),
+  const out={reg:str(d.reg,10),format:str(d.format,20),kind:str(d.kind,20),source:str(d.source),period:str(d.period),note:str(d.note,300),battles:num(d.battles),updated:str(d.updated,40),
     top:(Array.isArray(d.top)?d.top:[]).slice(0,60).map(row).filter(Boolean),more:(Array.isArray(d.more)?d.more:[]).slice(0,300).map(row).filter(Boolean)};
   if(d.smogon&&typeof d.smogon==='object')out.smogon={source:str(d.smogon.source),period:str(d.smogon.period),battles:num(d.smogon.battles),usage:pairs(d.smogon.usage,80)};
   return out}
 function cleanStatus(d){if(!d||typeof d!=='object')return null;return {lastRun:str(d.lastRun,40),ok:d.ok!==false,note:str(d.note,300),schedule:str(d.schedule,80)}}
-function liveUsage(fmt){const d=META[fmt];if(!d)return null;const m=new Map();
-  (d.top||[]).forEach(t=>{if(typeof t.u==='number')m.set(t.n,t.u)});
+function liveUsage(fmt){const d=META[fmt],m=new Map();
+  if(d)(d.top||[]).forEach(t=>{if(typeof t.u==='number')m.set(t.n,t.u)});
+  if(!m.size&&fmt==='doubles'&&META.doubles_tour){const r=typeof regInfo==='function'&&regInfo();
+    if(!r||!r.id||META.doubles_tour.reg===r.id)[...(META.doubles_tour.top||[]),...(META.doubles_tour.more||[])].forEach(t=>{if(typeof t.u==='number')m.set(t.n,t.u)})}
   return m.size?m:null}
 let usageCache={};
 function U(p){const f=S.format;if(!(f in usageCache))usageCache[f]=liveUsage(f);const m=usageCache[f];if(m)return m.get(p.n)||0;return p.u||0}

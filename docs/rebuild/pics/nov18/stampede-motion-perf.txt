@@ -1,0 +1,8 @@
+phone    surge   before  longest task ms 429.6/520.2/154.3 (median 429.6); DroppedFrame events 90/100/72; pipeline dropped 89/98/71 of presented 7/12/8; rAF gaps >25ms 3/3/3 of 3/4/3; worst rAF gap 983/533/550
+phone    surge   after   longest task ms 168.8/290.7/151 (median 168.8); DroppedFrame events 84/98/111; pipeline dropped 4/2/6 of presented 91/105/115; rAF gaps >25ms 3/2/3 of 3/2/4; worst rAF gap 717/850/700
+phone    scroll  before  longest task ms 19.3/28.1/32.6 (median 28.1); DroppedFrame events 0/2/9; pipeline dropped 0/2/9 of presented 50/51/49; rAF gaps >25ms 0/1/5 of 182/182/183; worst rAF gap 17/33/67
+phone    scroll  after   longest task ms 33.9/19.3/38.1 (median 33.9); DroppedFrame events 14/17/15; pipeline dropped 3/3/2 of presented 150/148/150; rAF gaps >25ms 3/4/7 of 176/178/173; worst rAF gap 50/33/50
+desktop  surge   before  longest task ms 84.4/177.4/123.6 (median 123.6); DroppedFrame events 38/46/47; pipeline dropped 38/45/46 of presented 5/25/13; rAF gaps >25ms 3/10/6 of 21/13/13; worst rAF gap 467/217/333
+desktop  surge   after   longest task ms 215.1/109.7/72 (median 109.7); DroppedFrame events 57/25/52; pipeline dropped 25/6/27 of presented 52/56/52; rAF gaps >25ms 6/5/9 of 8/35/12; worst rAF gap 233/183/200
+desktop  scroll  before  longest task ms 5.3/7.9/6.9 (median 6.9); DroppedFrame events 0/0/4; pipeline dropped 0/0/4 of presented 44/46/42; rAF gaps >25ms 0/0/2 of 180/183/179; worst rAF gap 17/17/67
+desktop  scroll  after   longest task ms 8/8/12.6 (median 8); DroppedFrame events 7/8/7; pipeline dropped 3/4/3 of presented 172/169/173; rAF gaps >25ms 0/0/0 of 183/179/183; worst rAF gap 17/17/17

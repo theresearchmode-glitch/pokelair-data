@@ -1,0 +1,387 @@
+KIP JOB 29 — Deep research: the best NAME for the site (keep "NastyPlot", or switch?). Research only, NO design, NO buying anything.
+From HH, Wed Nov 25, 2026. Everything you need is in this message; the earlier research is summarised below and attached in full at the end.
+
+You are Kip, on NastyPlot (Sim's Pokémon Champions VGC website; Sim is he/him). Rules: label every claim "checked (source/link + date)" or
+"not checked"; say "I'm unsure" when unsure; give the source link for every fact; never invent a check you didn't run; you are not a lawyer
+(say so where it matters). Times: say the time zone. Don't contact anyone, don't register or reserve anything, don't sign up for anything.
+
+=== THE SITE, IN 6 LINES ===
+- A free Pokémon Champions (VGC doubles) team builder + coach: Strength Score (0-100 for a whole team), damage calc, speed tiers, matchups,
+  ratings of every Pokémon from real tournament results, Battle turn-one plans. Public launch: quiet ~Dec 7, announced ~Dec 18, 2026.
+- Audience includes KIDS (Pokémon players of all ages): the name, its Google results and its spoken sound must be kid-safe.
+- Brand today: "NastyPlot" (the move Nasty Plot = sharply raises Sp. Atk). Logo: a devil-ish NastyPlot wordmark; colours PLOT blue + Nasty
+  pink; slanted boxy shapes; slogan "Sharply raise your win rate." Fonts: Unbounded (headlines) + Instrument Sans.
+- Domain owned by Sim: nastyplot.org (live site goes there). nastyplot.com is owned by a stranger (registered 2021-01-03 at DreamHost,
+  renews to 2027-01-03, no website). nastyplot.net was free (Nov 24).
+- SEO matters a lot to Sim ("super duper important"): being found on Google before launch.
+- Sim's feelings so far: he's leaning to KEEP NastyPlot ("in lingo nasty also means something is crazy good"; "all this is making me wanna
+  stick with nastyplot"). Any rename must clearly beat it. Decision deadline: about Dec 7 (before the quiet launch).
+
+=== SIM'S RULES FOR A NAME (from our talks, Nov 20-25) ===
+1. The PLAIN name must be free as .com, .org or .net (no "vgc", "tool", "get", "the" add-ons). .gg was researched for NastyPlot (see below).
+2. Short; Sim likes 1 word. "Oh that's clever" feeling: built from what we do + a Pokémon root, or a famous Pokémon phrase changed slightly.
+3. Must feel Pokémon-ONLY (round 6 names "could belong to any video game" were rejected).
+4. No clash with any Pokémon/VGC brand, team, channel, tool or event series. No clash with a live competitor.
+5. Kid-safe in Google results AND said out loud (Calc'd failed this: see below).
+6. Not mistaken for something else when read by a non-player (Intimidata reads as "intimate data").
+
+=== WHAT WE ALREADY FOUND (summary; details in the attached files) ===
+- Round 1-2 (move/item names, plain domains): free examples swordsdance (.org/.net), weaknesspolicy (all 3), mirrorherb (all 3), expertbelt,
+  wiseglasses, choicespecs, trickroom, battlebond, shellsmash, boosterenergy, clearamulet, covertcloak. Many taken (helpinghand, tailwind,
+  calmmind, followme, futuresight, psychup, supereffective…).
+- Round 3 coined (all 3 free): mewtrics, porystats, gengarithm, alakalc, calcadex, rotomdata, statchu, plotchu, metagrossary, trainerlytics,
+  champlans, matchupdex, strengthdex, setupdex, specsdex. (Not yet checked: Pokémon Company trademark risk of names built on Pokémon names.)
+- Round 4: "Turn Zero" — DROPPED (clashes: Turn Zero Nexus runs Pokémon TCG events on Limitless; reported GonkasVGC "Turn Zero" series;
+  turnzero.gg Warhammer; Turn Zero Games; turnzero.com = a sim-racing business).
+- Round 5: Intimidata (Intimidate + data) — Sim liked it; .org/.net free but intimidata.com registered 2026-09-26 (Austria, blank page);
+  search engines read it as "intimate data". Logo idea: plot bars as teeth closing like a jaw. Others: calcmind, statsdance, followmeta,
+  metasight, hiddenstats, nastyplan (all 3 free), plotarmored (all 3 free), statsmash, calcbeam, statsurge.
+- Round 6 (rejected as generic): tallywind, prankstats, moxidata, sturdata, focusstash, calcommander, unburdata, swordsdata…
+- Round 7 (Pokémon-only things): plotball, calcball (all 3 free), masterplot, plotdex, rarecalc, plotcandy, gymplot, masterstats.
+- Round 8 (VGC slang): haxproof, goldbottlecap, speedcreep, gotawaysafely (all 3 free); calcd, outspeed(s), hypertrained, backtwo, nohax…
+- Round 9 (1 word): calcd, carbos, terad, outsped, choiced, scarfed, statted, plusoned, statdust, metanome, calcoon, statmie, scorelax, calcy,
+  statora, plotty, everstat, megastat, benchd… (domain table attached).
+- Top-5 deep check (Nov 24): Statmie = OUT (statmie.com is a LIVE competitor: "free Pokémon GO and Pokémon Champions VGC tools", 7 languages);
+  Statdust (statdust.com = live football-analytics site); Calcd (calcd.com since 1998; calcd.net registered 2026-10-06 — Sim to confirm if
+  it's his); Choiced (choiced.com since 2008); Intimidata (above).
+- Calc'd full check (your job 9): NOT SAFE for kids — Googling "calcd" puts an adult anatomy calculator (calcsd.info) at #1 and chemistry
+  "Anal. Calcd." at #2; "calc'd" returns calcium + vitamin D; a live UK calculator site "calcd" (calcd.co.uk) exists; sounds like
+  "caulked"/worse aloud. A mascot "Chip" (calculator devil) was mocked up by Scout for Calc'd (saved, not used).
+- NastyPlot clash check (Nov 24): no Pokémon team/podcast/channel/brand named NastyPlot found; Google for "nasty plot" shows the move's
+  pages (Bulbapedia, Smogon, Serebii) — the SEO question is whether OUR site can outrank them for the brand query. Not checked: social
+  handles, trademarks, school/parental filters and the word "nasty".
+- Domain endings for NastyPlot (Nov 20 reports): .gg ~$52/yr (Porkbun), commercial .gg sites must show owner identity (privacy risk),
+  Google doesn't treat .gg as global; .app ~$9 then ~$15 (HTTPS forced, Google registry); .org (owned) best-remembered after .com;
+  .net classic fan-site ending; avoid .us (no privacy), .io, .co, .ai.
+
+=== THE JOB ===
+PART A — Is NastyPlot good enough to keep? Research and answer, with sources:
+  1. Google today for "nastyplot", "nasty plot", "nasty plot pokemon", "nastyplot vgc": who ranks, how hard to outrank for our own brand
+     name, and what Google shows kids (any adult/unsafe results? the word "nasty").
+  2. School/parental filters: does the word "nasty" in a domain or page title get blocked by common filters (GoGuardian, Securly,
+     Lightspeed, Bark, Google SafeSearch, Microsoft Family)? Find documentation or reports; label what you can't verify.
+  3. Social handles: X, Instagram, TikTok, YouTube, Reddit, Discord, Bluesky, Threads — @nastyplot and close variants (say which are
+     unverifiable from search).
+  4. Trademarks: USPTO / EUIPO / UK IPO for "NASTY PLOT" / "NASTYPLOT" (and whether a Pokémon move name as a brand is a Pokémon Company
+     trademark risk). Not legal advice; say what a lawyer should check.
+  5. nastyplot.com: any sign it's for sale or parked; what Sim could do (backorder, broker) and typical costs. Do NOT contact the owner.
+  6. Verdict: keep / keep with changes (e.g. ending, tagline) / switch, with the 3 biggest risks and the cost of switching later vs now.
+PART B — Find better names (only if they truly beat NastyPlot). Generate at least 40 NEW candidates following Sim's rules (not repeats of
+  the lists above unless you have new evidence), from: Pokémon-only roots (moves, abilities, items, mechanics, VGC slang, famous phrases),
+  changed slightly so it means what we do (team strength, scoring, coaching, calculating, plotting). Then cut to a TOP 10 and check each:
+  - Domains: .com, .org, .net (and .gg, .app) — say exactly how you checked (Google site: search can't prove a domain is free; say
+    "not checked" where you couldn't run RDAP/WHOIS; HH will re-check every domain with RDAP before Sim decides).
+  - Google results today (top 5, kid-safety), the apostrophe/spelling problem, the say-it-aloud test (homophones), how a non-player reads it.
+  - Clashes: Pokémon/VGC brands, apps (App Store / Google Play), companies, games, existing sites, competitors (Statmie, ChampDex,
+    Pikalytics, etc.).
+  - Trademark risk, incl. Pokémon Company marks (names containing a Pokémon's name like "Gengar", "Statmie", "Plotchu").
+  - Social handles (searchable ones; mark the rest not checked).
+  - SEO: how easy to own #1 for the name; whether the name helps searches like "pokemon champions team builder".
+PART C — One-page decision sheet for Sim: NastyPlot vs your best 3, side by side (domains, kid-safety, Google, clash, trademark,
+  memorability, SEO, cost), and your recommendation with a one-line reason each. Be honest if keeping NastyPlot is best.
+DELIVERY: plain text. Summary first (10 lines max), then Parts A, B, C as tables with source links + dates, then "What I could not check".
+No HTML-escaped characters (no &lt; &amp;), no google.com/url redirect links (give the real URLs).
+
+=== ATTACHED: the full earlier research (for reference) ===
+
+----- FILE: docs/rebuild/name-research-nov24.md -----
+# Name research (Sim, Nov 24) — domain checks
+Checked with the registries' RDAP (Verisign for .com/.net, PIR for .org): 200 = registered (taken), 404 = not registered (free).
+Method verified: nastyplot.org = taken (Sim owns it), google.* = taken. "Free" means not registered at check time; buy soon to keep it.
+Sim's rule: the plain name must be free as .com, .org or .net (no "vgc"/"tool" extras).
+Shortlist (free plain domains):
+- swordsdance: .org .net free (.com taken)
+- dragondance: .org free
+- weaknesspolicy: .com .org .net all free
+- mirrorherb: .com .org .net all free
+- expertbelt: .org .net free
+- wiseglasses: .org .net free
+- choicespecs: .org free
+- trickroom: .org free
+- battlebond: .org .net free
+- expshare: .org free
+- victorystar: .net free
+- shellsmash: .org .net free
+- boosterenergy: .org .net free
+- clearamulet / covertcloak: all free
+Taken everywhere (out by Sim's rule): helpinghand, coaching, tailwind, calmmind, followme, futuresight, mindseye, costar, psychup,
+analytic, forewarn, supereffective, plustwo, victorydance (.net only free), and more (full run in the chat log).
+
+## Round 3: coined names (Sim: built from what we do + a Pokémon root, "oh that's clever")
+All .com, .org and .net free (checked, RDAP): mewtrics, porystats, gengarithm, alakalc, calcadex, rotomdata, statchu, plotchu,
+metagrossary, trainerlytics, champlans, matchupdex, strengthdex, vgclytics, setupdex, specsdex, vgcwise.
+.com free only via .org/.net: megalytics (.org), teamlytics, scorebunny, calcazam, dexdata, tierdex, champdex.
+Web clash check (WebSearch, Nov 24): no use found for Mewtrics, Porystats, Gengarithm.
+
+## Round 4 (HH's own picks; Sim: "turn zero is really good")
+Turn Zero: turnzero.org and turnzero.net free; turnzero.com registered since 2005 (Squarespace, expires 2027-01-26), redirects to
+"Turn Zero Sim Racing" (turnzerosimracing.com), a racing-sim business, not Pokémon. Web search: no Pokémon/VGC use of "Turn Zero".
+Others in HH's top 10: hardread (.org/.net), plotarmored (all free), outread (.org/.net), sixtofour (.org/.net), speedtie (.org/.net),
+bestofone (.org/.net), trickroom (.org), swordsdance (.org/.net), weaknesspolicy (all free).
+
+## Decision (Sim, Nov 24): Turn Zero dropped (clashes)
+Checked: "Turn Zero Nexus" runs Pokémon TCG events on Limitless; GonkasVGC "Turn Zero" VGC series reported by the other account,
+not confirmed by HH's search; turnzero.gg (Warhammer), Turn Zero Games (LA), Turn Zero Sim Racing (.com). NastyPlot stays.
+Open until about Dec 7 (quiet launch): any new name idea gets the same checks (plain .com/.org/.net free, no Pokémon clash).
+
+## NastyPlot clash check (Sim asked, Nov 24)
+Domains: nastyplot.org = Sim's. nastyplot.com registered 2021-01-03 via DreamHost (renewed to 2027-01-03), no website answers
+(checked: curl, nothing returned). nastyplot.net free.
+Web searches (WebSearch, 5 queries): no Pokémon team, podcast, channel, esports org or brand named NastyPlot/Nasty Plot; no band, film,
+book or game titled "Nasty Plot"; no NastyPlot social accounts found. Searching "Nasty Plot" returns films with "Nasty" in the title
+and plot articles. Not checked: Google itself (likely shows the move's pages: Bulbapedia, Smogon, Serebii), social handles directly,
+trademarks.
+
+## Round 5: "a famous Pokémon phrase, changed just slightly so it means what we do" (Nov 24)
+Free plain domains (checked RDAP): intimidata (.org .net), calcmind (.org .net), statsdance (.org .net), followmeta (.org .net),
+metasight (.org), hiddenstats (.org .net), thinkroom (.org), statroom (.org), metaburst (.org), plotarmored (all), nastyplan (all),
+statsmash (.org .net), calcbeam (.org .net), statsurge (.org .net), calcmeta (.org .net).
+Taken: teamreview, foursight, metareader, wiseguard, youturn, datadance, prepup, metablast.
+- Intimidata: Sim likes it (Nov 24); next: clash check, Google check, logo direction when we come back to it.
+
+## Intimidata deep check (Sim asked, Nov 24)
+Domains: intimidata.org and .net free; intimidata.com REGISTERED 2026-09-26 (two months ago) via World4You (Austria), site answers
+with an empty page (title blank). Web searches: no product, app, company or Pokémon use named Intimidata; search engines treat it as
+a typo for intimidate / intimate / "intimate data" (results include an "Intimate Data" company and pages about intimacy).
+Risk: a non-player can read "Intimi-data" as "intimate data" — the same "sounds wrong" problem Sim wants to escape.
+- Logo idea (Sim, Nov 24): sharp teeth / a bite (Intimidate on Mightyena for years). HH's twist: the teeth ARE our plot bars — bars down
+  from the top and up from the bottom, slanted, closing like a jaw; reads as a bite AND a bar chart. Pink upper teeth, blue lower.
+
+## Round 6: Intimidata-style (one famous Ability/move/item, a few letters changed) (Nov 24)
+All three plain domains free: tallywind, prankstats, moxidata, sturdata, winnerfocus, focusstash, calcommander, goodasdata,
+unburdata, tailwinning, swordsdata. Two free (.org/.net): metabreaker, makeitwin, willowin, forewin, anticipata, metasurge,
+protactic, dracometa, metagrind, regenerata. Taken: quickcalc, analytix, tactician.
+
+## Round 7: twists on things ONLY Pokémon has (Sim: round 6 "could belong to any video game") (Nov 24)
+Free: plotball (all 3), calcball (all 3), masterplot (.org .net; "Masterplots" is a 1949 literature reference series, Wikipedia),
+plotdex (.org .net), rarecalc (.org .net), plotcandy (.org .net), gymplot (.org .net), masterstats (.org .net).
+Taken: masterplan, ultraplan, statball, raredata.
+
+## Round 8: full creative — VGC slang + Pokémon-only mechanics (Nov 24)
+All 3 free: haxproof, goldbottlecap, speedcreep(s), gotawaysafely, wildappeared. Two free: calced/calcd (.org), outspeed (.org),
+outspeeds (.org .net), hypertrained (.org .net), backtwo (.org .net), damageroll, critroll, nohax, goldcap, wildstats (.org .net).
+Taken: hypertrain, highroll, ohko, maxroll, crithappens, bottlecaps. Dex: overdone (ChampDex app already exists for Champions).
+
+## Round 9: 1-word names (Sim: short, 1 word; loves Calcd) (Nov 24)
+Free plain domains (checked RDAP):
+- calcd com:T org:F net:T
+- carbos com:T org:T net:F
+- terad com:T org:F net:T
+- outsped com:T org:F net:F
+- choiced com:T org:F net:F
+- scarfed com:T org:F net:T
+- specsd com:T org:F net:F
+- snarled com:T org:F net:F
+- crited com:?000 org:F net:F
+- flinched com:T org:F net:F
+- setupd com:T org:F net:F
+- statted com:T org:F net:F
+- calcked com:F org:F net:F
+- plusoned com:T org:F net:F
+- twoed com:T org:F net:F
+- ohkod com:F org:F net:F
+- sweepd com:T org:F net:F
+- readd com:T org:T net:F
+- hardreads com:T org:F net:F
+- dmgcalc com:T org:F net:F
+- speedtied com:F org:F net:F
+- teraed com:T org:F net:F
+- megaed com:T org:F net:F
+- statdust com:T org:F net:F
+- metanome com:T org:F net:F
+- calcoon com:T org:F net:T
+- statmie com:T org:F net:F
+- scorelax com:T org:T net:F
+- calcy com:T org:F net:T
+- statora com:T org:F net:T
+- plotty com:T org:T net:F
+- statcium com:F org:F net:F
+- everstat com:T org:F net:F
+- statstone com:T org:F net:F
+- megastat com:T org:F net:F
+- calcazam com:T org:F net:F
+- outspeedr com:F org:F net:F
+- benchd com:T org:F net:T
+(T = taken, F = free)
+
+## Top-5 deep research (Sim, Nov 24): Calcd, Statmie, Statdust, Intimidata, Choiced
+- Statmie: OUT. statmie.com registered 2026-11-02 (Cloudflare) and LIVE: "Statmie — free Pokémon GO and Pokémon Champions VGC tools"
+  (meta, top teams, damage calculator, speed tiers, archetypes; 7 languages). A direct competitor (also worth watching).
+- Statdust: statdust.com (2024, Porkbun) is live: "independent analytics for the 2026 international football tournament". Different
+  sport, same "stats site" idea. .org/.net free. Web search: nothing else.
+- Calcd: calcd.com since 1998 (GoDaddy), behind a Cloudflare bot check (content unknown). calcd.net registered 2026-10-06 via
+  Cloudflare (502, no site) — ASK SIM whether it's his. calcd.org free. Web: "calc'd" = calculated (damage calc slang), no brand found.
+- Choiced: choiced.com since 2008 (Annulet), behind a Cloudflare bot check. .org/.net free. Web: no Pokémon or brand use found.
+- Intimidata: see above (.com registered Sep 2026, blank; "intimate data" misreading).
+
+----- FILE: docs/naming/gemini-job9-calcd-name-check-nov25.txt (your job 9) -----
+GEMINI JOB 9 — Calc'd: is the name safe to use? (Research only, NO design)
+Project: NastyPlot (Sim's Pokémon Champions website)
+Reviewer: Neon (Gemini) | Checked: 2026-11-24 Eastern / 2026-11-25 UTC
+
+====================================================================
+VERDICT
+====================================================================
+not safe (for a kid-facing Pokémon site right now): Googling "calcd" puts an adult anatomy calculator (calcsd.info) at #1 and "Anal. Calcd." at #2; Googling "calc'd" returns Calcium + Vitamin D supplements; a live UK calculator site named "calcd" already exists at calcd.co.uk; and calcd.com / calcd.net are already taken.
+
+====================================================================
+1. DOMAINS
+====================================================================
+item | finding | source link | date | checked?
+calcd.com | Taken: registered since 1998 (GoDaddy), behind Cloudflare bot check (content unknown). Google site:calcd.com returns 0 indexed pages. | docs/rebuild/name-research-nov24.md (HH RDAP) | 2026-11-24 Eastern | checked (HH RDAP in file + Google Search; live site behind bot check = not checked)
+calcd.org | Free at HH's Nov 24 RDAP check (PIR 404). Google search returns 0 indexed pages. | docs/rebuild/name-research-nov24.md (HH RDAP) | 2026-11-24 Eastern | checked (HH RDAP in file + Google Search; live RDAP re-check today = not checked)
+calcd.net | Taken: registered 2026-10-06 via Cloudflare (502, no site — HH noted "ASK SIM whether it's his"). Google search returns 0 indexed pages. | docs/rebuild/name-research-nov24.md (HH RDAP) | 2026-11-24 Eastern | checked (HH RDAP in file + Google Search; owner = not checked)
+calcd.gg | 0 indexed pages in Google Search; registration/RDAP/parking status unknown. | — | 2026-11-24 Eastern | not checked (no live RDAP/WHOIS/HTTP access; Google Search only)
+calcd.app | 0 indexed pages in Google Search; registration/RDAP/parking status unknown. | — | 2026-11-24 Eastern | not checked (no live RDAP/WHOIS/HTTP access; Google Search only)
+calcd.io | 0 indexed pages in Google Search; registration/RDAP/parking status unknown. | — | 2026-11-24 Eastern | not checked (no live RDAP/WHOIS/HTTP access; Google Search only)
+getcalcd.com | 0 indexed pages in Google Search; registration/RDAP/parking status unknown. | — | 2026-11-24 Eastern | not checked (no live RDAP/WHOIS/HTTP access; Google Search only)
+calcd.co | 0 indexed pages in Google Search; registration/RDAP/parking status unknown. | — | 2026-11-24 Eastern | not checked (no live RDAP/WHOIS/HTTP access; Google Search only)
+calcd.co.uk (discovered clash) | LIVE site: "calcd: UK money calculators | mortgage, tax and more" — free UK finance/tax/mortgage calculators branded "calcd". | https://www.calcd.co.uk/ and https://www.calcd.co.uk/about/ | 2026-11-24 Eastern | checked (Google Search snippets)
+
+====================================================================
+2. CLASHES (PRODUCTS, APPS, COMPANIES, GAMES & VGC SLANG)
+====================================================================
+item | finding | source link | date | checked?
+calcd (UK finance site) | Live UK web app literally named "calcd" ("UK project building free money calculators" for mortgage, tax, take-home pay, pensions, VAT). Direct name + "calculator" category overlap. | https://www.calcd.co.uk/about/ | 2026-11-24 Eastern | checked (Google Search)
+calcSD (adult site) | Live site one letter away ("calcSD") that dominates #1/#3/#5 on Google for "calcd"; an adult male anatomy (penis length/girth) calculator. Major kid-safety clash in search. | https://calcsd.info/ | 2026-11-24 Eastern | checked (Google Search)
+numbrrrs ("Calc'd" feature) | iOS-style calculator app on Product Hunt (launched Sep–Nov 2025) whose yearly calculator Wrapped recap is called "Calc'd" ("gives you a hilarious yearly Calc'd"). | https://www.producthunt.com/products/numbrrrs | 2026-11-24 Eastern | checked (Google Search)
+CALCD (HiQLCD database) | Automotive Life Cycle Assessment (LCA) database for China named "CALCD". | https://www.hiq.earth/databases/industries/automotive | 2026-11-24 Eastern | checked (Google Search)
+CalcD (bioinformatics / GitHub) | R package function (`evobiR::CalcD`) and GitHub/Gist tools (`calcD_from_fas`, `CalcD.R`, `calcD.jl`) for Patterson's D-statistic (ABBA-BABA test). | https://www.rdocumentation.org/packages/evobiR/versions/1.1/topics/CalcD ; https://github.com/brunonevado/calcD_from_fas | 2026-11-24 Eastern | checked (Google Search)
+Anal. Calcd. (chemistry) | Standard organic chemistry abbreviation for "Calculated" in elemental analysis; ranks #2 on Google for "calcd". | https://chemistry.stackexchange.com/questions/7055/what-does-anal-calcd-stand-for-written-out | 2026-11-24 Eastern | checked (Google Search)
+Apple App Store / Google Play / Crunchbase | No standalone app or Crunchbase company named Calc'd / Calcd / Calced found via Google Search (only changelog text "Calc'd available cap" in Rolfes ITX). | https://apps.apple.com/rs/app/rolfes-itx/id1589766958?platform=mac | 2026-11-24 Eastern | checked (Google Search; direct App Store / Play Store / Crunchbase UI search = not checked)
+Pokémon / VGC brands | No Pokémon/VGC website, app, or brand named Calc'd / Calcd / Calced found. | — | 2026-11-24 Eastern | checked (Google Search)
+VGC slang: "calc'd" / "calced" | YES — widely used VGC/competitive Pokémon verb slang meaning "ran damage calculations for" (especially EV spreads). Quotes: (1) r/PokemonChampions (2026-04-20): "live the hits they were calc'd for"; (2) r/VGC (2026-05-12): "one-shot things they wouldn't have calc'd for"; (3) r/VGC (2026-06-17): "surprise mons you haven't calc'd for"; (4) r/PokemonChampions (2026-09-07): "What are your favorite calc-ed EV spreads?"; (5) Nugget Bridge (2015-03-11): "The reason I calc'd for Return...". Note: "you got calc'd" was NOT found as a common phrase in search results. | https://www.reddit.com/r/PokemonChampions/comments/1sqp3eq/where_do_you_look_up_common_ev_spreads_for/ ; https://www.reddit.com/r/VGC/comments/1tb25kb/unexpected_sneasler_tech_cool_replay/ ; https://www.reddit.com/r/VGC/comments/1u7xcp0/skill_improvement_how_do_i_start_training_in_vgc/ ; https://www.reddit.com/r/PokemonChampions/comments/1w9kls5/what_are_your_favorite_calced_ev_spreads/ ; https://nuggetbridge.com/reports/chesnaught-expecting-this-an-undefeated-senior-champion-st-charles/ | 2026-11-24 Eastern | checked (Google Search)
+
+====================================================================
+3. TRADEMARKS (DISCLAIMER: I AM NOT A LAWYER)
+====================================================================
+Note: I am not a lawyer. Web search is NOT a legal clearance search; before committing to any name, Sim should run direct searches on USPTO Trademark Search, EUIPO eSearch plus, and UK IPO (or consult a trademark attorney).
+
+item | finding | source link | date | checked?
+USPTO (CALCD / CALC'D / CALCED) | Google Search across trademarks.justia.com, trademarkia.com, and the open web returned 0 trademark listings for CALCD / CALC'D / CALCED (only chemistry patents containing "Calcd."). Live USPTO database was not queried directly. | https://patents.google.com/patent/US3749679A/en (patent noise only) | 2026-11-24 Eastern | not checked (live USPTO Trademark Search not queried; web search only)
+EUIPO (CALCD / CALC'D / CALCED) | Google Search returned 0 EUIPO trademark listings for CALCD / CALC'D / CALCED. Live EUIPO eSearch plus was not queried directly. | — | 2026-11-24 Eastern | not checked (live EUIPO database not queried; web search only)
+UK IPO (CALCD / CALC'D / CALCED) | Google Search returned 0 UK IPO trademark listings, BUT `calcd.co.uk` is an active UK calculator brand in commerce (potential unregistered / common-law "passing off" overlap in the UK if both are online calculators). Live UK IPO search was not queried directly. | https://www.calcd.co.uk/about/ | 2026-11-24 Eastern | not checked (live UK IPO database not queried; live UK brand clash found via web search)
+
+====================================================================
+4. GOOGLE SEARCH & THE APOSTROPHE PROBLEM
+====================================================================
+item | finding | source link | date | checked?
+Query: "calcd" (top results returned) | 1. calcSD (penis size calculator) — https://calcsd.info/ ; 2. "What does 'Anal. Calcd.' stand for written out?" — https://chemistry.stackexchange.com/questions/7055/what-does-anal-calcd-stand-for-written-out ; 3. Chart Calculator - calcSD — https://calcsd.info/chart ; 4. MDCalc — https://www.mdcalc.com/ ; 5. Measuring Properly - calcSD — https://calcsd.info/posts/measuring ; 6. CM/ECF California Central District — https://ecf.cacd.uscourts.gov/ ; 7. dict.cn/calcd — http://m.dict.cn/calcd ; 8. ISCD Precision Calculator — https://my.iscd.org/Shop/Product-Catalog/Product-Details?productid={60B68FC8-17D6-EA11-A813-000D3A1A1F8C} ; 9. Calcs.com — https://calcs.com/ | URLs listed inline | 2026-11-24 Eastern | checked (Google Search; 9 results returned)
+Query: "calc'd" (top results returned) | 1. Calcium with Vitamin D (Cleveland Clinic) — https://my.clevelandclinic.org/health/drugs/20207-calcium-vitamin-d-tablets ; 2. Cal D 500mg Tablet (MedEx) — https://medex.com.bd/brands/14420/cal-d-500-mg-tablet ; 3. Vitamin D Calculator (GrassrootsHealth) — https://grassrootshealth.net/dcalculator/ ; 4. About colecalciferol (NHS) — https://www.nhs.uk/medicines/colecalciferol/about-colecalciferol/ ; 5. Vitamin D Calculator (OmegaQuant) — https://omegaquant.com/vitamin-d-calculator/ ; 6. Vitamin D and Calcium (Johns Hopkins) — https://www.hopkinsmedicine.org/health/wellness-and-prevention/vitamin-d-and-calcium ; 7. Effect Size Calculators (UCCS) — https://lbecker.uccs.edu/ ; 8. Caltrate 600+D3 — https://www.caltrate.com/calcium-supplement-products/600d3/ | URLs listed inline | 2026-11-24 Eastern | checked (Google Search; 8 results returned)
+Query: "calcd pokemon" (top results returned) | 1. Pokémon Damage Calculator (Showdown) — https://calc.pokemonshowdown.com/ ; 2. Pokémon Champions Damage Calculator (Showdown) — https://calc.pokemonshowdown.com/champions.html?mode=champions ; 3. VGC Multi Calc — https://vgcmulticalc.com/ ; 4. NCP VGC Damage Calculator — https://nerd-of-now.github.io/NCP-VGC-Damage-Calculator/ ; 5. Gen III/IV Catch Rate Calculator — https://www.dragonflycave.com/calculators/gen-iii-iv-catch-rate/ ; 6. FusionCalc — https://fusioncalc.com/ ; 7. Candy Calc — https://richi3f.github.io/candy-calc/ ; 8. YouTube Short @ck49vgc — https://www.youtube.com/shorts/Q2vdbZPDsDA | URLs listed inline | 2026-11-24 Eastern | checked (Google Search; 8 results returned)
+How hard to rank? | Bare "calcd": medium-hard at launch because Google treats it as a typo for "calcSD" (adult site) or chemistry "calcd.", though no single global consumer brand owns exact-match "calcd" outside UK's calcd.co.uk. "calcd pokemon": medium — must outrank entrenched Showdown / VGC Multi Calc pages for brand-intent queries. | Same SERPs above | 2026-11-24 Eastern | checked (analysis of SERPs above)
+The apostrophe problem | Google does NOT treat "calcd" and "calc'd" the same. "calcd" -> calcSD (adult anatomy calculator) + chemistry "Anal. Calcd."; "calc'd" -> tokenized as "calc d" -> Calcium + Vitamin D supplements. Because URLs cannot contain an apostrophe (calcd.org), visitors who see "CALC'D" in the logo will split between typing "calc'd" (Vitamin D) and "calcd" (adult site). | Same SERPs above | 2026-11-24 Eastern | checked (side-by-side Google Search)
+
+====================================================================
+5. SOCIAL HANDLES
+====================================================================
+Note: Google Search returned 0 indexed profiles for @calcd, @calcdgg, @calcd_gg, r/calcd, or discord.gg/calcd. Because empty, private, suspended, or newly registered handles often do not appear in Google Search, availability CANNOT be confirmed from search alone.
+
+item | finding | source link | date | checked?
+X (@calcd / @calcdgg / @calcd_gg) | 0 indexed results in Google Search; live availability unknown. | — | 2026-11-24 Eastern | not checked (direct X lookup required)
+Instagram (@calcd / @calcdgg / @calcd_gg) | 0 indexed results in Google Search; live availability unknown. | — | 2026-11-24 Eastern | not checked (direct Instagram lookup required)
+TikTok (@calcd / @calcdgg / @calcd_gg) | 0 indexed results in Google Search; live availability unknown. | — | 2026-11-24 Eastern | not checked (direct TikTok lookup required)
+YouTube (@calcd / @calcdgg / @calcd_gg) | 0 indexed results in Google Search; live availability unknown. | — | 2026-11-24 Eastern | not checked (direct YouTube lookup required)
+Reddit (r/calcd) | 0 indexed results in Google Search; live availability unknown. | — | 2026-11-24 Eastern | not checked (direct Reddit lookup required)
+Discord vanity (discord.gg/calcd) | 0 indexed results in Google Search; live availability unknown (note: Discord vanity URLs also require Server Boost Level 3). | — | 2026-11-24 Eastern | not checked (direct Discord lookup required)
+Bluesky (@calcd.bsky.social / @calcdgg.bsky.social) | 0 indexed results in Google Search; live availability unknown (custom domain handle like @calcd.org would work if domain is owned). | — | 2026-11-24 Eastern | not checked (direct Bluesky lookup required)
+
+====================================================================
+6. SAY-IT TEST & KID-SAFETY
+====================================================================
+item | finding | source link | date | checked?
+Pronunciation out loud | Intended: "kalkt" (1 syllable, rhymes with "talked" / "chalked"). Without the apostrophe (in URLs like calcd.org), first-time readers often read "kalk-dee" (calc + D) or "kalsd". | — | 2026-11-24 Eastern | checked (linguistic analysis)
+Homophone & misspellings | Sounds identical to "caulked" (bathroom caulk) and close to "cocked" in noisy voice chat/streams. Likely typed misspellings: calced, calcked, calked, caulked, calc d, calc'd, calcd. | — | 2026-11-24 Eastern | checked (linguistic analysis)
+Kid-safety | Word itself is clean VGC slang ("calculated"), BUT: (1) Googling "calcd" currently puts an explicit adult anatomy calculator (calcsd.info) at #1 and "Anal. Calcd." at #2 — serious hazard for kids/parents searching the site name; (2) spoken homophone ("caulked"/"cocked") invites juvenile puns on streams/voice; (3) note that a "calculator devil" character ("Chip") could also draw minor parent sensitivity for younger kids compared to a neutral mascot. | https://calcsd.info/ ; https://chemistry.stackexchange.com/questions/7055/what-does-anal-calcd-stand-for-written-out | 2026-11-24 Eastern | checked (Google Search + analysis)
+
+====================================================================
+THE 3 BIGGEST RISKS
+====================================================================
+1. Kid-safety SERP hazard (CRITICAL): Searching "calcd" on Google today puts an adult penis-measurement calculator (calcsd.info) at #1, #3, and #5, and "Anal. Calcd." at #2. Until Calc'd builds enough domain authority to own #1 globally, any kid or parent who Googles the site name hits adult content immediately.
+2. The apostrophe splits brand search in half: "CALC'D" in the logo vs "calcd.org" in the URL creates two broken search paths — "calcd" goes to calcSD (adult site) and "calc'd" goes to Calcium + Vitamin D supplements (Cleveland Clinic / NHS / Caltrate), hurting word-of-mouth discovery and SEO (which Sim marked "super duper important").
+3. Live calculator clash + domain/trademark friction: A live UK calculator site literally named "calcd" already operates at calcd.co.uk (same "calculator" category), calcd.com (1998) and calcd.net (Oct 2026) are already registered, and spoken "calc'd" sounds like "caulked" / invites 6+ spelling variants (calced/calcked/calked/calc'd/calcd).
+
+====================================================================
+WHAT COULD NOT BE CHECKED
+====================================================================
+- Live RDAP / WHOIS / HTTP checks for calcd.gg, calcd.app, calcd.io, getcalcd.com, calcd.co, and live site content behind Cloudflare bot protection on calcd.com (VM has no internet access; Google Search returned 0 indexed pages).
+- Owner of calcd.net (registered 2026-10-06 via Cloudflare — Sim should confirm whether he bought it).
+- Official trademark registries: live queries on USPTO Trademark Search (tmsearch.uspto.gov), EUIPO eSearch plus, and UK IPO (web search only; I am not a lawyer).
+- Live handle availability on X, Instagram, TikTok, YouTube, Reddit (r/calcd), Discord vanity, and Bluesky (unindexed/empty handles do not appear in Google Search).
+- Direct in-store searches inside Apple App Store, Google Play Store, and Crunchbase UI (checked via Google site: search only).
+
+----- FILE: docs/rebuild/research/domain-research-nov20.md (summary part) -----
+# Domain research for NastyPlot (Nov 20, 2026)
+
+Look-only research for Sim. Nothing was bought, registered or signed up for. Nobody was contacted.
+Checks were run Fri Nov 20, 2026, 7:48 to 7:54 PM EST (clock: `TZ=America/New_York date`).
+Every claim is labelled **checked** (with the source or command) or **my judgement / not checked**. Prices are USD and can change any day.
+
+## Summary (10 lines)
+
+1. **nastyplot.com is taken** (checked: registered Jan 3, 2021 at DreamHost, expires Jan 3, 2027, no website on it). The other 15 names tested are all free (checked).
+2. **First choice: nastyplot.gg** (my judgement). It is the ending competitive-gaming sites use (op.gg, u.gg, and Pokémon's own tournament tool rk9.gg), so players remember it as part of the name.
+3. **Fallback: nastyplot.app** (about $9 first year, $15 after). Cheap, clean reputation, HTTPS is forced by every browser. Then nastyplot.net.
+4. **Not recommended:** nastyplot.co (the nearest lookalike of a .com a stranger owns, and $30+/yr), nastyplot.xyz (worse abuse record, no upside), thenastyplot.com / getnastyplot.com / playnastyplot.com (people drop the prefix and land on the stranger's nastyplot.com).
+5. **Also register and redirect:** nastyplot.app and nastyplot.net. Optional: nastyplot.org, nastyplot.co.
+6. **Registrar pick: Porkbun** for everything (it sells .gg; Cloudflare does not). Near-cost prices, hardware-key login, few upsells. Best for security and price on .com/.net/.org/.app: Cloudflare Registrar.
+7. **Cost (Porkbun, checked today):** .gg + .app + .net = **$73.07 in year 1, $79.25 per year after**. Budget route, nastyplot.app alone: about $9 then $15 a year. Hosting can be $0 (Cloudflare Pages).
+8. **Risk 1:** type-in traffic leaks to nastyplot.com, which someone else owns and could put anything on. Watch its Jan 3, 2027 expiry. Do not count on getting it.
+9. **Risk 2:** fan-site legal risk comes from the site's Pokémon content, not from the words "nasty plot" (no US trademark found for the phrase, checked). The Pokémon Company publishes no fan-site permission. Not legal advice.
+10. **Risk 3:** filters. New domains are often blocked for their first weeks, and the word "nasty" may trip keyword filters at schools (my judgement, not checked). Register about a month before launch and test on family filters.
+
+---
+
+## Part 1: what makes a good domain
+
+### 1.1 How much the ending matters
+
+
+----- FILE: docs/rebuild/research/domain-gg-nov20.md (summary part) -----
+# Is .gg worth it for NastyPlot? (Nov 20, 2026)
+
+Look-only research for Sim. Nothing bought, registered or signed up for. Nobody contacted. No personal data shared.
+Checks run Fri Nov 20, 2026, from 8:06 PM EST (clock: `TZ=America/New_York date` gave `Fri Nov 20 20:06:16 EST 2026` at the start and `20:10:09` when the numbers were totalled).
+Labels: **checked** (source or command + result) or **my judgement / not checked**. Prices are USD and can change any day. Not legal advice.
+
+## Summary (8 lines)
+
+1. **Verdict: yes to nastyplot.gg, but with conditions** (my judgement). It costs about $37 a year more than .app. The gaming meaning is real. But I found one rule the earlier report missed (line 4).
+2. **Cost (Porkbun, checked live today):** .gg $51.80 every year, with no first-year discount. .app $8.75, then $14.93. **Gap: $43 in year 1, $36.87 a year after. Over 5 years: .gg $259.00 vs .app $68.47 ($190.53 more). Over 10 years: $518.00 vs $143.12 ($374.88 more).**
+3. **Price risk is moderate, not high.** I found no rise in the registry's own .gg price since at least 2021. The 2021 "price rise" story was one registrar's retail change; the registry said it had not raised its price (checked). But the registry can change prices with no outside cap. .ai went up 14% in March 2026 (checked).
+4. **Risk 1, privacy (new finding).** The .gg rules say a website on a .gg name "used for a commercial purpose" must show its owner's identity on the site: name, postal and email address, and more (clause 4.4, checked). A free site with no ads probably isn't "commercial" (my judgement). Ads, donations or affiliate links could change that. .gg also allows no privacy service that hides the owner from the registry (clause 8.9, checked).
+5. **Risk 2, losing the name by accident.** A .gg that isn't renewed is gone from the registry about 35 days after it expires (checked: AWS Route 53 rules). Auto-renew with a backup card is a must.
+6. **Risk 3, search.** Google's own list of country endings it treats as "global" leaves out .gg (checked again today; .io, .ai, .tv, .co, .me are on it). So Google may link .gg sites to Guernsey. op.gg and u.gg rank worldwide anyway, so the real effect looks small (my judgement). Sources disagree.
+7. **No sign of .gg being a problem** for school filters (they block by category, such as "games", not by ending), for email, or for abuse. The .gg phishing rate is about 0.01% of names (ICANN data for May 2023, quoted by the registry's own director). DNSSEC works (checked: signed, validates). Guernsey has no .io-style sovereignty question (my judgement).
+8. **Cheapest safe route:** buy nastyplot.gg at Porkbun ($51.80/yr) or Spaceship (~$51.60/yr), or prepay at Dynadot (10 years $481.50, which works out at $48.15/yr). Turn on auto-renew and the registrar lock. Also buy nastyplot.app ($8.75, then $14.93) as the fallback and redirect it. Keep the site free of ads until Sim has decided on clause 4.4, or start on .app and send .gg to it.
+
+---
+
+## 1. What .gg really costs
+
+----- FILE: docs/rebuild/research/domain-top5-nov20.md (summary part) -----
+# Top 5 domain endings for NastyPlot, other than .com and .gg (Nov 20, 2026)
+
+Look-only research for Sim. Nothing was bought, registered or signed up for. Nobody was contacted. No personal data was sent anywhere.
+Checks ran Fri Nov 20, 2026, 8:16 to 8:22 PM EST (clock: `TZ=America/New_York date`).
+Labels: **checked** (source or command + result) or **my judgement / not checked**. Prices are USD, before tax, and can change any day.
+Builds on `domain-research-nov20.md` and `domain-gg-nov20.md`. Where this report disagrees with them, it says so.
+
+## Summary: the top 5
+
+5-year total = first year + 4 renewals at today's price, at the registrar named.
+
+| Rank | Domain | Available? | 1st year | Renewal | 5-yr total | Best registrar | One-line reason |
+|---|---|---|---|---|---|---|---|
+| 1 | **nastyplot.app** | Yes (checked) | $8.20 | $14.20 | **$65.00** | Cloudflare (Porkbun $8.75 / $14.93, 5-yr $68.47) | Reads as "the NastyPlot app", cheap, HTTPS forced by every browser, a Pokémon tool already uses it (pokebase.app). |
+| 2 | **nastyplot.org** | Yes (checked) | $8.50 | $11.20 | **$53.30** | Cloudflare (Porkbun $7.98 / $11.84, 5-yr $55.34) | Best-remembered and most trusted ending after .com in the one survey we have, and the cleanest abuse record of the big three. |
+| 3 | **nastyplot.net** | Yes (checked) | $11.86 | $11.86 (rising) | **$59.30** today; about **$63.66** after the Mar 2027 rise (estimate) | Cloudflare (Porkbun $12.52 / $12.52) | The classic Pokémon fan-site ending (Serebii, PokémonDB, Bulbagarden, Liquipedia), clean record. |
+| 4 | **nastyplot.games** | Yes (checked) | $8.24 | $30.38 | **$129.76** | Porkbun (Cloudflare $26.20 / $26.20, 5-yr $131.00) | Says "gaming" in the address itself, with a fair abuse record; but renewals cost about 2.5 times .org. |
+| 5 | **nastyplot.team** | Yes (checked) | $4.63 | $32.44 | **$134.39** | Porkbun (Cloudflare $28.20 / $28.20, 5-yr $141.00) | Best word fit for a team builder ("nastyplot.team"); costly renewals and an abuse rate like .app. |
+
+Honourable mentions: **.dev** (cleanest and cheap, but reads "developer"), **.page** (flat $10.20 a year, clean, but a bland word), **.me** (fine but costs more and says nothing).
+Avoid: **.us** (no privacy allowed: Sim's real name and address would be public), **.io** (country code may be retired; $50+ renewals), **.co** (a typo of the stranger's .com), **.ai** ($80 a year), **.tv** ($25 a year, means video), **.game** ($340 a year), and the cheap-bait endings with bad abuse records (.xyz, .club, .fun, .win, .live, .pro, .info, .site, .online, .wiki, .world, .fyi, .one, .zone).
+
+**The one-paragraph answer** is at the end (Part 4).
+
+**Where I disagree with the earlier report** (`domain-research-nov20.md`):

@@ -1,0 +1,45 @@
+Full check run, 2026-11-12T02:18:22.048Z
+base b8f55ed vs working tree 9d22563
+== same-import
+26 import/clear steps compared: 26 identical, 0 different; last state 2356 chars
+== same-box
+33 My Box steps compared: 33 identical, 0 different; last state 599 chars
+== same-record
+62 Your games steps compared: 62 identical, 0 different; last state 1728 chars
+== same-compare
+21 Compare steps compared: 20 identical, 1 different; last state 14335 chars
+== same-edits
+41 set-editing steps compared: 41 identical, 0 different; editor HTML 6276708 chars
+== same-saved
+38 save/open/rename/delete steps compared: 38 identical, 0 different; last state 34611 chars
+== same-team
+54 My Team states compared: 54 identical, 0 different
+== same-info
+350 info sheets compared: 349 identical, 1 different; 0 errors; sheet chars 5068470
+== same-sheet
+42 Team Sheets compared: 42 identical, 0 different; sheet chars 392685
+== same-share
+18 share images compared: 18 identical, 0 different or missing
+== same-matchups
+230 Matchups steps compared: 230 identical, 0 different; last state 76390 chars
+== same-six
+67 My Team six steps compared: 0 identical, 67 different; last state 3487 chars
+== same-why
+265 breakdowns and legal marks compared: 265 identical, 0 different; text 281047 chars
+== same-share-v2
+NO RESULT LINE (exit 1); last output: } |  | Node.js v22.23.4
+== run.mjs
+ALL PASSED
+== behaviour A-team
+behaviour: 131 pass, 1 FAIL, 10 known bugs, 0 fixed?, 2 skipped; 1009s  (adapter current)
+== behaviour C-battle
+behaviour: 86 pass, 0 FAIL, 0 known bugs, 0 fixed?, 1 skipped; 475s  (adapter current)
+== behaviour D-meta-shell
+behaviour: 151 pass, 0 FAIL, 7 known bugs, 0 fixed?, 2 skipped; 623s  (adapter current)
+== golden
+10 of 10 known-answer cases pass
+== same-grade
+ALL PASSED
+== suggest-audit
+SUGGESTIONS AUDIT PASSED
+DONE

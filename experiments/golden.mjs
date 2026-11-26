@@ -9,10 +9,12 @@
 //                         under the same limit (the best-graded exact six with 30+ games or 3+ players)
 // Usage: node experiments/golden.mjs [out.json]     (exit code 1 if a case fails; build the page first)
 import fs from 'node:fs'; import {createRequire} from 'node:module'; import {offFormat} from '../formats.mjs';
+import {withFixtures} from './md-fixtures.mjs';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = process.env.GOLDEN_OUT || ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json');
 const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': process.env.GOLDEN_MODEL ? JSON.parse(fs.readFileSync(process.env.GOLDEN_MODEL, 'utf8')) : rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json'), 'meta/history': rd('history.json')};
+withFixtures(D); /* Reg M-D day (gap G11): no real teams yet -> the fixture teams, with a "fixture teams" line (experiments/md-fixtures.mjs) */
 // Nov 9 (Sim: "if top teams are not scoring well the grade is off"): grade each top-4 team with ITS OWN team sheet (items, Abilities,
 // moves from its games in out/matches.json), as the site grades a team loaded from an event; default sets only when no sheet exists.
 /* GOLDEN_FROM=<date> (forward test): only events on or after it, graded with a model trained before it (GOLDEN_MODEL from
@@ -57,12 +59,14 @@ Object.assign(R, await run(`(()=>{ const mk = ns => ns.map(n => abMember(byName.
   // illegal: a strong six with two Sitrus Berries
   const ill = mk(['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott']); ill[0] = {...ill[0], item: 'Sitrus Berry', heldItem: 'Sitrus Berry'}; ill[1] = {...ill[1], item: 'Sitrus Berry', heldItem: 'Sitrus Berry'};
   const clause = itemClause(ill), RD = THR.teamReport(ill), G = CH.gradeOf(RD, proChecks(ill, true), ill);
-  return JSON.stringify({top: tg, weak: {mons: weak, g: g(weak)}, illegal: {clause: clause.length, flagged: !!(G && G.illegal) || clause.length > 0}}); })()`));
+  return JSON.stringify({top: tg, weak: {mons: weak, g: g(weak)}, illegal: {clause: clause.length, flagged: !!(G && G.illegal) || clause.length > 0}, even: typeof CH === 'object' && typeof CH.ssOfE === 'function' ? CH.ssOfE(.5) : 80}); })()`));
 // GOLDEN_DUMP=<file>: write each top-cut team's grade (sheet and default sets) and event, for looking into failures
 if (process.env.GOLDEN_DUMP) fs.writeFileSync(process.env.GOLDEN_DUMP, JSON.stringify(R.top));
 // GOLDEN_TOPCUT_ONLY=1 (walk-forward): print the top-cut tally as one JSON line and stop
-if (process.env.GOLDEN_TOPCUT_ONLY === '1') { const T = R.top.filter(t => !offFormat(t.ev)), n = T.length, good = T.filter(t => t.g >= 80).length;
-  console.log('TOPCUT ' + JSON.stringify({n, good, share: n ? +(good / n).toFixed(4) : null, median: n ? T.map(t => t.g).sort((a, c) => a - c)[n >> 1] : null}));
+/* the accuracy gate's check: top-4 teams the score calls FAVOURED, i.e. at or above the score that means a 50% win chance against the field,
+   read from the page's own formula (CH.ssOfE(.5): 80 before bands C, 73.33 under C; Nov 25, so the check means the same on either scale) */
+if (process.env.GOLDEN_TOPCUT_ONLY === '1') { const E = Number.isFinite(R.even) ? R.even : 80, T = R.top.filter(t => !offFormat(t.ev)), n = T.length, good = T.filter(t => t.g >= E - 1e-9).length;
+  console.log('TOPCUT ' + JSON.stringify({n, good, even: +E.toFixed(2), share: n ? +(good / n).toFixed(4) : null, median: n ? T.map(t => t.g).sort((a, c) => a - c)[n >> 1] : null}));
   await b.close(); fs.unlinkSync(page); process.exit(0); }
 // 4: suggestions on strong real teams
 R.sugg = await run(`(()=>{ const out = []; const A = ${JSON.stringify(R.top.filter(t => t.g >= 90).slice(0, 8).map(t => t.mons))};
