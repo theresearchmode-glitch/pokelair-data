@@ -39,3 +39,5 @@
 60 | done | alt/gemini-speed-fix2 18a67424 | static.css 824->42 KB raw (144.5->12.0 KB gz), /pokemon LCP 1774->1041ms, /gifts 26->13 reqs, 0 changed pixels on all 8 static shots, identical settled numbers, all 8 public tests pass in GitHub order | Thu Nov 26, 1:58 PM
 59 | done | alt/gemini-rehearsal4 577d22ce | Friday switch rehearsal 4 (main 03cd5e41 + design6 58137089 -> merge 3593e4ce): 5/5 expected conflicts only, switch-smoke ALL PASSED (Nov 26), GH test.yml run 45876567395 15/15 GREEN | Thu Nov 26, 2:26 PM
 61 | started | - | job 60 fixes 4+5 on origin/alt/speed-review, measured on real public-site.mjs deploy folder | Thu Nov 26, 2:29 PM
+61 | done | alt/gemini-speed-fix3 f01fcaf4 | fixes 4+5 on speed-review measured on real public-site.mjs deploy: static.css 824->42 KB (144.5->12.0 KB gz), /pokemon LCP 1756->1054ms, 14/14 byte-identical shots, 15/15 cross-test, all 8 public tests pass | Thu Nov 26, 2:55 PM
+62 | started | - | experiments/switch-preflight.mjs (read-only runbook step 1 check + fake fail proofs + runbook line) | Thu Nov 26, 2:55 PM
