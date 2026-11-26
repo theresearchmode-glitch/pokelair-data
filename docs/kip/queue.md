@@ -88,3 +88,22 @@ limit 3"), freezing live data from the first day.
 ## JOB 47 (after 45): experiments/turnstile-page-test.mjs fails on plain design6 (widget drawn twice, your job 41 item 3).
 - Find why Send Feedback renders the Turnstile widget twice on a redraw, fix the cause in the page (smallest change), and show the test
   failing before and passing after. This is page code but not design: no visual change beyond one widget instead of two.
+
+---
+## HH notes, Thu Nov 26 night (after midnight)
+- Job 46: verified. news-freshness-test fails 4 checks on main's old health.mjs, post-news-ran-test fails 3 on design6's old post-news.mjs;
+  both pass with your fix, and post-news-test + post-data-test still pass. Page half is in HH's merge chain; data half waits for Sim's
+  OK to push main. One edge case HH put in the runbook (no code change asked): if the news feed fails on the FIRST run after the
+  switch, post.json has no `ran` yet, health says "no date" and fails. Saturday checks for it.
+- Job 43: verified, 24 checks pass, and with the hook's branch check broken the test fails (4c). In HH's merge chain.
+- Job 42: verified, 14 checks pass incl. your 3 broken-step proofs. It had no GitHub run (experiments/md-roster-* are not in
+  test.yml's paths); HH started one by hand. In the merge chain.
+
+## JOB 48 (after 47): the Saturday merge into main must run BOTH test lists.
+Your job-43 merge-check.sh gives target main main's OLD list. Saturday's merge brings design6's code into main, so on that merge the
+redesign's tests (v2, public build, CSP, pokemon pages...) would not run under target main.
+- Make target main run tests_main AND tests_design6 when the merge's own .github/workflows/test.yml has design6's steps (e.g. it runs
+  app/test/v2-public.mjs), so it works today (main only) and on Saturday (both) with no edit in between. Keep every existing check.
+- Test: in merge-gate-test.mjs, a scratch merge whose test.yml has a v2 step runs both lists; a failing design6-list test blocks the
+  stamp for main. Show the new check failing before your change.
+- Branch from origin/alt/gemini-merge-gate if it is not yet in claude/design6, else from origin/claude/design6. One push.
