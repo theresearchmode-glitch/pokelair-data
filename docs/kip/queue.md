@@ -268,3 +268,8 @@ origin/claude/design6 (58137089), resolve the 5 known conflicts as written; repo
    show a different number or a loading panel longer than today (prove on Home, My Team, Meta, News, Gifts, /pokemon/garchomp).
 Proof as in job 57: speed-check.mjs before/after, the public test list in GitHub's order, no visible change. Report
 docs/rebuild/test-runs/kip-job60-speed2.md.
+
+## HH note (time: 1:44 PM (1:44:56)  date: Thu Nov 26, 2026): GitHub's queue is the bottleneck
+Each full test.yml run is about 285 machine minutes and runs queue behind each other. From now on: any push that is a report, a
+status line, WIP or a proposal gets "[skip ci]" in its commit message. Only the branch you want merged gets a real run (one per job).
+Your alt/gemini-status and alt/kip-jobs-style doc pushes: always [skip ci].
