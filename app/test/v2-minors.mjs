@@ -14,6 +14,7 @@
 //   Stampede tiles 2-5 + tags (Nov 18 night): Battle's VS clear, Test Run filled, Damage Calc balanced, equal band bars, board tags inside
 //   HQ Q4a-Q13f (Nov 18): Sim's answers for Home (morning questions), one check each (ONLY=HQ runs these alone)
 //   AS-1..9 (Nov 18): the All Suggestions sheet, option C (Sim's Q5): Suggest from, sections, card facts, Show 6 More, notes, height (ONLY=AS)
+//   TP3-1 (Nov 26): long event names are cut at a whole word, never mid-word (ONLY=TP3 runs it alone)
 //   BR-C1..C7 (Nov 18): behaviour review: the Apply and Remove holds end on any scroll they didn't make and on leaving My Team,
 //              redraws at 1100-1439 don't move My Team, keyboard Apply keeps the focus (ONLY=BR runs these alone)
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
@@ -286,6 +287,20 @@ const AS = async () => {
     const bad = all.filter(t => /tell it apart|no clear edge/.test(t) || !/^(Add fills your empty spot|Fix )/.test(t)); /* W1a (Sim, Nov 19): 'Add · fills your empty spot' (a Fix line stays) */
     ok(mtL.length >= 1 && shL.length >= 1 && !bad.length, `AS-11 (audit Nov 19 #3): with 5 of 6, ${mtL.length} My Team and ${shL.length} sheet card(s) fill the empty spot; none says it's a small change real games can't tell apart (${[...new Set(bad.length ? bad : all)].slice(0, 3).join(' | ')})`); await c.close(); } };
 if (process.env.ONLY === 'AS') { await AS(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+const TP3 = async () => { /* TP3-1 (small touches pass 3, Nov 26): a long event name is cut at a whole word. evShort cut every name over 28 letters at
+  letter 27, so Test Run's rows read "Buenos Aires Special Champi…" (and 13 more names mid-word, in the rows' screen-reader labels too, and in
+  Battle's opponent line). Checked over every event in the tournament data and on Test Run's rows at 1100x800. Failed on design6 b96f3a5e. */
+  const c = await b.newContext({viewport: {width: 1100, height: 800}}), q = await c.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#gauntlet'); await q.waitForTimeout(4000);
+  const r = JSON.parse(await q.evaluate(() => window.__ev(`(() => { const ev = [...new Set(((META.teams || {}).teams || []).map(t => t.event))], esc = x => x.replace(/[.*+?^\${}()|[\\]\\\\]/g, '\\\\$&');
+    const whole = stem => { const w = stem.replace(/[\\s|·;,:–-]+$/, '').trim().split(' ').pop(); return !!w && ev.some(e => new RegExp(esc(w) + '(?=[\\\\s|·;,:–-]|$)').test(e)); };
+    const cut = ev.map(e => evShort(e)).filter(s => s.includes('…')), bad = cut.filter(s => !whole(s.split('…')[0]));
+    const rows = [...document.querySelectorAll('#main .tp-card .dr-id small')].map(e => e.textContent.split(' · ')[0]).filter(s => s.includes('…')), badRows = rows.filter(s => !whole(s.split('…')[0]));
+    const lab = [...document.querySelectorAll('#main .tp-card[aria-label]')].map(e => e.getAttribute('aria-label')).filter(s => s.includes('…')).map(s => s.split('…')[0].split(', ').pop() + '…'), badLab = lab.filter(s => !whole(s.split('…')[0]));
+    return JSON.stringify({n: cut.length, bad, rows: rows.length, badRows, labs: lab.length, badLab}); })()`)));
+  ok(r.n >= 1 && !r.bad.length && !r.badRows.length && !r.badLab.length, `TP3-1: long event names end at a whole word (${r.n} cut names, ${r.rows} on Test Run's rows, ${r.labs} in their labels; mid-word: ${[...r.bad, ...r.badRows, ...r.badLab].slice(0, 4).join(' | ') || 'none'})`);
+  await c.close(); };
+if (process.env.ONLY === 'TP3') { await TP3(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- AS end
 // ---- MQ end ----
 // ---- BR end (run with the rest just before the browser closes) ----
@@ -2050,6 +2065,7 @@ if (part('groups')) { const bad = [];
       return {end: li ? Math.round(li.getBoundingClientRect().bottom) : null, scrollY: Math.round(scrollY), chips: ch.length, lab}; });
     if (r.end == null || r.end > h || r.scrollY !== 0 || r.chips !== 12 || !r.lab) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); await ctx.close(); }
   ok(!bad.length, `Speed Tiers on short laptop windows (Nov 26): the track's first row is on the first screen at 1280x720, 1366x768 and 1440x900, all 12 condition chips kept (${bad.join(' | ') || 'all three'})`); }
+if (part('main2')) await TP3(); /* small touches pass 3 (Nov 26), defined above; ONLY=TP3 runs it alone */
 if (part('groups')) { await HQ(); await wkPair(b, 'file://' + PAGE, ok); }
 await b.close();
 console.log(`v2-minors${PART === 'all' ? '' : ' (' + PART + ')'}:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
