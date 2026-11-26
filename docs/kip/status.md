@@ -34,3 +34,4 @@
 57 | done | alt/gemini-speed-fix1 c540120c | public external item webp files + shared /v2.css on index.html (LCP 11.6->5.6s, v2.js gz 1797->662 KB; all public tests pass in both build orders; 17/20 byte-identical + 3/20 1px subpixel) | Thu Nov 26, 12:52 PM
 58 | started | - | --split-routes on --public: measure LCP/bytes + full public test list, report what breaks before fixing | Thu Nov 26, 12:52 PM
 58 | done | alt/gemini-split-routes e6504b08 | --split-routes on --public: found 11/22 broken routes + Fast 3G waterfall stall before fixing; hoisted 14 helpers to kit.js + <link rel=preload as=script> -> all 22 routes + all public tests pass in both orders, LCP 4.5-4.9s, all 10 pages <1.5 MB; interactive cross-chunk risk noted for HH | Thu Nov 26, 1:18 PM
+59 | started | - | Friday switch rehearsal 4 (origin/main + origin/claude/design6 58137089) | Thu Nov 26, 1:28 PM
