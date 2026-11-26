@@ -392,3 +392,14 @@ p,li,small{text-wrap-style:pretty}
 /* Nov 25 (practice-switch review): on the Pokémon page the tier word under the score is plain text on the card, but kept --tier-ink
    (near-black, made for coloured tier chips), unreadable on the night card. Night takes the card's own second ink; day is unchanged */
 :root[data-theme="night"] .pk-rate .tier-tag{color:inherit} /* in sugs.css, after .tier-tag above: CSS layers order before specificity (pages.css .pkf rule lost to it) */
+/* ---------- Spicy picks (HH's Job E, Nov 26; sugs.js V2.sgSpicy): the toggle row under the suggestions, then its labelled group ---------- */
+.sg2-sp{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--rule)}
+.sg2-sph{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4)}
+.sg2-spc{flex:1 1 240px;margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.sg2-sp .sg2-spo{margin-top:var(--s4)}
+.sg2-adj .sg2-spin{margin-top:var(--s4)}
+.sg2-spf{display:grid;gap:var(--s2)}
+@media (min-width:900px){@container (min-width:560px){.sg2-spo li{grid-template-areas:"k sw ap" "mv sw ap" "sp sp sp" "ln ln ln" "wy wy wy"}.sg2-spo li>.sg2-spf{grid-area:sp;margin-top:var(--s2)}}}
+.sg2-spl{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s1);margin:0}
+.sg2-spl .k-tag{white-space:normal}
+.sg2-spr{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
