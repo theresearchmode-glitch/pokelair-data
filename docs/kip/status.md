@@ -36,3 +36,4 @@
 58 | done | alt/gemini-split-routes e6504b08 | --split-routes on --public: found 11/22 broken routes + Fast 3G waterfall stall before fixing; hoisted 14 helpers to kit.js + <link rel=preload as=script> -> all 22 routes + all public tests pass in both orders, LCP 4.5-4.9s, all 10 pages <1.5 MB; interactive cross-chunk risk noted for HH | Thu Nov 26, 1:18 PM
 59 | started | - | Friday switch rehearsal 4 (origin/main + origin/claude/design6 58137089) | Thu Nov 26, 1:28 PM
 60 | started | - | speed fixes 4+5 (static-page trimmed CSS + route-prioritized /data/*.json loading) | Thu Nov 26, 1:32 PM
+60 | done | alt/gemini-speed-fix2 18a67424 | static.css 824->42 KB raw (144.5->12.0 KB gz), /pokemon LCP 1774->1041ms, /gifts 26->13 reqs, 0 changed pixels on all 8 static shots, identical settled numbers, all 8 public tests pass in GitHub order | Thu Nov 26, 1:58 PM
