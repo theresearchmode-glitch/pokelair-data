@@ -309,3 +309,32 @@ Runbook step 1 is by hand today. experiments/switch-preflight.mjs, read-only, pr
 - origin/claude/design6's latest test.yml run is green;
 - out/regstate.json / out/post.json state as the runbook expects (step 5 note).
 Prove each FAIL path with a fake (e.g. an env var pointing it at a fixture). Doc: one line in switch-runbook-nov28.md step 1.
+
+---
+## SPEED PROGRAM (Sim, time: 2:39 PM (2:39:55)  date: Thu Nov 26, 2026: "speeding up the website load times ... thats a big deal fr")
+After 61 and 62, speed is your main line of work. Goal: Google's "good" on a mid phone: LCP under 2.5 s, CLS under 0.1, INP under
+200 ms, on the REAL deploy folder (`node public-site.mjs`, today's data from origin/main out/), Fast 3G-like + 4x CPU, the 10 pages
+of your speed-check. Today: about 4.6 s on / and /pokemon/garchomp (helper's speed-review numbers). Rules for every speed job:
+real deploy build; before/after table; cold-open every route + click its main buttons (split-routes-cross-test); 0 visible change
+(screenshots 390/1440 light/dark); public test list in GitHub's order; one real GitHub run on the branch to merge. Branch each job from
+the latest of: origin/alt/batch6 (when it exists), else origin/alt/speed-review.
+
+## JOB 63: where the 4.6 s goes (measure first, change nothing)
+For /, /pokemon/garchomp, /team, /meta, /news: a Chrome trace (Playwright CDP tracing) on the throttled real deploy. Report the
+LCP element and a waterfall split: HTML download, CSS, fonts, v2.js download, v2.js parse+compile, script run before first paint,
+data fetches, images. Top 10 costs in ms with file:line, each with the fix you'd make and its expected saving. Note: HH's helper
+is adding a static prerendered first screen for / (alt/prerender-home, in batch6): measure with it.
+
+## JOB 64: the first screen without waiting for the app (biggest expected win)
+From 63's numbers: make each page's LCP element paint from the static HTML (prerendered first screen) before v2.js runs: v2.js
+`defer`/after first paint where safe, critical CSS for the first screen only, fonts preloaded with font-display that avoids a late
+swap jump (measure CLS). Prove LCP before/after; no flash of wrong content (the app must take over the same layout).
+
+## JOB 65: less JavaScript up front
+Load only what a route needs first: lazy-load heavy modules (damage calc engine, Showdown data tables, the Strength Score model,
+Search index) on first use or after first paint; remove dead code from the public bundle; check the minifier setting. Report bytes and
+parse time saved per route. Every button still works cold (cross-test extended to each lazy module).
+
+## JOB 66: pictures
+Pokémon/item art: right sizes per screen (srcset), lazy-load below the first screen, preload only the LCP picture, and check
+AVIF/WebP sizes. Report bytes saved per page and LCP effect.
