@@ -38,7 +38,7 @@ const h404 = fs.existsSync(path.join(D, '404.html')) ? fs.readFileSync(path.join
 ok(v.length > 0 && h404p === v.replace(/<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>/g, '').replace('<title>', '<meta name="robots" content="noindex"><title>'), 'pokemon/404.html is the page with a noindex tag');
 /* Job W (Nov 26; changed with HH's yes pending): index.html is v2.html plus Home's static words (one visually hidden block in #main,
    app/build.mjs V2.preBlock), so it is compared with that block taken out, and the block must be there exactly once */
-{ const ix = fs.existsSync(path.join(D, 'index.html')) ? fs.readFileSync(path.join(D, 'index.html'), 'utf8') : '', blocks = ix.match(/<section class="vh" data-v2pre>[\s\S]*?<\/section>/g) || [];
+{ const ix = fs.existsSync(path.join(D, 'index.html')) ? fs.readFileSync(path.join(D, 'index.html'), 'utf8') : '', blocks = ix.match(/(?<=<main class="np-main" id="main">)<section class="vh" data-v2pre>[\s\S]*?<\/section>/g) || []; /* only the block in #main: an inline build's v2.js carries the same tag in V2.preBlock's own template (batch6) */
   ok(blocks.length === 1 && ix.replace(blocks[0], '') === v, `index.html is the same page as v2.html plus Home's static words ("/" serves it; ${blocks.length} word block)`); }
 // SEO fix 2 (Nov 25): each tool page has its own file (dist/team.html, served at /team) with its own title, description, og tags and
 // canonical from docs/rebuild/seo-titles-draft.md, so search engines read the right words before any script runs
