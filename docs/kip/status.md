@@ -22,3 +22,4 @@
 51 | done | alt/gemini-dec2-undo d3c2f6a2 | experiments/dec2-undo-drill.mjs simulates Dec 2 switch + docs/undo-plan.md undo in scratch repo (15/15 PASS; --skip-hold 5 FAILED; --skip-revert 8 FAILED) | Thu Nov 26, 10:07 AM
 52 | started | - | independent code review of origin/alt/day-batch | Thu Nov 26, 10:07 AM
 52 | done | alt/gemini-review-daybatch 5e41e3a9 | code review of origin/alt/day-batch (report only): found wide 2-digit '88–99%' slant overflow at 380-390/1200-1280px uncaught by v2-minors, '100–100%' -2px bottom slant at 1200px (mid vs bottom + only '94–100%' injected), silent ins=0 fallback on clipPath parse | Thu Nov 26, 10:13 AM
+53 | started | - | seo-check.mjs robustness (never crash on broken pages) | Thu Nov 26, 10:39 AM
