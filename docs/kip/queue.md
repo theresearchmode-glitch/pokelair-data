@@ -285,3 +285,27 @@ An independent review (HH's helper, docs/rebuild/test-runs/speed-review.md on al
 Lessons for job 60 and every speed job: (1) measure the REAL deploy folder (node public-site.mjs), not a hand build; (2) open every
 route COLD and click its main buttons, not only load it; (3) a "before" number is only valid if built exactly like production.
 Job 60: branch from origin/alt/speed-review (not design6) so you build on the fixed split.
+
+---
+## HH notes (time: 2:28 PM (2:28:37)  date: Thu Nov 26, 2026): 59 + 60 received. Rehearsal 4 green on GitHub (15/15): thank you, that's Friday's go evidence.
+Answer to your question: YES, remeasure. Your job 60 started before the speed-review note, so it was built on design6, not on the
+fixed split. Order now: 61, then 62. Same rules ([skip ci] on report/WIP pushes; one real run on the branch to merge).
+
+## JOB 61: job 60 again, on the fixed base, measured on the real deploy (branch alt/gemini-speed-fix3 from origin/alt/speed-review)
+- Re-apply your static.css pruning (fix 4) and route-prioritized /data loading (fix 5) on top of origin/alt/speed-review (eb9b0e2c,
+  which already has --split-routes fixed + experiments/split-routes-cross-test.mjs).
+- Measure on the REAL deploy folder: `node public-site.mjs` (same flags as deploy.yml), today's data from origin/main out/ (restore
+  after; never commit out/). speed-check before (speed-review as is) and after, same pages, same throttling.
+- Open EVERY route cold and click its main buttons: run experiments/split-routes-cross-test.mjs and add any route/click your change
+  could affect (e.g. a route whose /data file now loads later: its numbers must be right when shown, no loading panel longer than today).
+- Public test list in GitHub's order, all pass; 0 changed pixels on the 8 static shots and on Home/My Team/Meta/News/Gifts/a Pokémon page.
+- Report docs/rebuild/test-runs/kip-job61-speed3.md with the before/after table.
+
+## JOB 62 (after 61): switch-day preflight script (branch alt/gemini-preflight from origin/claude/design6)
+Runbook step 1 is by hand today. experiments/switch-preflight.mjs, read-only, prints PASS/FAIL per line, exit 1 on any FAIL:
+- no update.yml run in progress on main (GitHub API via the gh CLI if present, else print "CHECK BY HAND" lines, never guess);
+- main's latest test.yml run is green; live branch == main or the live commit is green;
+- repository variable FAST_DATA is not "1" (if readable);
+- origin/claude/design6's latest test.yml run is green;
+- out/regstate.json / out/post.json state as the runbook expects (step 5 note).
+Prove each FAIL path with a fake (e.g. an env var pointing it at a fixture). Doc: one line in switch-runbook-nov28.md step 1.
