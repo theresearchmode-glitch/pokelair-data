@@ -106,3 +106,4 @@
   .f3-big{font-size:var(--t34)}
   .f3-stamp{position:absolute;right:var(--s2);bottom:-12px;margin:0;font-size:var(--t15);transform:rotate(-8deg)} /* on the receipt's torn edge, under the score */}
 @media (max-width:429.98px){.f3-h1{font-size:var(--t28)}}
+@media (max-width:699.98px) and (max-height:699.98px){.f3-words .k-kicker{margin-top:var(--s1)}} /* short phones (iPhone SE, 568 tall): Score My Team above the tab bar on the Claude build too, under its data note (HH, Nov 26) */
