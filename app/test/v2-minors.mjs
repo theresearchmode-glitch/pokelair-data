@@ -430,8 +430,11 @@ if (process.env.ONLY === 'TF') { await TF(); await b.close(); console.log(`v2-mi
 // ---- HQ begin: Home answers (Sim, Nov 18 morning questions, docs/rebuild/morning-questions-nov18.md: "recommend for all is good").
 //   One check per answer applied; each failed on the build before its change. ONLY=HQ runs these alone.
 const HQ = async () => {
-  const hq = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700 && !o.desk, hasTouch: w < 700 && !o.desk, /* desk: a desktop window (classic scrollbar) */ reducedMotion: o.rm || 'no-preference'}); const q = await ctx.newPage();
-    await q.addInitScript(o => { window.__PL_TEST = 1; try { if (sessionStorage.getItem('hq')) return; sessionStorage.setItem('hq', '1'); /* once: a reload keeps what the page saved */ if (o.fresh) localStorage.clear(); for (const [k, v] of Object.entries(o.ls || {})) localStorage.setItem(k, v); } catch (x) {} }, {fresh: !!o.fresh, ls: o.ls || {}});
+  /* Job DD (Nov 26): Home's first screen is Final 3's hero on this build too (pubhome-f3.js V2.F3_CLAUDE). A check that reads the Stampede's
+     own hero (its function mentions sdh) opens Home with that hero (window.__NP_SDHERO), so these answers keep guarding it until Sim's yes;
+     every other Home answer runs on today's Home */
+  const hq = async (w, h, o = {}) => { if (o.sdh == null) o = {...o, sdh: /sdh/.test(String(o.fn || ''))}; const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700 && !o.desk, hasTouch: w < 700 && !o.desk, /* desk: a desktop window (classic scrollbar) */ reducedMotion: o.rm || 'no-preference'}); const q = await ctx.newPage();
+    await q.addInitScript(o => { window.__PL_TEST = 1; if (o.sdh) window.__NP_SDHERO = 1; try { if (sessionStorage.getItem('hq')) return; sessionStorage.setItem('hq', '1'); /* once: a reload keeps what the page saved */ if (o.fresh) localStorage.clear(); for (const [k, v] of Object.entries(o.ls || {})) localStorage.setItem(k, v); } catch (x) {} }, {fresh: !!o.fresh, ls: o.ls || {}});
     await q.goto('file://' + PAGE + (o.hash || '#home')); await q.waitForTimeout(o.wait || 2500); if (o.night) { await q.evaluate(() => V2.setTheme('night')); await q.waitForTimeout(300); }
     const r = o.fn ? await q.evaluate(o.fn) : null; if (o.keep) return {q, ctx, r}; await ctx.close(); return r; };
   // Q6 A: the hero's motion is on by default (no flag): the surge on arrival, the moving ticker with its pause button; reduced motion: none of it
@@ -855,7 +858,8 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { const lin = [];
   /* Home's ranks and most used moved for Sim's Nov 18 redesign (the Stampede): the hero's plates, tags and ticker (ratings) and the six's ring
      names stand in for .hm-rk / .hm-used; on Home every such button is read, not only the first */
-  for (const [route, sel] of [['meta', '.gs-mon'], ['speed', '.sp2-m'], ['home', '.sdh-plate'], ['home', '.sdh-tick li:not([hidden]) button'], ['home', '.sds-rings .sds-nm[data-v2mon]'], ['usage', '.us-fig']]) {
+  const p0 = p, ph = await (await b.newContext({viewport: {width: 1280, height: 900}})).newPage(); await ph.addInitScript(() => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; }); /* Job DD: the hero's plates and ticker are the Stampede hero's own */
+  for (const [route, sel] of [['meta', '.gs-mon'], ['speed', '.sp2-m'], ['home', '.sdh-plate'], ['home', '.sdh-tick li:not([hidden]) button'], ['home', '.sds-rings .sds-nm[data-v2mon]'], ['home', '.f3-bar'], ['usage', '.us-fig']]) { const p = /sdh/.test(sel) ? ph : p0; /* .f3-bar: Final 3's receipt bars (Job DD, HH: "94, Mega Charizard Y's Rating") */
     await p.goto('file://' + PAGE + '#' + route); await p.waitForTimeout(2000);
     lin.push(await p.evaluate(([sel, all]) => { const norm = x => x.toLowerCase().replace(/[^a-z0-9%.# ]+/g, ' ').replace(/\s+/g, ' ').trim(); const es = [...document.querySelectorAll('#main ' + sel)].filter(x => x.getClientRects().length && x.getAttribute('aria-label')); if (!es.length) { const tk = /sdh-tick/.test(sel) && document.querySelector('#main .sdh-tick'); if (tk && !tk.getClientRects().length) return ''; /* Home B (Sim, Nov 23): at 1100+ the ticker steps aside for the top 10 on the flag */ return sel + ' none'; }
       return (all ? es : es.slice(0, 1)).map(e => { const vis = norm((e.querySelector('.us-tx') || e).innerText).split(' ').slice(0, 2).join(' ') /* a Usage figure's podium number is decoration; its label text is .us-tx */, raw = e.getAttribute('aria-label'), al = norm(raw);
@@ -1472,9 +1476,39 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(seen.length === 12 && !bad.length, `Audit Nov 19 #4 (the Arena since Nov 19: one bar, not two wings): the KO Board bar's counts are exactly the board's tiles, on one line (3 teams x 1100/1280 x both directions; ${bad.join(' | ') || 'e.g. "' + seen.slice(0, 2).join('" / "') + '"'})`); }
 } // main1 end
 if (part('main2')) {
+// ---------- Home's first screen: Final 3 on this build too (Job DD, Nov 26; pubhome-f3.js V2.f3Home, V2.F3_CLAUDE) ----------
+/* Sim picked Final 3 as Home's FIRST SCREEN (nothing else removed): F3's hero replaces only the Stampede's hero; the Top 10, your six, the
+   tools rack and the post band stay below in today's order. Each check failed on design6 52fa60e6 (the Stampede's hero: no .f3-hero). */
+{ const f3 = async (w, h, fn, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: 'reduce'}); const q = await ctx.newPage(), errs = [];
+    q.on('pageerror', e => errs.push(e.message)); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+    if (o.night) { await q.evaluate(() => V2.setTheme('night')); await q.waitForTimeout(300); }
+    const r = await q.evaluate(fn); await ctx.close(); return {...r, errs: errs.length}; };
+  // F3-1: the order and the one h1; every bar a link labelled with its Pokémon and Rating
+  { const r = await f3(1440, 900, () => { const at = s => { const e = document.querySelector('#main ' + s); return e ? [...document.querySelectorAll('#main *')].indexOf(e) : -1; };
+      const bars = [...document.querySelectorAll('#main .f3-bar')];
+      return {seq: ['.f3-hero', '.sd-top', '.sd-six', '.sd-tools', '.sd-post'].map(at), old: at('.sdh'), h1: [...document.querySelectorAll('#main h1')].map(h => h.textContent.trim()),
+        bars: bars.length, barsOk: bars.every(a => a.tagName === 'A' && (/^(\d+), .+'s Rating$/.test(a.getAttribute('aria-label') || '') && (a.getAttribute('aria-label') || '').startsWith(a.textContent.trim()) || /, not rated$/.test(a.getAttribute('aria-label') || '')))}; });
+    ok(r.seq.every((x, i) => x >= 0 && (!i || x > r.seq[i - 1])) && r.old < 0 && r.h1.length === 1 && /^Rate your Pokémon Champions team/.test(r.h1[0]) && r.bars === 6 && r.barsOk && !r.errs,
+      `F3-1 (Job DD): Home is Final 3's hero, then Top 10, your six, tools rack, post band; no Stampede hero; one h1 (F3's); 6 receipt bars, each a link whose spoken name starts with its number: "<n>, <name>'s Rating" (${JSON.stringify(r)})`); }
+  // F3-2: the first screen. At 1440x900 the hero ends at the window's bottom even under the Preview's data note, and Home stays within its
+  // 4 screens; Score My Team is on the first screen (above the phone tab bar) at the sizes Sim checks
+  { const bad = []; for (const [w, h] of [[390, 844], [1280, 800], [1366, 768], [1440, 900], [1920, 1080]]) {
+      const r = await f3(w, h, () => { const g = document.querySelector('#main .f3-acts .k-go'), H = document.querySelector('#main .f3-hero'), bar = document.querySelector('.np-bar');
+        const fold = innerHeight - (bar && getComputedStyle(bar).position === 'fixed' ? bar.offsetHeight : 0);
+        return {go: g ? Math.round(g.getBoundingClientRect().bottom) : null, fold, heroEnd: H ? Math.round(H.getBoundingClientRect().bottom + scrollY) : null, scr: +(document.documentElement.scrollHeight / innerHeight).toFixed(3), note: !!document.querySelector('.np-dnote')}; });
+      if (r.go == null || r.go > r.fold) bad.push(`${w}x${h}: Score My Team ends ${r.go} under the first screen ${r.fold}`);
+      if (w === 1440 && (Math.abs(r.heroEnd - h) > 1 || r.scr > 4)) bad.push(`1440x900: hero ends ${r.heroEnd} (want ${h}; data note ${r.note}), ${r.scr} screens (4 at most)`); }
+    ok(!bad.length, `F3-2 (Job DD): Score My Team on the first screen at 390x844, 1280x800, 1366x768, 1440x900, 1920x1080; at 1440x900 the hero ends at the window's bottom under the data note and Home is at most 4 screens (${bad.join(' | ') || 'all good'})`); }
+  // F3-3: every width, day and night: no sideways scroll, no name, item, type or receipt line cut, no page error
+  { const bad = []; for (const w of [320, 360, 390, 414, 600, 768, 900, 1024, 1180, 1280, 1366, 1440, 1600, 1920, 2560]) for (const night of [false, true]) {
+      const r = await f3(w, 900, () => ({hero: !!document.querySelector('#main .f3-hero'), sw: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        cut: [...document.querySelectorAll('#main .f3-n b, #main .f3-n small, #main .f3-t, #main .f3-meta, #main .f3-h1')].filter(e => e.scrollWidth > e.clientWidth + 1).map(e => e.textContent.slice(0, 16))}), {night});
+      if (!r.hero || r.sw > 0 || r.cut.length || r.errs) bad.push(`${w}${night ? ' night' : ''}: ${JSON.stringify(r)}`); }
+    ok(!bad.length, `F3-3 (Job DD): Final 3's hero at 320-2560, day and night: no sideways scroll, nothing cut, no page error (${bad.slice(0, 3).join(' | ') || 'all good'})`); }
+}
 // ---------- Home, The Stampede: the hero band (Nov 18; app/src/v2/pages/stampede-hero.js, css/sd-hero.css, sd-shared.css) ----------
 { const hero = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: o.rm || "no-preference"}); const q = await ctx.newPage();
-    await q.addInitScript(e => { window.__PL_TEST = 1; if (e) try { localStorage.clear(); } catch (x) {} }, !!o.empty); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+    await q.addInitScript(e => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; /* the Stampede's own hero (Job DD) */ if (e) try { localStorage.clear(); } catch (x) {} }, !!o.empty); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
     if (o.empty) await q.evaluate(() => window.__ev(`(() => { S.slots = S.slots.map(() => blank()); render(); })()`)); if (o.night) await q.evaluate(() => V2.setTheme('night'));
     if (o.wait) await q.waitForFunction(() => document.querySelectorAll('#main .sdh-c').length > 0, null, {timeout: 20000}).catch(() => {}); await q.waitForTimeout(400);
     const r = await q.evaluate(o.fn || (() => { const g = s => { const e = document.querySelector(s); if (!e || !e.getClientRects().length) return null; const x = e.getBoundingClientRect(); return {t: Math.round(x.top), b: Math.round(x.bottom), l: Math.round(x.left), r: Math.round(x.right)}; };
@@ -2151,7 +2185,7 @@ if (part('main2')) { /* iPhone review Nov 25. #2: under 900 Home's two hero butt
      on desktop, where the line is left and the buttons right). #3: News' latest gift round uses the same picture-over-month layout as the others, so every month name in
      its row lines up (it sat sideways, its month 40px off). Both fail on the old code. The data note is hidden here: this build's saved-data
      note is Preview-only. */
-  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
+  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage(); await q.addInitScript(() => { window.__NP_SDHERO = 1; }); /* the Stampede hero's own buttons (Job DD) */
   for (const [w, h] of [[393, 659], [430, 739], [1100, 900], [1440, 900]]) {
     await q.setViewportSize({width: w, height: h}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2200);
     await q.addStyleTag({content: '.np-dnote{display:none}'}); await q.waitForTimeout(300); await q.evaluate(() => scrollTo(0, 0));
@@ -2170,7 +2204,7 @@ if (part('main2')) { /* iPhone review Nov 25. #2: under 900 Home's two hero butt
 if (part('main2')) { /* Sim, Nov 25 (MacBook, Claude app, about 1000x650): on a short desktop window the hero's tagline ate the scene: the front
      four were 80px, the crowd was gone, and #1/#2's plates covered 60-70% of them. Now, from 900 up: the crowd shows, the front four are at
      least 88px, the middle plates cover 45% of their Pokémon at most, and 1440x900 / 1920x1080 keep the full tagline (no override). Fails on the old code (crowd 0). */
-  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
+  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage(); await q.addInitScript(() => { window.__NP_SDHERO = 1; }); /* the Stampede hero's own tagline and crowd (Job DD) */
   for (const [w, h] of [[1000, 650], [1100, 700], [1280, 720], [1366, 768], [1440, 900], [1920, 1080]]) {
     await q.setViewportSize({width: w, height: h}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500); await q.evaluate(() => document.fonts.ready); await q.waitForTimeout(600);
     const r = await q.evaluate(() => { const S = document.querySelector('#main .sdh'); if (!S) return {none: 1}; const th = S.querySelector('.sdh-h');

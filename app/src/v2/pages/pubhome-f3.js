@@ -47,7 +47,7 @@ V2.f3Page = () => { const E = V2.esc, D = V2.f3Data(), W = V2.f3Words(D);
     const rows = D.rows.map((x, i) => { const r = x.r != null ? x.r : 40, len = Math.max(0, Math.min(100, (r - 40) / 60 * 100));
       return `<li class="f3-pl" style="--c:var(--f3-${x.t});--num:var(--f3-num-${x.t});--on:var(--f3-on-${x.t});--r:${r};--len:${len.toFixed(1)};--d:${(i * .1).toFixed(1)}s">
         <div class="f3-lab"><span class="f3-sp" aria-hidden="true">${V2.mon(x.n, {bare: true, iw: 36})}</span><span class="f3-n"><b>${E(x.d)}</b>${x.item ? `<small>${V2.keepForm ? V2.keepForm(E(x.item)) : E(x.item)}</small>` : ''}</span><span class="f3-t">${E(x.t)}</span></div>
-        <a class="f3-bar" href="${E(V2.f3Link(x.n))}" data-v2mon="${E(x.n)}" aria-label="${E(x.d)}, Rating ${x.r != null ? x.r : 'not rated'}"><b class="u f3-r" aria-hidden="true">${x.r != null ? x.r : '–'}</b><img class="f3-art" src="${V2.art(typeof SPRITE_ID === 'object' ? SPRITE_ID[x.n] : null, true)}" alt="" decoding="async"></a></li>`; }).join('');
+        <a class="f3-bar" href="${E(V2.f3Link(x.n))}" data-v2mon="${E(x.n)}" aria-label="${x.r != null ? `${x.r}, ${E(x.d)}'s Rating` : `${E(x.d)}, not rated`}"><b class="u f3-r" aria-hidden="true">${x.r != null ? x.r : '–'}</b><img class="f3-art" src="${V2.art(typeof SPRITE_ID === 'object' ? SPRITE_ID[x.n] : null, true)}" alt="" decoding="async"></a></li>`; }).join('');
     const stamp = W.before ? 'Reg M-D · Dec 2' : '';
     pr = `<figure class="f3-pr" aria-labelledby="f3-rc-h"><div class="f3-paper" aria-hidden="true"></div>
       <div class="f3-hd"><p class="f3-top"><span class="u">NastyPlot</span><span>Receipt</span></p><h2 class="f3-meta" id="f3-rc-h">${lab} · ${E(D.ev.name)}${when ? ` · ${E(when)}` : ''}${D.ev.players ? ` · ${E(Number(D.ev.players).toLocaleString('en-US'))} players` : ''}</h2></div>
@@ -59,8 +59,19 @@ V2.f3Page = () => { const E = V2.esc, D = V2.f3Data(), W = V2.f3Words(D);
   return `<div class="f3-home"><section class="f3-hero f3-anim" aria-labelledby="f3-h1"><div class="f3-panel" aria-hidden="true"><i class="f3-rays"></i><i class="f3-dots"></i></div>${W.html}${pr}</section></div>`; };
 /* Home (Job DD, Nov 26; Sim: Final 3 is the FIRST SCREEN, nothing else removed, rule 18): F3's hero replaces only the Stampede's hero; the
    Top 10, your six, tools rack and post band stay below in today's order. nastyplot.org always; the Claude build when V2.F3_CLAUDE. */
-V2.F3_CLAUDE = true; /* Job DD: the Claude build (live artifact + Preview) too, one front page everywhere; waits for Sim's yes */
+V2.F3_CLAUDE = !window.__NP_SDHERO; /* Job DD: the Claude build (live artifact + Preview) too, one front page everywhere; waits for Sim's yes. The checks of
+   the Stampede's own hero (kept, unused, until Sim's yes) set window.__NP_SDHERO before the page loads to draw it instead */
 V2.f3On = () => !!(window.__NP_PUBLIC || V2.F3_CLAUDE);
 V2.f3Home = () => `${V2.f3Page()}<div class="sd">${V2.sdTop()}${V2.sdSix()}${V2.sdTools()}${V2.sdPost()}</div>`;
+/* the first screen (Job DD): the hero fills the window less everything above it (header, a data note such as the Preview's), as the
+   Stampede's hero did (V2.sdhLayout --sdh-top); 76px (the header alone) until measured */
+V2.f3After = () => { const S = document.querySelector('#main .f3-hero'); if (!S) return; V2.f3Watch(); const t = Math.round(S.getBoundingClientRect().top + scrollY);
+  if (S.style.getPropertyValue('--f3-top') !== t + 'px') S.style.setProperty('--f3-top', t + 'px');
+  const w = S.querySelector('.f3-words'); const tight = !!w && innerWidth >= 1280 && w.offsetHeight + 40 > innerHeight - t; /* a style property, not a class: a redraw's patch keeps it */
+  if (S.style.getPropertyValue('--f3-pb') !== (tight ? 'var(--s4)' : '')) { if (tight) S.style.setProperty('--f3-pb', 'var(--s4)'); else S.style.removeProperty('--f3-pb'); } };
+/* again whenever the words change size (fonts arriving, today's data drawn into the same element) and when the window changes size */
+V2.f3Watch = () => { const w = document.querySelector('#main .f3-words'); if (!w || !window.ResizeObserver || V2._f3w === w) return; if (V2._f3ro) V2._f3ro.disconnect();
+  V2._f3w = w; V2._f3ro = new ResizeObserver(() => requestAnimationFrame(V2.f3After)); V2._f3ro.observe(w); };
+addEventListener('resize', () => { if (V2.f3After) requestAnimationFrame(V2.f3After); });
 // the static words (Job W, alt/prerender-home): this Home's h1 and line, when that build step is there
 V2.f3Seo = () => { const D = V2.f3Data(), W = V2.f3Words(D); return {h1: `Rate your Pokémon Champions team ${W.before ? 'before' : 'for'} Reg M-D.`, intro: (document.querySelector('#main .f3-lead') || {}).textContent || ''}; };

@@ -3,7 +3,7 @@
    type on the scale; 4px grid. Wide (1280+): words left, the panel right with the receipt and its bars running out across it. Narrow:
    the words, then the panel as a slanted block with the receipt inside and each bar under its name (F3p). */
 .f3-home{display:block;overflow-x:clip} /* f3-home, not .f3: the Stampede's plates are li.f1-f6 (batch6 overlap check) */
-.f3-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:var(--s6);min-height:calc(100svh - 76px);padding:0 var(--gut) var(--s10);overflow:hidden}
+.f3-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:var(--s6);min-height:calc(100svh - var(--f3-top,76px));padding:0 var(--gut) var(--f3-pb,var(--s10));overflow:hidden}
 .f3-panel{position:absolute;z-index:0;top:0;right:0;bottom:0;left:44%;overflow:hidden;background:var(--f3-panel);clip-path:polygon(12% 0,100% 0,100% 100%,0 100%)}
 .f3-rays{position:absolute;left:54%;top:52%;width:2400px;height:2400px;background:repeating-conic-gradient(from 2deg,var(--f3-ray-b) 0 1.5deg,transparent 1.5deg 9deg,var(--f3-ray-p) 9deg 10.5deg,transparent 10.5deg 18deg);transform:translate(-50%,-50%);
   -webkit-mask:radial-gradient(circle,var(--sd-mask) 0 15%,transparent 40%);mask:radial-gradient(circle,var(--sd-mask) 0 15%,transparent 40%)}
@@ -75,4 +75,31 @@
   .f3-scale{display:none}
 }
 @media (min-width:700px) and (max-width:1279.98px){.f3-pr{max-width:none}.f3-paper{left:calc(var(--s4) + 8%);right:calc(var(--s4) + 8%)}.f3-hd,.f3-ft,.f3-pl{margin:0 calc(var(--s4) + 8%)}}
-@media (max-width:699.98px){.f3-md-l{display:none}.f3-md-s{display:inline}}
+@media (max-width:699.98px){.f3-md-l{display:none}.f3-md-s{display:inline}
+  /* phones (Job DD, HH Nov 26: the hero was 1627px at 390): each Pokémon one row, its small picture, name with its item and type under it,
+     and its bar to the right in the same row (the number on it; the big riding picture stays on wider screens); a tighter receipt */
+  .f3-hero{gap:0;padding-bottom:var(--s2)}
+  .f3-acts{gap:var(--s3)}
+  .f3-h1{margin:var(--s3) 0}
+  .f3-lead{margin-bottom:var(--s4)}
+  .f3-md{margin-top:var(--s4)}
+  .f3-leg{display:none} /* each row carries its own type label here */
+  .f3-pr{padding:var(--s6) var(--s3);margin-top:var(--s2)}
+  .f3-paper{top:var(--s6);right:var(--s3);bottom:var(--s6);left:var(--s3)}
+  .f3-hd{padding:var(--s4) var(--s4) var(--s1)}
+  .f3-meta{margin-top:var(--s1)}
+  .f3-pl{grid-template-columns:minmax(0,1fr) minmax(96px,38%);align-items:center;gap:var(--s2);padding:2px 0;border-bottom:1px dotted var(--f3-rule)}
+  .f3-top .u{font-size:var(--t20)}
+  .f3-lab{display:grid;grid-template-columns:28px auto minmax(0,1fr);grid-template-areas:"sp nm nm" "sp it ty";align-items:center;gap:0 var(--s2);padding:0 0 0 var(--s3)}
+  .f3-sp{grid-area:sp;display:block;width:28px;height:28px}
+  .f3-n{display:contents}
+  .f3-n b{grid-area:nm;font-size:var(--t15)}
+  .f3-n small{grid-area:it}
+  .f3-t{grid-area:ty;justify-self:start;margin:0;padding:2px 6px}
+  .f3-bar{width:max(56px,calc(var(--len) * 1%));min-width:0;height:28px;margin:0 var(--s3) 0 0;box-shadow:0 0 12px color-mix(in srgb,var(--c) 60%,transparent),3px 3px 0 var(--f3-bar-shade)}
+  .f3-r{right:var(--s2);font-size:var(--t17)}
+  .f3-art{display:none}
+  .f3-ft{padding:var(--s2) var(--s4) 36px}
+  .f3-band{font-size:var(--t15)}
+  .f3-stamp{position:absolute;right:var(--s2);bottom:-12px;margin:0;font-size:var(--t15);transform:rotate(-8deg)} /* on the receipt's torn edge, under the score */}
+@media (max-width:429.98px){.f3-h1{font-size:var(--t28)}}
