@@ -2775,3 +2775,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:59 PM: Helper Job AA: Kip 57 correct but tiny real gain (deploy already used --item-files; Kip's 11.5 s 'before' was the wrong build); Kip 58 broke 10 cold-open pages/clicks; fixed on alt/speed-review eb9b0e2c (rdeps + needRoute + cross-chunk test in test.yml); LCP / 5339 -> 4610 ms, Garchomp 5266 -> 4653 ms; 2.5 s budget still missed. Kip told (queue). Merge after batch5 + GitHub green.
 - 2:08 PM: Sim (iPhone): Pokémon page type section - 2x weak / Resists / Immune run together with no separation; clean it up.
 - 2:10 PM: Design decision (HH authority, Sim asked): Pokémon page type matchups as one labelled row per kind with a coloured slanted mark (bad/good/ink); alt/typerows 0e65348d; pictures sent; full v2-minors running.
+- 2:10 PM: Sim OK on the Pokémon page type rows ('recommended is good').
