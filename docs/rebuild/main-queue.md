@@ -1,7 +1,7 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 5:23 AM (5:23:41)  date: Thu Nov 26, 2026
 NOW: HH: gate.sh alt/morning-batch 7369b676 (pid in .main-running): test-no-out + touches-pass3 + testrun-fit; local pre-check passed.
-NOW (helper): Job J, My Team at 390 height (4.81 vs cap 4.78 locally, GitHub passes): why, and is the real page over (alt/myteam-390). Jobs C-I done (I = Turnstile once, approved).
+NOW (helper): standby (remaining work waits on Sim: Spicy picks, tablet Home, My Team 390 cap, reg-test). Jobs C-J done.
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
   small touches v1; bands-c2 updated + J-REC proven; Game Plan v89.
