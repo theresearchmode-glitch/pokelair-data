@@ -18,14 +18,24 @@ Sim says yes on the day; nothing here runs before that.
 5. experiments/reg-test.mjs: 3 failures once main's regulation.json meets design6 (Kip job 40 MEDIUM-3; job 41 section 5 has the
    proposed change). It is not in test.yml, so it doesn't block; decide with Sim whether to update it.
 
+## Thu Nov 26 afternoon: Friday is the proposed day (Sim open to switching early; HH rec Fri Nov 27 morning, before the
+Stuttgart Regional weekend). Evidence so far:
+- Rehearsal 4 (Kip job 59, alt/gemini-rehearsal4 577d22ce): main 03cd5e41 + design6 58137089, the 5 known conflicts only,
+  switch-smoke ALL PASSED, GitHub run 45876567395 15/15 green.
+- switch-smoke on a batch5 build with today's main data: ALL PASSED (346 rated, 17,676 teams, 114 events, Data as of Nov 26).
+- Steps 6-7 dry run (helper Job T): build command fixed (no --public), step 7 before step 6, 369 files, 0 sp/.
+Still needed before Friday: batch 6 merged into design6 + green; Sim's go after using the Preview tonight; redo the merge on
+Friday's tips (design6 will have moved) and run merge-check target main (both lists, Kip 48).
+
 ## Rehearsal 2 (Thu Nov 26, night): PASSED
 alt/switch-rehearsal2 1039d5ea = main + design6 b96f3a5e + Kip 46 data half: the 5 conflicts resolved exactly as step 2 below says;
 merge-check's main list + design6 list locally 48 of 48; GitHub's full test.yml run on it: success (run 45785844537).
 Report: docs/rebuild/test-runs/switch-rehearsal2-nov26.md. On Saturday, redo the same merge on the day's tips (design6 will have moved).
 
 ## Saturday, in order
-1. **Preflight (from GitHub, not the clock):** no update.yml run in progress; main's latest test.yml run is green; FAST_DATA is not
-   `1`. Save the live artifact's index.html (sha256 prefix, version id) for the undo.
+1. **Preflight (from GitHub, not the clock):** run `node experiments/switch-preflight.mjs` (checks no update.yml run in progress,
+   main + design6 test.yml green, live == main or green, FAST_DATA != `1`, and out/regstate.json + out/post.json state). Save the
+   live artifact's index.html (sha256 prefix, version id) for the undo.
 2. **Merge** `origin/claude/design6` into main on a scratch branch. Expect these 5 conflicts (job 41 section 1):
    - test.yml: union of both `paths:` lists (keep main's regulation/no-rk9/date-switch/freshness/bo3/shadow/dec2 tests and
      design6's syntax-check + public tests); keep every run step from both.
