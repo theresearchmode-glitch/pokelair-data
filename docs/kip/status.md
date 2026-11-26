@@ -41,3 +41,4 @@
 61 | started | - | job 60 fixes 4+5 on origin/alt/speed-review, measured on real public-site.mjs deploy folder | Thu Nov 26, 2:29 PM
 61 | done | alt/gemini-speed-fix3 f01fcaf4 | fixes 4+5 on speed-review measured on real public-site.mjs deploy: static.css 824->42 KB (144.5->12.0 KB gz), /pokemon LCP 1756->1054ms, 14/14 byte-identical shots, 15/15 cross-test, all 8 public tests pass | Thu Nov 26, 2:55 PM
 62 | started | - | experiments/switch-preflight.mjs (read-only runbook step 1 check + fake fail proofs + runbook line) | Thu Nov 26, 2:55 PM
+62 | done | alt/gemini-preflight 57fe28b3 | experiments/switch-preflight.mjs (read-only runbook step 1 check, CHECK BY HAND fallback, live + all 7 fake FAIL paths verified, 1 line in switch-runbook-nov28.md) | Thu Nov 26, 2:57 PM
