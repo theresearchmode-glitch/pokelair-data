@@ -417,5 +417,5 @@ p,li,small{text-wrap-style:pretty}
 .sg2-spf{display:grid;gap:var(--s2)}
 @media (min-width:900px){@container (min-width:560px){.sg2-spo li{grid-template-areas:"k sw ap" "mv sw ap" "sp sp sp" "ln ln ln" "wy wy wy"}.sg2-spo li>.sg2-spf{grid-area:sp;margin-top:var(--s2)}}}
 .sg2-spl{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s1);margin:0}
-.sg2-spl .k-tag{white-space:normal}
+.sg2-spl .k-tag{white-space:normal;max-width:calc(100% - var(--s2));margin-left:var(--s1)} /* Job P (WebKit check wkb-10): the pill is slanted (-8deg), so its corners reach about 3px past its box when a long label wraps to two lines; 4px each side keeps them inside the card */
 .sg2-spr{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}

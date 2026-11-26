@@ -368,6 +368,18 @@ const SP = async () => {
     if (!r.hit || v.on !== 'true' || !v.seen || !v.foc || v.hash !== '#team') fd.push(`${W} "${word}": ${JSON.stringify({...r, ...v})}`);
     await q.evaluate(() => { const t = document.querySelector('#main [data-v2spicy]'); if (t && t.getAttribute('aria-pressed') === 'true') t.click(); }); await q.waitForTimeout(800); }
   ok(!fd.length, `SP-6 (rule 16): Search finds Spicy Picks ("spicy" at 1440, "rare picks" at 390); the result opens My Team with it on, the toggle in view and focused (${fd.join(' | ') || 'both'})`);
+  // SP-7 (Job P, Nov 26; WebKit check wkb-10): the label pill is slanted (skewX -8deg); when a long label wraps to two lines on a phone its
+  // corners reached 3px past the card. With the longest label put in ("Rare pick, plenty of games (1,598)"), at 360-430 both slanted
+  // corners stay inside the card. Failed on alt/kl-batch 14325eb1.
+  { const pb = []; for (const W of [360, 375, 390, 430]) { const c2 = await b.newContext({viewport: {width: W, height: 844}, hasTouch: true}), q2 = await c2.newPage();
+      await q2.addInitScript(([S]) => { window.__PL_TEST = 1; if (sessionStorage.getItem('sp7')) return; sessionStorage.setItem('sp7', 1); localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.state', JSON.stringify(S)); localStorage.setItem('cc2.pool', '"all"'); localStorage.setItem('np2.spicy', '1'); }, [st]);
+      await q2.goto('file://' + PAGE + '#team'); await q2.waitForTimeout(2000);
+      await q2.waitForFunction(() => document.querySelector('#main .sg2-spl .k-tag'), null, {timeout: 120000}).catch(() => {}); await q2.waitForTimeout(800);
+      const r = await q2.evaluate(async () => { const t = document.querySelector('#main .sg2-spl .k-tag'); if (!t) return {none: 1}; t.textContent = 'Rare pick, plenty of games (1,598)';
+        await new Promise(f => requestAnimationFrame(() => requestAnimationFrame(f))); const a = t.getBoundingClientRect(), li = t.closest('li').getBoundingClientRect();
+        return {lines: Math.round(a.height / 25), left: +(a.left - li.left).toFixed(1), right: +(li.right - a.right).toFixed(1)}; });
+      if (r.none || r.left < -0.5 || r.right < -0.5) pb.push(`${W}: ${JSON.stringify(r)}`); else pb.ok = (pb.ok || []).concat(`${W}: ${r.lines} line(s), ${r.left}/${r.right}px inside`); await c2.close(); }
+    ok(!pb.length, `SP-7 (Job P): the longest Spicy label's slanted pill stays inside its card at 360, 375, 390 and 430, wrapped or not (${pb.length ? pb.join(' | ') : (pb.ok || []).join(' | ')})`); }
   await c.close(); };
 if (process.env.ONLY === 'SP') { await SP(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 
