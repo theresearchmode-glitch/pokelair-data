@@ -1,2 +1,2 @@
-14208
-prelaunch.sh: nastyplot.org folder from main 1ba2a7a1 + launch checks (public-site, deploy-smoke, seo, asof, speed, privacy, links); never deploys
+
+next: fix Pokemon A-Z font-swap CLS (before launch)
