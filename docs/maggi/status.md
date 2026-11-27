@@ -34,3 +34,4 @@ M12 | done | alt/maggi-m12-podium 25b3551a | Settled 612d0364: phones fixed (HH 
 - | idle | - - | M12 done; waiting for next job | Fri Nov 27 09:10:55 AM EST 2026
 - | idle | - - | M12 done; waiting for next job | Fri Nov 27 09:19:14 AM EST 2026
 - | idle | - - | M12 done; waiting for next job (approaching 9:30 AM EST cutoff) | Fri Nov 27 09:27:38 AM EST 2026
+- | idle | - - | Stopping for 9:30/9:45 AM EST hard stop. Done: M1-M12 all complete, pushed with [skip ci], and reported (latest M12 on alt/maggi-m12-podium 25b3551a). Not done: none (queue clear). Continue: read origin/alt/maggi-jobs:docs/maggi/queue.md next session | Fri Nov 27 09:32:04 AM EST 2026
