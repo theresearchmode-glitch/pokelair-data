@@ -1,2 +1,2 @@
-12315
-HH rerun of Kip 65 key tests (cross-test, v2-public, pub-links, prerender) on alt/gemini-speed-less-js
+21456
+gate.sh alt/f3-claude (ba95fd61): waits for GitHub green, then merge-check, then push to claude/design6
