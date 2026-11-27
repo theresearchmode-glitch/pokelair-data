@@ -28,7 +28,7 @@ bash docs/maggi/wait-for-jobs.sh
 It checks GitHub every 2 minutes and returns as soon as queue.md changes (prints NEW WORK), or after 50 minutes (prints NO CHANGE).
 If your tool stops long commands sooner, run it as `ROUNDS=4 bash docs/maggi/wait-for-jobs.sh` (8 minutes) and repeat.
 - NEW WORK: read the queue, do the first job your status.md doesn't list as done/blocked, then run it again.
-- NO CHANGE: write `- | idle | - | waiting for HH | <time>` to status.md (push, [skip ci]) and run it again. Keep going until Sim stops you.
+- NO CHANGE: write `- | idle | - | waiting for HH | <time>` to status.md (push, [skip ci]) and run it again. Keep going until Sim says "stop working".
 Never end your turn while a job is unfinished; always send the report (status line + report file) before you stop.
 
 ## Every job's report
