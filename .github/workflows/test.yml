@@ -568,7 +568,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0.10.11 github:smogon/pokemon-showdown#1242c1e2d9763ba5b85d33f13aecb89bae19ae3d && npx playwright install --with-deps chromium
+      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0.10.11 github:smogon/pokemon-showdown#c7fa6f16503de510c319239b5b2d29d4f7abd8c4 && npx playwright install --with-deps chromium
       - run: cd node_modules/pokemon-showdown && node build
       - run: node app/build.mjs
       - name: Audits on today's data

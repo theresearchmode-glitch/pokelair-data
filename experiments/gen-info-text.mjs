@@ -8,7 +8,7 @@
 // overrides (Protect, Wish, Sandstorm, Snowscape, Strength Sap 5; Night Slash 20) are read from its file, not typed here.
 // Our own text (OVR) only where the design chat measured that Showdown's text is wrong or missing for Champions; each line says why.
 import fs from 'node:fs';
-const COMMIT = '1242c1e2d9763ba5b85d33f13aecb89bae19ae3d', PSDIR = process.env.PSDIR; if (!PSDIR) { console.error('set PSDIR'); process.exit(2); }
+const COMMIT = 'c7fa6f16503de510c319239b5b2d29d4f7abd8c4', PSDIR = process.env.PSDIR; if (!PSDIR) { console.error('set PSDIR'); process.exit(2); }
 const rd = f => fs.readFileSync(PSDIR + '/' + f.replace(/\//g, '_'), 'utf8');
 const toID = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
 // the text files are plain data: drop the type annotation on the first line and evaluate

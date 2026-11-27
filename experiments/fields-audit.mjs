@@ -1,5 +1,5 @@
 // Game-mechanics completeness guard: every VGC-relevant field the reference has must be in our data AND used by the engine.
-// Reference: Pokémon Showdown's "champions" data mod with Reg M-C data (GitHub build pinned at commit 1242c1e2d9763ba5b85d33f13aecb89bae19ae3d; NOT npm 0.11.11, which stops at Reg M-B) first; @smogon/calc gen 0 and @pkmn/dex gen 9 only for entries the mod lacks. Read-only. Exit 1 on any gap that would change an
+// Reference: Pokémon Showdown's "champions" data mod with Reg M-C data (GitHub build pinned at commit c7fa6f16503de510c319239b5b2d29d4f7abd8c4; NOT npm 0.11.11, which stops at Reg M-B) first; @smogon/calc gen 0 and @pkmn/dex gen 9 only for entries the mod lacks. Read-only. Exit 1 on any gap that would change an
 // answer users see. Usage: node experiments/fields-audit.mjs   (needs @pkmn/dex + @smogon/calc in node_modules; CI installs
 // them with --no-save; locally it also looks in C:/Users/<you>/code/pl-verify/node_modules)
 import fs from 'node:fs'; import {createRequire} from 'node:module'; import {fileURLToPath} from 'node:url';

@@ -4,7 +4,7 @@
 //   node experiments/gen-roster.mjs --ps <folder that holds node_modules/pokemon-showdown, or the showdown folder itself>
 //        [--format gen9championsvgc2026regmc] [--out <file>] [--report <file.md>] [--add <extra.json>] [--write]
 //
-// Showdown must be built (`node build` in its folder; CI pins commit 1242c1e2d9763ba5b85d33f13aecb89bae19ae3d, test.yml).
+// Showdown must be built (`node build` in its folder; CI pins commit c7fa6f16503de510c319239b5b2d29d4f7abd8c4, test.yml).
 // Writes <out> (default experiments/out/data.generated.js) and NEVER touches data.js unless --write is given.
 //
 // WHO IS IN THE ROSTER (the format's own rules, no list typed here): every species of the format's mod that exists, is not marked
