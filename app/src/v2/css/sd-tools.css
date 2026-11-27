@@ -467,7 +467,7 @@
   .sdt-grid>.sdt-dc .sdt-hpw>b{grid-area:mv;justify-self:start;margin:0}
   .sdt-grid>.sdt-dc .sdt-of{grid-area:of;align-self:start;margin:0}
   .sdt-grid>.sdt-dc .sdt-pct{grid-area:pct;margin-top:var(--s2)}
-  .sdt-grid>.sdt-dc .sdt-duel{margin-top:0;grid-template-columns:minmax(0,1fr) var(--s6) minmax(0,1fr)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:60px}
+  .sdt-grid>.sdt-dc .sdt-duel{margin-top:0;grid-template-columns:minmax(0,1fr) var(--s6) minmax(0,1fr)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:64px}
   .sdt-grid>.sdt-dc .sdt-strike{width:var(--s6);height:var(--s5)}
   .sdt-grid>.sdt-dc .sdt-mn{font-size:var(--t13)}
   .sdt-grid>.sdt-dc .sdt-pct{font-size:var(--d-calc)}
@@ -484,7 +484,7 @@
   .sdt-chips ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
   .sdt-chips li:last-child{grid-column:1/-1}
 }
-@media (max-width:379.98px){.sdt-grid>.sdt-dc .sdt-pct{font-size:var(--t34)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:52px}.sdt-grid>.sdt-dc>.sdt-hit{grid-template-areas:"duel mv" "pct pct" "of of" "bar bar";align-items:center}.sdt-grid>.sdt-dc .sdt-of{margin-bottom:var(--s1)}.sdt-grid>.sdt-dc .sdt-t{font-size:var(--t22)}} /* 320-379: the hit and the title stay inside the band */
+@media (max-width:379.98px){.sdt-grid>.sdt-dc .sdt-pct{font-size:var(--t34)}.sdt-grid>.sdt-dc>.sdt-hit{grid-template-areas:"duel mv" "pct pct" "of of" "bar bar";align-items:center}.sdt-grid>.sdt-dc .sdt-of{margin-bottom:var(--s1)}.sdt-grid>.sdt-dc .sdt-t{font-size:var(--t22)}} /* 320-379: the hit and the title stay inside the band */
 @media (max-width:389.98px){.sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t15)}} /* 320-389: all four card titles one step down together ("Archetypes" fits its half-width card) */
 @media (max-width:389.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:1/-1}} /* 320-389: a half-width card is too narrow for its title, Battle's two 56px sprites and Practice's 44px ones; one card per row */
 @media (max-width:699.98px){ /* Battle and Practice in half-width phone cards (Nov 26): one 56px sprite per side, clear of the VS; Practice's sprites 44px+ */
