@@ -186,7 +186,8 @@ V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: [
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
   return {places, mons}; };
-V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon, move, item, team style or page" aria-label="Find a Pokémon, move, item, Ability, nature, team style, saved team or page" autocomplete="off">${V2.CLR}</label><p class="vh" data-v2hitsay role="status"></p><div class="hits" data-v2hits></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
+V2.openSearch = () => { if (typeof INFO_TEXT !== 'object' && window.__NP_ROUTES && window.__NP_ROUTES['info-text']) V2.needRoute('info-text', () => { const q = document.querySelector('.np-sheet [data-v2q]'); if (q && q.value) q.dispatchEvent(new Event('input', {bubbles: true})); });
+  const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon, move, item, team style or page" aria-label="Find a Pokémon, move, item, Ability, nature, team style, saved team or page" autocomplete="off">${V2.CLR}</label><p class="vh" data-v2hitsay role="status"></p><div class="hits" data-v2hits></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
   const inp = sh.querySelector('[data-v2q]'), out = sh.querySelector('[data-v2hits]');
   // saved teams by name too (today's search does): choosing one opens it, like Open in Saved Teams
   const teams = q => { q = q.trim().toLowerCase(); return q && typeof S === 'object' ? S.teams.filter(t => t.format !== 'singles' && String(t.name).toLowerCase().includes(q)).slice(0, 4) : []; };
@@ -271,7 +272,7 @@ V2.places = [['home', 'Home'], ['build', 'Build'], ['team', 'My Team'], ['battle
 // search finds these too: rebuilt places inside My Team (audit JUMP-05; today's search finds them); pages are links, sheets open over
 // My Team as their buttons do. Search only: the top bar stays the five above.
 V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], ['team', 'Saved Teams', () => V2.openSavedTeams && V2.openSavedTeams()],
-  ['team', 'Team Sheet', () => V2.openTeamSheet && V2.openTeamSheet()], ['team', 'All Suggestions', () => V2.openAllSugs && V2.openAllSugs()], ['team', 'Spicy Picks', () => V2.spicyOpen && V2.spicyOpen()] /* Job E, Nov 26: Search finds the toggle and turns it on */,
+  ['team', 'Team Sheet', () => V2.openTeamSheet && V2.openTeamSheet()], ['team', 'All Suggestions', () => V2.needRoute('team', () => V2.openAllSugs && V2.openAllSugs())], ['team', 'Spicy Picks', () => V2.needRoute('team', () => V2.spicyOpen && V2.spicyOpen())] /* Job E, Nov 26: Search finds the toggle and turns it on */,
   /* Nov 15 (parity with today's search): every page can be found, by its name or a word of its line */
   ['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['natures', 'Natures'], ['tournaments', 'Winning Teams'], ['events', 'Events'], ['archetypes', 'Archetypes'], ['weekly', 'This Week'],
   ['speed', 'Speed Tiers'], ['calc', 'Damage Calculator'], ['types', 'Type Chart'], ['practice', 'Team Preview Practice'], ['gauntlet', 'Test Run'],
@@ -644,7 +645,7 @@ V2.routeJs = r => { const src = window.__NP_ROUTES && window.__NP_ROUTES[r]; if 
   return (V2._routeJs[r] = new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { V2._routeJs[r] = null; no(new Error('Route chunk failed: ' + r)); }; document.head.appendChild(s); })); };
 V2.routeSet = r => { const out = new Set(), go = k => { if (out.has(k)) return; out.add(k); for (const d of ((window.__NP_RDEPS || {})[k] || [])) go(d); }; go(r); return [...out]; };
 V2.loadRoute = r => { const src = window.__NP_ROUTES && window.__NP_ROUTES[r]; if (!src || V2._routeLoad[r]) return;
-  const set = V2.routeSet(r); if (V2.pages[r] && set.every(k => !window.__NP_ROUTES[k] || V2.pages[k] || (V2._routeJs[k] && V2._routeJs[k].done))) return;
+  const set = V2.routeSet(r); if (set.every(k => !window.__NP_ROUTES[k] || (V2._routeJs[k] && V2._routeJs[k].done))) return;
   V2._routeLoad[r] = true;
   Promise.all(set.map(k => V2.routeJs(k).then(() => { if (V2._routeJs[k]) V2._routeJs[k].done = true; })))
     .then(() => { V2._routeLoad[r] = false; V2.draw(); })

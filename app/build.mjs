@@ -49,7 +49,7 @@ if (process.argv.includes('--v2')) {
   JSON.parse(sprite); // fails the build if the shared sprite table ever stops being plain JSON
   const meta = fs.existsSync(dir + 'src/v2/art/meta.json') ? rd('src/v2/art/meta.json') : '{}';
   // the hero crowd's sprite sheets (Sim Q7a B, Nov 18; experiments/v2-crowd-sheets.py): where each picture sits in art/crowd-<n>.webp
-  const crowd = fs.existsSync(dir + 'src/v2/art/crowd.json') ? rd('src/v2/art/crowd.json').trim() : 'null';
+  const crowd = PUBLIC ? 'null' : (fs.existsSync(dir + 'src/v2/art/crowd.json') ? rd('src/v2/art/crowd.json').trim() : 'null');
   // the real item pictures (Sim, Nov 23): experiments/v2-items.py writes art/items/<file>.webp and art/items.json (item name -> file) when
   // the PC's upscaled set is there; without it ITEM_IMG is {} and every item keeps our drawing (item-art.js). JSON.parse fails a bad map.
   const itemImg = fs.existsSync(dir + 'src/v2/art/items.json') ? JSON.stringify(JSON.parse(rd('src/v2/art/items.json'))) : '{}';
@@ -70,13 +70,22 @@ if (process.argv.includes('--v2')) {
     for (const f of [...L, ...P.scripts]) for (const m of rd(f).matchAll(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/gm)) { if (!where.has(m[1])) where.set(m[1], []); where.get(m[1]).push(f); }
     const bad = [...where].filter(([n, fs]) => fs.length > 1 && !(BRIDGE.has(n) && fs.length === 2 && fs[1].endsWith('v2/bridge.js')));
     if (bad.length) { console.error('duplicate top-level functions: ' + bad.map(([n, fs]) => n + ' (' + fs.join(', ') + ')').join('; ')); process.exit(1); } }
+  const PUBLIC_DEAD = PUBLIC ? new Set([
+    'src/v2/pages/guide.js',
+    'src/v2/pages/owner.js',
+    'src/v2/pages/coming.js',
+    'src/v2/pages/stampede-hero.js',
+    'src/app/42-guide-data.js',
+    'src/app/51-usage-data.js'
+  ]) : null;
   const ROUTE_CHUNKS = {
     calc: ['src/v2/pages/calc.js', 'src/v2/pages/calc-plot.js'],
-    battle: ['src/v2/pages/battle.js', 'src/v2/pages/battle-pbp.js', 'src/v2/pages/battle-target.js'],
-    gauntlet: ['src/v2/pages/gauntlet.js', 'src/v2/pages/test-piles.js'],
-    practice: ['src/v2/pages/practice.js'],
-    compare: ['src/v2/pages/compare.js', 'src/v2/pages/compare-faceoff.js'],
-    build: ['src/v2/pages/build.js', 'src/v2/pages/build-sheet.js', 'src/v2/pages/build-plot.js'],
+    battle: ['src/app/46-battle-data.js', 'src/v2/pages/battle.js', 'src/v2/pages/battle-pbp.js', 'src/v2/pages/battle-target.js'],
+    gauntlet: ['src/app/38-gauntlet-data.js', 'src/v2/pages/gauntlet.js', 'src/v2/pages/test-piles.js'],
+    practice: ['src/app/63-practice-data.js', 'src/v2/pages/practice.js'],
+    compare: ['src/app/62-compare-data.js', 'src/v2/pages/compare.js', 'src/v2/pages/compare-faceoff.js'],
+    build: ['src/app/22-auto-build.js', 'src/v2/pages/build.js', 'src/v2/pages/build-sheet.js', 'src/v2/pages/build-plot.js'],
+    team: ['src/v2/pages/team-frame.js', 'src/v2/pages/matchups.js', 'src/v2/pages/sugs.js', 'src/v2/pages/record.js', 'src/v2/pages/share-slab.js', 'src/v2/pages/share-tape.js'],
     box: ['src/v2/pages/box.js'],
     events: ['src/v2/pages/events.js'],
     tournaments: ['src/v2/pages/winning.js'],
@@ -85,19 +94,29 @@ if (process.argv.includes('--v2')) {
     track: ['src/v2/pages/track.js'],
     natures: ['src/v2/pages/natures.js'],
     speed: ['src/v2/pages/speed.js'],
-    types: ['src/v2/pages/types.js'],
+    types: ['src/app/20-types-data.js', 'src/v2/pages/types.js'],
     meta: ['src/v2/pages/meta.js'],
     usage: ['src/v2/pages/usage.js'],
     sets: ['src/v2/pages/sets.js'],
     pokemon: ['src/v2/pages/pokemon.js'],
-    method: ['src/v2/pages/method.js'],
+    method: ['src/app/63-method-data.js', 'src/v2/pages/method.js'],
     about: ['src/v2/pages/about.js'],
-    feedback: ['src/v2/pages/feedback.js']
+    feedback: ['src/app/53-feedback-data.js', 'src/v2/pages/feedback.js'],
+    'info-text': ['src/data/info-text.js']
   };
   const splitSet = SPLIT_ROUTES ? new Set(Object.values(ROUTE_CHUNKS).flat()) : null;
-  const logicSrc = L.map((f, i) => { let s = rd(f); if (SPLIT_ROUTES && i === 0) s = s.replace(/^\(function\(\)\{\r?\n?/, ''); return s; }).join('\n');
-  const mainScripts = P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js')) && !(splitSet && splitSet.has(f)));
-  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + logicSrc + '\n' + mainScripts.map(rd).join('\n') + '\nV2.draw();' + (L.length && !SPLIT_ROUTES ? '\n})();' : '');
+  const mainLogic = L.filter(f => !(PUBLIC_DEAD && PUBLIC_DEAD.has(f)) && !(splitSet && splitSet.has(f)));
+  const logicSrc = mainLogic.map((f, i) => { let s = rd(f); if (SPLIT_ROUTES && i === 0) s = s.replace(/^\(function\(\)\{\r?\n?/, ''); return s; }).join('\n');
+  const mainScripts = P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js')) && !(PUBLIC_DEAD && PUBLIC_DEAD.has(f)) && !(splitSet && splitSet.has(f)));
+  const mainData = P.data.filter(f => !(splitSet && splitSet.has(f))).map(f => {
+    let s = rd(f);
+    /* Job 65: public --split --split-routes always ships /data/results.json and /data/perf.json; drop the stale baked-in fallbacks (use undefined, not null, since typeof null === 'object'). */
+    if (PUBLIC && SPLIT_ROUTES && process.argv.includes('--split') && f.endsWith('data.js')) {
+      s = s.replace(/^const RESULTS=.*;$/m, 'const RESULTS=undefined;').replace(/^const PERF_RAW=.*;$/m, 'const PERF_RAW=undefined;');
+    }
+    return asJsonParse(s);
+  }).join('\n');
+  const js = mainData + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + logicSrc + '\n' + mainScripts.map(rd).join('\n') + (PUBLIC_DEAD ? '\nV2.OWN=false;' : '') + '\nV2.draw();' + (L.length && !SPLIT_ROUTES ? '\n})();' : '');
   // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg).replace(/</g, '\\u003c')};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
   // --one-art-size (Nov 17): Claude-hosted builds (Preview, live artifact) use the 384px sprites only: an artifact holds at most 511 files,
@@ -148,22 +167,24 @@ if (process.argv.includes('--v2')) {
   let esb = null;
   if (!process.argv.includes('--keep-comments')) { try { esb = (await import('node:module')).createRequire(import.meta.url)('esbuild'); } catch (e) { console.log('v2: esbuild not installed, scripts ship unminified'); } }
   let jsOut = js, jsMap = null, cssOut = css;
+  const esbOpts = {loader: 'js', minify: true, target: 'es2020', drop: ['debugger'], charset: 'utf8', legalComments: 'none'};
   if (esb) {
     if (PUBLIC) {
-      const r = esb.transformSync(js, {loader: 'js', minify: true, charset: 'utf8', legalComments: 'none', sourcemap: SPLIT ? 'external' : false, sourcefile: 'v2.src.js'});
+      const r = esb.transformSync(js, {...esbOpts, sourcemap: SPLIT ? 'external' : false, sourcefile: 'v2.src.js'});
       jsOut = r.code; jsMap = r.map || null;
       cssOut = esb.transformSync(css, {loader: 'css', minify: true, charset: 'utf8', legalComments: 'none'}).code;
     } else {
       jsOut = esb.transformSync(js, {loader: 'js', minifyWhitespace: true, charset: 'utf8', legalComments: 'none'}).code;
     }
   }
-  const routeManifest = {}, routeDeps = {};
+  const routeManifest = {}, routeDeps = {}, routeRaw = {};
   if (SPLIT_ROUTES) {
     fs.mkdirSync(dir + 'dist/routes', {recursive: true});
     for (const [rk, files] of Object.entries(ROUTE_CHUNKS)) {
-      const raw = files.filter(f => fs.existsSync(dir + f)).map(rd).join('\n');
+      const raw = files.filter(f => fs.existsSync(dir + f)).map(f => /^src\/data\/.*\.js$/.test(f) ? asJsonParse(rd(f)) : rd(f)).join('\n');
       if (!raw) continue;
-      const code = esb ? esb.transformSync(raw, {loader: 'js', minify: true, charset: 'utf8', legalComments: 'none'}).code : raw;
+      routeRaw[rk] = raw;
+      const code = esb ? esb.transformSync(raw, esbOpts).code : raw;
       const fn = `${rk}.js`;
       fs.writeFileSync(dir + 'dist/routes/' + fn, code);
       routeManifest[rk] = `/routes/${fn}?v=${hash(code)}`; /* from the site root: /pokemon/x would look in /pokemon/routes/ (Nov 25) */
@@ -171,13 +192,21 @@ if (process.argv.includes('--v2')) {
     /* speed review (Nov 26): a page's file can call helpers that live in another page's file (Events draws Winning Teams' cards, This
        Week draws Events' tickets, "Set as Opponent" needs Battle's, Build's "Compare" needs Compare's: 9 crashes when a page was opened
        cold, experiments/split-routes-cross-test.mjs). Worked out here from the code itself, never by hand: for each page file, the other
-       page files whose V2.<name> it uses and the main script doesn't define. The page loads them with it (shell.js V2.loadRoute). */
+       page files whose V2.<name> or top-level function it uses and the main script doesn't define. The page loads them with it (shell.js V2.loadRoute). */
     const defs = s => new Set([...s.matchAll(/\bV2\.([A-Za-z_$][\w$]*)\s*=(?!=)/g)].map(m => m[1])), uses = s => new Set([...s.matchAll(/\bV2\.([A-Za-z_$][\w$]*)/g)].map(m => m[1]));
-    const mainDefs = defs(jsOut), chunkSrc = Object.fromEntries(Object.keys(routeManifest).map(rk => [rk, fs.readFileSync(dir + 'dist/routes/' + rk + '.js', 'utf8')]));
-    const owner = {}; for (const [rk, s] of Object.entries(chunkSrc)) for (const n of defs(s)) if (!mainDefs.has(n)) (owner[n] = owner[n] || new Set()).add(rk);
-    for (const [rk, s] of Object.entries(chunkSrc)) { const own = defs(s), need = new Set();
+    const fnDefs = s => new Set([...s.matchAll(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/gm)].map(m => m[1]));
+    const mainDefs = defs(jsOut), mainFnDefs = fnDefs(js), chunkSrc = Object.fromEntries(Object.keys(routeManifest).map(rk => [rk, fs.readFileSync(dir + 'dist/routes/' + rk + '.js', 'utf8')]));
+    const owner = {}, fnOwner = {};
+    for (const [rk, s] of Object.entries(chunkSrc)) {
+      for (const n of defs(s)) if (!mainDefs.has(n)) (owner[n] = owner[n] || new Set()).add(rk);
+      for (const n of fnDefs(routeRaw[rk])) if (!mainFnDefs.has(n)) (fnOwner[n] = fnOwner[n] || new Set()).add(rk);
+    }
+    for (const [rk, s] of Object.entries(chunkSrc)) { const own = defs(s), ownFn = fnDefs(routeRaw[rk]), need = new Set();
       const soft = n => s.includes('V2.' + n + '&&') || s.includes('V2.' + n + '?'); /* only checked for (V2.FB && …, V2.buildHits ? …): optional, not a reason to load another page's file first */
       for (const n of uses(s)) if (!mainDefs.has(n) && !own.has(n) && owner[n] && !soft(n)) for (const o of owner[n]) if (o !== rk) need.add(o);
+      for (const [n, owners] of Object.entries(fnOwner)) if (!ownFn.has(n) && new RegExp(`(?<!\\.)\\b${n}\\s*\\(`).test(routeRaw[rk])) {
+        for (const o of owners) if (o !== rk && !routeRaw[rk].includes(`V2.needRoute('${o}'`) && !routeRaw[rk].includes(`V2.needRoute("${o}"`)) need.add(o);
+      }
       if (need.size) routeDeps[rk] = [...need].sort(); }
   }
   let pubTag = '', seoRows = [], pokemonLd = null;

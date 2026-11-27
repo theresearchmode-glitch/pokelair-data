@@ -28,7 +28,8 @@ V2.isMoveLines = (n, M) => { const t = M.t || 'normal', f = M.f || '', L = [];
   if (f.includes('c')) L.push('Makes contact (Rocky Helmet and Rough Skin hurt the user)');
   return L.slice(0, 4); };
 V2.infoUse = (k, n) => { const I = typeof META === 'object' && META.info; if (!I || !I[k]) return null; const e = I[k][n]; return {N: I.N, src: I.source, period: I.period, t: e ? e[0] : 0, u: e ? e[1] : [], nu: e ? (e[2] != null ? e[2] : e[1].length) : 0}; };
-V2.openInfo = (kind, n) => kind === 'mv' ? V2.openMoveSheet(n) : kind === 'ab' ? V2.openAbilitySheet(n) : kind === 'it' ? V2.openItemSheet(n) : kind === 'nt' ? V2.openNatureSheet(n) : undefined;
+V2.openInfo = (kind, n) => { if (typeof INFO_TEXT !== 'object' && window.__NP_ROUTES && window.__NP_ROUTES['info-text']) { V2.needRoute('info-text', () => V2.openInfo(kind, n)); return; }
+  return kind === 'mv' ? V2.openMoveSheet(n) : kind === 'ab' ? V2.openAbilitySheet(n) : kind === 'it' ? V2.openItemSheet(n) : kind === 'nt' ? V2.openNatureSheet(n) : undefined; };
 // the parts every kind shares (HANDOFF "The sheet, top to bottom")
 V2.isFmt = x => x.toLocaleString('en-US');
 V2.isH = (t, s) => `<div class="is-h"><h3 class="u">${V2.esc(t)}</h3>${s ? `<span>${V2.esc(s)}</span>` : ''}</div>`;
@@ -101,7 +102,7 @@ V2.openAbilitySheet = n => { const E = V2.esc, txt = (typeof INFO_TEXT === 'obje
   const links = `<div class="is-sec is-links">${V2.kLink('Winning Teams With It', {href: '#tournaments', 'data-v2close': '', 'data-v2term': 'ability', 'data-v2termv': n})}</div>`;
   V2.sheet(`<div class="is2 kd-ability">${V2.isTab('ability', n, '<span>Ability</span><span class="is-tof u">TRAIT ON FILE</span>', V2.isShare(U), V2.IS_FP, V2.isPhoto(users))}<p class="is-lead">${E(V2.IS_LEAD.ab[n] || txt)}</p>${V2.isStats(stats)}${V2.isLines(V2.IS_HAND.ab[n] || [])}${V2.isUsers(U, users)}${V2.isMore(has, users, 'can have it')}${links}${V2.isCredit('Ability')}</div>`, {label: n}); V2.isFit(); };
 // an Ability name anywhere: a blue word (the site's "blue words are buttons") that opens its sheet
-V2.kAbil = n => n && typeof INFO_TEXT === 'object' && INFO_TEXT.ab[n] ? `<button type="button" class="is-w" data-v2info="ab" data-v2infon="${V2.esc(n)}" aria-haspopup="dialog">${V2.esc(n)}</button>` : V2.esc(n || '');
+V2.kAbil = n => n && (typeof INFO_TEXT === 'object' ? INFO_TEXT.ab[n] : typeof ABIL === 'object' && ABIL[n]) ? `<button type="button" class="is-w" data-v2info="ab" data-v2infon="${V2.esc(n)}" aria-haspopup="dialog">${V2.esc(n)}</button>` : V2.esc(n || '');
 // the ITEM sheet, "the evidence tag" (approved round 3): a manila tag with a punched hole, a string and a dashed tear line, a red EVIDENCE
 // stamp (hidden under 700 wide); manila with dark ink in both themes. Items not in Pokémon Champions (HANDOFF) get no sheet.
 V2.IS_NOT_IN = ['Safety Goggles', 'Covert Cloak', 'Clear Amulet', 'Loaded Dice', 'Choice Band', 'Choice Specs', 'Assault Vest'];
@@ -121,7 +122,7 @@ V2.openItemSheet = n => { const E = V2.esc, txt = (typeof INFO_TEXT === 'object'
   V2.sheet(`<div class="is2 kd-item">${tab}<p class="is-lead">${E(V2.IS_LEAD.it[n] || txt)}</p>${V2.isStats(stats)}${V2.isLines(V2.IS_HAND.it[n] || [])}${V2.isUsers(U, users)}${links}${V2.isCredit('Item')}</div>`, {label: n}); V2.isFit(); };
 // an item name anywhere: a blue word that opens its sheet (no button for 'No item' or an item without a sheet); a Mega letter stays with its name
 V2.kItem = n => { const t = V2.keepForm(V2.esc(n || '')).replace(/ (\S{1,2})$/, '\u00a0$1');
-  return n && typeof INFO_TEXT === 'object' && INFO_TEXT.it[n] && !V2.IS_NOT_IN.includes(n) ? `<button type="button" class="is-w" data-v2info="it" data-v2infon="${V2.esc(n)}" aria-haspopup="dialog">${t}</button>` : t; };
+  return n && (typeof INFO_TEXT === 'object' ? INFO_TEXT.it[n] : typeof ITEM_IMG === 'object' && ITEM_IMG[n]) && !V2.IS_NOT_IN.includes(n) ? `<button type="button" class="is-w" data-v2info="it" data-v2infon="${V2.esc(n)}" aria-haspopup="dialog">${t}</button>` : t; };
 // the NATURE sheet, "the psych profile" (Dossier step 3; Sim approved the design Nov 23, 4:38 PM, and the word "Nature" at 5:56 PM, with one line
 // that Pokémon Champions calls it a Stat Alignment; docs/mockups/sheet-pics-natures-nov23/HANDOFF.md section 2): a clipboard (cream ruled paper,
 // a metal clip, a margin line and a pencil underline in the raised stat's colour, dark ink in both themes), the picture ▲ raised over ▼ lowered,
