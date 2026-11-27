@@ -350,7 +350,7 @@ if (process.argv.includes('--v2')) {
           Object.assign(PRE, res.pre); Object.assign(SCR, res.scr); Object.assign(PK_SCR, res.pk);
           console.log(`public: static words for ${Object.values(PRE).filter(Boolean).length} pages (home: ${(String(PRE.home || '').match(/<h1>([^<]*)/) || [])[1] || 'none'})${SPLIT ? `; first screens: home=${SCR.home ? 'yes' : 'no'}, ${Object.values(SCR).filter(Boolean).length - (SCR.home ? 1 : 0)} tools, ${Object.values(PK_SCR).filter(Boolean).length} Pokémon` : ''}`);
         } catch (e) { console.log('public: static words skipped (' + String(e.message).slice(0, 80) + ')'); } finally { await b.close(); if (srv) srv.close(); } } } }
-  const addPre = (html, key) => PRE[key] ? html.replace('<main class="np-main" id="main">', m => m + PRE[key]) : html;
+  const addPre = (html, key) => PRE[key] ? html.replace('<main class="np-main" id="main">', m => m + (/<h1\b/i.test(html.replace(/<script[\s\S]*?<\/script>/gi, '')) ? PRE[key].replace(/<h1\b/gi, '<h2').replace(/<\/h1>/gi, '</h2>') : PRE[key])) : html;
   /* Public site, Nov 25 (Sim: quiet launch Dec 2-3; Kip job 31: one page per Pokémon is the fastest Google win).
      1. The page's own files load from the site root: on a two-level address (/pokemon/garchomp) a relative "v2.js" asked for
         /pokemon/v2.js and got the page back ("This page didn't load"). Done after the static first screen, which opens the file locally.

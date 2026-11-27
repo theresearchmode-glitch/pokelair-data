@@ -448,7 +448,8 @@ V2.preScreen = (route, mon) => {
       const ty = (V2.byName && V2.byName.get(p.n) && V2.byName.get(p.n).t) || p.t || [];
       const c1 = V2.TYPES.includes(ty[0]) ? ty[0] : 'Normal', c2 = V2.TYPES.includes(ty[1]) ? ty[1] : c1;
       let top = V2.pkTop(p).replace('<ul class="k-facts">', '<ul class="k-facts pk-hfx">').replace('<img class="k-art"', '<img class="k-art" fetchpriority="high"');
-      return `<div class="ra pk pkf" data-np-pre="pokemon" style="--pk-c1:var(--ty-${c1});--pk-c2:var(--ty-${c2})"><nav class="pk-trail" aria-label="You are here"><a href="/pokemon">Pokémon A to Z</a><span aria-hidden="true">›</span><span aria-current="page">${E(V2.disp(p.n))}</span></nav><div class="pk-hd">${V2.kHead({kicker: `CASE FILE${dex ? ' #' + dex : ''} · POKÉMON`, h1Html: `The file on <em class="pk-nm">${V2.nameHtml(V2.disp(p.n))}.</em>`, lead}).replace('<h1 class="k-h1 u">', '<h1 class="k-h1 u" id="pk-name">')}</div>${top}</div>`;
+      const pkOut = `<div class="ra pk pkf" data-np-pre="pokemon" style="--pk-c1:var(--ty-${c1});--pk-c2:var(--ty-${c2})"><nav class="pk-trail" aria-label="You are here"><a href="/pokemon">Pokémon A to Z</a><span aria-hidden="true">›</span><span aria-current="page">${E(V2.disp(p.n))}</span></nav><div class="pk-hd">${V2.kHead({kicker: `CASE FILE${dex ? ' #' + dex : ''} · POKÉMON`, h1Html: `The file on <em class="pk-nm">${V2.nameHtml(V2.disp(p.n))}.</em>`, lead}).replace('<h1 class="k-h1 u">', '<h1 class="k-h1 u" id="pk-name">')}</div>${top}</div>`;
+      return V2.pubLinks ? V2.pubLinks(pkOut) : pkOut;
     }
     let raw = '';
     if (route === 'home') raw = V2.f3Page ? V2.f3Page() : '';
@@ -470,7 +471,8 @@ V2.preScreen = (route, mon) => {
       const h1 = box.querySelector('h1');
       if (h1) { const d = document.createElement('div'); for (const a of [...h1.attributes]) d.setAttribute(a.name, a.value); d.setAttribute('role', 'presentation'); d.innerHTML = h1.innerHTML; h1.replaceWith(d); }
     }
-    return box.innerHTML.length <= 45000 ? box.innerHTML : '';
+    const outHtml = box.innerHTML.length <= 45000 ? box.innerHTML : '';
+    return outHtml && V2.pubLinks ? V2.pubLinks(outHtml) : outHtml;
   } catch (e) { return ''; }
 };
 V2.preBlock = (route, opt) => {
