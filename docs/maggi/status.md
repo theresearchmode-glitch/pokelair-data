@@ -13,3 +13,4 @@ M6 | started | alt/maggi-m6-review - | independent review of origin/alt/helper-d
 M6 | done | alt/maggi-m6-review b10c9dfb | reviewed helper-dec2patch (fc49e36d) vs news 877 + M4: 0 blockers, 1 should (add done predicate on data.js ABIL rows), 2 minor; apply-dec2-patch-test 29/29 + md-roster-step --force-patch pass | Fri Nov 27 06:34:44 AM EST 2026
 M7 | started | alt/maggi-m7-dec2fix - | cross-checking both Dec 2 patch scripts and adding data.js ABIL done-predicates + fail-first test | Fri Nov 27 06:37:19 AM EST 2026
 M7 | done | alt/maggi-m7-dec2fix a3d7622b | cross-checked both scripts (helper wins, nothing wrong), added data.js ABIL done-predicates + fail-first check 8; all 30 patch-test + rules-fixes (real+Dec3) + md-roster-step-test + run.mjs pass | Fri Nov 27 06:45:14 AM EST 2026
+M8 | started | alt/maggi-m8-wrapper-test - | writing experiments/host-wrapper-test.mjs + CI wiring + fail-before/pass-after proof | Fri Nov 27 06:47:55 AM EST 2026
