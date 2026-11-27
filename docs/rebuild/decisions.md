@@ -2927,3 +2927,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:36 AM: Kip's speed chain merged into design6 (978d8213) via gate: GitHub 15/15 on cd798dff, merge-check ALL PASSED.
 - 10:38 AM: Pushed main 59d0da27 (design6 0ccfa209: podium stacking + podium-cover-test); merge-check main ALL PASSED.
 - 10:52 AM: M7 GitHub run failed only v2-overlap team@360/night (footer links over logo) on its old base 5d111577; same check on design6 978d8213 locally: 0 findings 3/3 -> treated as flake; reran failed job; gate on green.
+- 10:53 AM: Sim checked live v161 on device: podium head over the tile + tapping a Ratings/Battle Pokemon opens its info: both good (Sim: 'both are good i checked rn').
