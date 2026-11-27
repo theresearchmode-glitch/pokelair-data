@@ -1531,6 +1531,62 @@ if (part('main2')) {
         cut: [...document.querySelectorAll('#main .f3-n b, #main .f3-n small, #main .f3-t, #main .f3-meta, #main .f3-h1')].filter(e => e.scrollWidth > e.clientWidth + 1).map(e => e.textContent.slice(0, 16))}), {night});
       if (!r.hero || r.sw > 0 || r.cut.length || r.errs) bad.push(`${w}${night ? ' night' : ''}: ${JSON.stringify(r)}`); }
     ok(!bad.length, `F3-3 (Job DD): Final 3's hero at 320-2560, day and night: no sideways scroll, nothing cut, no page error (${bad.slice(0, 3).join(' | ') || 'all good'})`); }
+  // F3-4 (M2 #1): after Dec 2 02:00 UTC while the data is still Reg M-C, a winner whose event name has no "(Reg M-C)" is still labelled "The last Reg M-C winning team"
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const on = Date.now; Date.now = () => Date.parse('2026-12-02T03:00:00Z'); V2._f3 = null;
+      try { const D = V2.f3Data(), h = V2.f3Page(), m = h.match(/<h2 class="f3-meta"[^>]*>([^<]+)/);
+        return {reg: D && D.reg, evReg: D && D.evReg, old: !!(D && D.old), meta: m ? m[1] : ''}; }
+      finally { Date.now = on; V2._f3 = null; } })()`));
+    ok(r.reg === 'M-D' && r.evReg === 'M-C' && r.old && r.meta.startsWith('The last Reg M-C winning team · ') && !r.errs,
+      `F3-4 (M2 #1): after Dec 2 02:00 UTC with Reg M-C data, evReg falls back to regInfo().id and the receipt reads "The last Reg M-C winning team" (${JSON.stringify(r)})`); }
+  // F3-5 (M2 #2): receipt bar links use "#pokemon=<name>" on the Claude build and "/pokemon/<slug>" only on the public build
+  { const r = await f3(1440, 900, () => { const hrefs = [...document.querySelectorAll('#main .f3-bar')].map(a => a.getAttribute('href') || '');
+      const check = window.__ev(`(() => { const o = window.__NP_PUBLIC; try { delete window.__NP_PUBLIC; const cl = V2.f3Link('Charizard-Mega-Y'); window.__NP_PUBLIC = 1; const pub = V2.f3Link('Charizard-Mega-Y'); return {cl, pub}; } finally { if (o === undefined) delete window.__NP_PUBLIC; else window.__NP_PUBLIC = o; } })()`);
+      return {hrefs, ...check}; });
+    ok(r.hrefs.length === 6 && r.hrefs.every(h => h.startsWith('#pokemon=')) && r.cl === '#pokemon=Charizard-Mega-Y' && r.pub === '/pokemon/charizard-mega-y' && !r.errs,
+      `F3-5 (M2 #2): V2.f3Link uses "#pokemon=..." on the Claude build and "/pokemon/<slug>" only with window.__NP_PUBLIC (${JSON.stringify(r)})`); }
+  // F3-6 (M2 #3): when RES is null or RES.teams is 0, the lead omits "against 0 real tournament teams"
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const o = RES, read = () => { const m = V2.f3Words(V2.f3Data()).html.match(/<p class="k-lead f3-lead">([\\s\\S]*?)<\\/p>/); return m ? m[1].replace(/<[^>]+>/g, '') : ''; };
+      try { RES = null; const n0 = read(); RES = {teams: 0}; const z0 = read(); return {n0, z0}; } finally { RES = o; } })()`));
+    ok(r.n0.includes('out of 100') && !/against 0|0 real tournament/.test(r.n0) && r.z0.includes('out of 100') && !/against 0|0 real tournament/.test(r.z0) && !r.errs,
+      `F3-6 (M2 #3): when RES is null or teams is 0, the lead omits "against 0 real tournament teams" (${JSON.stringify(r)})`); }
+  // F3-7 (M2 #4): V2.f3Rate returns null for V2.unrated(p) during a new regulation's first 28 days (bar shows "–" and "not rated")
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const P = META.perf, o1 = META.reg, o2 = P && P.reg, on = Date.now;
+      META.reg = {id: 'M-D', since: '2026-12-02', now: null}; if (P) P.reg = META.reg; Date.now = () => Date.parse('2026-12-03T12:00:00Z');
+      try { const un = ROSTER.find(q => { const x = ratings().get(q.n); return x && !x.tc; }), rd = ROSTER.find(q => { const x = ratings().get(q.n); return x && x.tc; });
+        return {unMon: un && un.n, isUn: !!(un && V2.unrated(un)), unRate: un ? V2.f3Rate(un.n) : 'none', rdMon: rd && rd.n, rdRate: rd ? V2.f3Rate(rd.n) : null}; }
+      finally { META.reg = o1; if (P) P.reg = o2; Date.now = on; } })()`));
+    ok(r.isUn && r.unRate === null && typeof r.rdRate === 'number' && !r.errs,
+      `F3-7 (M2 #4): V2.f3Rate returns null for V2.unrated(p) while keeping numeric ratings for rated Pokémon (${JSON.stringify(r)})`); }
+  // F3-8 (M3): Final 3 hero contrast (day and night): slogan, Reg M-D line, lead, receipt text and bar numbers meet WCAG thresholds
+  for (const night of [false, true]) {
+    const r = await f3(1440, 900, () => {
+      const rgb = s => (s.match(/[\d.]+/g) || []).map(Number);
+      const L = c => { const [R, G, B] = c.slice(0, 3).map(x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }); return .2126 * R + .7152 * G + .0722 * B; };
+      const cr = (a, b) => { const x = L(a), y = L(b); return +((Math.max(x, y) + .05) / (Math.min(x, y) + .05)).toFixed(2); };
+      const bgOf = e => { for (let a = e; a; a = a.parentElement) { const c = rgb(getComputedStyle(a).backgroundColor); if (c.length >= 3 && (c.length === 3 || c[3] > .5)) return c; } return [255, 255, 255]; };
+      const fg = s => { const e = document.querySelector('#main ' + s); return e ? rgb(getComputedStyle(e).color) : null; };
+      const pageBg = bgOf(document.querySelector('#main .f3-hero'));
+      const paperBg = rgb(getComputedStyle(document.querySelector('#main .f3-paper')).backgroundColor);
+      const bars = [...document.querySelectorAll('#main .f3-bar')].map(a => cr(rgb(getComputedStyle(a.querySelector('.f3-r')).color), rgb(getComputedStyle(a).backgroundColor)));
+      return {sl: cr(fg('.f3-sl'), pageBg), em: cr(fg('.f3-sl em'), pageBg), h1s: cr(fg('.f3-h1s'), pageBg), lead: cr(fg('.f3-lead'), pageBg),
+        meta: cr(fg('.f3-meta'), paperBg), big: cr(fg('.f3-big'), paperBg), barMin: Math.min(...bars)}; }, {night});
+    ok(r.sl >= 4.5 && r.em >= 3 && r.h1s >= 4.5 && r.lead >= 4.5 && r.meta >= 4.5 && r.big >= 3 && r.barMin >= 3 && !r.errs,
+      `F3-8 (M3, ${night ? 'night' : 'day'}): Final 3 hero contrast meets WCAG (sl ${r.sl}, em ${r.em}, h1s ${r.h1s}, lead ${r.lead}, meta ${r.meta}, big ${r.big}, barMin ${r.barMin})`); }
+  // F3-9 (M3): short-window fold check for BOTH start buttons (Score My Team + Build Me a Team) at 1000x650 and 393x659
+  { const bad = []; for (const [w, h] of [[1000, 650], [393, 659]]) {
+      const r = await f3(w, h, () => { const g1 = document.querySelector('#main .f3-acts .k-go'), g2 = document.querySelector('#main .f3-acts .k-btn'), bar = document.querySelector('.np-bar');
+        const fold = innerHeight - (bar && getComputedStyle(bar).position === 'fixed' ? bar.offsetHeight : 0);
+        return {b1: g1 ? Math.round(g1.getBoundingClientRect().bottom) : null, b2: g2 ? Math.round(g2.getBoundingClientRect().bottom) : null, fold, sw: document.documentElement.scrollWidth - document.documentElement.clientWidth}; });
+      if (r.b1 == null || r.b1 > r.fold || r.b2 == null || r.b2 > r.fold || r.sw > 0 || r.errs) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); }
+    ok(!bad.length, `F3-9 (M3): both start buttons (Score My Team + Build Me a Team) sit above the fold with no sideways scroll at 1000x650 and 393x659 (${bad.join(' | ') || 'all good'})`); }
+  // F3-10 (M3): V2._f3 cache invalidates across regulation change / Dec 2 02:00 UTC without manual reset, and unused V2.f3Seo is gone
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const on = Date.now;
+      try { Date.now = () => Date.parse('2026-12-01T12:00:00Z'); V2._f3 = null; const before = V2.f3Data();
+        Date.now = () => Date.parse('2026-12-02T03:00:00Z'); const after = V2.f3Data();
+        return {bReg: before && before.reg, bOld: !!(before && before.old), aReg: after && after.reg, aOld: !!(after && after.old), seo: typeof V2.f3Seo}; }
+      finally { Date.now = on; V2._f3 = null; } })()`));
+    ok(r.bReg === 'M-C' && !r.bOld && r.aReg === 'M-D' && r.aOld && r.seo === 'undefined' && !r.errs,
+      `F3-10 (M3): V2._f3 cache key includes regulation / Dec 2 rollover (no stale cache) and unused V2.f3Seo is removed (${JSON.stringify(r)})`); }
 }
 // ---------- Home, The Stampede: the hero band (Nov 18; app/src/v2/pages/stampede-hero.js, css/sd-hero.css, sd-shared.css) ----------
 { const hero = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: o.rm || "no-preference"}); const q = await ctx.newPage();

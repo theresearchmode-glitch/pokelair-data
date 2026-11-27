@@ -85,7 +85,7 @@ t('HOME-06', 'Start buttons: "Score My Team" first and "Build Me a Team" second,
   const r = await homePage(); let b = await r.ui.homeStartButtons();
   ok(b.join('|') === (NEW ? 'Score My Team|Build Me a Team|Battle' /* Sim, Nov 14 naming */ : 'Score my team|Build a team|Plan a match'), 'with a team buttons are ' + b.join('|'));
   await r.ui.tapText('Score my team'); ok(await r.ui.current() === 'report', 'Score my team did not open My Team'); await r.close();
-  const e = await aopen({team: []}); b = await e.ui.homeStartButtons(); ok(NEW ? b[0] === 'Score My Team' && b[1] === 'Build Me a Team' : b[0] === (NEW ? 'Build Me a Team' : 'Build me a team') && b.includes('Score my team') && b.includes('Plan a match'), 'empty team buttons are ' + b.join('|'));
+  const e = await aopen({team: []}); b = await e.ui.homeStartButtons(); ok(NEW ? b.join('|') === 'Score My Team|Build Me a Team|Battle' : b[0] === (NEW ? 'Build Me a Team' : 'Build me a team') && b.includes('Score my team') && b.includes('Plan a match'), 'empty team buttons are ' + b.join('|'));
   await e.ui.tapText((NEW ? 'Build Me a Team' : 'Build me a team')); ok(await e.ui.current() === 'auto', (NEW ? 'Build Me a Team did not open Build' : 'Build me a team did not open Build')); await e.close(); });
 
 t('HOME-07', '"Import from Showdown" opens My Team with the Import box ready', async () => {
