@@ -1,2 +1,2 @@
 8673
-gate batch alt/kip75-maggi13 6495dbd6 (Kip 74/75/76, Maggi M13, audit main-only, runbook) into design6
+gate batch alt/kip75-maggi13 6495dbd6 into design6 (waits on GitHub run 46037392840)
