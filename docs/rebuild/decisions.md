@@ -2929,3 +2929,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:52 AM: M7 GitHub run failed only v2-overlap team@360/night (footer links over logo) on its old base 5d111577; same check on design6 978d8213 locally: 0 findings 3/3 -> treated as flake; reran failed job; gate on green.
 - 10:53 AM: Sim checked live v161 on device: podium head over the tile + tapping a Ratings/Battle Pokemon opens its info: both good (Sim: 'both are good i checked rn').
 - 11:08 AM: Sim: use Kip and Maggi until 4 PM (then HH + Sim only). Queued Kip 74 (Dec 2 dry run) + 75 (Data as of on /data failure); Maggi M13 (speed chain review as merged) + M14 (v2-overlap flake). Their stop moved to fifteen minutes before four.
+- 11:27 AM: Maggi M7 (apply-dec2-patch ABIL done-predicates) merged into design6 eab885dd after GitHub rerun green + merge-check ALL PASSED.
