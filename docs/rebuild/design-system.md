@@ -1260,8 +1260,8 @@ Generated from app/src/v2/css/tokens.css: 769 tokens (766 by day, 220 changed by
 | --page-wash | `none` | `linear-gradient(180deg,#0C0C14 0,#12121C 280px,#191928 450px,#14141F 620px,#12121B 100%)` |  |
 | --scrim | `rgba(23,22,26,.28)` | `rgba(6,6,12,.45)` |  |
 | --scrim-deep | `rgba(23,22,26,.55)` | `rgba(8,8,14,.82)` |  |
-| --u | `"Unbounded","Instrument Sans",system-ui,sans-serif` | same |  |
-| --b | `"Instrument Sans",system-ui,sans-serif` | same |  |
+| --u | `"Unbounded","Unbounded Fallback","Instrument Sans",system-ui,sans-serif` | same |  |
+| --b | `"Instrument Sans","Instrument Sans Fallback",system-ui,sans-serif` | same |  |
 | --plot-seal | `#C41E35` | same | 5.61 / 3.18 |
 | --unit | `.62em` | same |  |
 | --shade | `30,20,50` | same |  |

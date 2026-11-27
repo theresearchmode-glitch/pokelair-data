@@ -200,7 +200,8 @@ const patchScript = P('experiments/apply-dec2-patch.mjs');
 if (fs.existsSync(patchScript)) {
   if (WRITE) {
     /* apply-dec2-patch.mjs is a dry run unless given --write, and refuses --write before 2026-12-02T02:00Z (exit 3) unless --force */
-    const pr = spawnSync(process.execPath, [patchScript, '--write', '--root', ROOT, ...(has('force-patch') ? ['--force'] : [])], {cwd: ROOT, encoding: 'utf8'});
+    const nowArg = arg('now', null);
+    const pr = spawnSync(process.execPath, [patchScript, '--write', '--root', ROOT, ...(has('force-patch') ? ['--force'] : []), ...(nowArg ? ['--now', nowArg] : [])], {cwd: ROOT, encoding: 'utf8'});
     if (pr.status === 3) console.log('  8. apply-dec2-patch.mjs: NOT applied, it is before the patch time (2026-12-02T02:00Z). After that, run: node experiments/apply-dec2-patch.mjs --write (or pass --force-patch here)');
     else if (pr.status !== 0) fail(`apply-dec2-patch.mjs failed (exit ${pr.status}): ${(pr.stderr || pr.stdout || '').trim().slice(0, 300)}`);
     else console.log('  8. apply-dec2-patch.mjs: re-applied cleanly');
