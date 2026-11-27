@@ -35,7 +35,10 @@ V2.kCard = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID
   /* Sim, Nov 21 (~12:25 PM, "the numbers are on top of the pokemon sprites it looks terrible"): nothing is drawn over the art. The score sits in
      the name row on the right (Plot blue, its tier word under it); the form line ('Mega') is in the name block */
   const sc = o.score != null && o.score !== '' ? `<span class="k-sc"><b class="k-score u">${V2.esc(o.score)}</b>${o.tier ? `<small class="k-tier">${V2.esc(o.tier)}</small>` : ''}</span>` : '';
-  const inner = `${o.mine ? V2.kMine(o.mine === true ? 'Yours' : o.mine) : ''}<span class="k-plate">${id ? `<img class="k-art" src="${V2.art(id, true)}" alt="${o.alt ? V2.esc(o.alt) : ''}"${o.alt ? '' : ' loading="lazy"'} decoding="async">` : ''}<span class="k-nm"><span class="k-id"><small class="k-form" data-kmax="2">${form ? V2.esc(form) : '&nbsp;'}</small><b class="k-name u" data-kmax="5">${V2.esc(k.name)}</b>${o.fact ? `<i class="k-fact">${V2.esc(o.fact)}</i>` : ''}</span>${sc}</span></span>`;
+  const hero = o.size === 'hero', sm = id ? V2.art(id, false) : '', bg = id ? V2.art(id, true) : '';
+  const img = id ? (hero ? `<img class="k-art" src="${bg}" alt="${o.alt ? V2.esc(o.alt) : ''}"${o.alt ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async">`
+    : `<img class="k-art" src="${sm}"${sm !== bg ? ` srcset="${sm} 240w, ${bg} 384w" sizes="${o.size === 'small' ? '72px' : '(max-width: 699.98px) 84px, 120px'}"` : ''} alt="${o.alt ? V2.esc(o.alt) : ''}"${o.alt ? '' : ' loading="lazy"'} decoding="async">`) : '';
+  const inner = `${o.mine ? V2.kMine(o.mine === true ? 'Yours' : o.mine) : ''}<span class="k-plate">${img}<span class="k-nm"><span class="k-id"><small class="k-form" data-kmax="2">${form ? V2.esc(form) : '&nbsp;'}</small><b class="k-name u" data-kmax="5">${V2.esc(k.name)}</b>${o.fact ? `<i class="k-fact">${V2.esc(o.fact)}</i>` : ''}</span>${sc}</span></span>`;
   return `<${tag}${tag === 'button' ? ' type="button"' : ''} class="k-card${size}${o.sel ? ' k-sel' : ''}"${V2.TYPES.includes(t) ? ` style="--kc:var(--tyn-${t})"` : ''}${'sel' in o && tag === 'button' ? ` aria-pressed="${o.sel ? 'true' : 'false'}"` : ''}${V2.kAttrs(o.attrs)}>${inner}</${tag}>`; };
 // a row of cards: six across on desktop, 3 x 2 on phones (never 5 + 1); four or two go 2 across on phones
 V2.kRoster = cards => `<ul class="k-roster" data-n="${Math.min(6, (cards || []).length)}">${(cards || []).map(c => `<li>${c}</li>`).join('')}</ul>`;
@@ -143,3 +146,25 @@ V2.monSlug = V2.monSlug || (n => encodeURIComponent(String(n).toLowerCase()));
 V2.pubSlug = V2.pubSlug || (n => String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’'.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''));
 V2.pkFocusName = V2.pkFocusName || (() => { if (!V2.pkFocus) return; V2.pkFocus = 0; const h = document.querySelector('#pk-name'); if (h) { h.setAttribute('tabindex', '-1'); h.setAttribute('data-pgfocus', ''); h.focus({preventScroll: true}); h.addEventListener('blur', () => { h.removeAttribute('tabindex'); h.removeAttribute('data-pgfocus'); }, {once: true}); } });
 
+// ---------- "?" explainers (today's TIPS words, 36-sug-data.js): tap for a small bubble; tap outside, Escape or scrolling closes it ----------
+V2.tip = k => { const T0 = TIPS[k], T = T0 && [V2.wl(T0[0]), V2.wl(T0[1])]; return T ? `<button type="button" class="sg2-tip" data-v2tip="${k}" aria-expanded="false" aria-label="${V2.esc(/^(What|How)\b/.test(T[0]) ? T[0] : `What is ${T[0]}?`)}">?</button>` : ''; };
+V2.tipClose = () => { document.querySelectorAll('.sg2-tipop').forEach(x => x.remove()); document.querySelectorAll('[data-v2tip][aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false')); };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2tip]');
+  if (!b) { if (!(e.target.closest && e.target.closest('.sg2-tipop'))) V2.tipClose(); return; }
+  e.preventDefault(); const was = document.querySelector('.sg2-tipop'); V2.tipClose(); if (was && was.dataset.k === b.dataset.v2tip) return;
+  const T0 = TIPS[b.dataset.v2tip], T = T0 && [V2.wl(T0[0]), V2.wl(T0[1])]; if (!T) return; const p = document.createElement('div'); p.className = 'sg2-tipop'; p.dataset.k = b.dataset.v2tip; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', T[0]);
+  p.innerHTML = `<b class="u">${V2.esc(T[0])}</b><p>${V2.esc(T[1])}</p><a class="np-link" href="#method">How We Calculate ›</a>`; p.id = 'np-tipop'; p.tabIndex = -1; document.body.append(p); b.setAttribute('aria-expanded', 'true'); b.setAttribute('aria-controls', 'np-tipop');
+  // place it from the drawn 24px tile, not the 44px tap area around it (A15), so it sits where it always did
+  const q = b.getBoundingClientRect(), g = Math.max(0, (q.height - 24) / 2), r = {left: q.left + g, width: q.width - 2 * g, top: q.top + g, bottom: q.bottom - g}, w = Math.min(340, innerWidth - 32); p.style.width = w + 'px'; p.style.left = Math.max(16, Math.min(innerWidth - w - 16, r.left + r.width / 2 - w / 2)) + 'px';
+  const below = r.bottom + 8 + p.offsetHeight < innerHeight - 72; p.style.top = (below ? r.bottom + 8 : Math.max(16, r.top - 8 - p.offsetHeight)) + scrollY + 'px';
+  /* stress test (Nov 16): opened from the keyboard, focus moves into the tip so its words are read (it was never reached); Escape returns to the '?' */
+  if (e.detail === 0) p.focus({preventScroll: true}); });
+/* Tab out of the tip continues after its '?' in the page (the tip sits at the end of the page, so focus fell to <body>) */
+document.addEventListener('keydown', e => { if (e.key !== 'Tab') return; const p = document.querySelector('.sg2-tipop'); if (!p || !p.contains(document.activeElement)) return;
+  const b = document.querySelector('[data-v2tip][aria-expanded="true"]'); if (!b) return; const inside = [...p.querySelectorAll('a,button')], last = inside[inside.length - 1];
+  if (e.shiftKey && document.activeElement === p) { e.preventDefault(); V2.tipClose(); b.focus(); return; }
+  if (!e.shiftKey && document.activeElement === (last || p)) { e.preventDefault(); const all = [...document.querySelectorAll('a[href],button:not([disabled]),input,select,textarea,summary,[tabindex="0"]')].filter(x => !p.contains(x) && x.getClientRects().length);
+    const nx = all[all.indexOf(b) + 1]; V2.tipClose(); (nx || b).focus(); } });
+document.addEventListener('focusout', e => { const p = document.querySelector('.sg2-tipop'); if (!p || !p.contains(e.target)) return; setTimeout(() => { const q = document.querySelector('.sg2-tipop'), f = document.activeElement; if (!q || q.contains(f) || (f && f.matches && f.matches('[data-v2tip]'))) return; V2.tipClose(); }, 0); }); /* after the move: removing the tip itself fires focusout */
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.querySelector('.sg2-tipop')) { const b = document.querySelector('[data-v2tip][aria-expanded="true"]'); V2.tipClose(); if (b) b.focus(); } });
+addEventListener('scroll', () => { const p = document.querySelector('.sg2-tipop'); if (p && !p.contains(document.activeElement)) V2.tipClose(); }, {passive: true}); /* Nov 16 (TEST-09): a tip holding keyboard focus stays open on scroll (focusing it can scroll it into view; it is anchored to the page, so it moves with it) */

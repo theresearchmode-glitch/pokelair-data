@@ -54,6 +54,15 @@ const MEASURE = async () => {
   const cut = (q, L) => { let a = {...q}; for (const {q: B} of L) { a = {l: Math.max(a.l, B.l), r: Math.min(a.r, B.r), t: Math.max(a.t, B.t), b: Math.min(a.b, B.b)}; if (a.r - a.l <= 0 || a.b - a.t <= 0) return null; } return a; };
   const ov = (a, c) => [Math.min(a.r, c.r) - Math.max(a.l, c.l), Math.min(a.b, c.b) - Math.max(a.t, c.t)];
   const num = x => Math.round(x);
+  // pre-decode and cache all <img> alpha masks BEFORE reading any boxes so T (text) and P (pictures) are captured in the same
+  // synchronous frame; yielding on await p.decode() between T and P let a background redraw (e.g. #team Suggestions growing the page
+  // by ~306px) compare stale footer-link T boxes against the shifted footer img.np-lg P box (M14, Nov 27).
+  const AC = window.__ovlA || (window.__ovlA = {});
+  for (const p of document.body.querySelectorAll('img')) { if (!p.naturalWidth) continue;
+    const k = p.currentSrc || p.src; if (k in AC) continue;
+    AC[k] = null; try { await p.decode().catch(() => {}); const nw = p.naturalWidth, nh = p.naturalHeight, sc = Math.min(1, 128 / Math.max(nw, nh)), cw = Math.max(1, Math.round(nw * sc)), ch = Math.max(1, Math.round(nh * sc));
+      const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch; const g = cv.getContext('2d'); g.drawImage(p, 0, 0, cw, ch); const d = g.getImageData(0, 0, cw, ch).data;
+      const m = new Uint8Array(cw * ch); for (let i = 0; i < m.length; i++) m[i] = d[i * 4 + 3] > 128 ? 1 : 0; AC[k] = {cw, ch, m}; } catch (e) { AC[k] = null; } }
   // ---- text leaves and their lines
   // a fixed moment: entrance animations run to their end; a looping one (a ticker strip) stops at its start, and its text is checked
   // along the whole strip, not only the part in its window just now (every part passes through the window)
@@ -84,18 +93,14 @@ const MEASURE = async () => {
   // a sprite's box is mostly see-through, so a line counts only the part of it over the picture's SOLID pixels (alpha > 128; soft
   // shadows and glows are see-through): a 128-px alpha mask of the picture, mapped through object-fit / object-position and a mirror
   // (scaleX(-1)), sampled on a 24 x 6 grid over the line. An <svg> or an unreadable picture counts as solid over its whole box.
-  const AC = window.__ovlA || (window.__ovlA = {});
-  const solidAt = async p => { const q = R(p.getBoundingClientRect()), all = () => 1; if (p.tagName !== 'IMG' || !p.naturalWidth) return all;
-    const k = p.currentSrc || p.src; if (!(k in AC)) { AC[k] = null; try { await p.decode().catch(() => {}); const nw = p.naturalWidth, nh = p.naturalHeight, sc = Math.min(1, 128 / Math.max(nw, nh)), cw = Math.max(1, Math.round(nw * sc)), ch = Math.max(1, Math.round(nh * sc));
-        const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch; const g = cv.getContext('2d'); g.drawImage(p, 0, 0, cw, ch); const d = g.getImageData(0, 0, cw, ch).data;
-        const m = new Uint8Array(cw * ch); for (let i = 0; i < m.length; i++) m[i] = d[i * 4 + 3] > 128 ? 1 : 0; AC[k] = {cw, ch, m}; } catch (e) { AC[k] = null; } }
-    const f = AC[k]; if (!f) return all; const s = css(p), W = q.r - q.l, H = q.b - q.t, nw = p.naturalWidth, nh = p.naturalHeight;
+  const solidAt = p => { const q = R(p.getBoundingClientRect()), all = () => 1; if (p.tagName !== 'IMG' || !p.naturalWidth) return all;
+    const f = AC[p.currentSrc || p.src]; if (!f) return all; const s = css(p), W = q.r - q.l, H = q.b - q.t, nw = p.naturalWidth, nh = p.naturalHeight;
     let sx2 = W / nw, sy2 = H / nh; const fit = s.objectFit; if (fit === 'contain' || fit === 'scale-down') { sx2 = sy2 = Math.min(W / nw, H / nh); if (fit === 'scale-down') sx2 = sy2 = Math.min(1, sx2); } else if (fit === 'cover') sx2 = sy2 = Math.max(W / nw, H / nh); else if (fit === 'none') sx2 = sy2 = 1;
     const cw = nw * sx2, ch = nh * sy2, [px, py] = (s.objectPosition || '50% 50%').split(' '), off = (v, free) => /%$/.test(v) ? free * parseFloat(v) / 100 : parseFloat(v) || 0;
     const ox = q.l + off(px, W - cw), oy = q.t + off(py || '50%', H - ch), mir = /^matrix\(-/.test(s.transform);
     return (X, Y) => { let u = (X - ox) / cw; const v = (Y - oy) / ch; if (mir) u = 1 - u; if (u < 0 || u >= 1 || v < 0 || v >= 1) return 0; return f.m[Math.floor(v * f.ch) * f.cw + Math.floor(u * f.cw)]; }; };
   const P = []; for (const p of document.body.querySelectorAll('img, svg')) { if (p.parentElement.closest('svg') || hidden(p)) continue;
-    const q = cut(R(p.getBoundingClientRect()), clips(p)); if (q) P.push({p, q, fixed: fixedOf(p), at: await solidAt(p)}); }
+    const q = cut(R(p.getBoundingClientRect()), clips(p)); if (q) P.push({p, q, fixed: fixedOf(p), at: solidAt(p)}); }
   const onTop = (t, pic) => { // the text has its own backdrop or outline between itself and the box it shares with the picture
     for (let c = t.e; c && !c.contains(pic); c = c.parentElement) { const s = css(c);
       if (s.backgroundColor && !/rgba\(0, 0, 0, 0\)|transparent/.test(s.backgroundColor) || s.backgroundImage !== 'none') return true;
@@ -188,7 +193,14 @@ const openView = async (p, r, v) => { await p.evaluate(() => { location.hash = '
   await p.evaluate(r => { location.hash = '#' + r; scrollTo(0, 0); }, r); await p.waitForTimeout(1300);
   if (v) { const ok = await p.evaluate(([S, v]) => { const g = [...document.querySelectorAll(S)].filter(e => e.getClientRects().length)[v.j], x = g && g.querySelectorAll('button')[v.k];
       if (!x || x.textContent.trim().replace(/\s+/g, ' ').slice(0, 24) !== v.t) return false; x.click(); scrollTo(0, 0); return true; }, [VSEL, v]); if (!ok) return false; await p.waitForTimeout(900); }
-  await p.evaluate(() => document.fonts && document.fonts.ready); return true; };
+  await p.evaluate(() => document.fonts && document.fonts.ready);
+  await p.evaluate(() => new Promise(res => {
+    let last = document.documentElement.scrollHeight, calm = 0, t0 = performance.now();
+    const tick = () => { const h = document.documentElement.scrollHeight;
+      if (h !== last) { last = h; calm = 0; } else calm += 50;
+      if (calm >= 250 || performance.now() - t0 >= 3000) res(); else setTimeout(tick, 50); };
+    setTimeout(tick, 50);
+  })); return true; };
 let routes = process.env.ROUTES ? process.env.ROUTES.split(',') : null;
 if (!routes) { const p = await b.newPage(); await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500);
   routes = await p.evaluate(() => Object.keys(V2.pages).filter(r => r !== 'owner')); await p.close(); }

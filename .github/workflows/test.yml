@@ -624,7 +624,9 @@ jobs:
           done
           echo "bad=$bad" >> "$GITHUB_OUTPUT"
       - name: Live-data audit issue
-        if: always()
+        # main only (Nov 27): runs on claude/design6 and helper branches carry their own out/, so they opened and closed this issue
+        # in turn (5 issues and emails to Sim on Nov 27, two from branch runs). Branch runs still print the audit in the log.
+        if: always() && github.ref == 'refs/heads/main'
         uses: actions/github-script@v8
         env:
           REPORT: ${{ runner.temp }}/audits.md

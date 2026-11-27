@@ -15,8 +15,11 @@ import crypto from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const SCRIPT_REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const rootArgIdx = process.argv.indexOf('--root');
+const ROOT = path.resolve(rootArgIdx > 0 && process.argv[rootArgIdx + 1] ? process.argv[rootArgIdx + 1] : SCRIPT_REPO);
 const SCRIPT = 'experiments/apply-dec2-patch.mjs';
+const PRE_PATCH_REF = '978d8213';
 let fails = 0, passes = 0;
 const ok = (cond, msg) => { console.log((cond ? '  PASS  ' : '  FAIL  ') + msg); cond ? passes++ : fails++; };
 const sha = f => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
@@ -24,12 +27,56 @@ const sha = f => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('
 const TARGETS = ['app/src/data/data.js', 'app/src/data/info-text.js', 'app/src/data/move-acc.js', 'app/src/data/move-meta.js',
   'app/src/v2/pages/infosheet.js', 'app/test/run.mjs'];
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'dec2-patch-test-'));
+
+// Detect whether ROOT is pre-patch, fully post-patch, or half-patched using apply-dec2-patch's own done-predicates
+const probe = spawnSync(process.execPath, [path.join(ROOT, SCRIPT), '--root', ROOT], {encoding: 'utf8'});
+const probeOut = (probe.stdout || '') + (probe.stderr || '');
+const isPostPatch = probe.status === 0 && /nothing to change/.test(probeOut) && !/->/.test(probeOut);
+const isPrePatch = probe.status === 0 && /DRY RUN, 6 file\(s\) would change/.test(probeOut) && !/: already done/.test(probeOut);
+
+let prePatchFiles = null;
+if (isPostPatch) {
+  console.log(`apply-dec2-patch-test: post-patch mode detected (loading pre-patch baseline ${PRE_PATCH_REF} from git)`);
+  ok(true, '0. post-patch mode: current repo files are fully patched (apply-dec2-patch dry run: nothing to change)');
+  const gitRepo = fs.existsSync(path.join(ROOT, '.git')) ? ROOT : SCRIPT_REPO;
+  const loadFromGit = ref => {
+    const out = {};
+    for (const f of TARGETS) {
+      const g = spawnSync('git', ['-C', gitRepo, 'show', `${ref}:${f}`], {encoding: 'utf8'});
+      if (g.status !== 0) return null;
+      out[f] = g.stdout;
+    }
+    return out;
+  };
+  prePatchFiles = loadFromGit(PRE_PATCH_REF);
+  if (!prePatchFiles) {
+    spawnSync('git', ['-C', gitRepo, 'fetch', '--depth=1', 'origin', PRE_PATCH_REF], {encoding: 'utf8'});
+    prePatchFiles = loadFromGit(PRE_PATCH_REF) || loadFromGit('HEAD~1');
+  }
+  if (!prePatchFiles) {
+    ok(false, `0. post-patch mode: could not load pre-patch baseline ${PRE_PATCH_REF} (or HEAD~1) via git show`);
+    fs.rmSync(TMP, {recursive: true, force: true});
+    console.log(`apply-dec2-patch-test: ${fails} FAILED (${passes} passed)`);
+    process.exit(1);
+  }
+} else if (!isPrePatch) {
+  ok(false, `0. repo is half-patched or unexpected (exit ${probe.status}: ${probeOut.trim().split('\n').slice(-2).join(' | ')})`);
+  fs.rmSync(TMP, {recursive: true, force: true});
+  console.log(`apply-dec2-patch-test: ${fails} FAILED (${passes} passed)`);
+  process.exit(1);
+}
+
 function scratch(name) {
   const d = path.join(TMP, name);
   for (const dir of ['app/src/data', 'app/src/app']) fs.cpSync(path.join(ROOT, dir), path.join(d, dir), {recursive: true});
   for (const f of ['app/src/v2/pages/infosheet.js', 'app/test/run.mjs', SCRIPT, 'experiments/rules-fixes-test.mjs']) {
     fs.mkdirSync(path.dirname(path.join(d, f)), {recursive: true});
     fs.copyFileSync(path.join(ROOT, f), path.join(d, f));
+  }
+  if (prePatchFiles) {
+    for (const [f, content] of Object.entries(prePatchFiles)) {
+      fs.writeFileSync(path.join(d, f), content);
+    }
   }
   return d;
 }
@@ -147,6 +194,20 @@ vm.runInContext = function (code, ctx, ...rest) { orig.call(vm, 'Date.now = () =
   ok(b.status === 0 && /PASS {2}5\. data\.js ABIL/.test(b.stdout), `7. unpatched data, clock Nov 30: rules-fixes-test passes (exit ${b.status}; ${(b.stdout.match(/\d+\/\d+ passed[^\n]*/) || [''])[0]})`);
   const c = rf(PATCHED, '2026-12-03T12:00:00Z');
   ok(c.status === 0 && /PASS {2}5\. data\.js ABIL/.test(c.stdout), `7. patched data, clock Dec 3: rules-fixes-test passes (exit ${c.status}; ${(c.stdout.match(/\d+\/\d+ passed[^\n]*/) || [''])[0]})`);
+}
+// 8. regenerated data.js with Showdown's own post-Dec-2 Ability wording (different from FF_NEW/ST_NEW, still has Fire Boost + Mega Evol / substitutes):
+//    done-predicates on data.js ABIL accept it as already done instead of stopping step 8 of md-roster-step
+{
+  const d = scratch('sd-abil'), f = path.join(d, 'app/src/data/data.js');
+  const altFF = 'Gains Fire Boost if hit by a Fire move; persists when it Mega Evolves.';
+  const altST = "Moves ignore redirection and targets' substitutes.";
+  let s = fs.readFileSync(f, 'utf8');
+  s = s.replace(/"Flash Fire":"[^"]*"/, `"Flash Fire":"${altFF}"`).replace(/"Stalwart":"[^"]*"/, `"Stalwart":"${altST}"`);
+  fs.writeFileSync(f, s);
+  const r = run(d, '--write', '--force'), A = load(d);
+  ok(r.status === 0 && /ABIL Flash Fire: already done/.test(r.stdout) && /ABIL Stalwart: already done/.test(r.stdout) &&
+    A.ABIL['Flash Fire'] === altFF && A.ABIL.Stalwart === altST,
+    `8. post-patch Showdown wording in data.js ABIL is accepted as already done (exit ${r.status}${r.status ? ': ' + r.stderr.trim().split('\n').slice(-2).join(' | ') : ''})`);
 }
 
 fs.rmSync(TMP, {recursive: true, force: true});

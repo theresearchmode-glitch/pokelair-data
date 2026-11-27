@@ -20,7 +20,7 @@ if (DIR === ROOT || DIR === DIST) fail('refusing to write over ' + DIR);
 if (fs.existsSync(DIST)) for (const f of fs.readdirSync(DIST, {withFileTypes: true})) fs.rmSync(path.join(DIST, f.name), {recursive: true, force: true});
 /* Web Analytics (Sim's token, once he adds the site in Cloudflare): set CF_ANALYTICS_TOKEN; without it the page loads no analytics */
 const cfa = (process.env.CF_ANALYTICS_TOKEN || '').trim();
-const b = spawnSync(process.execPath, ['app/build.mjs', '--v2', '--split', '--split-routes', '--one-art-size', '--item-files', '--art=art/', '--public', ...(cfa ? ['--cf-analytics=' + cfa] : [])], {encoding: 'utf8'});
+const b = spawnSync(process.execPath, ['app/build.mjs', '--v2', '--split', '--split-routes', '--item-files', '--art=art/', '--public', ...(cfa ? ['--cf-analytics=' + cfa] : [])], {encoding: 'utf8'});
 if (b.status !== 0) { console.error((b.stdout || '') + (b.stderr || '')); fail('the public build failed'); }
 
 // 2. copy it, only the kinds of files a page needs
@@ -32,12 +32,16 @@ const copy = (from, to) => { for (const e of fs.readdirSync(from, {withFileTypes
   if (SKIP.has(e.name) || e.name.endsWith('.map') || !ALLOW.test(e.name)) { skipped.push(path.relative(DIST, a)); continue; }
   fs.copyFileSync(a, z); files++; } };
 copy(DIST, DIR);
-// 3. the pictures
+// 3. the pictures (both 384px art/ and 240px art-s/ for srcset/thumbnails; skip unused crowd-*.webp on Final 3 public Home)
 const ART = path.join(ROOT, 'app/src/v2/art'); fs.mkdirSync(path.join(DIR, 'art'), {recursive: true});
-for (const f of fs.readdirSync(ART)) if (/\.(webp|png)$/.test(f)) { fs.copyFileSync(path.join(ART, f), path.join(DIR, 'art', f)); files++; }
-/* the item pictures (art/items/, 166 files): the build names them as files (--item-files), not data: URIs inside v2.js (phone speed, Nov 25) */
+for (const f of fs.readdirSync(ART)) if (/\.(webp|png)$/.test(f) && !/^crowd-/.test(f)) { fs.copyFileSync(path.join(ART, f), path.join(DIR, 'art', f)); files++; }
 if (fs.existsSync(path.join(ART, 'items'))) { fs.mkdirSync(path.join(DIR, 'art/items'), {recursive: true});
   for (const f of fs.readdirSync(path.join(ART, 'items'))) if (/\.webp$/.test(f)) { fs.copyFileSync(path.join(ART, 'items', f), path.join(DIR, 'art/items', f)); files++; } }
+const ARTS = path.join(ROOT, 'app/src/v2/art-s');
+if (fs.existsSync(ARTS)) { fs.mkdirSync(path.join(DIR, 'art-s'), {recursive: true});
+  for (const f of fs.readdirSync(ARTS)) if (/\.webp$/.test(f)) { fs.copyFileSync(path.join(ARTS, f), path.join(DIR, 'art-s', f)); files++; }
+  if (fs.existsSync(path.join(ARTS, 'items'))) { fs.mkdirSync(path.join(DIR, 'art-s/items'), {recursive: true});
+    for (const f of fs.readdirSync(path.join(ARTS, 'items'))) if (/\.webp$/.test(f)) { fs.copyFileSync(path.join(ARTS, 'items', f), path.join(DIR, 'art-s/items', f)); files++; } } }
 // 4. the data
 fs.mkdirSync(path.join(DIR, 'data'), {recursive: true});
 const rd = f => { try { return JSON.parse(fs.readFileSync(path.join('out', f), 'utf8')); } catch (e) { return null; } };
