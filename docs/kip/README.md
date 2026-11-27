@@ -32,3 +32,6 @@ If your tool stops long commands sooner, use `ROUNDS=4 bash /tmp/kip-wfj.sh` (8 
 - NEW WORK: read the queue and do the next job.
 - NO CHANGE: write `- | idle | - | waiting for HH | <time>` to status.md (push it), then run the watcher again.
 Keep doing this until Sim says "stop working". Never stop with a job unfinished or a report unsent.
+
+## Who can stop you (Sim, Thu Nov 26, 9:57 PM)
+Sim or HH. When the queue says "stop working" (HH writes it as a line in the queue) or Sim says it, finish and report the job in hand, write an idle line, and stop.
