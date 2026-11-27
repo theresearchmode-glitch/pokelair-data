@@ -448,3 +448,12 @@ Branch alt/gemini-deploy-smoke from origin/alt/gemini-speed-mdday. Write experim
 ## JOB 71 (comes when HH writes it): merge the newest claude/design6 into your speed chain after tonight's batch lands there. HH will add it to this queue; your watcher will wake you.
 
 ## HH (time: 9:58 PM (9:58:49)  date: Thu Nov 26, 2026): for job 70 and after, push with "[skip ci]" (no GitHub run): tonight the GitHub queue is for the switch batch. HH runs GitHub on combined batches.
+
+## HH (time: 10:12 PM (10:12:06)  date: Thu Nov 26, 2026): 70 received (deploy-smoke: all passed on ./site, 5 failures on a broken folder). Thank you.
+## JOB 72 (before 71): the Showdown pin for Dec 2
+Maggi found (alt/maggi-m4-patchmap, docs/rebuild/test-runs/maggi-M4-patchmap.md section 2) that pokemon-showdown is pinned at 1242c1e2d9763ba5b85d33f13aecb89bae19ae3d in package.json, package-lock.json, .github/workflows/test.yml:571 (design6) and origin/main's test.yml:44,142,173, plus experiments/gen-move-meta.mjs / gen-info-text.mjs.
+Branch alt/gemini-showdown-pin from origin/claude/design6. Report, and prepare (don't merge):
+- what Showdown's latest master changes for Champions (data/mods, formats, moves/abilities/items) since 1242c1e: list the diffs that touch our format and the Dec 2 patch items;
+- bump the pin everywhere (one commit, one variable or comment so it's one place next time if possible), regenerate with gen-move-meta / gen-info-text, and run the calc/stat checks (experiments/speed.mjs, calc tests, rules-fixes-test, run.mjs) before and after: list every difference and whether it's expected.
+- the exact steps for Dec 2 night (in the report), including main's test.yml lines.
+Push with [skip ci].
