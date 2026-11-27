@@ -5,6 +5,8 @@
 //   - computed body background-color, color, font-family, font-size
 //   - computed :root color-scheme, padding-top, padding-bottom
 //   - full-page screenshot byte-for-byte PNG match (same Chromium renderer, reducedMotion: 'reduce')
+// Before each shot every image is made eager, loaded and decoded, fonts ready, two frames painted (Job NN: async-decoded sprites
+// below the fold under a drop-shadow differed by timing when art was present; 3 of 10 runs failed before, 0 of 10 after).
 // Fails on any difference.
 // Usage: node experiments/host-wrapper-test.mjs  (or PAGE=app/dist/v2.html node experiments/host-wrapper-test.mjs)
 import fs from 'node:fs';
@@ -74,6 +76,28 @@ try {
     await p.waitForTimeout(2500);
     await p.evaluate(() => document.fonts && document.fonts.ready);
     await p.waitForTimeout(300);
+    // Settle every image before the shot (Job NN, Nov 27): Home's sprites are loading="lazy" decoding="async", and a full-page
+    // screenshot grows the viewport to the whole page, so below-the-fold sprites started loading DURING the capture and were
+    // drawn (or not) by timing, which made the two shots differ by a sprite's pixels. Both shots get the same treatment:
+    // every lazy image is made eager, then we wait until every image is complete and decoded (repeating while the set changes),
+    // fonts are ready, and two frames have painted.
+    const settle = await p.evaluate(async () => {
+      const frame = () => new Promise(r => requestAnimationFrame(() => r()));
+      let rounds = 0, last = '';
+      for (; rounds < 20; rounds++) {
+        const imgs = [...document.images];
+        imgs.forEach(i => { if (i.loading === 'lazy') i.loading = 'eager'; });
+        await Promise.all(imgs.map(i => i.complete ? null : new Promise(r => { i.addEventListener('load', r, {once: true}); i.addEventListener('error', r, {once: true}); })));
+        await Promise.all(imgs.map(i => i.naturalWidth ? i.decode().catch(() => {}) : null));
+        if (document.fonts) await document.fonts.ready;
+        await frame(); await frame();
+        const now = [...document.images].map(i => (i.currentSrc || i.src) + (i.complete ? '' : '?')).join('|');
+        if (now === last && [...document.images].every(i => i.complete)) break;
+        last = now;
+      }
+      return {rounds, imgs: document.images.length, incomplete: [...document.images].filter(i => !i.complete).length};
+    });
+    if (settle.incomplete) errs.push(`images never settled: ${settle.incomplete}/${settle.imgs} incomplete after ${settle.rounds} rounds`);
     const styles = await p.evaluate(readStyles);
     const png = await p.screenshot({fullPage: true, animations: 'disabled'});
     await ctx.close();
