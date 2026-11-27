@@ -1,2 +1,2 @@
-27757
-switch rehearsal on tonight tips: merge-check main (both lists) on alt/switch-nov27 (local)
+8190
+gate.sh alt/batch8 (waits for GitHub run 45934454500, then merge-check design6, push)

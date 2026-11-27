@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 10:30 PM (10:30:21)  date: Thu Nov 26, 2026
-NOW: (10:30 PM) switch rehearsal merge-check (target main, both lists) on local alt/switch-nov27, pid in .main-running. alt/batch8 7f4b1b9a pushed (real GitHub run); gate after the helper report is read.
+Updated: time: 10:40 PM (10:40:14)  date: Thu Nov 26, 2026
+NOW: (10:42 PM) gate.sh alt/batch8 waits for GitHub (pid in .main-running). Switch rehearsal merge-check for main: ALL PASSED. Helper Job GG (Dec 2 patch script, Showdown pin).
 NOW: (Kip) 72 Showdown pin bump (prepared, not merged). (Maggi) M5 apply-dec2-patch.mjs. HH squad watcher re-armed after every update.
 NEXT: gate alt/batch8 (F3 + qcheck fixes + calc tile + preflight-skip + sweep fixes) when GitHub is green and the helper report is read.
 NEXT: Preview republish after batch8 merges; tell Sim (iPhone check in the morning); end the helper by midnight (trig_01LjNsUYs9wEtHwagBYqvYCH).
