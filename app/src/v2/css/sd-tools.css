@@ -113,14 +113,10 @@
 .sdt-hp i{display:block;height:100%}
 .sdt-hp .left{background:var(--hp-left)}
 .sdt-hp .roll{background:repeating-linear-gradient(-45deg,var(--sd-hp-roll) 0 4px,var(--sd-hp-roll2) 4px 8px)}
-.sdt-hpk{display:none}
-/* Sim, Nov 26: on the red calc tile the bar reads as HP: green = left, dark = taken, white stripes = the damage roll; a key under it */
-.sdt-grid>.sdt-dc .sdt-hp{background:var(--sd-ink);box-shadow:none}
-.sdt-grid>.sdt-dc .sdt-hp .roll{background:repeating-linear-gradient(-45deg,var(--sd-on-band) 0 4px,color-mix(in srgb,var(--sd-on-band) 35%,transparent) 4px 8px)}
-.sdt-grid>.sdt-dc .sdt-hpk{grid-area:key;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s2);margin-top:calc(var(--s2) * -1);color:var(--sd-on-band);font:700 var(--t13)/1.3 var(--b)}
-.sdt-grid>.sdt-dc .sdt-hpk i{display:inline-block;width:var(--s3);height:var(--s3);clip-path:polygon(3px 0,100% 0,calc(100% - 3px) 100%,0 100%)}
-.sdt-grid>.sdt-dc .sdt-hpk .k-left{background:var(--hp-left)}
-.sdt-grid>.sdt-dc .sdt-hpk .k-roll{margin-left:var(--s2);background:repeating-linear-gradient(-45deg,var(--sd-on-band) 0 3px,color-mix(in srgb,var(--sd-on-band) 35%,transparent) 3px 6px);outline:1px solid color-mix(in srgb,var(--sd-on-band) 60%,transparent)}
+/* Sim, Nov 26 (iPhone): the calc tile's HP bar, cleaner, like a game HP bar: a dark track (HP taken), solid green (HP surely left),
+   mint (left only on a low roll). No stripes, no key */
+.sdt-grid>.sdt-dc .sdt-hp{background:color-mix(in srgb,var(--sd-ink) 40%,transparent)}
+.sdt-grid>.sdt-dc .sdt-hp .roll{background:color-mix(in srgb,var(--hp-left) 45%,var(--sd-on-band))}
 .sdt-hpw{justify-self:end;font:400 var(--t13)/1.3 var(--b);color:var(--sd-card-ink2)}
 .sdt-hpw b{font-weight:700;color:var(--sd-card-ink)}
 .sdt-duel{display:grid;grid-template-columns:minmax(0,1fr) var(--s6) minmax(0,1fr);align-items:end}
@@ -386,7 +382,7 @@
   .sdt-grid>.sdt-dc .sdt-tx{align-self:center}
   .sdt-grid>.sdt-dc .sdt-t{font-size:var(--t34);line-height:1.05}
   .sdt-grid>.sdt-dc .sdt-d{color:var(--sd-on-band)}
-  .sdt-grid>.sdt-dc>.sdt-hit{order:0;flex:none;height:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);grid-template-areas:"duel words" "duel bar" "duel key";
+  .sdt-grid>.sdt-dc>.sdt-hit{order:0;flex:none;height:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);grid-template-areas:"duel words" "duel bar";
     align-items:end;column-gap:var(--s8);row-gap:var(--s3);margin:0}
   /* the duel: sprites break out of the band's top; the attacker runs in streaks, the chevron strikes, the defender stands in the flash */
   .sdt-grid>.sdt-dc .sdt-duel{position:relative;grid-area:duel;grid-template-columns:minmax(0,1fr) var(--s16) minmax(0,1fr);align-items:end;margin-top:calc(var(--s24) * -1)}
@@ -465,8 +461,9 @@
   .sdt-grid>.sdt-dc .sdt-t{font-size:var(--t26)}
   /* Sim, Nov 26 (iPhone): the calc tile was too tall on phones (414px at 390). The duel sits beside the move and "of X's HP" (the hit's words
      become grid items), the big number keeps the full width below, then the bar */
-  .sdt-grid>.sdt-dc>.sdt-hit{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"duel mv" "duel of" "pct pct" "bar bar" "key key";row-gap:var(--s1);column-gap:var(--s3);align-items:end}
+  .sdt-grid>.sdt-dc>.sdt-hit{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"duel mv" "duel of" "pct pct" "bar bar";row-gap:var(--s1);column-gap:var(--s3);align-items:end}
   .sdt-grid>.sdt-dc .sdt-hpw{display:contents}
+  .sdt-grid>.sdt-dc .sdt-hp{height:var(--s4);margin-block:var(--s1) var(--s2)}
   .sdt-grid>.sdt-dc .sdt-hpw>b{grid-area:mv;justify-self:start;margin:0}
   .sdt-grid>.sdt-dc .sdt-of{grid-area:of;align-self:start;margin:0}
   .sdt-grid>.sdt-dc .sdt-pct{grid-area:pct;margin-top:var(--s2)}
@@ -487,7 +484,7 @@
   .sdt-chips ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
   .sdt-chips li:last-child{grid-column:1/-1}
 }
-@media (max-width:379.98px){.sdt-grid>.sdt-dc .sdt-pct{font-size:var(--t34)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:52px}.sdt-grid>.sdt-dc>.sdt-hit{grid-template-areas:"duel mv" "pct pct" "of of" "bar bar" "key key";align-items:center}.sdt-grid>.sdt-dc .sdt-of{margin-bottom:var(--s1)}.sdt-grid>.sdt-dc .sdt-t{font-size:var(--t22)}} /* 320-379: the hit and the title stay inside the band */
+@media (max-width:379.98px){.sdt-grid>.sdt-dc .sdt-pct{font-size:var(--t34)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:52px}.sdt-grid>.sdt-dc>.sdt-hit{grid-template-areas:"duel mv" "pct pct" "of of" "bar bar";align-items:center}.sdt-grid>.sdt-dc .sdt-of{margin-bottom:var(--s1)}.sdt-grid>.sdt-dc .sdt-t{font-size:var(--t22)}} /* 320-379: the hit and the title stay inside the band */
 @media (max-width:389.98px){.sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t15)}} /* 320-389: all four card titles one step down together ("Archetypes" fits its half-width card) */
 @media (max-width:389.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:1/-1}} /* 320-389: a half-width card is too narrow for its title, Battle's two 56px sprites and Practice's 44px ones; one card per row */
 @media (max-width:699.98px){ /* Battle and Practice in half-width phone cards (Nov 26): one 56px sprite per side, clear of the VS; Practice's sprites 44px+ */

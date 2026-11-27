@@ -17,9 +17,6 @@
 // Illustrations with no figure: Battle (your first two, or the top two rated, vs the latest winner's first two). Team Preview Practice
 // shows the latest winner's six as a team preview (live), with "Pick 4". Words new to the site wait on Sim (brief: "Wording that is new").
 V2.sdtPctTxt = (lo, hi) => String(lo) === String(hi) ? `${hi}%` : `${lo}–${hi}%`;
-/* Sim, Nov 26 (iPhone): the calc tile's HP bar was hard to read; a key under it says what's left in plain words (the bar's own label stays its role="img" text) */
-V2.sdtHpKey = H => { const lo = Math.max(0, Math.floor(100 - H.hi)), hi = Math.max(0, Math.ceil(100 - H.lo)), t = hi <= 0 ? 'Knocked out' : `${V2.sdtPctTxt(lo, hi)} HP left${lo <= 0 ? ' (can KO)' : ''}`;
-  return `<span class="sdt-hpk" aria-hidden="true"><i class="k-left"></i>${t}<i class="k-roll"></i>could go either way</span>`; };
 V2.sdtPctCls = t => t.length >= 7 ? ' sdt-pct3' : t.length === 6 ? ' sdt-pct2' : '';
 V2.SDT_TYPES = ['Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'];
 V2.SDT_WXTY = {tw: 'Flying', sun: 'Fire', rain: 'Water', sand: 'Ground', snow: 'Ice', grassy: 'Grass', psy: 'Psychic', tr: 'Ghost', elec: 'Electric'}; // as the Archetypes page's scenes
@@ -89,7 +86,7 @@ V2.sdTools = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => 
   // the calc number (Kip's review, Nov 26): a sure KO reads "100%", not "100–100%"; its size step comes from its length, so every shape
   // fits the slanted band: 7+ characters ("94–100%", "8.5–9.9%") the tight size, 6 ("88–99%") the middle size, shorter the full size
   const H = X.hit, hp = H ? `<div class="sdt-hit"><p class="sdt-hp" role="img" aria-label="${E(H.mv)} takes ${dmgP(H.lo)} to ${dmgP(H.hi)}% of ${E(V2.disp(H.d.n))}'s HP"><i class="left" style="width:${(100 - H.hi).toFixed(1)}%"></i><i class="roll" style="width:${(H.hi - H.lo).toFixed(1)}%"></i></p>
-    ${V2.sdtHpKey(H)}<p class="sdt-hpw" aria-hidden="true"><b>${E(H.mv)}</b> <span class="sdt-pct${V2.sdtPctCls(V2.sdtPctTxt(dmgP(H.lo), dmgP(H.hi)))}">${V2.sdtPctTxt(dmgP(H.lo), dmgP(H.hi))}</span><span class="sdt-of">of ${E(V2.disp(H.d.n))}'s HP</span></p><div class="sdt-duel">${V2.sdtMon(H.a.n, {cls: 'atk'})}<i class="sdt-strike" aria-hidden="true"></i>${V2.sdtMon(H.d.n, {cls: 'def'})}</div><p class="sdt-cc" aria-hidden="true">${nm(H.a.n)} into ${nm(H.d.n)}</p></div>` : '';
+    <p class="sdt-hpw" aria-hidden="true"><b>${E(H.mv)}</b> <span class="sdt-pct${V2.sdtPctCls(V2.sdtPctTxt(dmgP(H.lo), dmgP(H.hi)))}">${V2.sdtPctTxt(dmgP(H.lo), dmgP(H.hi))}</span><span class="sdt-of">of ${E(V2.disp(H.d.n))}'s HP</span></p><div class="sdt-duel">${V2.sdtMon(H.a.n, {cls: 'atk'})}<i class="sdt-strike" aria-hidden="true"></i>${V2.sdtMon(H.d.n, {cls: 'def'})}</div><p class="sdt-cc" aria-hidden="true">${nm(H.a.n)} into ${nm(H.d.n)}</p></div>` : '';
   const calc = V2.sdtPlate('Damage Calculator', 'sdt-dc', 'Run the damage first.', 'Run the damage first.', hp);
   // the four small plates, each picture breaking out of the top
   const K = X.core, core = K ? `<div class="sdt-pic"><div class="sdt-core">${V2.sdtMon(K.ns[0], {})}<b class="u sdt-plus" aria-hidden="true">+</b>${V2.sdtMon(K.ns[1], {})}</div><p class="sdt-cc" aria-hidden="true">${nm(K.ns[0])} + ${nm(K.ns[1])}</p></div>` : '';
