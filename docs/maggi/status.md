@@ -20,3 +20,4 @@ M9 | done | alt/maggi-m9-webkit 1e1b06af | WebKit iPhone 15/SE/iPad Pro 11 x lig
 M10 | started | alt/maggi-m10-webkit-all - | adding Build, My Box, Track Record, Search open, Spicy picks on, How We Calculate, About to WebKit host-wrapper-test | Fri Nov 27 07:08:54 AM EST 2026
 M10 | done | alt/maggi-m10-webkit-all 4e2ccb91 | WebKit iPhone 15 + iPad Pro 11 x light/dark x 7 extra pages (Build/Box/Track/Search/Spicy/Method/About): ALL 56 PASSED (0 differing pixels); Chromium ALL 8 PASSED | Fri Nov 27 07:17:34 AM EST 2026
 M11 | started | alt/maggi-m11-kip71 - | waiting for / reviewing Kip job 71 on alt/gemini-speed-chain | Fri Nov 27 07:20:05 AM EST 2026
+M11 | done | alt/maggi-m11-kip71 c034ccce | Verified Kip job 71 (80c0d935): M1, M2, M3, M4, F1 all fixed (report docs/rebuild/test-runs/maggi-M11-kip71.md) | Fri Nov 27 07:39:33 AM EST 2026
