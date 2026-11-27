@@ -40,6 +40,7 @@
 .f3-bar{position:relative;display:block;height:44px;width:max(130px,calc(var(--len) * 1% - 110px));margin-left:var(--s4);background:var(--c);color:var(--num);text-decoration:none;transform:skewX(-14deg);
   box-shadow:0 0 24px color-mix(in srgb,var(--c) 70%,transparent),6px 6px 0 var(--f3-bar-shade)}
 .f3-bar:focus-visible{outline:3px solid var(--f3-sticker);outline-offset:4px}
+.f3-bar::after{content:"";position:absolute;top:-8px;right:0;bottom:-8px;left:0} /* a 44px+ tap area round each bar (qcheck TAP: 28px on phones, 34px on tablets), no visual change */
 .f3-r{position:absolute;right:var(--s4);top:50%;font-size:var(--t28);line-height:1;text-shadow:2px 2px 0 var(--f3-bar-shade);transform:translateY(-50%) skewX(14deg)}
 .f3-art{position:absolute;left:calc(100% + 8px);bottom:-20px;width:auto;height:80px;max-width:100px;object-fit:contain;transform:skewX(14deg);
   filter:drop-shadow(3px 0 0 var(--f3-sticker)) drop-shadow(-3px 0 0 var(--f3-sticker)) drop-shadow(0 3px 0 var(--f3-sticker)) drop-shadow(0 -3px 0 var(--f3-sticker)) drop-shadow(0 0 14px var(--c))}
@@ -109,4 +110,5 @@
   .f3-band span{display:block}
   .f3-big{font-size:var(--t34)}
   .f3-stamp{position:absolute;right:var(--s2);bottom:-12px;margin:0;font-size:var(--t15);transform:rotate(-8deg)} /* on the receipt's torn edge, under the score */}
+@media (min-width:430px) and (max-width:909.98px){.f3-h1{font-size:var(--t34)}} /* the h1 lands on the type scale (4.4vw gave 34-40px between 773 and 909: 36.1px at 820, qcheck SIZE) */
 @media (max-width:429.98px){.f3-h1{font-size:var(--t28)}.f3-h1s{margin-top:var(--s1);font-size:var(--t15)}}
