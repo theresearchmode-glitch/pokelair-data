@@ -1,12 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 1:00 AM (1:00:45)  date: Fri Nov 27, 2026
-NOW: (1:01 AM) THE SWITCH: main pushed (572622d5); watching main GitHub run 45948985967 (pid in .main-running). Then: promote to live, publish R1-R4 to the live artifact, fire the refresh, check every page.
-NOW: helper Job II (alt/batch9 = batch8 + Maggi M2/M3 + dec2patch, [skip ci]). Kip/Maggi out until 3 AM; 71 and M6 queued.
-NEXT: gate alt/batch8 (F3 + qcheck fixes + calc tile + preflight-skip + sweep fixes) when GitHub is green and the helper report is read.
-NEXT: Preview republish after batch8 merges; tell Sim (iPhone check in the morning); end the helper by midnight (trig_01LjNsUYs9wEtHwagBYqvYCH).
-NEXT: review Maggi M2 when pushed; merge after batch8 (pubhome-f3.js).
-NEXT: Fri 7:30 AM switch prep (trig_01HzJ1ckLPN7LMVpiJ4eUh83); preflight copy from design6 once batch8 lands (else alt/preflight-skip).
-NEXT: after the switch: Kip speed chain 64c-69 review + merge.
+Updated: time: 1:48 AM (1:48:39)  date: Fri Nov 27, 2026
+NOW: (1:49 AM) THE SWITCH IS LIVE (artifact v159 1795762042-7ea6; main/live 572622d5). Watching the first merged data run 45953665171 (pid in .main-running); refresh fired 1:48 AM.
+NOW: helper Job JJ (review of Kip speed chain). Kip/Maggi back ~3 AM (71, M6 queued).
+NEXT: data run done -> check out/post.json has ran, tests green, promote; check the refresh summary (meta/post, meta/info).
+NEXT: batch9 (alt/batch9 50abdee8) real GitHub run, then gate into claude/design6, then main (after the switch, main follows design6).
+NEXT: 7:30 AM morning summary for Sim (trig_01HzJ1ckLPN7LMVpiJ4eUh83); Preview daily 7:41 AM.
+NEXT: Kip speed chain merge after Job JJ + Kip 71.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
