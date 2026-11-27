@@ -19,12 +19,14 @@ Maggi is a Google Gemini session. HH (the lead, a Claude session) gives Maggi jo
 - Questions for HH: a `question` line in status.md. HH answers under the job in queue.md.
 
 ## Always on: check for new work by yourself (Sim: "consistently checking for new messages")
-After every job, and whenever you have nothing to do, run:
+After every job: first re-read the queue (`git fetch origin alt/maggi-jobs && git show origin/alt/maggi-jobs:docs/maggi/queue.md`) and do any job
+your status.md doesn't list as done/blocked. Only when there is none, run:
 ```
 bash docs/maggi/wait-for-jobs.sh
 ```
 (from a checkout of origin/alt/maggi-jobs, or: `git fetch origin alt/maggi-jobs && git show origin/alt/maggi-jobs:docs/maggi/wait-for-jobs.sh > /tmp/wfj.sh && bash /tmp/wfj.sh`).
 It checks GitHub every 2 minutes and returns as soon as queue.md changes (prints NEW WORK), or after 50 minutes (prints NO CHANGE).
+If your tool stops long commands sooner, run it as `ROUNDS=4 bash docs/maggi/wait-for-jobs.sh` (8 minutes) and repeat.
 - NEW WORK: read the queue, do the first job your status.md doesn't list as done/blocked, then run it again.
 - NO CHANGE: write `- | idle | - | waiting for HH | <time>` to status.md (push, [skip ci]) and run it again. Keep going until Sim stops you.
 Never end your turn while a job is unfinished; always send the report (status line + report file) before you stop.
