@@ -404,6 +404,13 @@
   .sdt-grid>.sdt-ink{color:var(--sd-card-ink)}.sdt-grid>.sdt-ink::before{background:var(--sd-card)}.sdt-grid>.sdt-ink .sdt-d{color:var(--sd-card-ink2)}
   :root[data-theme="night"] .sdt-grid>.sdt-ink::after{background:var(--sd-card-shade);inset:0;translate:var(--s2) var(--s2)}
   .sdt-ra>.sdt-pod,.sdt-bt>.sdt-vs,.sdt-pr>.sdt-pp,.sdt-ar>.sdt-wx{order:-1;position:relative;isolation:isolate;flex:0 0 128px;height:128px;margin:calc(var(--s12) * -1) 0 var(--s1);padding:0 var(--s2) var(--s3);align-self:stretch;align-items:end;flex-basis:116px;height:116px}
+  /* Sim, Nov 27 (iPhone) + Maggi M12: the podium sprites rise past the card top into the Damage Calculator tile above, which painted over
+     their heads in WebKit (it paints the tiles in page order, not visual order). The first row of cards draws above the tile, at every width.
+     The picture stage sits above its card's link (z 2) so the Pokémon buttons in it can be tapped (the link covered them: Battle at every
+     width, Ratings' outer two from 1100px); the stage itself lets taps through, so its empty ground still opens the card's page */
+  .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt{z-index:1}
+  .sdt-ra>.sdt-pod,.sdt-bt>.sdt-vs,.sdt-pr>.sdt-pp,.sdt-ar>.sdt-wx{z-index:2;pointer-events:none}
+  .sdt-ra>.sdt-pod :is(a,button),.sdt-bt>.sdt-vs :is(a,button),.sdt-pr>.sdt-pp :is(a,button),.sdt-ar>.sdt-wx :is(a,button){pointer-events:auto}
   .sdt-ra>.sdt-pod::before,.sdt-bt>.sdt-vs::before,.sdt-pr>.sdt-pp::before,.sdt-ar>.sdt-wx::before{content:"";position:absolute;left:calc(var(--s2) * -1);right:calc(var(--s2) * -1);bottom:0;height:52px;z-index:-1;
     background:var(--stage);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
   .sdt-ra{--stage:var(--sd-race)}.sdt-bt{--stage:var(--sd-them)}.sdt-pr{--stage:var(--sd-flag)}.sdt-ar{--stage:var(--ty-Flying)}
@@ -479,9 +486,6 @@
   /* Archetypes in a half-width card: smaller sprites so the two style tags stay inside the 96px stage, above the title */
   .sdt-ar .sdt-art .np-mon{--iw:56px}.sdt-ar .sdt-wxi{gap:0;justify-content:flex-end}
   .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{--k:10px;grid-column:span 6;margin-top:var(--s10);padding-inline:calc(var(--s2) + var(--k))}
-  /* Sim, Nov 27 (iPhone): the Ratings podium sprites rise 20px past the card top, into the Damage Calculator tile above, which painted over
-     their heads (the tile comes later in the page). The first row of cards draws above the tile, so the heads show over its empty bottom edge */
-  .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt{z-index:1}
   .sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t17)}
   .sdt-ra>.sdt-pod,.sdt-bt>.sdt-vs,.sdt-pr>.sdt-pp,.sdt-ar>.sdt-wx{flex-basis:96px;height:96px}
   .sdt-chips ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
