@@ -153,7 +153,7 @@ footer{margin-top:56px;color:var(--mute);font-size:13px}
 <script>
 /* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
 const PLAN = {
-  updated: 'Fri Nov 27, 6:37 AM',
+  updated: 'Fri Nov 27, 7:50 AM',
   road: [
     {when: 'Done, Fri 1:47 AM', what: 'The switch', date: '2026-11-27'},
     {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
@@ -161,15 +161,15 @@ const PLAN = {
     {when: 'About Dec 18', what: 'The announcement', date: '2026-12-18'}
   ],
   now: [
-    {who: 'HH (this chat)', t: 'Found why the live site looks wrong (dark mode, fonts): Claude\'s host wraps the page in its own styles that beat ours. Fix built; a pixel comparison against the Preview is running before it goes live. Also fixing the Ratings Pokémon cut off on the Home.'},
-    {who: 'Helper', t: 'Pixel comparison: live page vs the Preview, 12 pages x 6 devices x light/dark.'},
-    {who: 'Kip (Gemini)', t: 'Back: fixing the 4 bugs found in his speed work (job 71).'},
-    {who: 'Maggi (Gemini)', t: 'Back: reviewed the Dec 2 patch script (0 blockers); now cross-checking two versions of it (M7).'},
-    {who: 'For you', t: 'Check the new site on your iPhone (same link) and read HH\'s summary. Kip and Maggi may need a nudge to resume after their usage reset.'}
+    {who: 'HH (this chat)', t: 'Live site fixed (7:38 AM, version 160): dark mode, fonts and the score box now match the Preview. Proof: 144 pixel pairs, iPhone/iPad 0 of 96 differ. Landing the same fix on main so main matches live.'},
+    {who: 'Helper', t: 'Done: the 144-pair comparison. Free for the next job.'},
+    {who: 'Kip (Gemini)', t: 'Job 73: the long test groups one at a time on his speed work (his 4 bug fixes checked by Maggi: all fixed).'},
+    {who: 'Maggi (Gemini)', t: 'M12: a test that the Home podium Pokémon always draw over the tile above (your iPhone bug).'},
+    {who: 'For you', t: 'Check the live link on your iPhone: dark mode, Home, My Team. Kip and Maggi stop before 10 AM.'}
   ],
   sim: [
     {s: 'done', t: 'Go for the switch', d: 'You said yes: switch tonight, HH runs it overnight and fixes anything that fails.', tag: 'Thu 9:40 PM'},
-    {s: 'sim', t: 'Check the new site on your iPhone', d: 'Same link. HH\'s one-screen summary waits for you in the morning; the old site is saved for a quick undo.', tag: 'Fri morning'},
+    {s: 'sim', t: 'Check the new site on your iPhone', d: 'Same link. The host-wrapper fix went live at 7:38 AM (dark mode, fonts, score box); the old site is saved for a quick undo.', tag: 'Fri morning'},
     {s: 'sim', t: 'OK the M-D change list', d: 'What\'s new, removed or changed in the roster.', tag: 'Dec 2'},
     {s: 'sim', t: '2–3 clicks for nastyplot.org', d: 'A Cloudflare permission and Google\'s "verify". HH walks you through each.', tag: 'Dec 1–2'},
     {s: 'sim', t: 'Find 3–5 testers', d: 'For a few days on nastyplot.org.', tag: 'by Dec 9'},

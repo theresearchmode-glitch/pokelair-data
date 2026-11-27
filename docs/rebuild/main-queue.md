@@ -1,10 +1,10 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 7:34 AM (7:34:41)  date: Fri Nov 27, 2026
-NOW: (7:35 AM) wrapper fix 612d0364 (+ podium sprites): GitHub run + gate (pid in .main-running). Helper Job LL 144-pair comparison on 612d0364 finishing; Maggi WebKit 116 pairs 0 diffs. Then publish the live page (lvpub2: v2.html + v2.js).
-NOW: Kip 73 (v2-minors/A-team one at a time on his chain 80c0d935); Maggi M11 (re-check Kip 71). Both stop before 10 AM; 9:50 reminder collects their handoff.
-NEXT: publish the fixed live page; then land the fix in design6 (gate) and main (merge-check), so main and live match.
-NEXT: Kip speed chain: after M11 + 73 + a GitHub run, gate into design6, then main + republish.
-NEXT: Preview daily 7:41 AM; Game Plan update.
+Updated: time: 7:50 AM (7:50:44)  date: Fri Nov 27, 2026
+NOW: (7:58 AM) live artifact = fixed build (v160, 612d0364). design6 has it (c21ae180). main merge 5c7839e2 ready in scratchpad/mm: waiting for GitHub on design6, then merge-check main, then push (pid in .main-running).
+NOW: Kip 73 (v2-minors/A-team on his chain 80c0d935); Maggi M12 (podium sprite cover test). Both stop before 10 AM; 9:50 reminder collects their handoff.
+NEXT: push main (5c7839e2) after merge-check passes; watch the main GitHub run + promote.
+NEXT: Kip speed chain (Maggi M11: all 5 fixed): after Kip 73 + a GitHub run, gate into design6, then main + republish live.
+NEXT: Game Plan update (wrapper fix live, Preview v270).
 NEXT: runbook note: a skipped data run can cancel a main test run (same concurrency group).
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
