@@ -1,2 +1,2 @@
-8190
-gate.sh alt/batch8 (waits for GitHub run 45934454500, then merge-check design6, push)
+4440
+gate.sh alt/batch8 (rerun of the flaked v2-minors main1 job)
