@@ -2973,3 +2973,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:28 PM: Sim's final yes on Build page C2 ('lvove it. rec is good to go. lets do it').
 - 6:37 PM: Sim: aim to go live Dec 1 (a day before Reg M-D, to iron out kinks); Sim does the Cloudflare steps later tonight. Plan: practice deploy to a hidden address after his clicks, then DEPLOY_ENABLED on Dec 1.
 - 6:38 PM: Sim: Cloudflare/GitHub setup will be done with Dos (PC chat) later tonight; Sim asks for the prompt when ready. HH pre-wrote docs/rebuild/dos-cloudflare-prompt.md (names only, no secrets in chat, DEPLOY_ENABLED/FAST_DATA not yet).
+- 6:38 PM: Sim: quiet launch Sun Nov 30 (evening), a full day before Reg M-D (9 PM Eastern Dec 1). CLAUDE.md + Game Plan updated.
