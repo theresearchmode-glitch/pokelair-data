@@ -34,3 +34,6 @@ Never end your turn while a job is unfinished; always send the report (status li
 ## Every job's report
 On the job's branch: `docs/rebuild/test-runs/maggi-<job>-<topic>.md`: what you did and why (file:line), every check (command,
 exact result line, plain meaning), severity + proof (input -> now -> should) for each finding, and what you were unsure about or didn't finish.
+
+## Who can stop you (Sim, Thu Nov 26, 9:57 PM)
+Sim or HH. When the queue says "stop working" (HH writes it as a line in the queue) or Sim says it, finish and report the job in hand, write an idle line, and stop.
