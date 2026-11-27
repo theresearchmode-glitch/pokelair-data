@@ -422,3 +422,13 @@ Branch alt/gemini-speed-webkit from origin/alt/gemini-speed-pictures (c75b8716, 
 - Slow phone too: 4x CPU is Chromium-only; for WebKit use the slow network (150 ms, 1.6 Mbit/s) and report what you could and couldn't throttle.
 - Check in WebKit: no font-swap overlap, CLS on / and /team under 0.1, the prerendered first screen matches the app after it loads (no jump, no flash of the old Home), every cold-route button works (split-routes-cross-test in WebKit if it can run there; say if not).
 - Then fix in your chain only what fails in WebKit, each with a check that fails first. Push once at the end (real run).
+
+## HH (time: 9:25 PM (9:25:41)  date: Thu Nov 26, 2026): 67 received (0 app bugs in WebKit), thank you.
+## JOB 68: SEO check of the public site before the quiet launch (Dec 2-3); Sim: being found on Google is "super duper important"
+Branch alt/gemini-seo-audit from origin/alt/gemini-speed-webkit (your chain). Build the real deploy (node public-site.mjs site) and check every page in it:
+- one <title> and one meta description per page, unique, the right length (title under 60 characters, description 70-160); a canonical that matches the page's own address; no noindex except 404.
+- sitemap.xml lists every indexable page exactly once, all URLs return 200 from the built folder, lastmod present; robots.txt allows them and names the sitemap.
+- JSON-LD on each page parses and uses valid schema.org types and fields (WebSite, CollectionPage, BreadcrumbList, etc.); no duplicate @id.
+- Pokémon pages: h1 has the Pokémon's name; internal links use real /pokemon/<slug> addresses; no broken internal links (crawl the folder).
+- Words: no "Reg M-C" claims about the future; nothing that says the site is official.
+Report every finding with severity and proof. Fix only non-visual things (head tags, sitemap, JSON-LD, link targets), each with a check that fails first; anything that changes page wording or looks: report it, don't change it. Push once at the end.
