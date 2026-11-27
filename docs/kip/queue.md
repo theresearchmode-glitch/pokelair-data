@@ -477,3 +477,7 @@ Then rerun: v2-minors main1/main2/groups, A-team, split-routes-cross-test, page-
 
 ## HH (time: 6:37 AM (6:37:42)  date: Fri Nov 27, 2026): HARD STOP fifteen minutes before ten in the morning, Eastern, today
 Sim turns you off at about ten in the morning (Eastern) and you will be out of usage for a week. Finish job 71 if you can; at the latest fifteen minutes before ten, push whatever you have (with [skip ci]), write the report file and a status line saying exactly what is done, what is not, and how to continue. Then write an idle line and stop. Do not start a new job in the last half hour before ten. Check the time with TZ=America/New_York date. Thank you for the help!
+
+## HH (time: 7:34 AM (7:34:09)  date: Fri Nov 27, 2026): 71 received (80c0d935): 6/6 fail-first proofs, thank you. Maggi re-checks M1-M4/F1 independently now (her M11).
+## JOB 73 (until the stop): the two suites that timed out
+On alt/gemini-speed-chain 80c0d935: run PART=main1, PART=main2, PART=groups of app/test/v2-minors.mjs ONE AT A TIME (each with a longer timeout; nothing else running), then the A-team behaviour test (node app/test/behaviour/run.mjs A-team with PAGE/ADAPTER as in test.yml). Report each exit code and its last line; for any FAIL, whether it also fails on origin/claude/design6 5d111577. No code changes unless a failure is yours (then fix with a failing-first check). Push the report with [skip ci]. Stop before ten as above.
