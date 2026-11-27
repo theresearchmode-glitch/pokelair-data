@@ -152,6 +152,8 @@ var POST = {checked: '2026-11-18T02:21:50Z',
       src: ['https://www.levelup.com/en/news/pokemon-world-championships-2026-here-are-all-the-freebies-you-can-get-by-watching-the-event/']}
   ],
   news: [
+    {id: 'n879', date: '2026-11-25T21:00:00Z', type: 'Campaign', kind: 6, title: 'Announcing a Campaign Linked to Pokémon GO! You Can Get Professor Willow’s Outfit Set!', url: 'https://champions-news.pokemon-home.com/page/879.html'},
+    {id: 'n878', date: '2026-11-25T02:00:00Z', type: 'Regulations', kind: 12, title: 'Regulation Set M-D', url: 'https://champions-news.pokemon-home.com/page/878.html'},
     {id: 'n877', date: '2026-11-18T02:00:00Z', type: 'Update', kind: 3, title: 'Wednesday, December 2, 2026 Battle Balance Adjustments', url: 'https://champions-news.pokemon-home.com/en/page/877.html'},
     {id: 'n869', date: '2026-11-04T04:00:00Z', type: 'Tournament', kind: 13, title: 'The Monthly Challenge Series November 2026 Is Coming!', url: 'https://champions-news.pokemon-home.com/en/page/869.html'},
     {id: 'n868', date: '2026-11-04T04:00:00Z', type: 'Battle Pass', kind: 16, title: 'Season M-8 Battle Passes', url: 'https://champions-news.pokemon-home.com/en/page/868.html'},

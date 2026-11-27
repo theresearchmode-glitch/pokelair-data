@@ -1,31 +1,31 @@
 {
- "updated": "2026-11-26T19:29:24.508Z",
+ "updated": "2026-11-27T07:19:20.773Z",
  "reg": "M-C",
  "today": {
-  "date": "2026-11-26",
+  "date": "2026-11-27",
   "reg": "M-C",
   "model": {
-   "heldOutAcc": 0.5712,
-   "calibratedLogloss": 0.6769,
-   "eventsBeatCoinFlip": "95/111",
-   "rawWinRateAcc": 0.5399,
-   "games": 49978
+   "heldOutAcc": 0.5692,
+   "calibratedLogloss": 0.6778,
+   "eventsBeatCoinFlip": "99/112",
+   "rawWinRateAcc": 0.5416,
+   "games": 50354
   },
   "teamStrengthOnEvents": {
-   "acc": 0.542,
-   "pairs": 4513,
+   "acc": 0.5378,
+   "pairs": 4505,
    "events": 114
   },
   "ratingsForward": {
    "snapshot": "2026-10-29",
-   "acc": 0.5327,
-   "games": 16614,
-   "snapshots": 14,
-   "avgAcc": 0.5345
+   "acc": 0.5335,
+   "games": 16987,
+   "snapshots": 15,
+   "avgAcc": 0.5352
   },
   "replays": {
    "games": 20000,
-   "rated1300": 8438
+   "rated1300": 8735
   },
   "warnings": []
  },
@@ -772,6 +772,34 @@
      "rated1300": 8438
     },
     "warnings": []
+   },
+   {
+    "date": "2026-11-27",
+    "reg": "M-C",
+    "model": {
+     "heldOutAcc": 0.5692,
+     "calibratedLogloss": 0.6778,
+     "eventsBeatCoinFlip": "99/112",
+     "rawWinRateAcc": 0.5416,
+     "games": 50354
+    },
+    "teamStrengthOnEvents": {
+     "acc": 0.5378,
+     "pairs": 4505,
+     "events": 114
+    },
+    "ratingsForward": {
+     "snapshot": "2026-10-29",
+     "acc": 0.5335,
+     "games": 16987,
+     "snapshots": 15,
+     "avgAcc": 0.5352
+    },
+    "replays": {
+     "games": 20000,
+     "rated1300": 8735
+    },
+    "warnings": []
    }
   ]
  },
@@ -1515,6 +1543,34 @@
    "replays": {
     "games": 20000,
     "rated1300": 8438
+   },
+   "warnings": []
+  },
+  {
+   "date": "2026-11-27",
+   "reg": "M-C",
+   "model": {
+    "heldOutAcc": 0.5692,
+    "calibratedLogloss": 0.6778,
+    "eventsBeatCoinFlip": "99/112",
+    "rawWinRateAcc": 0.5416,
+    "games": 50354
+   },
+   "teamStrengthOnEvents": {
+    "acc": 0.5378,
+    "pairs": 4505,
+    "events": 114
+   },
+   "ratingsForward": {
+    "snapshot": "2026-10-29",
+    "acc": 0.5335,
+    "games": 16987,
+    "snapshots": 15,
+    "avgAcc": 0.5352
+   },
+   "replays": {
+    "games": 20000,
+    "rated1300": 8735
    },
    "warnings": []
   }

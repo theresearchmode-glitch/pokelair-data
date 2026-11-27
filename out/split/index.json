@@ -1,42 +1,44 @@
 {
  "limit": 200000,
  "hard": 262144,
- "made": "2026-11-26T19:29:25.978Z",
+ "made": "2026-11-27T07:19:22.249Z",
  "split": {
   "results": {
-   "bytes": 305467,
+   "bytes": 306555,
    "parts": [
-    200005,
-    105586
+    200037,
+    106642
    ]
   },
   "model": {
-   "bytes": 251201,
+   "bytes": 252296,
    "parts": [
-    199995,
-    51325
+    199983,
+    52432
    ]
   },
   "events": {
-   "bytes": 244832,
+   "bytes": 245084,
    "parts": [
-    191184,
-    53770
+    191469,
+    53737
    ]
   }
  },
  "sizes": {
-  "results": 305467,
-  "doubles_tour": 80667,
-  "teams": 20983,
-  "history": 28457,
-  "model": 251201,
+  "results": 306555,
+  "doubles_tour": 80659,
+  "teams": 21114,
+  "history": 28485,
+  "model": 252296,
   "doubles": 92221,
   "doubles_ingame": 9475,
-  "events": 244832,
-  "track": 90902,
-  "practice": 132767,
-  "weekly": 2514,
-  "calendar": 6140
+  "events": 245084,
+  "track": 93845,
+  "practice": 130290,
+  "weekly": 2813,
+  "calendar": 6140,
+  "post": 22728,
+  "info": 84901
  }
 }
