@@ -62,5 +62,17 @@ for (const [name, pth, act] of CASES) {
   const ok = !errs.length && !r.broken && !step; if (!ok) fails++;
   console.log(`  ${ok ? 'pass' : 'FAIL'}  ${name} (cold on ${pth}) -> ${r.at}${step ? ' | step failed: ' + step : ''}${errs.length ? ' | ' + [...new Set(errs)].slice(0, 2).join(' || ').slice(0, 160) : ''}${r.broken ? ' | "This page didn\'t load"' : ''}`);
   await c.close(); }
+// Chunk-failure guards (Job 71 M1/M2): failing chunks must stop after 1 request, never loop
+for (const [name, pth, pat, act, check] of [
+  ['Chunk fail (M1): /routes/calc.js fails once -> "This page didn\'t load"', '/calc', /\/routes\/calc.*\.js/, null, async (q, reqs) => { const t = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim()); return reqs === 1 && /didn['’]t load/i.test(t); }],
+  ['Chunk fail (M1): /routes/team.js fails once -> "This page didn\'t load"', '/team', /\/routes\/team.*\.js/, null, async (q, reqs) => { const t = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim()); return reqs === 1 && /didn['’]t load/i.test(t); }],
+  ['Chunk fail (M2): /routes/info-text.js fails once on ability tap -> no loop', '/pokemon/garchomp', /\/routes\/info-text.*\.js/, async q => { await q.click('[data-v2info="ab"]'); }, async (q, reqs) => { const s = await q.evaluate(() => Boolean(document.querySelector('.np-sheet, .np-toast'))); return reqs === 1 && s; }],
+]) {
+  const c = await b.newContext({viewport: {width: 1440, height: 900}}), q = await c.newPage(); let reqs = 0, step = '';
+  await q.route(pat, async rt => { reqs++; if (reqs > 50) await new Promise(r => setTimeout(r, 100)); return rt.abort('failed').catch(() => {}); });
+  try { await q.goto(base + pth, {waitUntil: act ? 'networkidle' : 'domcontentloaded', timeout: 10000}); if (act) { await q.waitForTimeout(400); await act(q); } await q.waitForTimeout(1500); } catch (e) { step = String(e.message).split('\n')[0].slice(0, 90); }
+  const ok = !step && await check(q, reqs).catch(() => false); if (!ok) fails++;
+  console.log(`  ${ok ? 'pass' : 'FAIL'}  ${name} (reqs=${reqs}${step ? ' | ' + step : ''})`);
+  await c.close(); }
 await b.close(); srv.close();
 console.log(`split-routes-cross-test: ${fails ? fails + ' failed' : 'all passed'}`); process.exit(fails ? 1 : 0);

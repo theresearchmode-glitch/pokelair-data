@@ -58,8 +58,15 @@ for (const [rt, w, h] of [['/', 390, 844], ['/', 1440, 900], ['/pokemon/garchomp
       const st = getComputedStyle(el);
       if (st.display === 'none' || st.visibility === 'hidden' || el.closest('.vh')) continue;
       const r0 = el.getBoundingClientRect(); if (r0.width < 20 || r0.height < 20) continue;
-      const range = document.createRange(); range.selectNodeContents(el);
-      const rects = [...range.getClientRects()].filter(x => x.width > 1 && x.height > 1).sort((a, b) => a.top - b.top);
+      const rects = [];
+      const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      let tn;
+      while ((tn = tw.nextNode())) {
+        if (!tn.nodeValue || !tn.nodeValue.trim()) continue;
+        const r = document.createRange(); r.selectNodeContents(tn);
+        for (const rc of r.getClientRects()) if (rc.width > 1 && rc.height > 1) rects.push(rc);
+      }
+      rects.sort((a, b) => a.top - b.top);
       const lines = [];
       for (const rc of rects) {
         const last = lines[lines.length - 1];

@@ -406,11 +406,17 @@ if (process.argv.includes('--v2')) {
       fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
     }
     /* SEO fix 2 (Nov 25): one file per tool page (dist/team.html at /team) with its own words from the SEO map, on the shared stylesheet */
+    const PERSONAL = new Set(['team', 'box', 'compare', 'battle', 'build', 'practice', 'test-run', 'calc']);
+    const stateHead = `<style>.np-has-state [data-np-pre]{display:none}</style><script>try{if(localStorage.getItem('cc2.state'))document.documentElement.classList.add('np-has-state')}catch(e){}</script>`;
+    const stateDrop = `<script>try{if(localStorage.getItem('cc2.state')){var m=document.getElementById('main'),p=m&&m.querySelector('[data-np-pre]');if(p)p.remove();}}catch(e){}</script>`;
     for (const r of ownFileRows) {
       let tp = ownHead(ph, r.title, r.desc, `https://nastyplot.org${r.path}`);
       if (SPLIT_ROUTES && routeManifest[r.key]) tp = tp.replace('</head>', () => `<link rel="preload" as="script" href="${routeManifest[r.key]}"></head>`);
       if (SPLIT && SCR[r.key]) {
         tp = putScreen(tp, SCR[r.key], true);
+        if (PERSONAL.has(r.key)) {
+          tp = tp.replace('</head>', () => stateHead + '</head>').replace('</main>', () => '</main>' + stateDrop);
+        }
         if (pruneCss && v2CssRaw) tp = applyCritCss(tp, pruneCss(v2CssRaw, tp));
       } else if (SPLIT && pruneCss && v2CssRaw) {
         tp = applyCritCss(tp, pruneCss(v2CssRaw, tp));

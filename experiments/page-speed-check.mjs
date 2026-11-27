@@ -15,7 +15,7 @@ import zlib from 'node:zlib';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = path.resolve(process.env.SPEED_DIST || path.join(ROOT, 'app/dist'));
 
 const BUDGET = {lcpMs: 2500, cls: 0.1, transferBytes: 1.5 * 1024 * 1024};

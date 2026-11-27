@@ -28,7 +28,8 @@ V2.isMoveLines = (n, M) => { const t = M.t || 'normal', f = M.f || '', L = [];
   if (f.includes('c')) L.push('Makes contact (Rocky Helmet and Rough Skin hurt the user)');
   return L.slice(0, 4); };
 V2.infoUse = (k, n) => { const I = typeof META === 'object' && META.info; if (!I || !I[k]) return null; const e = I[k][n]; return {N: I.N, src: I.source, period: I.period, t: e ? e[0] : 0, u: e ? e[1] : [], nu: e ? (e[2] != null ? e[2] : e[1].length) : 0}; };
-V2.openInfo = (kind, n) => { if (typeof INFO_TEXT !== 'object' && window.__NP_ROUTES && window.__NP_ROUTES['info-text']) { V2.needRoute('info-text', () => V2.openInfo(kind, n)); return; }
+V2.openInfo = (kind, n, tried) => { if (typeof INFO_TEXT !== 'object' && !tried && window.__NP_ROUTES && window.__NP_ROUTES['info-text']) { V2.needRoute('info-text', () => V2.openInfo(kind, n, true)); return; }
+  if (typeof INFO_TEXT !== 'object' && kind === 'it') { V2.toast("Couldn't load item details right now. Try again in a moment."); return; }
   return kind === 'mv' ? V2.openMoveSheet(n) : kind === 'ab' ? V2.openAbilitySheet(n) : kind === 'it' ? V2.openItemSheet(n) : kind === 'nt' ? V2.openNatureSheet(n) : undefined; };
 // the parts every kind shares (HANDOFF "The sheet, top to bottom")
 V2.isFmt = x => x.toLocaleString('en-US');
