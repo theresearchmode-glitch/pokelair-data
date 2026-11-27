@@ -1476,6 +1476,32 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(seen.length === 12 && !bad.length, `Audit Nov 19 #4 (the Arena since Nov 19: one bar, not two wings): the KO Board bar's counts are exactly the board's tiles, on one line (3 teams x 1100/1280 x both directions; ${bad.join(' | ') || 'e.g. "' + seen.slice(0, 2).join('" / "') + '"'})`); }
 } // main1 end
 if (part('main2')) {
+// ---------- Pre-switch sweep finds (Job FF, Nov 26): "Reg M-D." never splits; the Search placeholder fits on phones ----------
+{ const ctx = await b.newContext({viewport: {width: 320, height: 568}, isMobile: true, hasTouch: true}); const q = await ctx.newPage();
+  await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+  // PS-1: at every phone width 300-430 the regulation words in Home's h1 ("Reg M-D." / "Reg M-C.") stay on one line
+  const split = [];
+  for (let w = 300; w <= 430; w++) { await q.setViewportSize({width: w, height: 568}); await q.waitForTimeout(30);
+    const r = await q.evaluate(() => { const h = document.querySelector('#main .f3-h1s'); if (!h) return 'no line'; const t = [...(function walk(n, a) { for (const c of n.childNodes) c.nodeType === 3 ? a.push(c) : walk(c, a); return a; })(h, [])];
+      const node = t.find(x => /Reg\s?M-[A-Z]\./.test(x.textContent)) || t.find(x => /M-[A-Z]\./.test(x.textContent)); if (!node) return 'no reg words';
+      const full = h.textContent, k = full.search(/Reg\s?M-[A-Z]\./); if (k < 0) return 'no reg words';
+      // walk the text nodes to the offsets of "Reg" and the final "."
+      let a = k, z = k + full.slice(k).search(/\./) + 1, rg = document.createRange(), seen = 0, sN = null, sO = 0, eN = null, eO = 0;
+      for (const n of t) { const L = n.textContent.length; if (!sN && a < seen + L) { sN = n; sO = a - seen; } if (!eN && z <= seen + L) { eN = n; eO = z - seen; } seen += L; }
+      rg.setStart(sN, sO); rg.setEnd(eN, eO); const tops = new Set([...rg.getClientRects()].filter(x => x.width > 1).map(x => Math.round(x.top))); return tops.size; });
+    if (r !== 1) split.push(`${w}: ${r}`); }
+  ok(!split.length, `PS-1 (Job FF): Home's "Reg M-D." stays on one line at every phone width 300-430 (${split.slice(0, 6).join(', ') || 'all one line'}${split.length > 6 ? ' … ' + split.length + ' widths' : ''})`);
+  // PS-2: the Search box's placeholder fits inside the box at every phone width 320-429; from 430 the long one ("…item, team style or page") stays
+  const cut = [], keep = [];
+  for (const w of [320, 340, 360, 375, 390, 414, 429, 430, 768, 1440]) { await q.setViewportSize({width: w, height: w < 700 ? 844 : 900}); await q.waitForTimeout(60);
+    const r = await q.evaluate(() => { if (!document.querySelector('[data-v2q]')) V2.openSearch(); const i = document.querySelector('[data-v2q]'); const s = getComputedStyle(i), c = document.createElement('canvas').getContext('2d');
+      c.font = `${s.fontStyle} ${s.fontWeight} ${s.fontSize} ${s.fontFamily}`; const room = i.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight);
+      const r = {ph: i.placeholder, need: Math.ceil(c.measureText(i.placeholder).width), room: Math.floor(room)}; document.querySelector('.np-sheet [data-v2close], .np-sheet .np-x, .np-sheet button[aria-label="Close"]') ? document.querySelector('.np-sheet [data-v2close], .np-sheet .np-x, .np-sheet button[aria-label="Close"]').click() : V2.closeSheet && V2.closeSheet(); return r; });
+    await q.waitForTimeout(200);
+    if (w < 430 && r.need > r.room) cut.push(`${w}: "${r.ph}" ${r.need}px in ${r.room}px`);
+    if (w >= 430 && !/team style or page/.test(r.ph)) keep.push(`${w}: "${r.ph}"`); }
+  ok(!cut.length && !keep.length, `PS-2 (Job FF): the Search placeholder fits its box at 320-429 and the long one stays from 430 (${[...cut, ...keep].join(' | ') || 'all good'})`);
+  await ctx.close(); }
 // ---------- Home's first screen: Final 3 on this build too (Job DD, Nov 26; pubhome-f3.js V2.f3Home, V2.F3_CLAUDE) ----------
 /* Sim picked Final 3 as Home's FIRST SCREEN (nothing else removed): F3's hero replaces only the Stampede's hero; the Top 10, your six, the
    tools rack and the post band stay below in today's order. Each check failed on design6 52fa60e6 (the Stampede's hero: no .f3-hero). */

@@ -33,7 +33,7 @@ V2.f3Link = n => { const s = typeof V2.pubSlug === 'function' ? V2.pubSlug(n) : 
 // the words (Sim, Nov 26: option A): ONE h1 with the slogan drawn like the brand lockup ("Sharply raise" ink, "your win rate." PLOT blue)
 // and, smaller inside the same h1, the line Google reads for the regulation; that line changes with the calendar (before Dec 2: "before Reg M-D."; from Dec 2: "for Reg M-D."), and later names the regulation
 V2.f3Words = D => { const E = V2.esc, now = Date.now(), mdAt = Date.parse(V2.REG_START_MD || ''), before = isFinite(mdAt) && now < mdAt;
-  const reg = D && D.reg ? D.reg : '', em = before ? 'before Reg M-D.' : reg && reg !== 'M-C' ? `for Reg ${E(reg)}.` : 'for Reg M-D.';
+  const reg = D && D.reg ? D.reg : '', em = before ? 'before <span class="nw">Reg M-D.</span>' : reg && reg !== 'M-C' ? `for <span class="nw">Reg ${E(reg)}.</span>` : 'for <span class="nw">Reg M-D.</span>'; /* the regulation never splits (Job FF: "M-D." sat alone at 320) */
   const teams = (typeof RES === 'object' && RES && RES.teams) || 0, md = V2.mdCountdown(now) || V2.regDay(now) || '', mdS = V2.mdCountdown(now, true) || V2.regDay(now) || '';
   const tys = D ? [...new Set(D.rows.map(x => x.t))] : [];
   return {before, html: `<div class="f3-words"><p class="k-kicker">Team builder · Strength Score</p>
