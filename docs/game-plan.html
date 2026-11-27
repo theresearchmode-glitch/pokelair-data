@@ -153,7 +153,7 @@ footer{margin-top:56px;color:var(--mute);font-size:13px}
 <script>
 /* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
 const PLAN = {
-  updated: 'Fri Nov 27, 10:36 AM',
+  updated: 'Fri Nov 27, 11:35 AM',
   road: [
     {when: 'Done, Fri 1:47 AM', what: 'The switch', date: '2026-11-27'},
     {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
@@ -161,10 +161,11 @@ const PLAN = {
     {when: 'About Dec 18', what: 'The announcement', date: '2026-12-18'}
   ],
   now: [
-    {who: 'HH (this chat)', t: 'Live link v161 (10:14 AM): wrapper fix + podium Pokémon over the tile and tappable. Main has the wrapper fix (GitHub green); podium going to main now. Kip\'s speed work going into the redesign (GitHub 15/15).'},
-    {who: 'Helper', t: 'Making the live-vs-Preview pixel test reliable on the speed work (it flaked 2 of 5 locally).'},
-    {who: 'Kip + Maggi (Gemini)', t: 'Off for a week. All their jobs done; one Dec 2 script fix of Maggi\'s waiting to merge (GitHub testing).'},
-    {who: 'For you', t: 'Check the live link: Home podium on iPhone/iPad, tap a Pokémon on Ratings or Battle.'}
+    {who: 'HH (this chat)', t: 'Both fixes live (v161) and on main, all tested; you checked them on your phone. Now: Dec 2 runbook updated with Kip\'s dry-run order; alarm emails only from the live site (fix in GitHub).'},
+    {who: 'Helper', t: 'Making the live-vs-Preview pixel test steady (Chrome draws a sprite slightly differently 1 load in 10).'},
+    {who: 'Kip (Gemini, until 4 PM)', t: 'Job 74 done: Dec 2 practice run found the right order + 2 bugs. Now: 75 "Data as of" always shows, 76 typo alarms, 77 a test that stays green after the patch.'},
+    {who: 'Maggi (Gemini, until 4 PM)', t: 'M13: checking every public page after Kip\'s speed work. Then M14: the one-off overlap failure.'},
+    {who: 'For you', t: 'Nothing needed. Before Dec 2: set FAST_DATA=1 (HH reminds you).'}
   ],
   sim: [
     {s: 'done', t: 'Go for the switch', d: 'You said yes: switch tonight, HH runs it overnight and fixes anything that fails.', tag: 'Thu 9:40 PM'},
@@ -246,13 +247,14 @@ const PLAN = {
       {s: 'next', t: 'Short picture summary for Sim', d: '', tag: 'HH, night'}
     ]},
     {h: 'Fri Nov 27', items: [
-      {s: 'next', t: 'Fix what the practice switch found', d: '', tag: 'HH'},
-      {s: 'doing', t: 'Alarms to Sim\'s phone', d: 'Limitless down, M-D spotted, tests failed. Being built by the other account.', tag: 'HH'},
-      {s: 'doing', t: 'Live data includes info-sheet counts and Gifts/news', d: 'The new site needs them. Being built by the other account.', tag: 'HH'},
-      {s: 'next', t: 'Data every 4 hours, ready to switch on', d: '', tag: 'HH'},
-      {s: 'done', t: 'Reg M-D countdown on the site', d: '"Reg M-D in 7 days." on Home; Sim OK\'d the design calls.', tag: 'Nov 24'},
-      {s: 'done', t: 'Test teams for M-D day', d: 'Done early by the other account; no check passes on nothing any more.', tag: 'Nov 24'},
-      {s: 'next', t: 'Final checks on the switch version', d: '', tag: 'Helper + PC'}
+      {s: 'done', t: 'The switch went live overnight', d: 'Live link v159 at 1:47 AM; main green.', tag: 'Fri 1:47 AM'},
+      {s: 'done', t: 'Live link: dark mode, fonts, score box fixed', d: 'Claude\'s host styles were beating ours. 144 pixel pairs vs the Preview: iPhone/iPad 0 differ. You checked it.', tag: 'v160, 7:38 AM'},
+      {s: 'done', t: 'Home podium Pokémon over the tile, tappable', d: 'Every size (Maggi found the iPad + Battle cases); tapping a Pokémon opens its info. You checked it.', tag: 'v161, 10:14 AM'},
+      {s: 'done', t: 'Kip\'s page-speed work in the redesign', d: 'Reviewed, 4 must-fixes fixed and re-checked by Maggi, 2 more bugs fixed by HH\'s helper; GitHub 15/15.', tag: 'design6'},
+      {s: 'done', t: 'Dec 2 patch night practice run', d: 'Kip, on a copy with a Dec 2 clock: found the right order and a test that would turn red; runbook updated.', tag: 'Kip 74'},
+      {s: 'done', t: 'Alarms reach your phone', d: 'GitHub emails, you confirmed. Noise fix: only the live site opens the data alarm.', tag: 'HH'},
+      {s: 'doing', t: 'Speed work to main and the live link', d: 'After Maggi\'s page-by-page check and a pixel comparison.', tag: 'HH'},
+      {s: 'next', t: 'Data every 4 hours for M-D', d: 'Built; you switch it on (FAST_DATA=1) the night before Dec 2.', tag: 'You, Dec 1'}
     ]},
     {h: 'Thu night: the switch (HH, overnight)', items: [
       {s: 'next', t: 'New site goes live, undo plan ready, watched all day', d: '', tag: 'HH + Sim'},

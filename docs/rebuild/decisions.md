@@ -2934,3 +2934,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:30 AM: Sim: GitHub alarm emails reach him ('Yup i got the emails'). Alarm path confirmed end to end; noise fix (audit issue main-only) gating.
 - 11:32 AM: main 59d0da27 (podium) GitHub run 46026603683: success, all jobs.
 - 11:35 AM: Kip 74 Dec 2 dry run done (7c4da53d): 2 script bugs fixed fail-first; found order rules (roster step after 02:00Z, then gen-move-meta + gen-info-text, patch again if pin old) and CI blocker (apply-dec2-patch-test red post-patch). Runbook updated on alt/dec2-runbook 3e4fc7ec (carries Kip 74); GitHub dispatched. Kip job 77 queued: post-patch mode for apply-dec2-patch-test.
+- 11:36 AM: Hourly 11:35: Game Plan rewritten (Friday section now reflects the switch day), disk 12 GB, 1 helper (Job NN), Kip 75 + Maggi M13 working; gates: audit-main-only, dec2-runbook waiting on GitHub.
