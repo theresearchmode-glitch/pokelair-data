@@ -2952,3 +2952,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:36 PM: Main merge df1617f3 passed merge-check but main moved meanwhile (data commit 4b9f9fbd); not pushed. Re-running main-merge.sh on the new main.
 - 2:59 PM: main 1ba2a7a1 pushed (design6 ea0dd5f4 + data 4b9f9fbd; merge-check main ALL PASSED). Live artifact v162 (1795809589-fe4f) from main's build: host-wrapper-test 8/8 (0 px), WebKit iPhone 15 light/dark + iPad landscape dark: our colours/fonts, back buttons shown, 0 page errors; v2.js read back 3,826,665 B sha bee5efbd. Published while main's own GitHub run (watching) was still going: the same code passed GitHub on design6 ea0dd5f4.
 - 3:00 PM: Sim checked live v162 on his phone: 'they feel good'. t3 merged origin/claude/design6 (30cf2b8e); its accidental GitHub run 46060594435 cancelled. Preview rebuild started.
+- 3:01 PM: Preview v271 (1795809679-8724): today's merged work + data 2026-11-27T19:19Z (live 4b9f9fbd); no-names 0, COPY-OK, exit 0.
