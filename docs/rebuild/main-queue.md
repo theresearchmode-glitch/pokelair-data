@@ -2,14 +2,11 @@
 Updated: time: 9:36 PM (9:36:47)  date: Thu Nov 26, 2026
 NOW: (9:37 PM) waiting for the helper real push of alt/batch8 (b8-wait.sh pid in .main-running; then read report + gate.sh alt/batch8). Switch dry run done (all passed).
 NOW: (Kip) 69 = speed chain on Reg M-D day-one data. (Maggi) M2 = fix M1 findings 1-5.
-NEXT: batch8 = alt/calc-tile-phone + alt/preflight-skip (merge-tree clean), real GitHub run, gate after Final 3 is in design6.
-NEXT: Preview republish after the merge (Final 3 for Sim's iPhone check); send Sim before/after pictures.
-NEXT: tell Sim when Final 3 is in design6 so Kip re-merges design6 into 64c before his final push.
-NEXT: Fri 7:30 AM switch prep (trig_01HzJ1ckLPN7LMVpiJ4eUh83), preflight from alt/preflight-skip 575ba798.
-NEXT: gate alt/f3-public-rest after batch7; then part 2 when Sim says yes; Preview republish.
-NEXT: Friday switch if Sim OKs the Preview tonight; Kip 62 preflight on the morning.
-NEXT: verify Kip 64b when it lands (LCP claim 0.4-1.5 s) and merge it.
-NEXT: Sim's answers: Final 3 on the Claude build (helper's alt/f3-claude), Friday go/no-go.
+NEXT: gate alt/batch8 (F3 + qcheck fixes + calc tile + preflight-skip + sweep fixes) when GitHub is green and the helper report is read.
+NEXT: Preview republish after batch8 merges; tell Sim (iPhone check in the morning); end the helper by midnight (trig_01LjNsUYs9wEtHwagBYqvYCH).
+NEXT: review Maggi M2 when pushed; merge after batch8 (pubhome-f3.js).
+NEXT: Fri 7:30 AM switch prep (trig_01HzJ1ckLPN7LMVpiJ4eUh83); preflight copy from design6 once batch8 lands (else alt/preflight-skip).
+NEXT: after the switch: Kip speed chain 64c-69 review + merge.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
