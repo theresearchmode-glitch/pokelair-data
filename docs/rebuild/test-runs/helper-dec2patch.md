@@ -3,11 +3,11 @@
 HH's helper, Thu Nov 26, 10:58 PM (clock: docs/rebuild/now.sh). Branch alt/helper-dec2patch from origin/claude/design6 23520831.
 Not merged; nothing applied to the real data. The script refuses to write before 2026-12-02T02:00Z unless --force.
 
-What I'd need to know that you haven't told me:
-- Ability wording is mine, built from the official sentences (below). Sim/HH may want other words; the tests only need
-  "Fire Boost" + "Mega Evolves" (rules-fixes-test check 5) and "substitutes".
-- Castform-Sunny / -Rainy / -Snowy get Psych Up too (LEARN-only battle forms with Castform's exact list). Not in the map; my reading
-  (Kip's job 49 did the same). Say if you want them left out.
+Settled with HH (Nov 26):
+- Ability wording: built from the official patch note; replace with the in-game English text once Showdown/Bulbapedia publish it on
+  Dec 2. Keep "Fire Boost" + "Mega Evolves" and "substitutes", which rules-fixes-test check 5 looks for.
+- Castform-Sunny / -Rainy / -Snowy get Psych Up too. They are LEARN-only battle forms with Castform's exact list, the same choice as
+  Kip's job 49. HH: keep them.
 
 ## Sources
 - Official notes: docs/rebuild/test-runs/patch-dec2-official-877.html (news 877), read as text.

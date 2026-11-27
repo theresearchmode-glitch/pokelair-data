@@ -80,6 +80,8 @@ const NEW_MOVES = {
 const MOVE_ROWS = {'Psych Up': ['Psych Up', 0, 0, 0, 0, 0], 'Slack Off': ['Slack Off', 0, 0, 0, 0, 0], 'Roost': ['Roost', 9, 0, 0, 0, 0],
   'Tailwind': ['Tailwind', 9, 0, 0, 0, 0], 'Wonder Room': ['Wonder Room', 10, 0, 0, 0, 0], 'Play Rough': ['Play Rough', 17, 1, 90, 0, 0]};
 
+// Ability wording (HH OK, Nov 26): built from the official patch note; replace with the in-game English text once Showdown/Bulbapedia
+// publish it on Dec 2 (keep "Fire Boost" + "Mega Evolves" and "substitutes": rules-fixes-test check 5 looks for them).
 const FF_OLD = "This Pokemon's Fire attacks do 1.5× damage if hit by one Fire move; Fire immunity.";
 const FF_NEW = "Fire immunity: when hit by a Fire move, this Pokemon gains Fire Boost (its Fire attacks do 1.5× damage). Fire Boost persists even if it Mega Evolves.";
 const ST_OLD = "This Pokemon's moves cannot be redirected to a different target by any effect.";
