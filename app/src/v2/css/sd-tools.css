@@ -479,6 +479,9 @@
   /* Archetypes in a half-width card: smaller sprites so the two style tags stay inside the 96px stage, above the title */
   .sdt-ar .sdt-art .np-mon{--iw:56px}.sdt-ar .sdt-wxi{gap:0;justify-content:flex-end}
   .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{--k:10px;grid-column:span 6;margin-top:var(--s10);padding-inline:calc(var(--s2) + var(--k))}
+  /* Sim, Nov 27 (iPhone): the Ratings podium sprites rise 20px past the card top, into the Damage Calculator tile above, which painted over
+     their heads (the tile comes later in the page). The first row of cards draws above the tile, so the heads show over its empty bottom edge */
+  .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt{z-index:1}
   .sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t17)}
   .sdt-ra>.sdt-pod,.sdt-bt>.sdt-vs,.sdt-pr>.sdt-pp,.sdt-ar>.sdt-wx{flex-basis:96px;height:96px}
   .sdt-chips ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
