@@ -2925,3 +2925,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:31 AM: Helper Job MM done: alt/speed-chain-merge cd798dff (Kip chain + 2 real fixes), GitHub 15/15; gating into design6. Open: no 'Data as of' date on Home if /data fails entirely under split-routes (minor); host-wrapper-test flaked 2/5 locally on cd798dff -> new helper Job NN to fix the test's waiting.
 - 10:36 AM: Hourly 10:36: disk 5->8 GB (removed helper's finished wt-speedmerge, old scratch folders); Game Plan v116; 1 helper (Job NN); main merge-check (podium) + speed-chain gate running.
 - 10:36 AM: Kip's speed chain merged into design6 (978d8213) via gate: GitHub 15/15 on cd798dff, merge-check ALL PASSED.
+- 10:38 AM: Pushed main 59d0da27 (design6 0ccfa209: podium stacking + podium-cover-test); merge-check main ALL PASSED.
