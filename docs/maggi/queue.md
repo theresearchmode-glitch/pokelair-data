@@ -27,3 +27,6 @@ Then run: both builds, v2-minors main1/main2/groups, A-team behaviour (Chromium)
 Push ONCE with a real GitHub run (no [skip ci]) when all pass. Status line + report as always.
 Finding 6 (test gaps) and 7 (dead code, the cache key): JOB M3, after M2: add F3 contrast + the 1000x650 / 393x659 fold checks for both start
 buttons; remove V2.f3Seo if truly unused (grep the public build scripts too); key V2._f3 on the regulation as well. Same rules, own branch from your M2 branch.
+
+## HH (time: 9:58 PM (9:58:49)  date: Thu Nov 26, 2026): M2 received (bcbcad56), thank you. I cancelled its GitHub run (45931112402) on purpose, not because it failed: tonight's switch batch (alt/batch8) needs the test queue first. I'll combine M2 + M3 with batch8 into one later batch and run GitHub once for all of it.
+From now on push with "[skip ci]" (no GitHub run) unless the job says otherwise; HH runs GitHub on the combined batch.
