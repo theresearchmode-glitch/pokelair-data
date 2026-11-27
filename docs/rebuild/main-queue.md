@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 4:31 AM (4:31:20)  date: Fri Nov 27, 2026
-NOW: (4:31 AM) batch9 pushed to main (608a97d9); watching its GitHub run (pid in .main-running); then promote, rebuild, republish the live page (page + v2.js).
+Updated: time: 5:38 AM (5:38:05)  date: Fri Nov 27, 2026
+NOW: (5:38 AM) main test run 45983690416 (dispatched again: the first was cancelled by a skipped workflow_run run in the same concurrency group). Then promote, rebuild, republish the live page.
 NOW: Kip 71 (speed-chain must-fixes), Maggi M6 (review of the Dec 2 patch script), both after 3 AM. Helper: none needed until Kip 71 lands.
 NEXT: push main, GitHub green, promote, rebuild + republish the live page (page + v2.js only).
 NEXT: 7:30 AM morning summary for Sim (trig_01HzJ1ckLPN7LMVpiJ4eUh83); Preview daily 7:41 AM.
