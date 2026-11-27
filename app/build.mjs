@@ -44,7 +44,15 @@ if (process.argv.includes('--v2')) {
   // code review C3 (Nov 15): /* */ comments are dropped from the shipped CSS (69 KB of 490), as the live build does; the source keeps them.
   // `--keep-comments` keeps them. JS comments are dropped by esbuild further down (code review B-I1).
   const noCom = c => process.argv.includes('--keep-comments') ? c : c.replace(/\/\*[\s\S]*?\*\//g, '');
-  const css = `@layer ${layers};\n` + P.css.map(([n, f]) => `@layer ${n} {\n${noCom(rd(f))}\n}`).join('\n');
+  const css = `@layer ${layers};\n` + P.css.map(([n, f]) => `@layer ${n} {\n${noCom(rd(f))}\n}`).join('\n')
+    /* Nov 27 (Sim saw dark mode broken on the live artifact): the Claude artifact host wraps index.html in its own UNLAYERED style
+       (:root color-scheme light + safe-area padding, html scroll-padding-top, body margin/padding/font/background/color, img max-width).
+       Every rule above is in @layer, so the host's rules won. revert-layer in this one unlayered block sets those properties back to
+       what our layers say, so the wrapped page renders exactly like the unwrapped one (the Preview). */
+    + '\n:root:root{color-scheme:revert-layer;box-sizing:revert-layer;padding-top:revert-layer;padding-bottom:revert-layer}'
+    + 'html:root{scroll-padding-top:revert-layer}'
+    + 'html body{margin:revert-layer;padding:revert-layer;font:revert-layer;background:revert-layer;color:revert-layer}'
+    + 'html body img{max-width:revert-layer}';
   const helpers = rd('src/app/15-visual-helpers.js'), i0 = helpers.indexOf('SPRITE_ID ='), sprite = helpers.slice(helpers.indexOf('{', i0), helpers.indexOf('}', i0) + 1);
   JSON.parse(sprite); // fails the build if the shared sprite table ever stops being plain JSON
   const meta = fs.existsSync(dir + 'src/v2/art/meta.json') ? rd('src/v2/art/meta.json') : '{}';
