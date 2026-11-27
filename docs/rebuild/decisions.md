@@ -2972,3 +2972,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:14 PM: main 75da5b29 pushed (design6 54d6ac7e font fix; merge-check main ALL PASSED). Watching its run; live v163 after it (or together with the Build page if Sim says yes first).
 - 6:28 PM: Sim's final yes on Build page C2 ('lvove it. rec is good to go. lets do it').
 - 6:37 PM: Sim: aim to go live Dec 1 (a day before Reg M-D, to iron out kinks); Sim does the Cloudflare steps later tonight. Plan: practice deploy to a hidden address after his clicks, then DEPLOY_ENABLED on Dec 1.
+- 6:38 PM: Sim: Cloudflare/GitHub setup will be done with Dos (PC chat) later tonight; Sim asks for the prompt when ready. HH pre-wrote docs/rebuild/dos-cloudflare-prompt.md (names only, no secrets in chat, DEPLOY_ENABLED/FAST_DATA not yet).
