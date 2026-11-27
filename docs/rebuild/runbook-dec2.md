@@ -13,6 +13,21 @@ fallback if Showdown is late.
 - [ ] Turn FAST_DATA on (repo variable FAST_DATA=1): data every 4 hours from Dec 2 for 2 weeks.
 - [ ] The data refresh and the 7:41 Preview job: confirm both ran green today.
 
+## The order that works (Kip job 74, Fri Nov 27: full dry run on a scratch copy with a fake Dec 2 clock; docs/rebuild/test-runs/kip-job74-dec2-dryrun.md)
+Since this runbook was written, two scripts do most of it: experiments/apply-dec2-patch.mjs (the balance patch by hand-edit, date-gated
+to 02:00Z Dec 2, idempotent) and experiments/md-roster-step.mjs (roster, items, sprites, regulation; its step 8 re-runs the patch).
+1. Run md-roster-step.mjs --write AFTER 02:00Z Dec 2. Before that time it rewrites data.js and skips the patch (step 8 "NOT applied").
+   If it ran early: run `node experiments/apply-dec2-patch.mjs --write` again after 02:00Z.
+2. Then `node experiments/gen-move-meta.mjs` and `node experiments/gen-info-text.mjs`: md-roster-step does not run them, and new M-D
+   Pokemon have no weight (SPECIES_WT) and new items/abilities no info text until they run (fields-audit fails on it).
+3. If the Showdown pin does not yet have the patch (smogon/pokemon-showdown#12475), run apply-dec2-patch.mjs --write once more: step 2
+   regenerated move-acc/move-meta/info-text from the old pin. Safe to repeat (done-predicates).
+4. In the SAME commit, retire the apply-dec2-patch-test.mjs step in test.yml (or switch it to its post-patch mode if built by then): it
+   copies the repo's data and expects it unpatched, so it fails (12 of 30) once the patch is committed.
+5. fields-audit stays red on the 5 patched moves until the Showdown pin moves to a commit with #12475 (expected; the pin bump
+   branch alt/helper-showdown-pin waits for that).
+6. app/test/run.mjs needs the frozen out/ (design6); the empty M-D day-one out/ belongs on main/live only.
+
 ## Dec 2, part 1: the balance patch (all regulations)
 1. [ ] Is it live? Official notes page + maintenance over (news.pokemon-home.com). Note the time.
 2. [ ] Does Showdown have it? Check smogon/pokemon-showdown commits for the champions mod (Rock Slide 95 / flinch 20 in
