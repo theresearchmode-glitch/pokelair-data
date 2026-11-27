@@ -58,7 +58,7 @@ const NO_CALC_EFFECT = new Set(['No Item', 'No Held Item', 'Pressure', 'Keen Eye
   'Emergency Exit', 'Flower Veil', 'Static', 'Poison Point', 'Insomnia', 'Limber', 'Leaf Guard', 'Telepathy', 'Magician', 'Shed Skin', 'Immunity', 'Early Bird', 'Poison Heal', 'Toxic Debris', 'Spicy Spray', 'Trace', 'Illusion',
   'Moody', 'Anger Point', 'Steadfast', 'Magma Armor', 'Corrosion', 'Light Clay', 'Eject Button', 'Leppa Berry', 'Binding Band', 'Big Root', 'Red Card',
   'Regenerator', 'Natural Cure', 'Harvest', 'Pickup', 'Run Away', 'Honey Gather', 'Ball Fetch', 'Sitrus Berry', 'Leftovers', 'Lum Berry', 'Mental Herb', 'White Herb', 'Shell Bell', 'Black Sludge', 'Focus Sash', 'Power Herb', 'Mirror Herb', 'Eject Pack', 'Covert Cloak', 'Safety Goggles', 'Throat Spray', 'Room Service', 'Adrenaline Orb', 'Booster Energy', 'Ability Shield', 'Clear Amulet', 'Punching Glove', 'Loaded Dice']);
-const T = JSON.parse(rd(OUT + 'meta_tour.json')), rows = [...T.top, ...(T.more || [])].sort((a, b) => b.u - a.u).slice(0, 100), ab = new Map(), it = new Map();
+const T = JSON.parse(rd(OUT + 'meta_tour.json')), rows = [...(T.top || []), ...(T.more || [])].sort((a, b) => b.u - a.u).slice(0, 100), ab = new Map(), it = new Map();
 for (const r of rows) { for (const [n, p] of r.ab || []) if (p >= 1) ab.set(n, Math.max(ab.get(n) || 0, p * r.u / 100)); for (const [n, p] of r.it || []) if (p >= 1) it.set(n, Math.max(it.get(n) || 0, p * r.u / 100)); }
 const ABIL = grab(/const ABIL=(\{[\s\S]*?\});/, data) || {};
 const lc = new Set([...ENGINE.matchAll(/'([A-Z][A-Za-z' -]+)'/g)].map(x => x[1].toLowerCase()));
