@@ -23,3 +23,4 @@ M11 | started | alt/maggi-m11-kip71 - | waiting for / reviewing Kip job 71 on al
 M11 | done | alt/maggi-m11-kip71 c034ccce | Verified Kip job 71 (80c0d935): M1, M2, M3, M4, F1 all fixed (report docs/rebuild/test-runs/maggi-M11-kip71.md) | Fri Nov 27 07:39:33 AM EST 2026
 - | idle | - - | M11 done; waiting for next job | Fri Nov 27 07:47:55 AM EST 2026
 M12 | started | alt/maggi-m12-podium - | Starting M12: Home podium sprite stacking order investigation + podium-cover-test.mjs | Fri Nov 27 07:50:23 AM EST 2026
+M12 | done | alt/maggi-m12-podium 25b3551a | Settled 612d0364: phones fixed (HH WebKit render right, 26% sprite px over .sdt-dc); WebKit iPad Pro 11 landscape still cut (z-index:1 only under 700px) + Battle a.sdt-go >=1100; proposed 2-line fix proven | Fri Nov 27 08:03:26 AM EST 2026
