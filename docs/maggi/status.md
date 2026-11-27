@@ -9,3 +9,4 @@ M4 | started | alt/maggi-m4-patchmap - | checking Dec 2 balance-patch map agains
 M4 | done | alt/maggi-m4-patchmap 5e96566d | audited Dec 2 patch map on design6+main: 5 shifted lines, missed Showdown 1242c1e pins in package.json+test.yml (must change), rules-fixes-test Dec 2 guard, md-roster-step hook | Thu Nov 26 10:11:09 PM EST 2026
 M5 | started | alt/maggi-m5-dec2patch - | writing experiments/apply-dec2-patch.mjs and apply-dec2-patch-test.mjs | Thu Nov 26 10:13:54 PM EST 2026
 M5 | done | alt/maggi-m5-dec2patch b0daf6e8 | added apply-dec2-patch.mjs + apply-dec2-patch-test.mjs (14/14 pass incl. time-bomb fail/pass, run.mjs, unrated-test); note md-roster-step:201 needs --write | Fri Nov 27 06:32:10 AM EST 2026
+M6 | started | alt/maggi-m6-review - | independent review of origin/alt/helper-dec2patch (fc49e36d) | Fri Nov 27 06:32:27 AM EST 2026
