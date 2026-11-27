@@ -97,48 +97,21 @@ export async function staticPages({dir, h, ph, ownHead, esc, pages, lastmod}) {
   const ld = JSON.stringify({'@context': 'https://schema.org', '@graph': [{'@type': 'CollectionPage', '@id': 'https://nastyplot.org/pokemon', url: 'https://nastyplot.org/pokemon', name: title, description: desc, isPartOf: {'@type': 'WebSite', name: 'NastyPlot', url: 'https://nastyplot.org/'}},
     {'@type': 'BreadcrumbList', itemListElement: [{'@type': 'ListItem', position: 1, name: 'NastyPlot', item: 'https://nastyplot.org/'}, {'@type': 'ListItem', position: 2, name: 'Pokémon', item: 'https://nastyplot.org/pokemon'}]}]});
   let pokHtml = withHtmlClass(docOf(ownHead(baseHead, title, desc, 'https://nastyplot.org/pokemon'), got.idx, ld));
+  /* 2. the light 404: no canonical, no og:url, noindex */
   const h404 = ownHead(baseHead, 'Page not found · NastyPlot', 'This address doesn\'t match a page on NastyPlot.', 'https://nastyplot.org/').replace(/<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>/g, '').replace('<title>', '<meta name="robots" content="noindex"><title>');
   let nfHtml = withHtmlClass(docOf(h404, got.nf, ''));
-
-  /* Fix 4 (Job 61): trim /v2.css into /static.css for the static pages (/pokemon, 404.html) using the same safe token-pruning
-     rule as app/slim.mjs (drop rules whose class/id names appear nowhere in the static HTML or fit.js; keep @layer/@media/@keyframes). */
+  /* Fix 4 (Job 61 / batch7) + Job 64c: write trimmed /static.css for the static pages (keeps 404.html under 30 KB cap)
+     and inline pruned critical CSS directly into /pokemon (pokemon.html) for 0-RTT first paint. */
   if (fs.existsSync(dist + 'v2.css')) {
+    const {pruneCss} = await import('./crit-css.mjs');
     const v2Css = fs.readFileSync(dist + 'v2.css', 'utf8');
-    const nonCss = (pokHtml + '\n' + nfHtml + '\n' + fit).replace(/<style>[\s\S]*?<\/style>/g, ' ');
-    const words = new Set(nonCss.match(/[A-Za-z_][\w-]*/g) || []);
-    const has = n => { if (words.has(n)) return true; for (let k = n.length - 1; k > 0; k--) if ((n[k - 1] === '-' || n[k - 1] === '_') && words.has(n.slice(0, k))) return true;
-      const base = n.replace(/\d+$/, ''); return base !== n && words.has(base); };
-    const needed = sel => { const s = sel.replace(/:not\((?:[^()]|\([^()]*\))*\)/g, '');
-      const flat = s.replace(/:(?:is|where|has|matches)\((?:[^()]|\([^()]*\))*\)/g, '');
-      const out = []; for (const m of flat.matchAll(/([.#])([A-Za-z_][\w-]*)/g)) out.push(m[2]); return out; };
-    const splitTop = s => { const out = []; let d = 0, cur = '';
-      for (const ch of s) { if (ch === '(' || ch === '[') d++; if (ch === ')' || ch === ']') d--; if (ch === ',' && d === 0) { out.push(cur); cur = ''; } else cur += ch; }
-      out.push(cur); return out; };
-    const prune = css => { let out = '', i = 0;
-      while (i < css.length) {
-        const ob = css.indexOf('{', i), sc = css.indexOf(';', i);
-        if (sc >= 0 && (ob < 0 || sc < ob)) { out += css.slice(i, sc + 1); i = sc + 1; continue; }
-        if (ob < 0) { out += css.slice(i); break; }
-        const head = css.slice(i, ob), headT = head.trim();
-        let d = 1, j = ob + 1; while (j < css.length && d) { if (css[j] === '{') d++; else if (css[j] === '}') d--; j++; }
-        const body = css.slice(ob + 1, j - 1);
-        if (headT.startsWith('@')) {
-          if (/^@(media|supports|layer|container)\b/.test(headT)) { const inner = prune(body); if (inner.trim()) out += head + '{' + inner + '}'; }
-          else out += head + '{' + body + '}';
-        } else {
-          const sels = splitTop(head), live = sels.filter(s => needed(s).every(has));
-          if (live.length) out += live.join(',') + '{' + body + '}';
-        }
-        i = j;
-      }
-      return out; };
-    const staticCss = prune(v2Css);
+    const staticCss = pruneCss(v2Css, pokHtml + '\n' + nfHtml + '\n' + fit);
+    const pokCss = pruneCss(v2Css, pokHtml + '\n' + fit);
     const staticRef = `/static.css?v=${H(staticCss)}`;
     fs.writeFileSync(dist + 'static.css', staticCss);
-    pokHtml = pokHtml.replace(/href="\/v2\.css\?v=[^"]+"/, `href="${staticRef}"`);
+    pokHtml = pokHtml.replace(/<link rel="stylesheet" href="\/v2\.css\?v=[^"]+">/, () => `<style id="np-crit">${pokCss}</style>`);
     nfHtml = nfHtml.replace(/href="\/v2\.css\?v=[^"]+"/, `href="${staticRef}"`);
   }
-
   fs.writeFileSync(dist + 'pokemon.html', pokHtml);
   fs.writeFileSync(dist + '404.html', nfHtml);
   return {underdog: got.dog, asOf: got.asOf, sitemap: `  <url><loc>https://nastyplot.org/pokemon</loc><lastmod>${lastmod}</lastmod></url>`, size404: fs.statSync(dist + '404.html').size, sizeIndex: fs.statSync(dist + 'pokemon.html').size};

@@ -40,8 +40,19 @@ const CASES = [
   ['Natures (deferred data) -> Ratings: real ratings rows render', '/natures', async q => { await q.click('a[data-h="#meta"], a[href="/meta"]'); await q.waitForTimeout(1500); const n = await q.evaluate(() => document.querySelectorAll('.ra-row, .rs-st li').length); if (n < 5) throw new Error('expected ratings rows, got ' + n); }],
   ['Gifts (deferred data) -> News: stories render without hanging', '/gifts', async q => { await q.evaluate(() => { location.hash = '#news'; }); await q.waitForTimeout(1500); const ok = await q.evaluate(() => /Dispatch/i.test((document.querySelector('#main h1') || {}).innerText || '')); if (!ok) throw new Error('News h1 did not render'); }],
   ['Track Record (cold): receipts render with real numbers', '/track-record', async q => { const len = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim().length); if (len < 300) throw new Error('Track Record main too short: ' + len); }],
+  ['Info sheet (cold): ability button lazy-loads info-text and opens sheet', '/pokemon/garchomp', async q => { await q.click('[data-v2info="ab"]'); await q.waitForSelector('.np-sheet .is2 .is-lead', {timeout: 8000}); const t = await q.textContent('.np-sheet .is2 .is-lead'); if (!t || t.trim().length < 10) throw new Error('empty ability lead'); }],
+  ['Search (cold): move query lazy-loads info-text and opens move sheet', '/', async q => { await q.click('[data-v2search]'); await q.waitForTimeout(400); await q.keyboard.type('Protect'); await q.waitForSelector('.np-sheet [data-v2info="mv"]', {timeout: 8000}); await q.click('.np-sheet [data-v2info="mv"]'); await q.waitForSelector('.np-sheet .is2 .is-lead', {timeout: 8000}); const t = await q.textContent('.np-sheet .is2 .is-lead'); if (!t || t.trim().length < 10) throw new Error('empty move lead'); }],
+  ['Team (cold): team chunk renders My Team', '/team', async q => { const len = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim().length); if (len < 150) throw new Error('Team main too short: ' + len); }],
+  ['Search (cold): Spicy Picks lazy-loads team chunk', '/', async q => { await q.click('[data-v2search]'); await q.waitForTimeout(400); await q.keyboard.type('Spicy Picks'); await q.waitForTimeout(500); await q.click('text=Spicy Picks'); await q.waitForTimeout(1200); const len = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim().length); if (len < 150) throw new Error('Team after Spicy Picks too short: ' + len); }],
+  ['Build (cold): Hatch it runs auto-build from build chunk', '/build', async q => { await q.click('[data-bdgo]'); await q.waitForSelector('[data-bdcx], .bd-card, .bd-team', {timeout: 12000}); }],
+  ['Battle (cold): tournament teams from gauntlet chunk load in opponent sheet', '/battle', async q => { await q.click('[data-btopp]'); await q.waitForSelector('.bt-osheet', {timeout: 8000}); const n = await q.evaluate(() => document.querySelectorAll('.bt-osheet button').length); if (n < 3) throw new Error('expected opponent buttons, got ' + n); }],
+  ['Method (cold): method-data renders', '/how-it-works', async q => { const len = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim().length); if (len < 400) throw new Error('Method main too short: ' + len); }],
+  ['Types (cold): types-data renders chart', '/types', async q => { const len = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim().length); if (len < 200) throw new Error('Types main too short: ' + len); }],
+  ['Practice (cold): practice-data renders preview', '/practice', async q => { const len = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim().length); if (len < 200) throw new Error('Practice main too short: ' + len); }],
+  ['Compare (cold): compare-data renders', '/compare', async q => { const len = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim().length); if (len < 120) throw new Error('Compare main too short: ' + len); }],
+  ['Feedback (cold): feedback-data renders', '/', async q => { await q.evaluate(() => { location.hash = '#feedback'; }); await q.waitForSelector('#fbText2', {timeout: 8000}); const h1 = await q.textContent('#main h1'); if (!h1 || !h1.trim()) throw new Error('Feedback h1 missing'); }],
   ['7 pages by the menu, no reload', '/', async q => { for (const h of ['#build', '#meta', '#battle', '#team', '#gifts', '#events', '#calc']) { await q.evaluate(h => { location.hash = h; }, h); await q.waitForTimeout(1500); } }]];
-const b = await chromium.launch(); let fails = 0;
+const b = await chromium.launch({args: ['--disable-dev-shm-usage']}); let fails = 0;
 for (const [name, pth, act] of CASES) {
   const c = await b.newContext({viewport: {width: 1440, height: 900}}), q = await c.newPage(), errs = []; q.setDefaultTimeout(8000);
   q.on('pageerror', e => errs.push(e.message)); q.on('console', m => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errs.push(m.text().split('\n')[0]); });
@@ -50,6 +61,18 @@ for (const [name, pth, act] of CASES) {
   const r = await q.evaluate(() => ({at: location.pathname + location.hash.slice(0, 16), broken: /didn.t load/.test(document.body.innerText)}));
   const ok = !errs.length && !r.broken && !step; if (!ok) fails++;
   console.log(`  ${ok ? 'pass' : 'FAIL'}  ${name} (cold on ${pth}) -> ${r.at}${step ? ' | step failed: ' + step : ''}${errs.length ? ' | ' + [...new Set(errs)].slice(0, 2).join(' || ').slice(0, 160) : ''}${r.broken ? ' | "This page didn\'t load"' : ''}`);
+  await c.close(); }
+// Chunk-failure guards (Job 71 M1/M2): failing chunks must stop after 1 request, never loop
+for (const [name, pth, pat, act, check] of [
+  ['Chunk fail (M1): /routes/calc.js fails once -> "This page didn\'t load"', '/calc', /\/routes\/calc.*\.js/, null, async (q, reqs) => { const t = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim()); return reqs === 1 && /didn['’]t load/i.test(t); }],
+  ['Chunk fail (M1): /routes/team.js fails once -> "This page didn\'t load"', '/team', /\/routes\/team.*\.js/, null, async (q, reqs) => { const t = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim()); return reqs === 1 && /didn['’]t load/i.test(t); }],
+  ['Chunk fail (M2): /routes/info-text.js fails once on ability tap -> no loop', '/pokemon/garchomp', /\/routes\/info-text.*\.js/, async q => { await q.click('[data-v2info="ab"]'); }, async (q, reqs) => { const s = await q.evaluate(() => Boolean(document.querySelector('.np-sheet, .np-toast'))); return reqs === 1 && s; }],
+]) {
+  const c = await b.newContext({viewport: {width: 1440, height: 900}}), q = await c.newPage(); let reqs = 0, step = '';
+  await q.route(pat, async rt => { reqs++; if (reqs > 50) await new Promise(r => setTimeout(r, 100)); return rt.abort('failed').catch(() => {}); });
+  try { await q.goto(base + pth, {waitUntil: act ? 'networkidle' : 'domcontentloaded', timeout: 10000}); if (act) { await q.waitForTimeout(400); await act(q); } await q.waitForTimeout(1500); } catch (e) { step = String(e.message).split('\n')[0].slice(0, 90); }
+  const ok = !step && await check(q, reqs).catch(() => false); if (!ok) fails++;
+  console.log(`  ${ok ? 'pass' : 'FAIL'}  ${name} (reqs=${reqs}${step ? ' | ' + step : ''})`);
   await c.close(); }
 await b.close(); srv.close();
 console.log(`split-routes-cross-test: ${fails ? fails + ' failed' : 'all passed'}`); process.exit(fails ? 1 : 0);

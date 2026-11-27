@@ -37,8 +37,10 @@ V2.cp = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m
 // same shape (no reserved blank line above every name); elsewhere (rows, sentences) Mega stays inline before the name (nameHtml)
 // o.tag (i42, Nov 13): a bare tile that writes its own name still gets the corner Mega tag (A9), so its name never wraps below its neighbours
 V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
-  const big = !(o.iw && o.iw <= 80) || o.big;
-  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id, big)}" alt="" loading="lazy" decoding="async">` : ''}${V2.disp(n).startsWith('Mega ') && (!o.bare || o.tag) ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `<b>${V2.esc(V2.disp(n).replace(/^Mega /, ''))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
+  const sm = id ? V2.art(id, false) : '', bg = id ? V2.art(id, true) : '', useSm = o.iw && o.iw <= 80;
+  const img = id ? (o.big ? `<img src="${bg}" alt="" loading="lazy" decoding="async">`
+    : `<img src="${useSm ? sm : bg}"${sm !== bg ? ` srcset="${sm} 240w, ${bg} 384w" sizes="${o.iw ? o.iw + 'px' : '(max-width: 699.98px) 84px, 120px'}"` : ''} alt="" loading="lazy" decoding="async">`) : '';
+  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${img}${V2.disp(n).startsWith('Mega ') && (!o.bare || o.tag) ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `<b>${V2.esc(V2.disp(n).replace(/^Mega /, ''))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
 // drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
 V2.ICON = {fwd: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4.5 16.5 12 9 19.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>', back: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>', search: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>',
   // My Box: a storage box (lid, body, handle slot), drawn like the search glass
@@ -186,7 +188,8 @@ V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: [
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
   return {places, mons}; };
-V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="${innerWidth < 430 ? 'Pokémon, move, item or page' : 'Find a Pokémon, move, item, team style or page'}" aria-label="Find a Pokémon, move, item, Ability, nature, team style, saved team or page" autocomplete="off">${V2.CLR}</label><p class="vh" data-v2hitsay role="status"></p><div class="hits" data-v2hits></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
+V2.openSearch = () => { if (typeof INFO_TEXT !== 'object' && window.__NP_ROUTES && window.__NP_ROUTES['info-text']) V2.needRoute('info-text', () => { const q = document.querySelector('.np-sheet [data-v2q]'); if (q && q.value) q.dispatchEvent(new Event('input', {bubbles: true})); });
+  const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="${innerWidth < 430 ? 'Pokémon, move, item or page' : 'Find a Pokémon, move, item, team style or page'}" aria-label="Find a Pokémon, move, item, Ability, nature, team style, saved team or page" autocomplete="off">${V2.CLR}</label><p class="vh" data-v2hitsay role="status"></p><div class="hits" data-v2hits></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
   const inp = sh.querySelector('[data-v2q]'), out = sh.querySelector('[data-v2hits]');
   // saved teams by name too (today's search does): choosing one opens it, like Open in Saved Teams
   const teams = q => { q = q.trim().toLowerCase(); return q && typeof S === 'object' ? S.teams.filter(t => t.format !== 'singles' && String(t.name).toLowerCase().includes(q)).slice(0, 4) : []; };
@@ -271,7 +274,7 @@ V2.places = [['home', 'Home'], ['build', 'Build'], ['team', 'My Team'], ['battle
 // search finds these too: rebuilt places inside My Team (audit JUMP-05; today's search finds them); pages are links, sheets open over
 // My Team as their buttons do. Search only: the top bar stays the five above.
 V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], ['team', 'Saved Teams', () => V2.openSavedTeams && V2.openSavedTeams()],
-  ['team', 'Team Sheet', () => V2.openTeamSheet && V2.openTeamSheet()], ['team', 'All Suggestions', () => V2.openAllSugs && V2.openAllSugs()], ['team', 'Spicy Picks', () => V2.spicyOpen && V2.spicyOpen()] /* Job E, Nov 26: Search finds the toggle and turns it on */,
+  ['team', 'Team Sheet', () => V2.openTeamSheet && V2.openTeamSheet()], ['team', 'All Suggestions', () => V2.needRoute('team', () => V2.openAllSugs && V2.openAllSugs())], ['team', 'Spicy Picks', () => V2.needRoute('team', () => V2.spicyOpen && V2.spicyOpen())] /* Job E, Nov 26: Search finds the toggle and turns it on */,
   /* Nov 15 (parity with today's search): every page can be found, by its name or a word of its line */
   ['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['natures', 'Natures'], ['tournaments', 'Winning Teams'], ['events', 'Events'], ['archetypes', 'Archetypes'], ['weekly', 'This Week'],
   ['speed', 'Speed Tiers'], ['calc', 'Damage Calculator'], ['types', 'Type Chart'], ['practice', 'Team Preview Practice'], ['gauntlet', 'Test Run'],
@@ -432,7 +435,50 @@ V2.PUB_PATHS = {home: '/', team: '/team', build: '/build', battle: '/battle', ca
    V2.pages[route].seo() -> {h1, intro} (Home does: its drawn headline and line; a new front page supplies its own), else the page's SEO
    title and description are used. Home and Ratings add the top 10 as real /pokemon/ links. Every link is a real public address. */
 V2.PRE_LINKS = [['Score My Team', 'team'], ['Build Me a Team', 'build'], ['Ratings and tier list', 'meta'], ['Damage Calc', 'calc'], ['Speed Tiers', 'speed'], ['Usage Stats', 'usage'], ['Winning Teams', 'tournaments'], ['Test Run', 'gauntlet'], ['Mystery Gifts', 'gifts']];
-V2.preBlock = route => { const E = V2.esc, P = V2.pages[route], S = (window.__NP_SEO || {})[route] || {}, sq = t => String(t || '').replace(/\s+/g, ' ').trim();
+/* Job 64 (speed program): visible above-the-fold first screen for a route, called via V2.preBlock(route, {visible: true}) on --split --public.
+   Demotes <h1> to <div role="presentation"> on routes that also carry the visually hidden SEO block (home, team, meta) so the raw HTML keeps
+   exactly one <h1> (prerender-test.mjs) while painting the identical visible first screen before v2.js runs. */
+V2.preScreen = (route, mon) => {
+  try {
+    if (route === 'pokemon' && mon) {
+      const p = typeof ROSTER === 'object' ? ROSTER.find(q => q.n === mon) : null;
+      if (!p || !V2.pkTop || !V2.pkDex || !V2.kHead) return '';
+      const E = V2.esc, H = lairHead(p), dex = V2.pkDex(p);
+      const lead = `Pokémon Champions · VGC doubles, ${regName().replace(/ /g, '\u00a0').replace(/-/g, '\u2011')}. ${H.tot ? `Rated from ${basisNum(H.tot, true)} real tournament teams.` : V2.unrated(p) ? 'No tournament teams yet: not rated yet.' : 'No tournament teams yet: rated from its stats, typing and tools.'}${H.thinR && !V2.unrated(p) ? ' Early read: few games so far.' : ''}`;
+      const ty = (V2.byName && V2.byName.get(p.n) && V2.byName.get(p.n).t) || p.t || [];
+      const c1 = V2.TYPES.includes(ty[0]) ? ty[0] : 'Normal', c2 = V2.TYPES.includes(ty[1]) ? ty[1] : c1;
+      let top = V2.pkTop(p).replace('<ul class="k-facts">', '<ul class="k-facts pk-hfx">').replace('<img class="k-art"', '<img class="k-art" fetchpriority="high"');
+      const pkOut = `<div class="ra pk pkf" data-np-pre="pokemon" style="--pk-c1:var(--ty-${c1});--pk-c2:var(--ty-${c2})"><nav class="pk-trail" aria-label="You are here"><a href="/pokemon">Pokémon A to Z</a><span aria-hidden="true">›</span><span aria-current="page">${E(V2.disp(p.n))}</span></nav><div class="pk-hd">${V2.kHead({kicker: `CASE FILE${dex ? ' #' + dex : ''} · POKÉMON`, h1Html: `The file on <em class="pk-nm">${V2.nameHtml(V2.disp(p.n))}.</em>`, lead}).replace('<h1 class="k-h1 u">', '<h1 class="k-h1 u" id="pk-name">')}</div>${top}</div>`;
+      return V2.pubLinks ? V2.pubLinks(pkOut) : pkOut;
+    }
+    let raw = '';
+    if (route === 'home') raw = V2.f3Page ? V2.f3Page() : '';
+    else { const P = V2.pages && V2.pages[route]; if (P && typeof P.draw === 'function') raw = P.draw(); }
+    if (!raw || typeof raw !== 'string') return '';
+    const box = document.createElement('div'); box.innerHTML = raw;
+    const rootEl = box.firstElementChild; if (!rootEl) return '';
+    rootEl.setAttribute('data-np-pre', route);
+    if (route === 'home') {
+      const f3h = box.querySelector('.f3-anim'); if (f3h) f3h.classList.remove('f3-anim');
+      rootEl.style.minHeight = '100svh';
+    } else {
+      if (rootEl.children.length > 4) while (rootEl.children.length > 4) rootEl.lastElementChild.remove();
+      for (const list of box.querySelectorAll('ul, ol, tbody')) { const cap = list.classList.contains('rs-st') ? 3 : 8; while (list.children.length > cap) list.lastElementChild.remove(); }
+      for (const big of box.querySelectorAll('.gs-body, .ra-list')) if (box.innerHTML.length > 35000) big.remove();
+      while (rootEl.children.length > 1 && box.innerHTML.length > 35000) rootEl.lastElementChild.remove();
+      let imgN = 0; for (const im of box.querySelectorAll('img')) { imgN++; if (imgN > 1 || route === 'natures') im.setAttribute('loading', 'lazy'); }
+    }
+    if (route === 'home' || route === 'team' || route === 'meta') {
+      const h1 = box.querySelector('h1');
+      if (h1) { const d = document.createElement('div'); for (const a of [...h1.attributes]) d.setAttribute(a.name, a.value); d.setAttribute('role', 'presentation'); d.innerHTML = h1.innerHTML; h1.replaceWith(d); }
+    }
+    const outHtml = box.innerHTML.length <= 45000 ? box.innerHTML : '';
+    return outHtml && V2.pubLinks ? V2.pubLinks(outHtml) : outHtml;
+  } catch (e) { return ''; }
+};
+V2.preBlock = (route, opt) => {
+  if (opt && opt.screenOnly) return V2.preScreen(route, opt.mon);
+  const E = V2.esc, P = V2.pages[route], S = (window.__NP_SEO || {})[route] || {}, sq = t => String(t || '').replace(/\s+/g, ' ').trim();
   let o = null; try { o = P && typeof P.seo === 'function' ? P.seo() : null; } catch (e) { o = null; }
   const h1 = sq(o && o.h1) || sq(S.title).replace(/\s*·\s*NastyPlot\s*$/, '').replace(/^NastyPlot\s*·\s*/, ''), intro = sq(o && o.intro) || sq(S.desc);
   if (!h1) return '';
@@ -484,7 +530,7 @@ V2.focusKey = el => { if (!el || el === document.body || !el.closest || !el.clos
 // An element whose action markers (data-* attributes) differ is a different control: it is replaced, never changed in place, so a
 // tap that is still being handled can't reach a different action (found Nov 12: "Show 2 more" became "See all" in place and the
 // same click then opened All Suggestions; behaviour test SUG-04).
-V2.dataSig = e => [...e.attributes].filter(a => a.name.startsWith('data-')).map(a => a.name + '=' + a.value).sort().join('&');
+V2.dataSig = e => [...e.attributes].filter(a => a.name.startsWith('data-') && a.name !== 'data-np-pre').map(a => a.name + '=' + a.value).sort().join('&');
 V2.morph = (o, n) => { if (o.nodeType !== n.nodeType || o.nodeName !== n.nodeName || (o.nodeType === 1 && (o.id !== n.id || V2.dataSig(o) !== V2.dataSig(n)))) { o.replaceWith(n); return; }
   if (o.nodeType !== 1) { if (o.nodeValue !== n.nodeValue) o.nodeValue = n.nodeValue; return; }
   /* a node a script owns (data-v2own: the Turnstile widget on Send Feedback) is kept exactly as it is, with what the script put in it;
@@ -513,6 +559,7 @@ V2.morphField = (o, n) => { if (o.nodeName === 'SELECT') { V2.morphKids(o, n); o
 V2.redraw = pre => { const app = document.getElementById('app'); if (!app || !app.firstChild) { V2.draw(); return; }
   const y = scrollY, act = document.activeElement, key = V2.focusKey(act), r = pre && pre.tag === V2.preOk && V2.preOk(pre) ? pre.r : V2.shell(), t = document.createElement('template'); t.innerHTML = r.html;
   V2.rdN = (V2.rdN || 0) + 1; /* counted after the check above, so a pre-built HTML is never stale against this very redraw */
+  if (V2.dataReady()) { const mm = document.getElementById('main'); if (mm) mm.querySelectorAll(':scope > [data-v2pre], :scope > .vh.np-loading').forEach(e => e.remove()); }
   V2.morphKids(app, t.content); if (scrollY !== y) scrollTo(0, y); /* only when the merge moved it (code review B-m2) */
   if (key && !act.isConnected) { const e = [...document.querySelectorAll('#app ' + key.sel)][Math.max(0, key.i)]; if (e) e.focus({preventScroll: true}); }
   /* stress test (Nov 16): a focused heading kept by the merge loses its temporary tabindex (copied from the fresh HTML) and the browser drops focus to <body>; put both back */
@@ -561,14 +608,12 @@ V2.loadingHtml = () => `<section class="np-loading" aria-busy="true"><div class=
 V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
   /* Sim, Nov 19 (B): the top bar's Battle opens Damage Calculator, the first of Battle's tabs; it stays lit on every Battle page */
   const nav = V2.places.map(([k, n]) => `<a href="#${k}"${ /* Sim, Nov 20 (scan S26): the top bar's Battle opens the Battle page (was Damage Calculator, Nov 19 B) */ ''}${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
-  return {P, html: `<a class="vh np-skip" href="#main" data-v2skip>Skip to the page</a>
-<header class="np-head">${V2.backBtn()}<a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a>${V2.fwdBtn()}<nav class="np-nav" aria-label="Main">${nav}</nav>
+  const preM = !V2.dataReady() ? document.getElementById('main') : null;
+  const preHtml = preM && preM.querySelector(`[data-np-pre="${r}"]`) ? preM.innerHTML : '';
+  return {P, html: `<a class="vh np-skip" href="#main" data-v2skip>Skip to the page</a><header class="np-head">${V2.backBtn()}<a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a>${V2.fwdBtn()}<nav class="np-nav" aria-label="Main">${nav}</nav>
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <a class="np-theme np-boxlink" href="${r === 'box' ? V2.esc(V2.boxFrom || '#team') : '#box'}" aria-label="${r === 'box' ? 'My Box is open. Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}" title="${r === 'box' ? 'Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
-  <button type="button" class="np-theme" data-v2theme data-mode="${V2.themeMode()}" aria-label="${V2.themeMode() === 'auto' ? `Auto mode is on, following your device (${V2.theme()} now)` : V2.THEME_WORD[V2.themeMode()] + ' is on'}. Switch to ${V2.themeNext() === 'auto' ? 'auto: follow your device' : V2.themeNext() + ' mode'}" title="${V2.THEME_WORD[V2.themeMode()]}">${V2.ICON[V2.themeMode() === 'auto' ? 'auto' : V2.themeMode() === 'night' ? 'moon' : 'sun']}</button></div></header>
-<main class="np-main" id="main">${!V2.dataReady() ? V2.loadingHtml() : `${((place === 'home' || place === 'meta') && r !== 'pokemon') || window.__NP_PVFAIL ? V2.dataNote() : ''}${P ? V2.safeDraw(P) : ''}`}</main>
-<footer class="np-foot">${V2.logo(true)}<div class="np-ftxt">${place === 'home' ? '' : '<p class="np-ftag u">Sharply raise <span>your win rate.</span></p>'}<span>NastyPlot is an unofficial, fan&#8209;made tool, not affiliated with Nintendo, The Pok&eacute;mon Company or Game Freak; Pok&eacute;mon names are trademarks of their owners. &copy; 2026 NastyPlot. All rights reserved.${V2.dataReady() && V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span></div><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#about=priv">Privacy</a><a href="#about=contact">Contact</a>${V2.FB && V2.FB.ok ? '<a href="#feedback">Send Feedback</a>' : ''}${V2.OWN ? `<a href="#owner">Owner</a>` : ``}<button type="button" class="np-fsrcb" data-fsrc aria-expanded="false" aria-controls="np-fsrc">Sources and Credits</button></nav><p class="np-fsrc" id="np-fsrc" hidden>${(() => { try { return DATA_SOURCES.map(x => V2.esc(x.name)).join(' · '); } catch (e) { return ''; } })()}. Type symbols: pokemon-type-icons by James Watkins (MIT). Each used by its own rules; details in <a class="np-link" href="#about=data">About</a>.</p></footer>
-<nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
+  <button type="button" class="np-theme" data-v2theme data-mode="${V2.themeMode()}" aria-label="${V2.themeMode() === 'auto' ? `Auto mode is on, following your device (${V2.theme()} now)` : V2.THEME_WORD[V2.themeMode()] + ' is on'}. Switch to ${V2.themeNext() === 'auto' ? 'auto: follow your device' : V2.themeNext() + ' mode'}" title="${V2.THEME_WORD[V2.themeMode()]}">${V2.ICON[V2.themeMode() === 'auto' ? 'auto' : V2.themeMode() === 'night' ? 'moon' : 'sun']}</button></div></header><main class="np-main" id="main">${P && P._failed ? V2.safeDraw(P) : !V2.dataReady() ? (preHtml || V2.loadingHtml()) : `${((place === 'home' || place === 'meta') && r !== 'pokemon') || window.__NP_PVFAIL ? V2.dataNote() : ''}${P ? V2.safeDraw(P) : ''}`}</main><footer class="np-foot">${V2.logo(true)}<div class="np-ftxt">${place === 'home' ? '' : '<p class="np-ftag u">Sharply raise <span>your win rate.</span></p>'}<span>NastyPlot is an unofficial, fan&#8209;made tool, not affiliated with Nintendo, The Pok&eacute;mon Company or Game Freak; Pok&eacute;mon names are trademarks of their owners. &copy; 2026 NastyPlot. All rights reserved.${V2.dataReady() && V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span></div><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#about=priv">Privacy</a><a href="#about=contact">Contact</a>${V2.FB && V2.FB.ok ? '<a href="#feedback">Send Feedback</a>' : ''}${V2.OWN ? `<a href="#owner">Owner</a>` : ``}<button type="button" class="np-fsrcb" data-fsrc aria-expanded="false" aria-controls="np-fsrc">Sources and Credits</button></nav><p class="np-fsrc" id="np-fsrc" hidden>${(() => { try { return DATA_SOURCES.map(x => V2.esc(x.name)).join(' · '); } catch (e) { return ''; } })()}. Type symbols: pokemon-type-icons by James Watkins (MIT). Each used by its own rules; details in <a class="np-link" href="#about=data">About</a>.</p></footer><nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
 /* audit Nov 16 (WCAG 2.4.2): each page has its own browser title, its name as the menu and search show it ("Meta · NastyPlot"); Home keeps "NastyPlot";
    Pokémon pages set their own fuller title (pages/pokemon.js) */
 /* public site (Nov 25, SEO): a not-found screen (a wrong address, or /pokemon/<unknown>) tells search engines not to index it. Cloudflare
@@ -604,12 +649,12 @@ V2._routeJs = {};
 V2.routeJs = r => { const src = window.__NP_ROUTES && window.__NP_ROUTES[r]; if (!src) return Promise.resolve(); if (V2._routeJs[r]) return V2._routeJs[r];
   return (V2._routeJs[r] = new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { V2._routeJs[r] = null; no(new Error('Route chunk failed: ' + r)); }; document.head.appendChild(s); })); };
 V2.routeSet = r => { const out = new Set(), go = k => { if (out.has(k)) return; out.add(k); for (const d of ((window.__NP_RDEPS || {})[k] || [])) go(d); }; go(r); return [...out]; };
-V2.loadRoute = r => { const src = window.__NP_ROUTES && window.__NP_ROUTES[r]; if (!src || V2._routeLoad[r]) return;
-  const set = V2.routeSet(r); if (V2.pages[r] && set.every(k => !window.__NP_ROUTES[k] || V2.pages[k] || (V2._routeJs[k] && V2._routeJs[k].done))) return;
+V2.loadRoute = r => { const src = window.__NP_ROUTES && window.__NP_ROUTES[r]; if (!src || V2._routeLoad[r] || (V2.pages[r] && V2.pages[r]._failed)) return;
+  const set = V2.routeSet(r); if (set.every(k => !window.__NP_ROUTES[k] || (V2._routeJs[k] && V2._routeJs[k].done))) return;
   V2._routeLoad[r] = true;
   Promise.all(set.map(k => V2.routeJs(k).then(() => { if (V2._routeJs[k]) V2._routeJs[k].done = true; })))
     .then(() => { V2._routeLoad[r] = false; V2.draw(); })
-    .catch(() => { V2._routeLoad[r] = false; V2.pages[r] = {place: '', draw: () => V2.safeDraw({draw(){throw new Error('Route chunk failed: ' + r)}})}; V2.draw(); }); };
+    .catch(() => { V2._routeLoad[r] = false; V2.pages[r] = {_failed: true, place: '', draw: () => V2.safeDraw({draw(){throw new Error('Route chunk failed: ' + r)}})}; V2.draw(); }); };
 /* a click in the main script that needs a helper from a page's file (Compare, Set as Opponent, the box toast, the events calendar,
    Search's Build Around a Core): runs at once when that file is here (always, on builds without --split-routes), else after it arrives */
 V2.needRoute = (rk, fn) => { if (!window.__NP_ROUTES || !window.__NP_ROUTES[rk] || V2.routeSet(rk).every(k => V2._routeJs[k] && V2._routeJs[k].done)) return fn();
@@ -622,17 +667,23 @@ V2.warmRoutes = () => { if (V2._warm || !window.__NP_ROUTES) return; V2._warm = 
    feedback.js's own file has arrived (--split-routes); feedback.js replaces this object when it runs */
 V2.FB = V2.FB || {ok: !!window.__NP_PUBLIC};
 V2.draw = () => { const app = document.getElementById('app'); if (!app) return;
-  const r0 = V2.route(); if (window.__NP_ROUTES && window.__NP_ROUTES[r0] && (!V2.pages[r0] || V2._routeLoad[r0] || V2.routeSet(r0).some(k => window.__NP_ROUTES[k] && !(V2._routeJs[k] && V2._routeJs[k].done)))) { V2.loadRoute(r0); if (V2._routeLoad[r0]) { const m = document.getElementById('main'); if (m) m.innerHTML = V2.loadingHtml(); return; } }
+  const r0 = V2.route(); if (window.__NP_ROUTES && window.__NP_ROUTES[r0] && !(V2.pages[r0] && V2.pages[r0]._failed) && (!V2.pages[r0] || V2._routeLoad[r0] || V2.routeSet(r0).some(k => window.__NP_ROUTES[k] && !(V2._routeJs[k] && V2._routeJs[k].done)))) { V2.loadRoute(r0); if (V2._routeLoad[r0]) { const m = document.getElementById('main'); if (m && !m.querySelector(`[data-np-pre="${r0}"]`)) m.innerHTML = V2.loadingHtml(); return; } }
   if (window.__NP_ROUTES && V2._dataOk) V2.warmRoutes(); /* after the first real draw, the other page files in the background */
   V2.drawN = (V2.drawN || 0) + 1; const {P, html} = V2.shell();
   // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
   // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.
-  const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }
-  app.innerHTML = html;
-  if (keep.size) for (const n of app.querySelectorAll('img[src]')) { const l = keep.get(n.getAttribute('src')), o = l && l.shift(); if (!o) continue;
-    for (const a of [...o.attributes]) if (a.name !== 'src' && !n.hasAttribute(a.name)) o.removeAttribute(a.name);
-    for (const a of [...n.attributes]) if (a.name !== 'src' && a.name !== 'loading' && o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
-    o.removeAttribute('loading'); n.replaceWith(o); }
+  const m0 = document.getElementById('main'), isPre = !!(m0 && m0.querySelector(`[data-np-pre="${r0}"]`)) && !(P && P._failed);
+  if (isPre && V2.morphKids) {
+    if (V2.dataReady()) m0.querySelectorAll(':scope > [data-v2pre], :scope > .vh.np-loading').forEach(e => e.remove());
+    const t = document.createElement('template'); t.innerHTML = html; V2.morphKids(app, t.content);
+  } else {
+    const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }
+    app.innerHTML = html;
+    if (keep.size) for (const n of app.querySelectorAll('img[src]')) { const l = keep.get(n.getAttribute('src')), o = l && l.shift(); if (!o) continue;
+      for (const a of [...o.attributes]) if (a.name !== 'src' && !n.hasAttribute(a.name)) o.removeAttribute(a.name);
+      for (const a of [...n.attributes]) if (a.name !== 'src' && a.name !== 'loading' && o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
+      o.removeAttribute('loading'); n.replaceWith(o); }
+  }
   if (P && P.after) try { P.after(); } catch (e) { console.error(e); } if (V2.fitWords) try { V2.fitWords(); } catch (e) { console.error(e); } V2.setTitle(); };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2theme]'); if (t) V2.setTheme(V2.themeNext()); });
 // My Box toggles (Sim, Nov 12): the box icon opens My Box; pressed again while in the box, it goes back to the screen you came from
