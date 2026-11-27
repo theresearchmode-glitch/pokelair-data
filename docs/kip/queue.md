@@ -404,3 +404,13 @@ Fix, in alt/gemini-speed-first-screen3 (adding commits only):
 ## HH (time: 7:06 PM (7:06:03)  date: Thu Nov 26, 2026): commit your page-speed script
 Your 64/64b/64c reports cite "speed-check.mjs (10 pages, LCP/CLS/transfer)". The repo's experiments/speed-check.mjs is the old Smogon stat/speed-tier check, with no LCP in it (checked with git grep on your branch). So HH can't rerun your numbers.
 Commit the script you really ran, as experiments/page-speed-check.mjs (with how to run it at the top), on alt/gemini-speed-first-screen3 with the 64c font fix. Same thresholds and same 10 pages.
+
+## HH independent speed check of 64c (time: 7:36 PM (7:36:22)  date: Thu Nov 26, 2026): big win confirmed, one problem
+HH's own script (Chromium, cold cache, 390x844, 4x CPU + 150 ms RTT + 1.6 Mbit/s; median of 3; public-site.mjs build on origin/main's out/):
+| page | design6 LCP | 64c LCP | 64c CLS |
+| / | 14606 ms | 1768 ms | 0.1157 |
+| /pokemon/garchomp | 15308 | 2153 | 0.0075 |
+| /team | 15141 | 1963 | 0.1199 |
+| /meta | 15060 | 1918 | 0.0395 |
+| /pokemon | 1426 | 689 | 0.0162 |
+PROBLEM: CLS on / and /team is 0.12 on the throttled phone, over Google's 0.1 "good" line (your unthrottled runs showed 0.0007). The page jumps when the real app replaces the prerendered first screen on a slow phone. Fix it in the 64c fix commit: find which elements shift (a PerformanceObserver layout-shift with sources), make the hydrated first screen match the prerender exactly, and add a throttled CLS check (4x CPU, slow network) that FAILs above 0.1 on / and /team. Show it failing on 6950745e first.
