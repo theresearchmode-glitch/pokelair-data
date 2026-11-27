@@ -52,7 +52,8 @@ if (process.argv.includes('--v2')) {
     + '\n:root:root{color-scheme:revert-layer;box-sizing:revert-layer;padding-top:revert-layer;padding-bottom:revert-layer}'
     + 'html:root{scroll-padding-top:revert-layer}'
     + 'html body{margin:revert-layer;padding:revert-layer;font:revert-layer;background:revert-layer;color:revert-layer}'
-    + 'html body img{max-width:revert-layer}';
+    + 'html body img{max-width:revert-layer}'
+    + 'html body [hidden]:not([hidden=until-found i]){display:revert-layer!important}';
   const helpers = rd('src/app/15-visual-helpers.js'), i0 = helpers.indexOf('SPRITE_ID ='), sprite = helpers.slice(helpers.indexOf('{', i0), helpers.indexOf('}', i0) + 1);
   JSON.parse(sprite); // fails the build if the shared sprite table ever stops being plain JSON
   const meta = fs.existsSync(dir + 'src/v2/art/meta.json') ? rd('src/v2/art/meta.json') : '{}';
