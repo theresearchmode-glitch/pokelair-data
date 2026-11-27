@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 2:36 PM (2:36:43)  date: Fri Nov 27, 2026
-NOW: main-merge.sh rerun (pid in .main-running): design6 ea0dd5f4 into main 4b9f9fbd (main moved by a data commit), merge-check main; then push main + watch its run.
-DONE today: live v160 + v161 (Sim checked); main 5c7839e2 + 59d0da27; design6 ea0dd5f4 = speed chain + Kip 74-77 + Maggi M7/M13/M14 + host-wrapper-test steady + audit main-only + runbook. Helpers AS NEEDED.
-NEXT: live v162 from main's build: host-wrapper comparison on the lvpub build (WebKit iPhone + Chromium) before publishing; then Preview republish.
-NEXT: quiet launch: practice deploy to a hidden address once Sim's Cloudflare token exists (docs/sim-launch-steps.md); Limitless API key text before the announcement.
+Updated: time: 3:36 PM (3:36:10)  date: Fri Nov 27, 2026
+NOW: watching main 1ba2a7a1 GitHub run 46060344273 (pid in .main-running); live v162 + Preview v271 already carry it (same code green on design6).
+NOW: helper Job OO: Build page before building: 3 original coded directions + pictures (Sim: 'nastyplot af', no outside inspiration). Sim picks.
+NOW (HH): draft the Limitless API key application text (docs/rebuild/test-runs/limitless-terms-nov27.md) for Sim to send before the announcement.
+NEXT: after Sim picks a Build direction: finish it (tests, pictures), gate, live.
+NEXT: quiet launch: practice deploy once Sim's Cloudflare token exists (docs/sim-launch-steps.md).
 NEXT: patch night Dec 1 after 9 PM Eastern per runbook-dec2.md; Showdown pin bump when #12475 lands.
-NEXT: runbook note: a data commit can land on main during a 30-min merge-check; re-merge before pushing (main-merge.sh does it).
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.

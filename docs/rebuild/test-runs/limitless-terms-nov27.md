@@ -13,3 +13,12 @@ Read with a web scrape (Firecrawl, direct quotes), not legal advice.
 Recommendation (HH): before announcing (about Dec 18), apply for an API key as a public-facing project. It is their stated route
 for public projects, and it raises our rate limit. Keep the source credit ("Online tournaments, via Limitless") on every page
 that shows it, and keep player names out (already done: IDs only, no-names check daily).
+
+## Draft API key application (for Sim to send; HH drafted Fri Nov 27)
+Project: NastyPlot (nastyplot.org), a free team builder and Strength Score for Pokémon Champions VGC doubles.
+What we use: public tournament placings and team sheets from the Limitless API, read once every few hours by one scheduled job
+(not by visitors' browsers); results are cached and shown as usage stats, sets and real winning teams, credited "Online
+tournaments, via Limitless" with a link.
+Players: we show no player names (IDs only), because many of our users are kids.
+Why a key: a public-facing project with a steady, small request rate; we'd like the higher limit so a busy day never misses events.
+Contact: hello@nastyplot.org (forwarded; set up before sending).
