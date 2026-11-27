@@ -1531,6 +1531,32 @@ if (part('main2')) {
         cut: [...document.querySelectorAll('#main .f3-n b, #main .f3-n small, #main .f3-t, #main .f3-meta, #main .f3-h1')].filter(e => e.scrollWidth > e.clientWidth + 1).map(e => e.textContent.slice(0, 16))}), {night});
       if (!r.hero || r.sw > 0 || r.cut.length || r.errs) bad.push(`${w}${night ? ' night' : ''}: ${JSON.stringify(r)}`); }
     ok(!bad.length, `F3-3 (Job DD): Final 3's hero at 320-2560, day and night: no sideways scroll, nothing cut, no page error (${bad.slice(0, 3).join(' | ') || 'all good'})`); }
+  // F3-4 (M2 #1): after Dec 2 02:00 UTC while the data is still Reg M-C, a winner whose event name has no "(Reg M-C)" is still labelled "The last Reg M-C winning team"
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const on = Date.now; Date.now = () => Date.parse('2026-12-02T03:00:00Z'); V2._f3 = null;
+      try { const D = V2.f3Data(), h = V2.f3Page(), m = h.match(/<h2 class="f3-meta"[^>]*>([^<]+)/);
+        return {reg: D && D.reg, evReg: D && D.evReg, old: !!(D && D.old), meta: m ? m[1] : ''}; }
+      finally { Date.now = on; V2._f3 = null; } })()`));
+    ok(r.reg === 'M-D' && r.evReg === 'M-C' && r.old && r.meta.startsWith('The last Reg M-C winning team · ') && !r.errs,
+      `F3-4 (M2 #1): after Dec 2 02:00 UTC with Reg M-C data, evReg falls back to regInfo().id and the receipt reads "The last Reg M-C winning team" (${JSON.stringify(r)})`); }
+  // F3-5 (M2 #2): receipt bar links use "#pokemon=<name>" on the Claude build and "/pokemon/<slug>" only on the public build
+  { const r = await f3(1440, 900, () => { const hrefs = [...document.querySelectorAll('#main .f3-bar')].map(a => a.getAttribute('href') || '');
+      const check = window.__ev(`(() => { const o = window.__NP_PUBLIC; try { delete window.__NP_PUBLIC; const cl = V2.f3Link('Charizard-Mega-Y'); window.__NP_PUBLIC = 1; const pub = V2.f3Link('Charizard-Mega-Y'); return {cl, pub}; } finally { if (o === undefined) delete window.__NP_PUBLIC; else window.__NP_PUBLIC = o; } })()`);
+      return {hrefs, ...check}; });
+    ok(r.hrefs.length === 6 && r.hrefs.every(h => h.startsWith('#pokemon=')) && r.cl === '#pokemon=Charizard-Mega-Y' && r.pub === '/pokemon/charizard-mega-y' && !r.errs,
+      `F3-5 (M2 #2): V2.f3Link uses "#pokemon=..." on the Claude build and "/pokemon/<slug>" only with window.__NP_PUBLIC (${JSON.stringify(r)})`); }
+  // F3-6 (M2 #3): when RES is null or RES.teams is 0, the lead omits "against 0 real tournament teams"
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const o = RES, read = () => { const m = V2.f3Words(V2.f3Data()).html.match(/<p class="k-lead f3-lead">([\\s\\S]*?)<\\/p>/); return m ? m[1].replace(/<[^>]+>/g, '') : ''; };
+      try { RES = null; const n0 = read(); RES = {teams: 0}; const z0 = read(); return {n0, z0}; } finally { RES = o; } })()`));
+    ok(r.n0.includes('out of 100') && !/against 0|0 real tournament/.test(r.n0) && r.z0.includes('out of 100') && !/against 0|0 real tournament/.test(r.z0) && !r.errs,
+      `F3-6 (M2 #3): when RES is null or teams is 0, the lead omits "against 0 real tournament teams" (${JSON.stringify(r)})`); }
+  // F3-7 (M2 #4): V2.f3Rate returns null for V2.unrated(p) during a new regulation's first 28 days (bar shows "–" and "not rated")
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const P = META.perf, o1 = META.reg, o2 = P && P.reg, on = Date.now;
+      META.reg = {id: 'M-D', since: '2026-12-02', now: null}; if (P) P.reg = META.reg; Date.now = () => Date.parse('2026-12-03T12:00:00Z');
+      try { const un = ROSTER.find(q => { const x = ratings().get(q.n); return x && !x.tc; }), rd = ROSTER.find(q => { const x = ratings().get(q.n); return x && x.tc; });
+        return {unMon: un && un.n, isUn: !!(un && V2.unrated(un)), unRate: un ? V2.f3Rate(un.n) : 'none', rdMon: rd && rd.n, rdRate: rd ? V2.f3Rate(rd.n) : null}; }
+      finally { META.reg = o1; if (P) P.reg = o2; Date.now = on; } })()`));
+    ok(r.isUn && r.unRate === null && typeof r.rdRate === 'number' && !r.errs,
+      `F3-7 (M2 #4): V2.f3Rate returns null for V2.unrated(p) while keeping numeric ratings for rated Pokémon (${JSON.stringify(r)})`); }
 }
 // ---------- Home, The Stampede: the hero band (Nov 18; app/src/v2/pages/stampede-hero.js, css/sd-hero.css, sd-shared.css) ----------
 { const hero = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: o.rm || "no-preference"}); const q = await ctx.newPage();
