@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 7:37 PM (7:37:10)  date: Thu Nov 26, 2026
-NOW: (7:40 PM) HH LCP check of the Claude build that goes live tomorrow (pid in .main-running); helper finishing slogan push; Kip 64c fixes (fonts, CLS, commit script) then 65.
+NOW: (7:48 PM) HH diagnosing the Claude-build Home 26 s LCP on a slow phone (pid in .main-running); helper finishing slogan push; Kip on 65 (Sim relaying the 64c fixes).
 NEXT: gate alt/f3-claude into claude/design6 when GitHub green + helper report read.
 NEXT: Preview republish after the merge (Final 3 for Sim's iPhone check); send Sim before/after pictures.
 NEXT: tell Sim when Final 3 is in design6 so Kip re-merges design6 into 64c before his final push.
