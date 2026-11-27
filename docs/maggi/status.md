@@ -16,3 +16,4 @@ M7 | done | alt/maggi-m7-dec2fix a3d7622b | cross-checked both scripts (helper w
 M8 | started | alt/maggi-m8-wrapper-test - | writing experiments/host-wrapper-test.mjs + CI wiring + fail-before/pass-after proof | Fri Nov 27 06:47:55 AM EST 2026
 M8 | done | alt/maggi-m8-wrapper-test 612d0364 | added host-wrapper-test.mjs + test.yml; caught 2nd wrapper bug ([hidden] display:none!important shifted header logo 40px left) and fixed in build.mjs:56 -> 0 differing pixels across 390/1440 light/dark | Fri Nov 27 06:55:02 AM EST 2026
 M9 | started | alt/maggi-m9-webkit - | extending host-wrapper-test.mjs for WebKit (iPhone 15, iPhone SE, iPad Pro 11) + Home/Team/Meta/Garchomp/Battle | Fri Nov 27 06:57:28 AM EST 2026
+M9 | done | alt/maggi-m9-webkit 1e1b06af | WebKit iPhone 15/SE/iPad Pro 11 x light/dark x 5 pages (Home/Team/Meta/Garchomp/Battle): 0 baseline noise, ALL 60 PASSED (0 differing pixels); Chromium ALL 8 PASSED | Fri Nov 27 07:06:16 AM EST 2026
