@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 8:25 PM (8:25:36)  date: Thu Nov 26, 2026
-NOW: (8:50 PM) helper Job FF: alt/batch8 = F3 + quality-v2 fixes (tap targets, h1 size) + calc tile + preflight + 2 sweep fixes; gate batch8 alone. Maggi on M1. Kip on 66.
+Updated: time: 9:36 PM (9:36:47)  date: Thu Nov 26, 2026
+NOW: (9:37 PM) waiting for the helper real push of alt/batch8 (b8-wait.sh pid in .main-running; then read report + gate.sh alt/batch8). Switch dry run done (all passed).
+NOW: (Kip) 69 = speed chain on Reg M-D day-one data. (Maggi) M2 = fix M1 findings 1-5.
 NEXT: batch8 = alt/calc-tile-phone + alt/preflight-skip (merge-tree clean), real GitHub run, gate after Final 3 is in design6.
 NEXT: Preview republish after the merge (Final 3 for Sim's iPhone check); send Sim before/after pictures.
 NEXT: tell Sim when Final 3 is in design6 so Kip re-merges design6 into 64c before his final push.
 NEXT: Fri 7:30 AM switch prep (trig_01HzJ1ckLPN7LMVpiJ4eUh83), preflight from alt/preflight-skip 575ba798.
-NOW: (Kip) 64c started 6:06 PM (alt/gemini-speed-first-screen3 from alt/f3-claude); 64b lands after the switch.
 NEXT: gate alt/f3-public-rest after batch7; then part 2 when Sim says yes; Preview republish.
 NEXT: Friday switch if Sim OKs the Preview tonight; Kip 62 preflight on the morning.
 NEXT: verify Kip 64b when it lands (LCP claim 0.4-1.5 s) and merge it.
