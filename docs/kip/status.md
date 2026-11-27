@@ -69,3 +69,4 @@
 73 | done | alt/gemini-speed-chain 1170ae6e | A-team 145/145 clean (139 pass, 0 FAIL, 4 known, 2 skip); v2-minors solo: 0 regressions vs design6 5d111577 (TF-2 2775px & MT390-1 3733px identical on design6, ONLY=HQ 17/17 PASS, Sprites A 91/0 PASS, main1 hit VM 4x-CPU click timeout at L1055); report docs/rebuild/test-runs/kip-job73-minors-ateam.md | Fri Nov 27, 8:57 AM
 - | idle | - | waiting for HH (all jobs through 73 done; hard stop at 9:45 AM EST) | Fri Nov 27, 9:16 AM
 - | idle | alt/gemini-speed-chain 1170ae6e | stopping before 9:45 AM EST hard stop (all jobs through 73 done and pushed; clean tree, ready for HH review/merge) | Fri Nov 27, 9:25 AM
+74 | started | alt/gemini-dec2-dryrun 44f62cbe | running Dec 2 patch night full dry run on scratch copy (apply-dec2-patch + md-roster-step + tests) | Fri Nov 27, 11:11 AM
