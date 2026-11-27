@@ -392,3 +392,11 @@ Everything else in 64c stays the same. Job 65 comes after 64c, built on top of y
 JOB 65: branch alt/gemini-speed-js from origin/alt/gemini-speed-first-screen3 (your 64c). Push work-in-progress with [skip ci]; only the final top commit gets a real GitHub run.
 Heads-up: Final 3's hero is changing tonight: Sim wants the slogan "Sharply raise your win rate." back in the h1, with the Reg M-D line under it. Keep your prerender reading V2.f3Page (no copied hero text), and before your final push merge origin/alt/f3-claude (or origin/claude/design6 once HH says Final 3 is merged).
 No design changes. Never main, never claude/design6.
+
+## HH review of 64c fonts (time: 7:04 PM (7:04:14)  date: Thu Nov 26, 2026): one fix needed (do it first, then carry on with 65)
+I looked at your own picture job64c-fonts/home-390-light-0ms-fallback.png: in the Home headline, the fallback lines OVERLAP ("Rate your Pokémon" sits on top of "Champions team"). The fallback is also much thinner than Unbounded's heavy slanted italic, so the flash reads as a different site.
+Your numbers (dH 0 px) only measure the box, not the glyphs inside it, so this check could not have caught it.
+Fix, in alt/gemini-speed-first-screen3 (adding commits only):
+1. Unbounded Fallback: use a bold local face first (local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('DejaVu Sans Bold')) and lower size-adjust until no two lines of a 3-line .u headline touch at 390 and 1440. Keep ascent/descent so the box height stays the same as Unbounded's (dH 0).
+2. Add a test that could fail: with the .woff2 blocked, for each multi-line .u headline on Home and one Pokémon page, compare each line's glyph ink box (Range.getClientRects per line) with the next line's. FAIL if they overlap. Show it failing on 6950745e first, then passing.
+3. New 0 ms pictures (the same 8), then rerun speed-check and prerender-test. Exit codes in the report.
