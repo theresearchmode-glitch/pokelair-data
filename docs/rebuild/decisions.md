@@ -2948,3 +2948,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:29 PM: Batch 2 (helper NN host-wrapper-test, Kip 77, Maggi M14) merged into design6 ea0dd5f4: GitHub green on 50602157, merge-check ALL PASSED. Started main-merge.sh (design6 -> main, merge-check main; push by hand after).
 - 1:30 PM: Checked the real Preview (scratchpad/redesign = Preview v270 build, today's data) Home at 320 and 360 in Chromium: no .f3-rows on the page at all (0 rows), so the frozen-data overlap (type labels under bars at 320) does not show on the Preview today. Not a live issue now; it would only matter if those rows return with data like the frozen set.
 - 1:36 PM: Hourly 1:36: no problems (helper line ignored: as needed). Disk 12 GB. main-merge.sh waiting for GitHub on design6 ea0dd5f4.
+- 2:36 PM: Hourly 2:36: design6 ea0dd5f4 GitHub green (46049850769); main merge df1617f3 (no conflicts) merge-check running. Game Plan v119. Disk 10 GB.
