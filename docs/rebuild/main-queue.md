@@ -1,7 +1,7 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 9:36 PM (9:36:47)  date: Thu Nov 26, 2026
-NOW: (9:37 PM) waiting for the helper real push of alt/batch8 (b8-wait.sh pid in .main-running; then read report + gate.sh alt/batch8). Switch dry run done (all passed).
-NOW: (Kip) 69 = speed chain on Reg M-D day-one data. (Maggi) M2 = fix M1 findings 1-5.
+Updated: time: 10:30 PM (10:30:21)  date: Thu Nov 26, 2026
+NOW: (10:30 PM) switch rehearsal merge-check (target main, both lists) on local alt/switch-nov27, pid in .main-running. alt/batch8 7f4b1b9a pushed (real GitHub run); gate after the helper report is read.
+NOW: (Kip) 72 Showdown pin bump (prepared, not merged). (Maggi) M5 apply-dec2-patch.mjs. HH squad watcher re-armed after every update.
 NEXT: gate alt/batch8 (F3 + qcheck fixes + calc tile + preflight-skip + sweep fixes) when GitHub is green and the helper report is read.
 NEXT: Preview republish after batch8 merges; tell Sim (iPhone check in the morning); end the helper by midnight (trig_01LjNsUYs9wEtHwagBYqvYCH).
 NEXT: review Maggi M2 when pushed; merge after batch8 (pubhome-f3.js).
