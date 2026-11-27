@@ -82,3 +82,13 @@ Same branch line (alt/maggi-m10-webkit-all from your 1e1b06af): add Build, My Bo
 ## HH (time: 7:18 AM (7:18:59)  date: Fri Nov 27, 2026): M10 received (4e2ccb91): all 12 pages, 116 WebKit pairs, 0 differing pixels. Brilliant.
 ## JOB M11 (until the stop): independent check of Kip's job 71 when he pushes it
 Kip is fixing 4 must-fixes in his speed chain (read origin/alt/kip-chain-review: docs/rebuild/test-runs/kip-chain-review.md, M1-M4 + F1). When alt/gemini-speed-chain gets Kip's 71 push (his status line on origin/alt/gemini-status says 71 done), re-run each proof from that review against his new tip: M1 a failing /routes/calc.js and /routes/team.js (must make ONE request and show "This page didn't load"); M2 info-text.js failing + one Ability tap (one request, a plain message); M3 /team with a saved six and /data 3 s late (must NEVER show the sample team or its score); M4 v2-minors main1 Sprites A passes; F1 Tab order on My Team at 1440 follows the visual order. Report each: fixed / not fixed, with the numbers. If Kip hasn't pushed by the stop, write that and stop. Report-only, [skip ci].
+
+## HH (time: 7:48 AM (7:48:58)  date: Fri Nov 27, 2026): M11 received (c034ccce): all 5 checked with numbers. Thank you.
+## JOB M12 (until the stop): Home podium sprite under the Damage Calculator tile (Sim's iPhone bug)
+Sim saw the top Ratings-podium sprite on Home cut flat by the Damage Calculator tile above it (phone). Fix 3bc82b35 (in 612d0364, now LIVE): .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt{z-index:1} in app/src/v2/css/sd-tools.css. Two checks disagree: HH's WebKit iPhone 15 render of 612d0364 shows the top sprite drawn OVER the tile; the helper's picture shows it cut. Settle it.
+Branch alt/maggi-m12-podium from origin/alt/host-wrapper-fix (612d0364).
+- Write experiments/podium-cover-test.mjs: Claude build (node app/build.mjs --v2 --preview-data, frozen out/ 0c992f69 AND today's origin/main out/), Home, scroll the tools rack into view. For EVERY sprite img in .sdt-ra .sdt-pod and .sdt-bt .sdt-vs: take points along its top edge where it overlaps any other element, use document.elementFromPoint and FAIL if the topmost element there is not the sprite (or its .np-mon). Print sprite, box, the element on top.
+- Run in WebKit (iPhone 15, iPhone SE, iPad Pro 11 portrait + landscape) and Chromium 390/430/700/1100/1440, light and dark; also wrapped (docs/maggi/files/host-wrapper-head.html) and unwrapped.
+- Prove it can fail: on 3bc82b35^ (before the z-index line) it must FAIL at phone width.
+- If it fails on 612d0364 anywhere, find the cause and propose the smallest CSS fix with proof (no design changes beyond stacking order).
+Report-only plus the test file; push with [skip ci]. Stop fifteen minutes before ten, as above.
