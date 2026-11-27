@@ -1,2 +1,2 @@
-31565
-gate batch 2 alt/batch-nov27b into design6
+3593
+main-merge.sh: wait for design6 ea0dd5f4 green, merge into main copy (scratchpad/mm3), merge-check main

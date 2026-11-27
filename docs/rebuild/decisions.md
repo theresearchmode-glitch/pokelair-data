@@ -2945,3 +2945,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:44 PM: Hourly 12:43: hourly-check prompt updated to Sim's 'helpers as needed' + GitHub one-run-at-a-time note; Game Plan v118; disk 12 GB; batch 1 run 46037392840 in progress, batch 2 queued.
 - 12:56 PM: Batch 1 (Kip 74/75/76, Maggi M13, runbook, audit main-only) merged into design6 ed1d9c2e: GitHub green on 6495dbd6, merge-check ALL PASSED. Batch 2 gate started.
 - 12:57 PM: Wrote docs/sim-launch-steps.md: Sim's click-by-click for Dec 1-2 (Cloudflare token, account ID, FAST_DATA, DEPLOY_ENABLED, Google Search Console + sitemap). Repo variables/secrets can't be read from this session (403), so step 0 asks Sim what exists.
+- 1:29 PM: Batch 2 (helper NN host-wrapper-test, Kip 77, Maggi M14) merged into design6 ea0dd5f4: GitHub green on 50602157, merge-check ALL PASSED. Started main-merge.sh (design6 -> main, merge-check main; push by hand after).
