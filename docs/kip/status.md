@@ -65,3 +65,4 @@
 72 | started | alt/gemini-showdown-pin 23520831 | auditing Showdown pin since 1242c1e, bumping pin, regenerating move-meta/info-text, running before/after checks | Thu Nov 26, 10:13 PM
 71 | started | alt/gemini-speed-chain eb89d52e | merging origin/claude/design6 + fixing M1/M2/M3/M4/F1 from kip-chain-review with fail-first checks | Fri Nov 27, 6:28 AM
 71 | done | alt/gemini-speed-chain 80c0d935 | merged design6 (5d111577) + fixed M1/M2/M3/M4/F1 (6/6 fail on eb89d52e -> 6/6 PASS); 29/29 split-routes-cross-test, 6/6 first-screen-guard, 10/10 page-speed-check, v2-public, prerender-test, seo-audit, deploy-smoke, Sprites A (91/0) ALL PASS; v2-minors/A-team hit local VM timeouts (reported honestly); report docs/rebuild/test-runs/kip-job71-speed-chain.md | Fri Nov 27, 7:33 AM
+73 | started | alt/gemini-speed-chain 80c0d935 | running v2-minors (main1, main2, groups) and A-team one at a time | Fri Nov 27, 7:36 AM
