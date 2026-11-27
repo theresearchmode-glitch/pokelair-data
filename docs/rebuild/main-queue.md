@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 12:31 AM (12:31:07)  date: Fri Nov 27, 2026
-NOW: (12:31 AM) THE SWITCH steps 1-3 running (switch-run.sh: preflight, merge on design6 ee87a267, merge-check main), pid in .main-running; Preview rebuild first.
+Updated: time: 1:00 AM (1:00:45)  date: Fri Nov 27, 2026
+NOW: (1:01 AM) THE SWITCH: main pushed (572622d5); watching main GitHub run 45948985967 (pid in .main-running). Then: promote to live, publish R1-R4 to the live artifact, fire the refresh, check every page.
 NOW: helper Job II (alt/batch9 = batch8 + Maggi M2/M3 + dec2patch, [skip ci]). Kip/Maggi out until 3 AM; 71 and M6 queued.
 NEXT: gate alt/batch8 (F3 + qcheck fixes + calc tile + preflight-skip + sweep fixes) when GitHub is green and the helper report is read.
 NEXT: Preview republish after batch8 merges; tell Sim (iPhone check in the morning); end the helper by midnight (trig_01LjNsUYs9wEtHwagBYqvYCH).
