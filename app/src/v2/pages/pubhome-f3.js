@@ -9,7 +9,7 @@
 // Every bar is a link to its Pokémon's page, labelled "<name>, Rating <n>". Colours: tokens.css --f3-*.
 V2.F3_TYPES = ['Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'];
 V2.f3Ty = t => V2.F3_TYPES.includes(t) ? t : 'Normal';
-V2.f3Rate = n => { try { const r = ratings().get(n); return r ? RS(r.total) : null; } catch (e) { return null; } };
+V2.f3Rate = n => { try { const p = typeof byName !== 'undefined' && byName.get(n); if (p && V2.unrated && V2.unrated(p)) return null; const r = ratings().get(n); return r ? RS(r.total) : null; } catch (e) { return null; } };
 V2.f3Date = d => { const t = Date.parse(String(d || '').slice(0, 10) + 'T12:00:00Z'); return isFinite(t) ? new Date(t).toLocaleDateString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'}) : ''; };
 // the team on the receipt: the latest event's winner (homeChamp); if there is none yet (a new regulation's first day), the top Winning
 // Teams entry; the label says which, and says when it is the previous regulation's team. Cached per data version: grading is the costly part.
@@ -22,14 +22,14 @@ V2.f3Data = () => { const key = typeof metaVersion !== 'undefined' ? metaVersion
       if (T) { six = T.mons.map(n => ({p: byName.get(n), it: '', ab: ''})); ev = {name: String(T.event || '').replace(/\s*·\s*\d[\d,]* players$/, ''), date: '', players: +((String(T.event || '').match(/(\d[\d,]*) players$/) || [])[1] || '').replace(/,/g, '') || 0}; } }
     if (six) { let ms = six.map((m, i) => memberOf({n: m.p.n, a: m.ab || null, it: m.it ? {[S.format]: m.it} : null}, i)).filter(Boolean);
       let G = null; try { const RD = prepOf(ms); G = RD ? CH.gradeOf(RD, proChecks(ms, true), ms) : null; } catch (e) { G = null; }
-      const evReg = (String(ev.name).match(/\(Reg ([A-Z]-[A-Z])\)/) || [])[1] || '';
+      const evReg = (String(ev.name).match(/\(Reg ([A-Z]-[A-Z])\)/) || [])[1] || reg;
       /* the regulation the site is in: the data's, or Reg M-D from Dec 2 even while the data still says M-C (its first day has no winner yet) */
       const mdAt = Date.parse(V2.REG_START_MD || ''), cur = isFinite(mdAt) && Date.now() >= mdAt && (!reg || reg === 'M-C') ? 'M-D' : reg;
       v = {reg: cur, ev, old: !!(evReg && cur && evReg !== cur), evReg, G, rows: ms.map(m => ({p: m.p, n: m.p.n, d: V2.disp(m.p.n), item: m.heldItem || m.item || '', t: V2.f3Ty(m.p.t[0]), r: V2.f3Rate(m.p.n)}))}; }
   } catch (e) { v = null; }
   V2._f3 = {key, v}; return v; };
 V2.f3Band = G => G ? ({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[CH.grade(G.s)] || 'solid' : '';
-V2.f3Link = n => { const s = typeof V2.pubSlug === 'function' ? V2.pubSlug(n) : ''; return s ? `/pokemon/${s}` : `#pokemon=${encodeURIComponent(n)}`; };
+V2.f3Link = n => { const s = window.__NP_PUBLIC && typeof V2.pubSlug === 'function' ? V2.pubSlug(n) : ''; return s ? `/pokemon/${s}` : `#pokemon=${encodeURIComponent(n)}`; };
 // the words (Sim, Nov 26: option A): ONE h1 with the slogan drawn like the brand lockup ("Sharply raise" ink, "your win rate." PLOT blue)
 // and, smaller inside the same h1, the line Google reads for the regulation; that line changes with the calendar (before Dec 2: "before Reg M-D."; from Dec 2: "for Reg M-D."), and later names the regulation
 V2.f3Words = D => { const E = V2.esc, now = Date.now(), mdAt = Date.parse(V2.REG_START_MD || ''), before = isFinite(mdAt) && now < mdAt;
@@ -38,7 +38,7 @@ V2.f3Words = D => { const E = V2.esc, now = Date.now(), mdAt = Date.parse(V2.REG
   const tys = D ? [...new Set(D.rows.map(x => x.t))] : [];
   return {before, html: `<div class="f3-words"><p class="k-kicker">Team builder · Strength Score</p>
     <h1 class="k-h1 u f3-h1" id="f3-h1"><span class="f3-sl">Sharply raise <em>your win rate.</em></span> <span class="f3-h1s">Rate your Pokémon Champions team ${em}</span></h1>
-    <p class="k-lead f3-lead"><span class="f3-l0">Add your six. </span>NastyPlot rings it up out of 100 against ${E(Number(teams).toLocaleString('en-US'))} real tournament teams, then shows its Matchups and exactly what to change.</p>
+    <p class="k-lead f3-lead"><span class="f3-l0">Add your six. </span>NastyPlot rings it up out of 100${teams ? ` against ${E(Number(teams).toLocaleString('en-US'))} real tournament teams` : ''}, then shows its Matchups and exactly what to change.</p>
     <div class="f3-acts">${V2.kGo('Score My Team', {href: '#team', 'data-sdgo': true})}${V2.kBtn('Build Me a Team', {href: '#build', 'data-sdgo': true})}</div>
     ${md ? `<p class="f3-md"><span class="f3-md-l">${E(md)}</span><span class="f3-md-s">${E(mdS)}</span></p>` : ''}
     ${tys.length ? `<p class="f3-leg"><span class="vh">The bar colours are the types of the winning six: </span>${tys.map(t => `<span class="f3-chip" style="--c:var(--f3-${t});--on:var(--f3-on-${t})">${E(t)}</span>`).join('')}</p>` : ''}</div>`}; };
