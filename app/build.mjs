@@ -84,7 +84,8 @@ if (process.argv.includes('--v2')) {
     'src/v2/pages/owner.js',
     'src/v2/pages/coming.js',
     'src/v2/pages/stampede-hero.js',
-    'src/app/42-guide-data.js',
+    /* not 'src/app/42-guide-data.js' (review MM, Nov 27): Team Styles (archetypes.js) and Search's team styles (shell.js) read its
+       GUIDE / GUIDE_ORDER / guideCounts; without it the public Team Styles page said "Usage numbers appear once top teams load." for good */
     'src/app/51-usage-data.js'
   ]) : null;
   const ROUTE_CHUNKS = {

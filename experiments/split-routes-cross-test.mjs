@@ -51,6 +51,10 @@ const CASES = [
   ['Practice (cold): practice-data renders preview', '/practice', async q => { const len = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim().length); if (len < 200) throw new Error('Practice main too short: ' + len); }],
   ['Compare (cold): compare-data renders', '/compare', async q => { const len = await q.evaluate(() => (document.querySelector('#main')?.innerText || '').trim().length); if (len < 120) throw new Error('Compare main too short: ' + len); }],
   ['Feedback (cold): feedback-data renders', '/', async q => { await q.evaluate(() => { location.hash = '#feedback'; }); await q.waitForSelector('#fbText2', {timeout: 8000}); const h1 = await q.textContent('#main h1'); if (!h1 || !h1.trim()) throw new Error('Feedback h1 missing'); }],
+  /* review MM (Nov 27): the public build left out 42-guide-data.js (GUIDE, GUIDE_ORDER, guideCounts), so Team Styles said "Usage numbers
+     appear once top teams load." for good (its static HTML too) and Search lost its Team style results. Both fail on 80c0d935. */
+  ['Team Styles (cold): the playbooks draw from real counts', '/archetypes', async q => { const n = await q.evaluate(() => document.querySelectorAll('#main [data-argo]').length); if (n < 6) throw new Error('playbooks drawn: ' + n); }],
+  ['Search (cold): "trick" finds the Trick Room team style', '/', async q => { await q.click('[data-v2search]'); await q.waitForTimeout(400); await q.keyboard.type('trick'); await q.waitForTimeout(800); const t = await q.evaluate(() => document.body.innerText); if (!/Team style\s+Trick Room/.test(t)) throw new Error('no Team style result'); }],
   ['7 pages by the menu, no reload', '/', async q => { for (const h of ['#build', '#meta', '#battle', '#team', '#gifts', '#events', '#calc']) { await q.evaluate(h => { location.hash = h; }, h); await q.waitForTimeout(1500); } }]];
 const b = await chromium.launch({args: ['--disable-dev-shm-usage']}); let fails = 0;
 for (const [name, pth, act] of CASES) {
