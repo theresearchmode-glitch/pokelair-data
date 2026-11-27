@@ -1,10 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 5:13 PM (5:13:15)  date: Fri Nov 27, 2026
-NOW: main-merge.sh (pid in .main-running): design6 54d6ac7e (font fix) into main + merge-check; then push, watch run, live v163.
-NOW: helper Job OO: Build page C2 final checks + 810 alignment fix; patches in scratchpad/bdshots/patches (helper's commits are refused by the permission check; HH commits the chosen patch as his own work after Sim's final yes).
-DONE today: launch rehearsal 7/7 on design6 54d6ac7e; live v162 + Preview v271 + main 1ba2a7a1 green.
-NEXT: Build page C2: apply patch on a branch from design6, run its checks, GitHub, gate, main, live.
-NEXT: quiet launch: practice deploy once Sim's Cloudflare token exists (docs/sim-launch-steps.md); patch night Dec 1 after 9 PM Eastern per runbook-dec2.md.
+Updated: time: 5:22 PM (5:22:29)  date: Fri Nov 27, 2026
+NOW: main-merge.sh (pid in .main-running): design6 54d6ac7e (font fix) into main + merge-check; then push main, watch run, live v163.
+DONE today: Build page C2 finished by helper (patch scratchpad/bdshots/patches/build-dir-c-v2.patch); launch rehearsal 7/7.
+NEXT: on Sim's final yes: apply build-dir-c-v2.patch on alt/build-c2 from design6, run build + v2-q83/s16/s17/tap-size/qcheck locally, push (GitHub), gate, main, live with before/after pictures.
+NEXT: Preview republish after the Build page lands (rule 28).
+NEXT: quiet launch: practice deploy once Sim's Cloudflare token exists (docs/sim-launch-steps.md).
+NEXT: patch night Dec 1 after 9 PM Eastern per runbook-dec2.md; Showdown pin bump when #12475 lands.
 NOW (HH): draft the Limitless API key application text (docs/rebuild/test-runs/limitless-terms-nov27.md) for Sim to send before the announcement.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
