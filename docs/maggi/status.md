@@ -10,3 +10,4 @@ M4 | done | alt/maggi-m4-patchmap 5e96566d | audited Dec 2 patch map on design6+
 M5 | started | alt/maggi-m5-dec2patch - | writing experiments/apply-dec2-patch.mjs and apply-dec2-patch-test.mjs | Thu Nov 26 10:13:54 PM EST 2026
 M5 | done | alt/maggi-m5-dec2patch b0daf6e8 | added apply-dec2-patch.mjs + apply-dec2-patch-test.mjs (14/14 pass incl. time-bomb fail/pass, run.mjs, unrated-test); note md-roster-step:201 needs --write | Fri Nov 27 06:32:10 AM EST 2026
 M6 | started | alt/maggi-m6-review - | independent review of origin/alt/helper-dec2patch (fc49e36d) | Fri Nov 27 06:32:27 AM EST 2026
+M6 | done | alt/maggi-m6-review b10c9dfb | reviewed helper-dec2patch (fc49e36d) vs news 877 + M4: 0 blockers, 1 should (add done predicate on data.js ABIL rows), 2 minor; apply-dec2-patch-test 29/29 + md-roster-step --force-patch pass | Fri Nov 27 06:34:44 AM EST 2026
