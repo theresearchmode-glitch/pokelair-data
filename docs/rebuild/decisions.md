@@ -2921,3 +2921,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:56 AM: Pushed main 5c7839e2 = design6 c21ae180 (host-wrapper fix + podium z-index + host-wrapper-test) merged into main; merge-check main ALL PASSED (55); first attempt's 32 failures were a missing node_modules link in the worktree, not the code.
 - 9:36 AM: Hourly 9:35: cancelled GitHub run 46011501061 on alt/t3-pending (log branch; held a runner since 8:56 while main and speed-chain runs queued). Log pushes now carry [skip ci]. Game Plan updated. Disk 9 GB, 1 helper (Job MM).
 - 10:07 AM: main 5c7839e2 GitHub run 46012888301 success (all jobs); Promote to live queued.
+- 10:14 AM: Published live artifact v161 (1795792461-8ff5): design6 0ccfa209 build (podium sprites over tile at every width + tappable; host-wrapper fix kept), today's main data; design6 GitHub 46012768551 green. v2.js unchanged (c2b2e40e).
