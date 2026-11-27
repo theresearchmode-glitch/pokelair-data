@@ -2926,3 +2926,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:36 AM: Hourly 10:36: disk 5->8 GB (removed helper's finished wt-speedmerge, old scratch folders); Game Plan v116; 1 helper (Job NN); main merge-check (podium) + speed-chain gate running.
 - 10:36 AM: Kip's speed chain merged into design6 (978d8213) via gate: GitHub 15/15 on cd798dff, merge-check ALL PASSED.
 - 10:38 AM: Pushed main 59d0da27 (design6 0ccfa209: podium stacking + podium-cover-test); merge-check main ALL PASSED.
+- 10:52 AM: M7 GitHub run failed only v2-overlap team@360/night (footer links over logo) on its old base 5d111577; same check on design6 978d8213 locally: 0 findings 3/3 -> treated as flake; reran failed job; gate on green.
