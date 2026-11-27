@@ -1,4 +1,4 @@
-// Permanent regression test for the Claude artifact host wrapper bug (Nov 27, Jobs M8 & M9).
+// Permanent regression test for the Claude artifact host wrapper bug (Nov 27, Jobs M8, M9, M10).
 // The Claude host wraps index.html in an unlayered <style> block (docs/maggi/files/host-wrapper-head.html on alt/maggi-jobs).
 // Because NastyPlot's CSS lives in @layer, unlayered host styles win unless app/build.mjs emits its unlayered revert-layer block.
 // Compares unwrapped vs host-wrapped dist/v2.html:
@@ -9,7 +9,8 @@
 //   node experiments/host-wrapper-test.mjs                         (Chromium: 390x844 & 1440x900, light & dark, #home)
 //   PAGE=app/dist/v2.html node experiments/host-wrapper-test.mjs   (CI mode, uses existing build)
 //   BROWSER=webkit PAGE=app/dist/v2.html node experiments/host-wrapper-test.mjs
-//     (WebKit: iPhone 15, iPhone SE, iPad Pro 11, light & dark, on #home, #team [full saved team], #meta, #pokemon=Garchomp, #battle)
+//     (WebKit: core 5 pages on iPhone 15, iPhone SE, iPad Pro 11 + extra 7 pages on iPhone 15 & iPad Pro 11, light & dark)
+//   Optional filters: SET=core|extra|all, DEVICES=..., ROUTES=...
 import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -19,6 +20,7 @@ import {chromium, webkit, devices} from 'playwright';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PAGE = path.resolve(ROOT, process.env.PAGE || 'app/dist/v2.html');
 const BROWSER = (process.env.BROWSER || 'chromium').toLowerCase();
+const SET = (process.env.SET || 'all').toLowerCase();
 const ENGINE = BROWSER === 'webkit' ? webkit : chromium;
 
 // Exact host wrapper head from docs/maggi/files/host-wrapper-head.html (alt/maggi-jobs).
@@ -35,7 +37,7 @@ fs.writeFileSync(WRAPPED, HOST_HEAD + fs.readFileSync(PAGE, 'utf8') + '</body></
 let fails = 0, passes = 0;
 const ok = (cond, msg) => { console.log((cond ? '  PASS  ' : '  FAIL  ') + msg); cond ? passes++ : fails++; };
 
-// Full saved 6-Pokémon team for #team (matches cc2.state shape in app/test/v2-saved.mjs).
+// Full saved 6-Pokémon team for #team and Spicy picks (matches cc2.state shape in app/test/v2-saved.mjs).
 const SAVED_SLOTS = [
   {n: 'Incineroar', a: 'Intimidate', lock: false},
   {n: 'Rotom-Wash', a: null, lock: true},
@@ -53,25 +55,64 @@ const SAVED_STATE = JSON.stringify({
   leads: ['Incineroar', 'Garchomp'],
 });
 
-const ROUTES = process.env.ROUTES
-  ? process.env.ROUTES.split(',').map(s => s.trim()).filter(Boolean)
-  : (BROWSER === 'webkit' ? ['#home', '#team', '#meta', '#pokemon=Garchomp', '#battle'] : ['#home']);
+const VIEW_DEFS = {
+  '#home': {hash: '#home', label: '#home'},
+  '#team': {hash: '#team', label: '#team'},
+  '#meta': {hash: '#meta', label: '#meta'},
+  '#pokemon=Garchomp': {hash: '#pokemon=Garchomp', label: '#pokemon=Garchomp'},
+  '#battle': {hash: '#battle', label: '#battle'},
+  '#build': {hash: '#build', label: '#build'},
+  '#box': {hash: '#box', label: '#box'},
+  '#track': {hash: '#track', label: '#track'},
+  'search': {hash: '#home', label: 'Search open', after: async p => {
+    await p.evaluate(() => { if (window.V2 && V2.openSearch) V2.openSearch(); });
+    await p.waitForTimeout(400);
+  }},
+  'spicy': {hash: '#team', label: '#team (Spicy picks on)', spicy: true, after: async p => {
+    await p.waitForFunction(() => window.V2 && V2.spicy && V2.spicy.key === V2.spKey(), null, {timeout: 20000}).catch(() => {});
+    await p.waitForTimeout(400);
+  }},
+  '#method': {hash: '#method', label: '#method'},
+  '#about': {hash: '#about', label: '#about'},
+};
 
-const VIEWPORTS = BROWSER === 'webkit'
-  ? (process.env.DEVICES ? process.env.DEVICES.split(',').map(s => s.trim()).filter(Boolean) : ['iPhone 15', 'iPhone SE', 'iPad Pro 11']).map(name => {
-      const dev = devices[name];
-      if (!dev) throw new Error(`Unknown Playwright device: ${name}`);
-      return {label: `${name} (${dev.viewport.width}x${dev.viewport.height})`, ctxOpts: {...dev}};
-    })
-  : [
-      {label: '390x844', ctxOpts: {viewport: {width: 390, height: 844}, isMobile: true, hasTouch: true}},
-      {label: '1440x900', ctxOpts: {viewport: {width: 1440, height: 900}, isMobile: false, hasTouch: false}},
-    ];
+const CORE_ROUTES = ['#home', '#team', '#meta', '#pokemon=Garchomp', '#battle'];
+const EXTRA_ROUTES = ['#build', '#box', '#track', 'search', 'spicy', '#method', '#about'];
+
+const devEntry = name => {
+  const dev = devices[name];
+  if (!dev) throw new Error(`Unknown Playwright device: ${name}`);
+  return {label: `${name} (${dev.viewport.width}x${dev.viewport.height})`, ctxOpts: {...dev}};
+};
 
 const THEMES = [
   {theme: 'day', scheme: 'light'},
   {theme: 'night', scheme: 'dark'},
 ];
+
+// Build the list of {vp, th, view} jobs to run.
+const JOBS = [];
+if (BROWSER !== 'webkit') {
+  const vps = [
+    {label: '390x844', ctxOpts: {viewport: {width: 390, height: 844}, isMobile: true, hasTouch: true}},
+    {label: '1440x900', ctxOpts: {viewport: {width: 1440, height: 900}, isMobile: false, hasTouch: false}},
+  ];
+  const rs = process.env.ROUTES ? process.env.ROUTES.split(',').map(s => s.trim()).filter(Boolean) : ['#home'];
+  for (const vp of vps) for (const th of THEMES) for (const r of rs) JOBS.push({vp, th, view: VIEW_DEFS[r] || {hash: r, label: r}});
+} else if (process.env.ROUTES || process.env.DEVICES) {
+  const vps = (process.env.DEVICES ? process.env.DEVICES.split(',').map(s => s.trim()).filter(Boolean) : ['iPhone 15', 'iPad Pro 11']).map(devEntry);
+  const rs = (process.env.ROUTES ? process.env.ROUTES.split(',').map(s => s.trim()).filter(Boolean) : EXTRA_ROUTES);
+  for (const vp of vps) for (const th of THEMES) for (const r of rs) JOBS.push({vp, th, view: VIEW_DEFS[r] || {hash: r, label: r}});
+} else {
+  if (SET === 'core' || SET === 'all') {
+    for (const vp of ['iPhone 15', 'iPhone SE', 'iPad Pro 11'].map(devEntry))
+      for (const th of THEMES) for (const r of CORE_ROUTES) JOBS.push({vp, th, view: VIEW_DEFS[r]});
+  }
+  if (SET === 'extra' || SET === 'all') {
+    for (const vp of ['iPhone 15', 'iPad Pro 11'].map(devEntry))
+      for (const th of THEMES) for (const r of EXTRA_ROUTES) JOBS.push({vp, th, view: VIEW_DEFS[r]});
+  }
+}
 
 const readStyles = () => {
   const bs = getComputedStyle(document.body);
@@ -89,7 +130,7 @@ const readStyles = () => {
 
 const b = await ENGINE.launch();
 try {
-  const capture = async (file, ctxOpts, {theme, scheme}, hash) => {
+  const capture = async (file, ctxOpts, {theme, scheme}, view) => {
     const ctx = await b.newContext({
       ...ctxOpts,
       colorScheme: scheme,
@@ -98,16 +139,19 @@ try {
     const p = await ctx.newPage();
     const errs = [];
     p.on('pageerror', e => errs.push(String(e)));
-    await p.addInitScript(([th, st]) => {
+    await p.addInitScript(([th, st, sp]) => {
       try {
         localStorage.setItem('np2.theme', th);
         localStorage.setItem('cc2.theme', JSON.stringify(th === 'night' ? 'dark' : 'light'));
         localStorage.setItem('cc2.welcomed', '"1"');
         localStorage.setItem('cc2.state', st);
+        if (sp) localStorage.setItem('np2.spicy', '1');
+        else localStorage.removeItem('np2.spicy');
       } catch (e) {}
-    }, [theme, SAVED_STATE]);
-    await p.goto('file://' + file + hash, {timeout: 60000});
+    }, [theme, SAVED_STATE, !!view.spicy]);
+    await p.goto('file://' + file + view.hash, {timeout: 60000});
     await p.waitForTimeout(2500);
+    if (view.after) await view.after(p);
     await p.evaluate(() => document.fonts && document.fonts.ready);
     await p.waitForTimeout(300);
     const styles = await p.evaluate(readStyles);
@@ -140,31 +184,28 @@ try {
     } finally { await p.close(); }
   };
 
-  if (BROWSER === 'webkit') {
-    const a1 = await capture(PAGE, VIEWPORTS[0].ctxOpts, THEMES[0], ROUTES[0]);
-    const a2 = await capture(PAGE, VIEWPORTS[0].ctxOpts, THEMES[0], ROUTES[0]);
+  if (BROWSER === 'webkit' && JOBS.length) {
+    const j0 = JOBS[0];
+    const a1 = await capture(PAGE, j0.vp.ctxOpts, j0.th, j0.view);
+    const a2 = await capture(PAGE, j0.vp.ctxOpts, j0.th, j0.view);
     const base = Buffer.compare(a1.png, a2.png) === 0 ? {diffPx: 0, pct: 0, maxDelta: 0} : await diffPngs(a1.png, a2.png);
-    console.log(`  INFO  webkit same-file baseline (${VIEWPORTS[0].label} light ${ROUTES[0]}): ${base.diffPx} differing pixels (maxDelta=${base.maxDelta})`);
+    console.log(`  INFO  webkit same-file baseline (${j0.vp.label} ${j0.th.scheme} ${j0.view.label}): ${base.diffPx} differing pixels (maxDelta=${base.maxDelta})`);
   }
 
-  for (const vp of VIEWPORTS) {
-    for (const th of THEMES) {
-      for (const hash of ROUTES) {
-        const label = `${BROWSER} ${vp.label} ${th.scheme} ${hash}`;
-        const u = await capture(PAGE, vp.ctxOpts, th, hash);
-        const w = await capture(WRAPPED, vp.ctxOpts, th, hash);
-        const styleDiffs = [];
-        for (const k of Object.keys(u.styles)) {
-          if (u.styles[k] !== w.styles[k]) styleDiffs.push(`${k}: unwrapped=${JSON.stringify(u.styles[k])} vs wrapped=${JSON.stringify(w.styles[k])}`);
-        }
-        ok(!u.errs.length && !w.errs.length && !styleDiffs.length,
-          `${label} styles match (${styleDiffs.length ? styleDiffs.join('; ') : `bodyBg=${w.styles.bodyBg}, rootScheme=${w.styles.rootScheme}`}${u.errs.length || w.errs.length ? '; errs=' + [...u.errs, ...w.errs].join('|') : ''})`);
-        const sameBytes = Buffer.compare(u.png, w.png) === 0;
-        const px = sameBytes ? {diffPx: 0, pct: 0, maxDelta: 0} : await diffPngs(u.png, w.png);
-        ok(px.diffPx === 0,
-          `${label} screenshot pixel-identical (${px.diffPx === 0 ? `${u.png.length} B, 0 differing pixels` : `${px.sizeDiff || `${px.diffPx}/${px.totalPx} px (${px.pct}%), maxDelta=${px.maxDelta}, first=${JSON.stringify(px.first)}`}`})`);
-      }
+  for (const {vp, th, view} of JOBS) {
+    const label = `${BROWSER} ${vp.label} ${th.scheme} ${view.label}`;
+    const u = await capture(PAGE, vp.ctxOpts, th, view);
+    const w = await capture(WRAPPED, vp.ctxOpts, th, view);
+    const styleDiffs = [];
+    for (const k of Object.keys(u.styles)) {
+      if (u.styles[k] !== w.styles[k]) styleDiffs.push(`${k}: unwrapped=${JSON.stringify(u.styles[k])} vs wrapped=${JSON.stringify(w.styles[k])}`);
     }
+    ok(!u.errs.length && !w.errs.length && !styleDiffs.length,
+      `${label} styles match (${styleDiffs.length ? styleDiffs.join('; ') : `bodyBg=${w.styles.bodyBg}, rootScheme=${w.styles.rootScheme}`}${u.errs.length || w.errs.length ? '; errs=' + [...u.errs, ...w.errs].join('|') : ''})`);
+    const sameBytes = Buffer.compare(u.png, w.png) === 0;
+    const px = sameBytes ? {diffPx: 0, pct: 0, maxDelta: 0} : await diffPngs(u.png, w.png);
+    ok(px.diffPx === 0,
+      `${label} screenshot pixel-identical (${px.diffPx === 0 ? `${u.png.length} B, 0 differing pixels` : `${px.sizeDiff || `${px.diffPx}/${px.totalPx} px (${px.pct}%), maxDelta=${px.maxDelta}, first=${JSON.stringify(px.first)}`}`})`);
   }
 } finally {
   await b.close();
