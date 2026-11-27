@@ -24,3 +24,13 @@ k64c	fast	/pokemon/garchomp	LCP 98	FCP 98	CLS 0.0000
 k64c	fast	/team	LCP 135	FCP 135	CLS 0.0000
 k64c	fast	/meta	LCP 87	FCP 87	CLS 0.0159
 ```
+
+## Claude build Home, slow phone, why 26 s (time: 7:53 PM (7:53:58)  date: Thu Nov 26, 2026)
+
+```
+load event 26548 ms
+LCP candidates: [{"t":5589,"el":"IMG.","url":"ttp%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22-68.57","size":896},{"t":26268,"el":"H1.u sdh-h","url":"","size":74426}]
+total KB 4815 requests 58
+biggest: v2.js?v=add6709e7771 3729KB | index.html 980KB | instrument-sans-latin.woff2 56KB | unbounded-latin.woff2 50KB 
+```
+My test server sends files uncompressed. Whether the Claude artifact host compresses v2.js is NOT checked, so 26 s is the worst case.
