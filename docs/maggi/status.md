@@ -36,3 +36,5 @@ M12 | done | alt/maggi-m12-podium 25b3551a | Settled 612d0364: phones fixed (HH 
 - | idle | - - | M12 done; waiting for next job (approaching 9:30 AM EST cutoff) | Fri Nov 27 09:27:38 AM EST 2026
 - | idle | - - | Stopping for 9:30/9:45 AM EST hard stop. Done: M1-M12 all complete, pushed with [skip ci], and reported (latest M12 on alt/maggi-m12-podium 25b3551a). Not done: none (queue clear). Continue: read origin/alt/maggi-jobs:docs/maggi/queue.md next session | Fri Nov 27 09:32:04 AM EST 2026
 M13 | started | alt/maggi-m13-chain - | Starting M13: independent review of Kip speed chain as merged (978d8213 vs 0ccfa209) | Fri Nov 27 11:11:08 AM EST 2026
+M13 | done | alt/maggi-m13-chain 13db26aa | All 369 pages match (0 SEO/link/console/textLen diffs, 10/10 Search match); found & fixed /calc prerender CLS 0.3096->0 (shell.js:461 + fail-first test) | Fri Nov 27 11:34:09 AM EST 2026
+M14 | started | alt/maggi-m14-overlap - | Starting M14: investigate v2-overlap flake on 5d111577 and 978d8213 + under CPU load | Fri Nov 27 11:34:09 AM EST 2026
