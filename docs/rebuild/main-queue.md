@@ -1,8 +1,8 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 1:48 AM (1:48:39)  date: Fri Nov 27, 2026
-NOW: (1:49 AM) THE SWITCH IS LIVE (artifact v159 1795762042-7ea6; main/live 572622d5). Watching the first merged data run 45953665171 (pid in .main-running); refresh fired 1:48 AM.
+Updated: time: 2:36 AM (2:36:38)  date: Fri Nov 27, 2026
+NOW: (2:37 AM) gate.sh alt/batch9 waits for GitHub run 45959577409 (pid in .main-running). Switch live; first merged data run + its tests green.
 NOW: helper Job JJ (review of Kip speed chain). Kip/Maggi back ~3 AM (71, M6 queued).
-NEXT: data run done -> check out/post.json has ran, tests green, promote; check the refresh summary (meta/post, meta/info).
+NEXT: check promote moved live to b7d60ef3; check the refresh summary (meta/post, meta/info).
 NEXT: batch9 (alt/batch9 50abdee8) real GitHub run, then gate into claude/design6, then main (after the switch, main follows design6).
 NEXT: 7:30 AM morning summary for Sim (trig_01HzJ1ckLPN7LMVpiJ4eUh83); Preview daily 7:41 AM.
 NEXT: Kip speed chain merge after Job JJ + Kip 71.
