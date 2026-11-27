@@ -45,3 +45,5 @@ Branch alt/maggi-m5-dec2patch from origin/claude/design6. It applies every "must
 - Test experiments/apply-dec2-patch-test.mjs on a scratch copy: every change lands, the second run is a no-op, rules-fixes-test passes with a fake clock after Dec 2 (its time-bomb guard) and still passes before, unrated-test + run.mjs pass. Show the time-bomb failing without the patch.
 - The Showdown pin bump is NOT in this job (Kip does it). The wording you write is game text from the patch notes, not page design.
 Push with [skip ci]; report as always.
+
+## HH (time: 10:38 PM (10:38:58)  date: Thu Nov 26, 2026): you hit your usage limit, so job M5 (apply-dec2-patch.mjs) moved to HH's Claude helper. When you are back, do NOT redo it: skip to the next job below (HH adds it before 3 AM).
