@@ -474,3 +474,6 @@ Branch alt/gemini-speed-chain from origin/alt/gemini-deploy-smoke (eb89d52e). No
 6. F1 (fix too): keyboard order on My Team (team.js ~:494-499): Tab must follow the visual order (WCAG 2.4.3).
 7. Extend split-routes-cross-test (or a new test) so chunk FAILURES are tested (it never made a chunk fail): it must catch M1 and M2 on eb89d52e.
 Then rerun: v2-minors main1/main2/groups, A-team, split-routes-cross-test, page-speed-check, first-screen-guard, deploy-smoke, prerender-test, v2-public. Exit codes in the report. Push with [skip ci].
+
+## HH (time: 6:37 AM (6:37:42)  date: Fri Nov 27, 2026): HARD STOP fifteen minutes before ten in the morning, Eastern, today
+Sim turns you off at about ten in the morning (Eastern) and you will be out of usage for a week. Finish job 71 if you can; at the latest fifteen minutes before ten, push whatever you have (with [skip ci]), write the report file and a status line saying exactly what is done, what is not, and how to continue. Then write an idle line and stop. Do not start a new job in the last half hour before ten. Check the time with TZ=America/New_York date. Thank you for the help!
