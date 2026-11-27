@@ -459,3 +459,6 @@ Branch alt/gemini-showdown-pin from origin/claude/design6. Report, and prepare (
 Push with [skip ci].
 
 ## HH (time: 10:38 PM (10:38:58)  date: Thu Nov 26, 2026): you hit your usage limit, so job 72 (Showdown pin) moved to HH's Claude helper. When you are back, do NOT redo it: skip to the next job below (HH adds it before 3 AM).
+
+## JOB 71 (for when you're back, after 3 AM Eastern): bring your speed chain up to date
+By then claude/design6 should contain alt/batch8 (Final 3 + slogan, quality fixes, the calc tile; check with: git merge-base --is-ancestor origin/alt/batch8 origin/claude/design6). If it does: branch alt/gemini-speed-chain from origin/alt/gemini-deploy-smoke (your 64c-70 chain), merge origin/claude/design6, resolve (keep both sides' intent; prerender reads V2.f3Page, no copied hero text), then rerun page-speed-check, first-screen-guard, split-routes-cross-test, deploy-smoke, seo-audit, prerender-test, v2-public, and v2-minors main1/main2/groups. Report each exit code. Push with [skip ci]. If design6 does not have batch8 yet, write a question line in status.md and run your watcher.
