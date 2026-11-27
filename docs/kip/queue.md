@@ -414,3 +414,11 @@ HH's own script (Chromium, cold cache, 390x844, 4x CPU + 150 ms RTT + 1.6 Mbit/s
 | /meta | 15060 | 1918 | 0.0395 |
 | /pokemon | 1426 | 689 | 0.0162 |
 PROBLEM: CLS on / and /team is 0.12 on the throttled phone, over Google's 0.1 "good" line (your unthrottled runs showed 0.0007). The page jumps when the real app replaces the prerendered first screen on a slow phone. Fix it in the 64c fix commit: find which elements shift (a PerformanceObserver layout-shift with sources), make the hydrated first screen match the prerender exactly, and add a throttled CLS check (4x CPU, slow network) that FAILs above 0.1 on / and /team. Show it failing on 6950745e first.
+
+## HH (time: 9:11 PM (9:11:29)  date: Thu Nov 26, 2026): 66 received, thank you (speed program 63-66 done). Review after the switch.
+## JOB 67: the speed chain on iPhone/iPad (WebKit), the devices Sim uses
+Branch alt/gemini-speed-webkit from origin/alt/gemini-speed-pictures (c75b8716, your 64c+65+66 chain). Report only unless a check fails.
+- Run experiments/page-speed-check.mjs and first-screen-guard.mjs in WebKit (iPhone 15, iPhone SE, iPad Pro 11) as well as Chromium, on the real public-site.mjs deploy.
+- Slow phone too: 4x CPU is Chromium-only; for WebKit use the slow network (150 ms, 1.6 Mbit/s) and report what you could and couldn't throttle.
+- Check in WebKit: no font-swap overlap, CLS on / and /team under 0.1, the prerendered first screen matches the app after it loads (no jump, no flash of the old Home), every cold-route button works (split-routes-cross-test in WebKit if it can run there; say if not).
+- Then fix in your chain only what fails in WebKit, each with a check that fails first. Push once at the end (real run).
