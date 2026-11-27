@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 8:25 PM (8:25:36)  date: Thu Nov 26, 2026
-NOW: (8:26 PM) tests on alt/calc-tile-phone 9ffffd6a (pid in .main-running); f3-claude run has an infra flake in an alert-only job: f3-follow.sh reruns it and restarts the gate; helper Job EE pre-switch sweep (report ~9:30 PM).
+NOW: (8:50 PM) helper Job FF: alt/batch8 = F3 + quality-v2 fixes (tap targets, h1 size) + calc tile + preflight + 2 sweep fixes; gate batch8 alone. Maggi on M1. Kip on 66.
 NEXT: batch8 = alt/calc-tile-phone + alt/preflight-skip (merge-tree clean), real GitHub run, gate after Final 3 is in design6.
 NEXT: Preview republish after the merge (Final 3 for Sim's iPhone check); send Sim before/after pictures.
 NEXT: tell Sim when Final 3 is in design6 so Kip re-merges design6 into 64c before his final push.
