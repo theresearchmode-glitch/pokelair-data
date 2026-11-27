@@ -7,7 +7,8 @@
 //   5. app/src/data/items-list.js        rebuilt from --items <txt> (if provided)
 //   6. app/src/app/24-sheet-data.js      PAGE_REG updated to --reg <id> (if provided)
 //   7. regulation.json                   "site" updated to --reg <id> (if file exists & --reg provided)
-//   8. experiments/apply-dec2-patch.mjs  re-applied automatically if present (so regenerated LEARN keeps patch moves)
+//   8. experiments/apply-dec2-patch.mjs  re-applied automatically if present (so regenerated LEARN keeps patch moves);
+//      before 2026-12-02T02:00Z it is skipped with a message unless --force-patch is given
 //
 // DRY-RUN by default: prints every planned change and writes nothing. Pass --write to apply.
 // Stops on the first error with a plain message (exit 1).
@@ -15,7 +16,7 @@
 // Usage:
 //   node experiments/md-roster-step.mjs [--root <dir>] [--ps <showdown dir>] [--format <sd format>]
 //        [--add <extra.json>] [--sprites <map.json>] [--items <items.txt>] [--reg <M-D>]
-//        [--run-sprites] [--write]
+//        [--run-sprites] [--force-patch] [--write]
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -198,9 +199,11 @@ if (REG && fs.existsSync(regJsonPath)) {
 const patchScript = P('experiments/apply-dec2-patch.mjs');
 if (fs.existsSync(patchScript)) {
   if (WRITE) {
-    const pr = spawnSync(process.execPath, [patchScript], {cwd: ROOT, encoding: 'utf8'});
-    if (pr.status !== 0) fail(`apply-dec2-patch.mjs failed (exit ${pr.status}): ${(pr.stderr || pr.stdout || '').trim().slice(0, 300)}`);
-    console.log('  8. apply-dec2-patch.mjs: re-applied cleanly');
+    /* apply-dec2-patch.mjs is a dry run unless given --write, and refuses --write before 2026-12-02T02:00Z (exit 3) unless --force */
+    const pr = spawnSync(process.execPath, [patchScript, '--write', '--root', ROOT, ...(has('force-patch') ? ['--force'] : [])], {cwd: ROOT, encoding: 'utf8'});
+    if (pr.status === 3) console.log('  8. apply-dec2-patch.mjs: NOT applied, it is before the patch time (2026-12-02T02:00Z). After that, run: node experiments/apply-dec2-patch.mjs --write (or pass --force-patch here)');
+    else if (pr.status !== 0) fail(`apply-dec2-patch.mjs failed (exit ${pr.status}): ${(pr.stderr || pr.stdout || '').trim().slice(0, 300)}`);
+    else console.log('  8. apply-dec2-patch.mjs: re-applied cleanly');
   } else {
     console.log('  8. apply-dec2-patch.mjs: will re-apply on --write');
   }
