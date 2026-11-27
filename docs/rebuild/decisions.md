@@ -2932,3 +2932,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:27 AM: Maggi M7 (apply-dec2-patch ABIL done-predicates) merged into design6 eab885dd after GitHub rerun green + merge-check ALL PASSED.
 - 11:29 AM: Found: Live-data audit issue flapped 5x today (open/close, each emails Sim), at least 2 from branch runs. Fix alt/audit-main-only 5958b416: issue step main-only; gating. Also: watchdog/md-watch scheduled runs fire hours late (yesterday 21:57Z for a 12:47Z cron; today's not yet run at 16:30Z): GitHub scheduler delay, not a failure (not proven). Open: audit flags item 'Dragonitete' (0.01% of slots) not modelled.
 - 11:30 AM: Sim: GitHub alarm emails reach him ('Yup i got the emails'). Alarm path confirmed end to end; noise fix (audit issue main-only) gating.
+- 11:32 AM: main 59d0da27 (podium) GitHub run 46026603683: success, all jobs.
