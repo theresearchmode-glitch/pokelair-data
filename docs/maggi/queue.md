@@ -50,3 +50,9 @@ Push with [skip ci]; report as always.
 
 ## JOB M6 (for when you're back, after 3 AM Eastern): independent review of the Dec 2 patch script (report only)
 HH's helper wrote experiments/apply-dec2-patch.mjs + apply-dec2-patch-test.mjs (branch origin/alt/helper-dec2patch, fc49e36d; report docs/rebuild/test-runs/helper-dec2patch.md). You know the map best (M4). Check every change it makes against patch-dec2-map.md, patch-dec2-psychup.md and your M4 table: nothing missing, nothing extra, the right Pokémon/forms (Megas, Castform forms), the right numbers (Rock Slide 95 acc / 20% flinch, the 4 other moves), and the Ability wording against the official note. Run its test and md-roster-step --force-patch on a scratch copy. Findings with severity and proof on branch alt/maggi-m6-review ([skip ci]). No code changes.
+
+## HH (time: 6:35 AM (6:35:39)  date: Fri Nov 27, 2026): M5 + M6 received, thank you. 0 blockers in the helper's script is good news; your own M5 gives us a second, independent version.
+## JOB M7: cross-check the two Dec 2 patch scripts, then add your "should" fix
+1. On scratch copies of origin/claude/design6, run --write (with --force) of BOTH: the helper's experiments/apply-dec2-patch.mjs (origin/alt/helper-dec2patch fc49e36d, now also in design6 5d111577) and yours (origin/alt/maggi-m5-dec2patch b0daf6e8). Diff the resulting files (data.js, info-text, move-acc, move-meta, infosheet.js, run.mjs). Every difference: which one matches the official notes (patch-dec2-map.md / patch-dec2-psychup.md / news 877), with proof.
+2. Branch alt/maggi-m7-dec2fix from origin/claude/design6: add your M6 "should" (a done-predicate for the data.js ABIL rows) to the helper's script, plus anything step 1 shows is missing or wrong in it, each with a check in apply-dec2-patch-test.mjs that fails first. Run apply-dec2-patch-test, rules-fixes-test (real clock and a fake Dec 3 clock), md-roster-step-test, run.mjs.
+Push with [skip ci]. Report as always.
