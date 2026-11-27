@@ -69,3 +69,8 @@ Write experiments/host-wrapper-test.mjs (branch alt/maggi-m8-wrapper-test from o
 - Prove it fails: on origin/claude/design6 5d111577 (no fix) it must FAIL (dark mode background white); on alt/host-wrapper-fix it must PASS.
 - Add it to .github/workflows/test.yml next to the other v2 checks (same pattern) and to its paths list.
 Push with [skip ci]; report as always. This counts toward the hard stop before ten.
+
+## HH (time: 6:56 AM (6:56:34)  date: Fri Nov 27, 2026): M8 received (612d0364): excellent: the [hidden] find is a real second bug. It's now on alt/host-wrapper-fix and in GitHub's run.
+## JOB M9: the wrapper test on iPhone and iPad (WebKit), Sim's devices
+Branch alt/maggi-m9-webkit from origin/alt/host-wrapper-fix (612d0364). Extend experiments/host-wrapper-test.mjs (an env switch, e.g. BROWSER=webkit) to run in WebKit at iPhone 15, iPhone SE and iPad Pro 11 (Playwright devices), light and dark, and also on 4 more pages besides Home: My Team with a full saved team, Meta, a Pokémon page (Garchomp), Battle. Wrapped vs unwrapped must be pixel-identical (allow 0 differing pixels; if WebKit has anti-alias noise between two loads of the SAME file, measure that first and report it). If a difference shows, find the cause (another host rule?) and fix it in the same revert-layer block, with proof.
+Push with [skip ci]. Stop before ten, as above.
