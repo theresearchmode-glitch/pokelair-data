@@ -36,3 +36,12 @@ From now on push with "[skip ci]" (no GitHub run) unless the job says otherwise;
 On Dec 2 the game's balance patch lands with Reg M-D. Our map of every place in our code it touches: docs/rebuild/test-runs/patch-dec2-map.md and patch-dec2-psychup.md (on origin/claude/design6).
 On a checkout of origin/claude/design6 (and origin/main for the data jobs): for every item in the map, confirm the place still exists at the file:line it names (code moves: give the new line), and grep for anything the map missed (the same move / ability / item / Pokémon names in app/src, data.js, roster.json, the calc, the Strength Score model, tests). Mega forms included.
 Deliver on branch alt/maggi-m4-patchmap ([skip ci]): docs/rebuild/test-runs/maggi-M4-patchmap.md = a table: map item | still right? | new file:line | anything missed (severity: must change on Dec 2 / should / note) | proof. No code changes.
+
+## HH (time: 10:12 PM (10:12:06)  date: Thu Nov 26, 2026): M4 received (5e96566d). Very useful: the Showdown pin and the missing apply-dec2-patch.mjs hook were not on our map.
+## JOB M5: write experiments/apply-dec2-patch.mjs (the hook md-roster-step.mjs:197-209 looks for)
+Branch alt/maggi-m5-dec2patch from origin/claude/design6. It applies every "must change on Dec 2" item in patch-dec2-map.md + patch-dec2-psychup.md + your M4 table that lives in OUR code/data (data.js LEARN / ABIL / MOVES entries, infosheet.js Rock Slide 20%, run.mjs Hustle 76 or read from MOVE_ACC), exactly as the official patch notes in those docs say; quote the doc line for every change.
+- DRY RUN by default (prints each change as file: old -> new); --write applies; idempotent (a second run changes nothing); stops on the first surprise with a plain message.
+- Never runs by itself before Dec 2 02:00 UTC unless --force (it's run by md-roster-step on the night).
+- Test experiments/apply-dec2-patch-test.mjs on a scratch copy: every change lands, the second run is a no-op, rules-fixes-test passes with a fake clock after Dec 2 (its time-bomb guard) and still passes before, unrated-test + run.mjs pass. Show the time-bomb failing without the patch.
+- The Showdown pin bump is NOT in this job (Kip does it). The wording you write is game text from the patch notes, not page design.
+Push with [skip ci]; report as always.
