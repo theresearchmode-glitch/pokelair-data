@@ -16,7 +16,7 @@ that shows it, and keep player names out (already done: IDs only, no-names check
 
 ## Draft API key application (for Sim to send; HH drafted Fri Nov 27)
 Project: NastyPlot (nastyplot.org), a free team builder and Strength Score for Pokémon Champions VGC doubles.
-What we use: public tournament placings and team sheets from the Limitless API, read once every few hours by one scheduled job
+What we use: public tournament placings and team sheets from the Limitless API, read by one scheduled job once a day (every 4 hours for about two weeks after a new regulation starts; checked: .github/workflows/update.yml crons), plus one daily Reg M-D watcher
 (not by visitors' browsers); results are cached and shown as usage stats, sets and real winning teams, credited "Online
 tournaments, via Limitless" with a link.
 Players: we show no player names (IDs only), because many of our users are kids.
