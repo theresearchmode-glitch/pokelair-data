@@ -3,7 +3,7 @@
    type on the scale; 4px grid. Wide (1280+): words left, the panel right with the receipt and its bars running out across it. Narrow:
    the words, then the panel as a slanted block with the receipt inside and each bar under its name (F3p). */
 .f3-home{display:block;overflow-x:clip} /* f3-home, not .f3: the Stampede's plates are li.f1-f6 (batch6 overlap check) */
-.f3-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:var(--s6);min-height:calc(100svh - 76px);padding:0 var(--gut) var(--s10);overflow:hidden}
+.f3-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:var(--s6);min-height:calc(100svh - var(--f3-top,76px));padding:0 var(--gut) var(--f3-pb,var(--s10));overflow:hidden}
 .f3-panel{position:absolute;z-index:0;top:0;right:0;bottom:0;left:44%;overflow:hidden;background:var(--f3-panel);clip-path:polygon(12% 0,100% 0,100% 100%,0 100%)}
 .f3-rays{position:absolute;left:54%;top:52%;width:2400px;height:2400px;background:repeating-conic-gradient(from 2deg,var(--f3-ray-b) 0 1.5deg,transparent 1.5deg 9deg,var(--f3-ray-p) 9deg 10.5deg,transparent 10.5deg 18deg);transform:translate(-50%,-50%);
   -webkit-mask:radial-gradient(circle,var(--sd-mask) 0 15%,transparent 40%);mask:radial-gradient(circle,var(--sd-mask) 0 15%,transparent 40%)}
@@ -11,6 +11,9 @@
   -webkit-mask:radial-gradient(circle at 60% 50%,var(--sd-mask) 0 22%,transparent 46%);mask:radial-gradient(circle at 60% 50%,var(--sd-mask) 0 22%,transparent 46%)}
 .f3-words{position:relative;z-index:4;max-width:640px}
 .f3-h1{margin:var(--s4) 0;font-size:var(--d-fhead)}
+.f3-sl{display:block}
+.f3-sl em{display:block} /* the lockup's two lines: "Sharply raise" / "your win rate." */
+.f3-h1s{display:block;max-width:min(520px,calc(44vw - var(--gut) - 16px));margin-top:var(--s3);font-size:var(--t22);line-height:1.2;letter-spacing:0;color:var(--k-ink)} /* the regulation line inside the h1 (Sim, option A) */
 .f3-lead{max-width:min(520px,calc(44vw - var(--gut) - 16px));margin:0 0 var(--s6)} /* the words stop before the panel's slanted edge at every width */
 .f3-acts{max-width:min(640px,calc(44vw - var(--gut) - 16px));display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4)}
 .f3-acts .k-go{margin:0}
@@ -37,6 +40,7 @@
 .f3-bar{position:relative;display:block;height:44px;width:max(130px,calc(var(--len) * 1% - 110px));margin-left:var(--s4);background:var(--c);color:var(--num);text-decoration:none;transform:skewX(-14deg);
   box-shadow:0 0 24px color-mix(in srgb,var(--c) 70%,transparent),6px 6px 0 var(--f3-bar-shade)}
 .f3-bar:focus-visible{outline:3px solid var(--f3-sticker);outline-offset:4px}
+.f3-bar::after{content:"";position:absolute;top:-8px;right:0;bottom:-8px;left:0} /* a 44px+ tap area round each bar (qcheck TAP: 28px on phones, 34px on tablets), no visual change */
 .f3-r{position:absolute;right:var(--s4);top:50%;font-size:var(--t28);line-height:1;text-shadow:2px 2px 0 var(--f3-bar-shade);transform:translateY(-50%) skewX(14deg)}
 .f3-art{position:absolute;left:calc(100% + 8px);bottom:-20px;width:auto;height:80px;max-width:100px;object-fit:contain;transform:skewX(14deg);
   filter:drop-shadow(3px 0 0 var(--f3-sticker)) drop-shadow(-3px 0 0 var(--f3-sticker)) drop-shadow(0 3px 0 var(--f3-sticker)) drop-shadow(0 -3px 0 var(--f3-sticker)) drop-shadow(0 0 14px var(--c))}
@@ -59,7 +63,7 @@
   .f3-anim .f3-art{animation:f3Pop .45s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(.7s + var(--d,0s))}
 }
 @media (max-width:1279.98px){
-  .f3-lead,.f3-acts,.f3-md,.f3-leg{max-width:none}
+  .f3-lead,.f3-acts,.f3-md,.f3-leg,.f3-h1s{max-width:none}
   .f3-hero{grid-template-columns:minmax(0,1fr);min-height:0;padding:var(--s2) var(--gut) var(--s10)}
   .f3-panel{display:none}
   .f3-pr{justify-self:stretch;width:calc(100% + 2 * var(--gut));max-width:none;margin:var(--s6) calc(-1 * var(--gut)) 0;padding:40px var(--s4) 48px;background:var(--f3-panel);clip-path:polygon(0 24px,100% 0,100% 100%,0 100%)}
@@ -75,4 +79,36 @@
   .f3-scale{display:none}
 }
 @media (min-width:700px) and (max-width:1279.98px){.f3-pr{max-width:none}.f3-paper{left:calc(var(--s4) + 8%);right:calc(var(--s4) + 8%)}.f3-hd,.f3-ft,.f3-pl{margin:0 calc(var(--s4) + 8%)}}
-@media (max-width:699.98px){.f3-md-l{display:none}.f3-md-s{display:inline}}
+@media (max-width:699.98px){.f3-md-l{display:none}.f3-md-s{display:inline}
+  /* phones (Job DD, HH Nov 26: the hero was 1627px at 390): each Pokémon one row, its small picture, name with its item and type under it,
+     and its bar to the right in the same row (the number on it; the big riding picture stays on wider screens); a tighter receipt */
+  .f3-hero{gap:0;padding-bottom:var(--s2)}
+  .f3-acts{gap:var(--s3)}
+  .f3-h1{margin:var(--s3) 0}
+  .f3-lead{margin-bottom:var(--s4)}
+  .f3-md{margin-top:var(--s4)}
+  .f3-leg{display:none} /* each row carries its own type label here */
+  .f3-l0{display:none} /* the lead's first clause: the slogan line came back (Sim, option A); the Home stays within its 7.95 screens (HH) */
+  .f3-pr{padding:var(--s6) var(--s3);margin-top:var(--s2)}
+  .f3-paper{top:var(--s6);right:var(--s3);bottom:var(--s6);left:var(--s3)}
+  .f3-hd{padding:var(--s4) var(--s4) var(--s1)}
+  .f3-meta{margin-top:var(--s1)}
+  .f3-pl{grid-template-columns:minmax(0,1fr) minmax(96px,38%);align-items:center;gap:var(--s2);padding:2px 0;border-bottom:1px dotted var(--f3-rule)}
+  .f3-top .u{font-size:var(--t20)}
+  .f3-lab{display:grid;grid-template-columns:28px auto minmax(0,1fr);grid-template-areas:"sp nm nm" "sp it ty";align-items:center;gap:0 var(--s2);padding:0 0 0 var(--s3)}
+  .f3-sp{grid-area:sp;display:block;width:28px;height:28px}
+  .f3-n{display:contents}
+  .f3-n b{grid-area:nm;font-size:var(--t15)}
+  .f3-n small{grid-area:it}
+  .f3-t{grid-area:ty;justify-self:start;margin:0;padding:2px 6px}
+  .f3-bar{width:max(56px,calc(var(--len) * 1%));min-width:0;height:28px;margin:0 var(--s3) 0 0;box-shadow:0 0 12px color-mix(in srgb,var(--c) 60%,transparent),3px 3px 0 var(--f3-bar-shade)}
+  .f3-r{right:var(--s2);font-size:var(--t17)}
+  .f3-art{display:none}
+  .f3-ft{align-items:center;padding:var(--s2) var(--s4) 32px}
+  .f3-band{font-size:var(--t15)} /* Unbounded stays 15px+ (v2-unbounded) */
+  .f3-band br{display:none}
+  .f3-band span{display:block}
+  .f3-big{font-size:var(--t34)}
+  .f3-stamp{position:absolute;right:var(--s2);bottom:-12px;margin:0;font-size:var(--t15);transform:rotate(-8deg)} /* on the receipt's torn edge, under the score */}
+@media (min-width:430px) and (max-width:909.98px){.f3-h1{font-size:var(--t34)}} /* the h1 lands on the type scale (4.4vw gave 34-40px between 773 and 909: 36.1px at 820, qcheck SIZE) */
+@media (max-width:429.98px){.f3-h1{font-size:var(--t28)}.f3-h1s{margin-top:var(--s1);font-size:var(--t15)}}

@@ -30,15 +30,16 @@ V2.f3Data = () => { const key = typeof metaVersion !== 'undefined' ? metaVersion
   V2._f3 = {key, v}; return v; };
 V2.f3Band = G => G ? ({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[CH.grade(G.s)] || 'solid' : '';
 V2.f3Link = n => { const s = typeof V2.pubSlug === 'function' ? V2.pubSlug(n) : ''; return s ? `/pokemon/${s}` : `#pokemon=${encodeURIComponent(n)}`; };
-// the words: the h1 changes with the calendar (before Dec 2: "before Reg M-D."; from Dec 2: "for Reg M-D."), and later names the regulation
+// the words (Sim, Nov 26: option A): ONE h1 with the slogan drawn like the brand lockup ("Sharply raise" ink, "your win rate." PLOT blue)
+// and, smaller inside the same h1, the line Google reads for the regulation; that line changes with the calendar (before Dec 2: "before Reg M-D."; from Dec 2: "for Reg M-D."), and later names the regulation
 V2.f3Words = D => { const E = V2.esc, now = Date.now(), mdAt = Date.parse(V2.REG_START_MD || ''), before = isFinite(mdAt) && now < mdAt;
-  const reg = D && D.reg ? D.reg : '', em = before ? 'before Reg M-D.' : reg && reg !== 'M-C' ? `for Reg ${E(reg)}.` : 'for Reg M-D.';
+  const reg = D && D.reg ? D.reg : '', em = before ? 'before <span class="nw">Reg M-D.</span>' : reg && reg !== 'M-C' ? `for <span class="nw">Reg ${E(reg)}.</span>` : 'for <span class="nw">Reg M-D.</span>'; /* the regulation never splits (Job FF: "M-D." sat alone at 320) */
   const teams = (typeof RES === 'object' && RES && RES.teams) || 0, md = V2.mdCountdown(now) || V2.regDay(now) || '', mdS = V2.mdCountdown(now, true) || V2.regDay(now) || '';
   const tys = D ? [...new Set(D.rows.map(x => x.t))] : [];
   return {before, html: `<div class="f3-words"><p class="k-kicker">Team builder · Strength Score</p>
-    <h1 class="k-h1 u f3-h1" id="f3-h1">Rate your Pokémon Champions team <em>${em}</em></h1>
-    <p class="k-lead f3-lead">Add your six. NastyPlot rings it up out of 100 against ${E(Number(teams).toLocaleString('en-US'))} real tournament teams, then shows its Matchups and exactly what to change.</p>
-    <div class="f3-acts">${V2.kGo('Score My Team', {href: '#team'})}${V2.kBtn('Build Me a Team', {href: '#build'})}</div>
+    <h1 class="k-h1 u f3-h1" id="f3-h1"><span class="f3-sl">Sharply raise <em>your win rate.</em></span> <span class="f3-h1s">Rate your Pokémon Champions team ${em}</span></h1>
+    <p class="k-lead f3-lead"><span class="f3-l0">Add your six. </span>NastyPlot rings it up out of 100 against ${E(Number(teams).toLocaleString('en-US'))} real tournament teams, then shows its Matchups and exactly what to change.</p>
+    <div class="f3-acts">${V2.kGo('Score My Team', {href: '#team', 'data-sdgo': true})}${V2.kBtn('Build Me a Team', {href: '#build', 'data-sdgo': true})}</div>
     ${md ? `<p class="f3-md"><span class="f3-md-l">${E(md)}</span><span class="f3-md-s">${E(mdS)}</span></p>` : ''}
     ${tys.length ? `<p class="f3-leg"><span class="vh">The bar colours are the types of the winning six: </span>${tys.map(t => `<span class="f3-chip" style="--c:var(--f3-${t});--on:var(--f3-on-${t})">${E(t)}</span>`).join('')}</p>` : ''}</div>`}; };
 V2.f3Page = () => { const E = V2.esc, D = V2.f3Data(), W = V2.f3Words(D);
@@ -47,7 +48,7 @@ V2.f3Page = () => { const E = V2.esc, D = V2.f3Data(), W = V2.f3Words(D);
     const rows = D.rows.map((x, i) => { const r = x.r != null ? x.r : 40, len = Math.max(0, Math.min(100, (r - 40) / 60 * 100));
       return `<li class="f3-pl" style="--c:var(--f3-${x.t});--num:var(--f3-num-${x.t});--on:var(--f3-on-${x.t});--r:${r};--len:${len.toFixed(1)};--d:${(i * .1).toFixed(1)}s">
         <div class="f3-lab"><span class="f3-sp" aria-hidden="true">${V2.mon(x.n, {bare: true, iw: 36})}</span><span class="f3-n"><b>${E(x.d)}</b>${x.item ? `<small>${V2.keepForm ? V2.keepForm(E(x.item)) : E(x.item)}</small>` : ''}</span><span class="f3-t">${E(x.t)}</span></div>
-        <a class="f3-bar" href="${E(V2.f3Link(x.n))}" data-v2mon="${E(x.n)}" aria-label="${E(x.d)}, Rating ${x.r != null ? x.r : 'not rated'}"><b class="u f3-r" aria-hidden="true">${x.r != null ? x.r : '–'}</b><img class="f3-art" src="${V2.art(typeof SPRITE_ID === 'object' ? SPRITE_ID[x.n] : null, true)}" alt="" decoding="async"></a></li>`; }).join('');
+        <a class="f3-bar" href="${E(V2.f3Link(x.n))}" data-v2mon="${E(x.n)}" aria-label="${x.r != null ? `${x.r}, ${E(x.d)}'s Rating` : `${E(x.d)}, not rated`}"><b class="u f3-r" aria-hidden="true">${x.r != null ? x.r : '–'}</b><img class="f3-art" src="${V2.art(typeof SPRITE_ID === 'object' ? SPRITE_ID[x.n] : null, true)}" alt="" decoding="async"></a></li>`; }).join('');
     const stamp = W.before ? 'Reg M-D · Dec 2' : '';
     pr = `<figure class="f3-pr" aria-labelledby="f3-rc-h"><div class="f3-paper" aria-hidden="true"></div>
       <div class="f3-hd"><p class="f3-top"><span class="u">NastyPlot</span><span>Receipt</span></p><h2 class="f3-meta" id="f3-rc-h">${lab} · ${E(D.ev.name)}${when ? ` · ${E(when)}` : ''}${D.ev.players ? ` · ${E(Number(D.ev.players).toLocaleString('en-US'))} players` : ''}</h2></div>
@@ -57,5 +58,22 @@ V2.f3Page = () => { const E = V2.esc, D = V2.f3Data(), W = V2.f3Words(D);
       <p class="f3-scale" aria-hidden="true"><span>Rating 40</span><span>70</span><span>100</span></p></figure>`; }
   else pr = `<figure class="f3-pr f3-empty"><div class="f3-paper" aria-hidden="true"></div><div class="f3-hd"><p class="f3-top"><span class="u">NastyPlot</span><span>Receipt</span></p><p class="f3-meta">No winning team in today's data yet. The receipt prints after the next event.</p></div></figure>`;
   return `<div class="f3-home"><section class="f3-hero f3-anim" aria-labelledby="f3-h1"><div class="f3-panel" aria-hidden="true"><i class="f3-rays"></i><i class="f3-dots"></i></div>${W.html}${pr}</section></div>`; };
+/* Home (Job DD, Nov 26; Sim: Final 3 is the FIRST SCREEN, nothing else removed, rule 18): F3's hero replaces only the Stampede's hero; the
+   Top 10, your six, tools rack and post band stay below in today's order. nastyplot.org always; the Claude build when V2.F3_CLAUDE. */
+V2.F3_CLAUDE = !window.__NP_SDHERO; /* Job DD: the Claude build (live artifact + Preview) too, one front page everywhere; waits for Sim's yes. The checks of
+   the Stampede's own hero (kept, unused, until Sim's yes) set window.__NP_SDHERO before the page loads to draw it instead */
+V2.f3On = () => !!(window.__NP_PUBLIC || V2.F3_CLAUDE);
+V2.f3Home = () => `${V2.f3Page()}<div class="sd">${V2.sdTop()}${V2.sdSix()}${V2.sdTools()}${V2.sdPost()}</div>`;
+/* the first screen (Job DD): the hero fills the window less everything above it (header, a data note such as the Preview's), as the
+   Stampede's hero did (V2.sdhLayout --sdh-top); 76px (the header alone) until measured */
+V2.f3After = () => { const S = document.querySelector('#main .f3-hero'); if (!S) return; V2.f3Watch(); const t = Math.round(S.getBoundingClientRect().top + scrollY);
+  if (S.style.getPropertyValue('--f3-top') !== t + 'px') S.style.setProperty('--f3-top', t + 'px');
+  const w = S.querySelector('.f3-words'), pr = S.querySelector('.f3-pr'); const need = Math.max(w ? w.offsetHeight : 0, pr ? pr.offsetHeight + 48 : 0) + 40; /* the taller column: the words, or the receipt with its 24px margins */
+  const tight = !!w && innerWidth >= 1280 && need > innerHeight - t; /* a style property, not a class: a redraw's patch keeps it */
+  if (S.style.getPropertyValue('--f3-pb') !== (tight ? 'var(--s4)' : '')) { if (tight) S.style.setProperty('--f3-pb', 'var(--s4)'); else S.style.removeProperty('--f3-pb'); } };
+/* again whenever the words change size (fonts arriving, today's data drawn into the same element) and when the window changes size */
+V2.f3Watch = () => { const w = document.querySelector('#main .f3-words'); if (!w || !window.ResizeObserver || V2._f3w === w) return; if (V2._f3ro) V2._f3ro.disconnect();
+  V2._f3w = w; V2._f3ro = new ResizeObserver(() => requestAnimationFrame(V2.f3After)); V2._f3ro.observe(w); };
+addEventListener('resize', () => { if (V2.f3After) requestAnimationFrame(V2.f3After); });
 // the static words (Job W, alt/prerender-home): this Home's h1 and line, when that build step is there
-V2.f3Seo = () => { const D = V2.f3Data(), W = V2.f3Words(D); return {h1: `Rate your Pokémon Champions team ${W.before ? 'before' : 'for'} Reg M-D.`, intro: (document.querySelector('#main .f3-lead') || {}).textContent || ''}; };
+V2.f3Seo = () => { const D = V2.f3Data(), W = V2.f3Words(D); return {h1: `Sharply raise your win rate. Rate your Pokémon Champions team ${W.before ? 'before' : 'for'} Reg M-D.`, intro: (document.querySelector('#main .f3-lead') || {}).textContent || ''}; };

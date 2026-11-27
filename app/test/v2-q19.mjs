@@ -33,7 +33,7 @@ const measure = (a, h, f, w, ht, col, R, C) => lab.evaluate(async ([a, h, f, w, 
   return {n, cells, worst, at}; }, [a, h, f, w, ht, col, R, C]);
 const res = [];
 for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1280, 1440, 1920, 2560]) {
-  const p = await b.newPage({viewport: {width: W, height: W < 500 ? 844 : 900}, colorScheme: th}); await p.addInitScript(() => { window.__PL_TEST = 1; });
+  const p = await b.newPage({viewport: {width: W, height: W < 500 ? 844 : 900}, colorScheme: th}); await p.addInitScript(() => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; /* the Stampede hero's own headline (Job DD) */ });
   await p.goto('file://' + PAGE + '#home', {timeout: 90000}); await p.waitForTimeout(2500);
   const info = await p.evaluate(() => { const h = document.querySelector('.sdh-h'), r = h.getBoundingClientRect(), c = getComputedStyle(h.querySelector('.l2')).color.match(/\d+/g).map(Number);
     return {x: 0, y: Math.max(0, Math.floor(r.top)), w: innerWidth, h: Math.min(innerHeight, Math.ceil(r.bottom)) - Math.max(0, Math.floor(r.top)), col: c.slice(0, 3)}; });
