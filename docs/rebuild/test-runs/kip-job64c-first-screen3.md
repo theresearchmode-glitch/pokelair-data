@@ -46,3 +46,21 @@ Before/after first-paint PNGs saved in `docs/rebuild/test-runs/job64c-fonts/` (`
 | `node experiments/split-routes-cross-test.mjs` | **PASS (all cold routes + buttons)** | `0` |
 | `node experiments/switch-smoke.mjs` | **ALL PASSED (phone + desktop, 10 views)** | `0` |
 | `v2-minors` (`PART=main1`, `main2`, `groups`) | Local runs hit 10-min VM timeout; full 3-part `v2-minors` on frozen `TEST_DATA` runs in GitHub Actions CI on this branch | CI |
+
+## 5. HH Review Fixes (7:04 PM, 7:06 PM, 7:36 PM)
+1. **Fallback font overlap fix (`app/src/v2/fonts/fonts.css`):**
+   - Switched `Unbounded Fallback` to bold local faces (`local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('DejaVu Sans Bold'), local('Helvetica Bold')`) with `size-adjust: 124%; ascent-override: 62%; descent-override: 17%; line-gap-override: 0%` (`1.24 * 0.79 = 0.980 <= 1.00`, eliminating vertical glyph overlap inside `line-height: 1.0` headlines while keeping `dH = 0 px`).
+   - Regenerated all 8 `0 ms` PNGs in `docs/rebuild/test-runs/job64c-fonts/` and visually verified `home-390-light-0ms-fallback.png` and `home-1440-dark-0ms-fallback.png` (bold, crisp, 0 touching lines):
+     - `home-390-light`: `dH=0 px`, `swapCLS=0.0028`
+     - `home-1440-dark`: `dH=0 px`, `swapCLS=0.0089`
+     - `garchomp-390-light`: `dH=0 px`, `swapCLS=0.0034`
+     - `garchomp-1440-dark`: `dH=0 px`, `swapCLS=0.0066`
+2. **Throttled CLS fix on `/team` (`app/src/v2/pages/team.js`):**
+   - Root cause diagnosed via `PerformanceObserver` `layout-shift` with `sources`: inside `.pty2`, `P.mtf-acts` (`order: 2`) and `DIV.k-sent.u` (`order: 3`) came BEFORE `.mtf` (`order: 1`, ~20 KB) in the DOM, so over Fast 3G streaming HTML painted `P.mtf-acts` at `y=528` and `DIV.k-sent.u` at `y=648` before `.mtf` arrived and shoved them off-viewport (`CLS=0.1442` at `t=508 ms`).
+   - Split `mtfHead` into `mtfTop` + `V2.mtfFrame(D, sel)` + `mtfFoot` (both `mtfTop`/`mtfFoot` wrapped in `.mtf-head.tmk-head` with `display: contents` on `.pty2`, zero visual change on mobile or desktop).
+3. **Committed `experiments/page-speed-check.mjs` and `experiments/first-screen-guard.mjs`:**
+   - **Before (`6950745e`):** `SPEED_DIST=/tmp/site-64c node experiments/first-screen-guard.mjs` -> **`4 FAILED`** (`font-overlap / 390x844: 15px`, `/ 1440x900: 33.6px`, `/pokemon/garchomp 390x844: 21.4px`, `throttled-CLS /team: 0.1487 >= 0.1`).
+   - **After (this commit):** `SPEED_DIST=/tmp/site-64c-fix node experiments/first-screen-guard.mjs` -> **`6/6 ALL PASSED` (`EXIT=0`)**: `0 px` overlap on all 4 views, `throttled-CLS /: 0.0019`, `throttled-CLS /team: 0.0055`.
+   - `SPEED_DIST=/tmp/site-64c-fix node experiments/page-speed-check.mjs`: **`10/10 ALL PASSED` (`EXIT=0`)**.
+   - `node app/test/prerender-test.mjs`: **`14/14 ALL PASSED` (`EXIT=0`)**.
+
