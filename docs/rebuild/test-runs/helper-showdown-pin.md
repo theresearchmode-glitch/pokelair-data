@@ -90,8 +90,8 @@ that line to move, or put Meowstic-F back by hand.
 7. **origin/main's test.yml** (main only with Sim's go) has the same install line three times: **:44, :142, :173**
    (`npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0.10.11 github:smogon/pokemon-showdown#1242c1e2d9763ba5b85d33f13aecb89bae19ae3d`).
    Each is followed by `cd node_modules/pokemon-showdown && node build` (:46, :143, :174). Change the SHA in all three, in the same
-   main commit as the data that needs it (checked with `git grep -n 1242c1e origin/main -- .github`: exactly those 3 lines; main's
-   package.json has no pokemon-showdown entry).
+   main commit as the data that needs it (checked with `git grep -n 1242c1e origin/main -- .github`: exactly those 3 lines; main has
+   no package.json at all: `git show origin/main:package.json` -> "exists on disk, but not in 'origin/main'").
 
 ## Not checked
 - GitHub run (pushed with [skip ci]).
