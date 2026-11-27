@@ -22,3 +22,4 @@ M10 | done | alt/maggi-m10-webkit-all 4e2ccb91 | WebKit iPhone 15 + iPad Pro 11 
 M11 | started | alt/maggi-m11-kip71 - | waiting for / reviewing Kip job 71 on alt/gemini-speed-chain | Fri Nov 27 07:20:05 AM EST 2026
 M11 | done | alt/maggi-m11-kip71 c034ccce | Verified Kip job 71 (80c0d935): M1, M2, M3, M4, F1 all fixed (report docs/rebuild/test-runs/maggi-M11-kip71.md) | Fri Nov 27 07:39:33 AM EST 2026
 - | idle | - - | M11 done; waiting for next job | Fri Nov 27 07:47:55 AM EST 2026
+M12 | started | alt/maggi-m12-podium - | Starting M12: Home podium sprite stacking order investigation + podium-cover-test.mjs | Fri Nov 27 07:50:23 AM EST 2026
