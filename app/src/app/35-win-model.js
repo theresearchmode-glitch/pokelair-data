@@ -1,5 +1,10 @@
 // ---------- win model (trained on real tournament games, player skill removed) + your own battle log ----------
-function modelOK(){const m=META.model;return !!(m&&m.ships&&m.mons&&Object.keys(m.mons).length)}
+// code review C8: the model is used only when its fields have the right shape (a missing or mistyped table threw deep in a page);
+// otherwise the site falls back to the check-based score, as before the model arrives. Checked once per model object.
+function modelOK(){const m=META.model;if(!(m&&m.ships&&m.mons&&typeof m.mons==='object'&&Object.keys(m.mons).length))return false;if(modelOK._m===m)return modelOK._ok;
+  const obj=x=>x&&typeof x==='object'&&!Array.isArray(x),opt=(k,f)=>m[k]==null||f(m[k]),fin=x=>typeof x==='number'&&isFinite(x);
+  const ok=!!obj(m.pairs)&&['monSd','pairSd','sets','team','ctr','dist','setRange','setFreq','eval'].every(k=>opt(k,obj))&&opt('tested',Array.isArray)&&['meanX','supK','calib','half','pairSd0'].every(k=>opt(k,fin));
+  modelOK._m=m;modelOK._ok=ok;return ok}
 function modelX(names){const m=META.model;let x=0;for(const n of names)x+=m.mons[n]||0;
   for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++){const a=names[i]<names[j]?names[i]+'|'+names[j]:names[j]+'|'+names[i];x+=m.pairs[a]||0}return x}
 // Set features (item, Ability and moves per Pokémon; Abilities as "Sneasler#Unburden" once the model ships them, Nov 8), when the model kept them: each member's usual item (or Mega Stone) and its 4 moves.
@@ -46,7 +51,9 @@ function teamX(names,ms){let x=modelX(names);const M=META.model,byN=new Map((ms|
 // lacks it. Sim, Nov 8: a no-Mega team graded 98 while real no-Mega teams win 34%. Move-based ones need the sets (ms).
 function teamBasicsOf(names,ms){if(names.length!==6)return null;const o={noMega:names.some(n=>(byName.get(n)||{}).m)?0:1};
   if(ms&&ms.length===6){const mv=ms.map(m=>((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(z=>z&&(z.name||z)).filter(Boolean)),has=n=>mv.some(L=>L.includes(n));
-    o.protectLow=mv.filter(L=>L.includes('Protect')).length<=2?1:0;
+    /* Sim, Nov 16 (batch 2B): the whole Protect family counts (Detect, Spiky Shield, King's Shield...), as the suggestions count it; measured on
+       18,642 later games: as accurate as Protect alone (log-loss 0.68084 vs 0.68088), and the score now agrees with the advice */
+    {const PF=typeof LANE==='object'&&LANE.PROT?LANE.PROT:new Set(['Protect','Detect','Spiky Shield',"King's Shield",'Baneful Bunker','Silk Trap','Burning Bulwark','Obstruct']);o.protectLow=mv.filter(L=>L.some(n=>PF.has(n))).length<=2?1:0}
     {const trU=mv.map((L,i)=>L.includes('Trick Room')?i:-1).filter(i=>i>=0);o.trNoSlow=trU.length&&names.filter((n,i)=>!trU.includes(i)&&((byName.get(n)||{}).sp??100)<=60).length<2?1:0}
     // Nov 18 (rule-holes sweep, hole 10): the game plan's speed tools (Tailwind, Trick Room, every ROLE.drop move, weather speed
     // with its setter) plus Choice Scarf; the trainer's copy is team-basics.mjs, and suggest-gaps.mjs checks they agree on real sheets
@@ -86,8 +93,8 @@ function structCredit(ms){if(ms.length!==6)return {c:1,miss:[]};let CK=null;try{
 // upside needs proof: an untried mix, or a team missing what nearly every winning team has, gets its above-average edge cut
 // Every team is read the same way: 4 moves (an opponent's likely-move list keeps its 4 most used), its default item when
 // none is set, then Item Clause and dead items (a mirror of your own six in the Gauntlet is exactly even).
-function strengthX(names,ms){if(ms){ms=resolveItems(ms.map(m=>{if(!m||!m.p)return m;let o=m;if(o.moves&&o.moves.length>4)o={...o,moves:o.moves.slice(0,4)};if(!o.item&&!o.p.m)o={...o,item:defaultItem(o.p)};return o}));const all=ms;ms=ms.map(m=>m&&m.heldItem&&!itemWorks(all,m.heldItem)?{...m,_deadItem:true}:m)}const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
-  const cr=dev>0?mixCredit(names):1,sc=dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
+function strengthX(names,ms,skipStruct){if(ms){ms=resolveItems(ms.map(m=>{if(!m||!m.p)return m;let o=m;if(o.moves&&o.moves.length>4)o={...o,moves:o.moves.slice(0,4)};if(!o.item&&!o.p.m)o={...o,item:defaultItem(o.p)};return o}));const all=ms;ms=ms.map(m=>m&&m.heldItem&&!itemWorks(all,m.heldItem)?{...m,_deadItem:true}:m)}const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
+  const cr=dev>0?mixCredit(names):1,sc=!skipStruct&&dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
 // The model is trained on doubles tournament games only.
 function winVsField(names,mine,msIn){if(!modelOK()||names.length<6)return null;{const b=names.map(n=>(byName.get(n)||{}).b||n);if(new Set(b).size<b.length)return null}
   const ms=mine?(msIn||members()):null,mx=META.model.meanX||0;
@@ -108,10 +115,17 @@ function modelLine(){const m=META.model;if(!m||!m.eval)return '';const e=m.eval,
 // supports (held-out: the model told top 8 from the rest only 59% of the time, 50% at regionals). Teams are judged by facts
 // instead: the share of the top-30 threats they're ready for (55-threats.js), and 0 when the Item Clause makes them illegal.
 // tsOf keeps its old name so every caller (Fix plans, Quick add, Best additions, Build for me, saved teams) switches at once.
+/* code review A2-M9 (documented, Nov 16): an Item Clause clash makes tsOf 0 on purpose (an illegal team is never counted as strong in the
+   background numbers: track record, winners' medians); the Strength Score itself (CH.gradeOf) keeps its number and flags the team
+   'Not legal yet', so a player sees the score their six would get once the items are fixed */
 function tsOf(team){if(!team||team.length!==6)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;
   if(typeof itemClash==='function'&&itemClash(ms).length)return 0;const r=THR.teamReport(ms);return r?r.score:null}catch(e){return null}}
 // the full report for any six (or fewer), with the items each member would really hold
 function prepOf(team){if(!team||!team.length)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;return THR.teamReport(ms)}catch(e){return null}}
+// speed (Nov 18, pre-launch 2d): tsOf and prepOf for the background planner (yield* them): a pause after each threat, same numbers, same cache
+function* tsOfG(team){if(!team||team.length!==6)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;
+  if(typeof itemClash==='function'&&itemClash(ms).length)return 0;const r=yield* THR.teamReportG(ms);return r?r.score:null}catch(e){return null}}
+function* prepOfG(team){if(!team||!team.length)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;return yield* THR.teamReportG(ms)}catch(e){return null}}
 // Which plans get a full readiness check: the planner's own best n (the readiness check is the slow part)
 function tsShortlist(pls,n){return pls.slice(0,n)}
 // Fix plans, Best additions and Build for me choose by readiness (off-meta searches keep their own picks)
@@ -125,21 +139,24 @@ function tsInfo(team){const s=tsOf(team);return s==null?null:{score:s}}
 function tsTitle(base,t,team){const a=CH.hand(base),b=CH.hand(t&&t.rows?t:team?prepOf(team):null);return a&&b?`Ready for ${a.x}/${a.n} → ${b.x}/${b.n} top threats`:`${base.score}% → ${t.score}% ready for the top 30 threats`}
 // A team's grade, the big number on My team (readiness + team strength − missed checks), for any six (Nov 7, Sim: "it says +2
 // ready but my score went from 93 to 91"). Suggestions are judged and labelled by it, so the card matches what Apply does.
+// a member's nature and stat points as a cache-key part (code review A2-I4 + A1-I2, Nov 17: the grade memo and Test Run's cache
+// ignored them, so a spread edit kept the old number); 'c' = the common spread
+function spreadKey(m){const c=m&&m.spread;return c?(c.nat||'')+'/'+[c.hp,c.atk,c.def,c.spa,c.spd,c.spe].join('.'):'c'}
 const gradeMemo=new Map();
 function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.gradeOf)return null;
-  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')).sort().join('|');
+  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+(m.itemDefault?'d':'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')+'~'+spreadKey(m)).sort().join('|');
   if(gradeMemo.has(k))return gradeMemo.get(k);let g=null;
   try{const ms=typeof assignItems==='function'?assignItems(team):team,RD=THR.teamReport(ms),G=CH.gradeOf(RD,proChecks(ms,true),ms);g=G?G.s:null;
     // a six that real players ran and lost with more than the field average is never an upgrade, whatever its grade
     // (Nov 7, Sim: the top suggestion took a 93 (A) to a C) a six that is a real tournament team is graded by its real win rate
-    // on My team, so it is judged on that same scale here: 60% wins = 90 (A), 55% = 80 (B), 50% = 70 (C), 45% = 60 (D)
+    // on My team, so it is judged on that same scale here (CH.recScore, the Strength Score's own formula: 60% wins = 90, 54% = 80)
     }catch(e){}
   if(gradeMemo.size>500)gradeMemo.clear();gradeMemo.set(k,g);return g}
 function planGrade(pl){if(!pl||!pl.team||pl.team.length!==6)return null;if(pl._g===undefined)pl._g=gradeTeam(pl.team);return pl._g}
 // "Grade 93 → 95" on a suggestion; the title keeps the readiness detail
 // "Grade 93 → 96" on a suggestion: the same one grade My team shows (Nov 7: one grade out of 100, real results blended in)
 function gradeChip(g0,g1,cls){if(g0==null||g1==null)return '';const d=g1-g0;
-  const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Strength Score now ${Math.round(g0)} (${CH.wordOf(g0)}). With this change ${Math.round(g1)} (${CH.wordOf(g1)}): teams scoring like this win about ${Math.round(b)}% against today\u2019s tournament teams. In real games, teams that made a change like this won about 1 to 2 more games per 100: the score rates the team, your play decides the rest.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
+  const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Strength Score now ${Math.round(g0)} (${CH.wordOf(Math.round(g0))}). With this change ${Math.round(g1)} (${CH.wordOf(Math.round(g1))}): teams scoring like this win about ${Math.round(b)}% against today\u2019s tournament teams. In real games, teams that made a change like this won about 1 to 2 more games per 100: the score rates the team, your play decides the rest.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
   return `<span class="${cls||'tsd'} ${d>0?'up':d<0?'dn':''}" title="${tt}">${CH.gradeMove(g0,g1)}</span>`}
 function tsChip(team){let ms=null;try{ms=members()}catch(e){}const g0=ms&&ms.length===6?gradeTeam(ms):null,g1=gradeTeam(team);if(g0!=null&&g1!=null)return gradeChip(g0,g1,null,team);
   const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
@@ -182,7 +199,8 @@ function realMatch(mine,theirs){if(!modelOK()||!META.model.ctr)return null;const
 // Grade-raising suggestions need 75%+ (a third of strength-raising swaps qualify); fixes for real problems don't.
 var SWAP_K=.7,SWAP_MIN=.75;
 function swapSure(base,team){const M=META.model;if(!M||!M.monSd||!base||!team||base.length!==6||team.length!==6)return null;
-  const A=base.map(m=>m.p.n),B=team.map(m=>m.p.n),sa=new Set(A),sb=new Set(B),mx=Math.max(...Object.values(M.monSd)),p0=+M.pairSd0||.05,pk=(a,b)=>a<b?a+'|'+b:b+'|'+a;
+  const vals=Object.values(M.monSd).filter(isFinite);if(!vals.length)return null;
+  const A=base.map(m=>m.p.n),B=team.map(m=>m.p.n),sa=new Set(A),sb=new Set(B),mx=Math.max(...vals),p0=+M.pairSd0||.05,pk=(a,b)=>a<b?a+'|'+b:b+'|'+a;
   const pairs=ns=>{const s=new Set();for(let i=0;i<6;i++)for(let j=i+1;j<6;j++)s.add(pk(ns[i],ns[j]));return s},pa=pairs(A),pb=pairs(B);let v=0;
   for(const n of A)if(!sb.has(n))v+=(M.monSd[n]??mx)**2;for(const n of B)if(!sa.has(n))v+=(M.monSd[n]??mx)**2;
   for(const k of pa)if(!pb.has(k))v+=((M.pairSd||{})[k]??p0)**2;for(const k of pb)if(!pa.has(k))v+=((M.pairSd||{})[k]??p0)**2;

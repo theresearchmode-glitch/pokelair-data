@@ -1,0 +1,331 @@
+KIP JOB 35: NASTYPLOT STRENGTH SCORE INDEPENDENT AUDIT & IMPROVEMENT PLAN
+Date: 2026-11-25 (data snapshot: 2026-11-25T10:41:02.976Z UTC; data jobs run in UTC)
+Sources inspected: kip-job35-files.txt (CLAUDE.md + 17 repo files + out/model.json shape) and kip-job35-matches.json (51,308 raw rows -> 49,250 decided non-mirror games, 554 events, 7,583 teams, 6,234 players, 8,452 features, 12,889 decks).
+Files NOT in bundle (marked "not checked" where referenced): model-settings.json, team-basics.mjs, formats.mjs, model-guard.mjs, out/model.json (full body), out/replays.json, experiments/board.mjs, experiments/golden.mjs, experiments/compare.mjs, experiments/sealed.json, app/src/app/55-threats.js.
+
+================================================================================
+PART 1: HOW IT WORKS (END-TO-END PIPELINE & DISAGREEMENTS)
+================================================================================
+
+All steps below are checked (read directly from uploaded files; unbundled helper files noted as not checked).
+
+1. DATA JOB (GitHub Actions, runs daily at 09:07 UTC per .github/workflows/update.yml:4,60-69)
+   - Input filtering (model.mjs:15):
+     Loads out/matches.json. Filters to decided non-mirror games:
+       G = (M.m || []).filter(g => g[2] !== 0.5 && g[0] !== g[1])
+     On kip-job35-matches.json: 51,308 raw rows -> 49,250 games (1,656 draws and 416 mirrors dropped; checked by running Node on kip-job35-matches.json).
+     Tuple format: [A, B, r, evIdx, pA, pB, round, dA, dB].
+
+   - Feature construction (model.mjs:24-65):
+     * Species (b): 319 distinct species.
+     * Pairs (q): species pairs appearing on >= 30 distinct teams in G (model.mjs:27-30).
+     * Set features (c): @item, #ability, :move appearing on >= 40 distinct decks in G (model.mjs:34-39), centered within each species:
+         w_j = 1(deck has feature j) - freq[j]
+       where freq[j] = (decks with feature j) / (decks carrying that species) (model.mjs:41-44,109-110).
+     * Team basics (T): ['noMega', 'protectLow'] (model.mjs:55,63-65).
+       noMega = 1 if no species matches /-Mega/; protectLow = 1 if <= 2 Protect-family users on sheets listing 16+ moves (team-basics.mjs: not checked, file not in bundle).
+
+   - Model fitting (model.mjs:95-133):
+     Ridge-regularized Bradley-Terry logistic regression fitted with Adam (250 iterations, lr = 0.03):
+       x(t, d) = sum(b[j]) + sum(q[p]) + sum(c[j] * (has_j - freq_j)) + sum(T[k] * tv_k)
+       eta = x(A, dA) - x(B, dB) + s[pA] - s[pB]
+       P(A beats B) = sig(eta) = 1 / (1 + exp(-eta))
+     Recency weights (model.mjs:104-107):
+       W_i = 0.5^((lastDay - day_i) / half), normalized to mean 1 (half = 14 days in out/model.json shape).
+       Team basics use separate teamHalf = 0 (all games equal weight).
+     Ridge penalties (model.mjs:95,100,102,161):
+       With locked shrink K = 10: lb = 40, lp = 150 * pairShrink (600 with pairShrink = 4, inferred from model.mjs:45 and verified by replication), ls = 15, lc = 60, L_T = 1.
+     Diagonal Hessian variance (model.mjs:124-127):
+       vb[j] = 1 / (sum(W_i * p_i * (1 - p_i)) + 2 * lb)
+       vq[j] = 1 / (sum(W_i * p_i * (1 - p_i)) + 2 * lp)
+     Post-hoc evidence shrink (model.mjs:129-132):
+       b[j] *= n_b / (n_b + 1000)
+       q[j] *= n_q / (n_q + 300)
+       where n_b, n_q are team appearances in the fitted games.
+
+   - Holdout split, calibration, and ship gate (model.mjs:67-74,167-199):
+     Splits events 80/20 by date (train = 40,029 games, test = 9,221 games, 111 test events; checked by Node replication).
+     Fits calibration slope calib on test via 30 Newton steps:
+       P = sig(calib * (x(A, dA) - x(B, dB)))   (calib = 0.925 on 2026-11-25).
+     Ships if min(ev.model_teams_only.logloss, calFull.ll) < ev.raw_win_rates.logloss (model.mjs:189).
+     Refits F on all G (model.mjs:194).
+
+   - Set clamping, meanX, and 45-day field distribution (model.mjs:204-228):
+     * setRange[sp] = [min_real_deck_val, max_build_val_with_5+_decks].
+     * meanX (0.4584) = game-weighted mean of xClamp(t, d) over GF (model.mjs:224).
+     * tested = pairs on >= 15 distinct teams in GF (model.mjs:215-217).
+     * credit(t) = 0.5 + 0.5 * min(1, testedPairs(t) / 6) (model.mjs:219).
+     * dist.q = 101 percentiles (0..100) of meanX + (dv > 0 ? dv * credit(t) : dv) over distinct (team, deck) sheets in the last 45 days (model.mjs:226-228).
+
+   - Add-on data jobs (update.yml:62-69):
+     * pilot.mjs:11-25 -> model.pilot: paired 3-week-window same-player win% with vs without each Pokemon (informational only; not in Strength Score).
+     * six.mjs:16-36 -> model.sixes: holds xOf fixed, fits per-six residual delta (tau = 0.1, sig_s = 0.6, 300 Adam steps, no recency decay) for sixes with >= 10 games:
+         P(A wins) = sig(calib * (xOf(A) + dl[A] - xOf(B) - dl[B]) + s[pA] - s[pB]).
+     * ctr.mjs:14-36 -> model.ctr: holds calib * (xOf(A) - xOf(B)) fixed, fits player skill S then skew-symmetric pairwise counters C[a][b] = -C[b][a] (lam = 300) for Pokemon on >= 1% of teams. Used in Matchups and Battle only, never in Strength Score.
+     * leads.mjs:12-19 -> model.leads: from out/replays.json (not checked), Elo-adjusted win rate when led minus when in back, shrunk n / (n + 300). Used in Battle lead pick only.
+
+2. FRONTEND PAGE (35-win-model.js, 58-strength.js, 59-matchup-data.js, 36-lanes.js, 60-concept-h.js)
+   For a 6-Pokemon team ms:
+   - teamX(names, ms) (35-win-model.js:44-49):
+       x0 = modelX(names) + sum(setOne(m)) + teamBasicsX(names, ms)
+       minus mons[n] and setOne(m) for any 3rd+ Mega (megas.slice(2), 35-win-model.js:46-48).
+     When SET_UNKNOWN_AVG = true (35-win-model.js:22-31), unedited item/ability/moves contribute 0 to setOne.
+   - CH.strengthOf(ms, ready) (58-strength.js:76-81):
+       cr = 0.75 + 0.25 * min(1, testedPairs(names) / supK)
+       x  = meanX + (dv > 0 ? dv * cr : dv)   where dv = x0 - meanX
+       mu = 0.003 * (ready - 79)
+       y0 = x + mu
+       y  = y0 + (six ? six.d : 0)            where six.d = delta * (6 - offMetaMembers) / 6 (58-strength.js:33-48)
+   - Win chance vs field & 0-100 Strength Score (58-strength.js:21-26,65,144):
+       e  = CH.fieldWin(y) = (1 / 101) * sum_{i=0..100} sig(calib * (y - dist.q[i]))
+       ss = clamp(0, 100, 80 + 122 * (e - 0.5))
+       G.s = Math.round(ss * 10) / 10; displayed as Math.round(G.s) (60-concept-h.js:71).
+     Bands: 90+ Top tier (A), 80-89 Tournament ready (B), 70-79 Solid (C), 60-69 Needs work (D), <60 Missing a basic (F).
+     Sticky band buffer (58-strength.js:130-140): keeps prior letter/word for saved/current teams until Math.round(s) crosses a boundary by >= 1.5 points.
+   - Partial teams (1-5 Pokemon) (58-strength.js:87-90):
+       y = xk + ((6 - k) / 6) * meanX (no teamBasicsX, no mu, no six).
+   - Team checks (58-strength.js:72,141):
+     Checklist advice only in v2 Strength Score (CH.GMISS = 6 applies only in v1 fallback when !modelOK()).
+   - Matchups (35-win-model.js:182-195, 58-strength.js:199-201, 59-matchup-data.js:13-15):
+     Per-threat real-game verdict sums ctrVal(a, threat) over your six (Favoured >= +1.5 pts, Unfavoured <= -1.5 pts, else Even match).
+     Battle mode realMatch: p = sig(0.85 * (calib * (teamX(A, mine) - teamX(B, null)) + sum(ctr))).
+
+3. PLACES WHERE THE PAGE AND DATA JOB DISAGREE (checked in code)
+   a) MD.team (noMega, protectLow) is omitted in six.mjs:19-23, ctr.mjs:16-20, and shadow-scoreboard.mjs:31-55, while included in model.mjs:111 and 35-win-model.js:49,64.
+   b) mixCredit formula mismatch: model.mjs:219 (building dist.q) and 35-win-model.js:70 use 0.5 + 0.5 * min(1, k / 6), while 58-strength.js:78 (CH.strengthOf) uses 0.75 + 0.25 * min(1, k / 6).
+   c) Mega-stacking cap (megas.slice(2)): 35-win-model.js:46-48 drops 3rd+ Mega's mons[n] and setOne(m) (while keeping its pairs bonuses); model.mjs, six.mjs, and ctr.mjs count all Megas.
+   d) dist.q vs CH.strengthOf scope: dist.q (model.mjs:227) is percentiles of x without mu or six.d, while CH.fieldWin(y) compares y = x + mu + six.d against dist.q.
+   e) Unedited moves in setOne vs teamBasicsOf: SET_UNKNOWN_AVG = true (35-win-model.js:28) treats unedited moves as average (0) in setOne, yet teamBasicsOf (35-win-model.js:53-56) grades protectLow on those unedited default moves.
+   f) realMatch asymmetry (35-win-model.js:190): calls teamX(A, mine) - teamX(B, null), giving your team set features + protectLow while giving the opponent neither.
+   g) CH.sticky (58-strength.js:135-140) can display a score and band word that contradict each other (e.g., "79 · Tournament ready").
+
+================================================================================
+PART 2: CORRECTNESS & STATISTICS AUDIT (RANKED CRITICAL FIRST)
+================================================================================
+
+[CRITICAL] Finding 1: Shadow scoreboard evaluates yesterday's games IN-SAMPLE and strips live.sixes
+- Files: .github/workflows/update.yml:43,60,88; shadow-scoreboard.mjs:20,31-55,104-119
+- Status: checked (read workflow + ran Node simulation on 2026-11-24)
+- Proof:
+  * Input: Daily workflow run on 2026-11-25 UTC with MODEL_SHADOW=1.
+  * What happens now: update.yml:43 fetches yesterday's (2026-11-24) games into out/matches.json; update.yml:60 runs MODEL_SHADOW=1 node model.mjs, training BOTH out/model.json and out/model_shadow.json on ALL of out/matches.json (including 2026-11-24); update.yml:88 then runs node shadow-scoreboard.mjs, which grades gradeDate < today (2026-11-24) using the models just trained on those exact games. On 2026-11-24 (328 games), in-sample evaluation produced a fake delta = -0.00646 (4x larger than the true prospective delta = -0.00164 over 15 held-out days). In addition, shadow-scoreboard.mjs:20,53 reads model.sixDelta (shadow only) and never reads live.sixes (from six.mjs), AND omits model.team on both models.
+  * What should happen: Run shadow-scoreboard.mjs BEFORE model.mjs so newly arrived prior-day games are graded by yesterday's committed models; read model.sixes for live and model.sixDelta for shadow; include model.team (noMega, protectLow) in teamX().
+
+[CRITICAL] Finding 2: six.mjs and ctr.mjs omit MD.team (noMega, protectLow), double-counting penalties
+- Files: six.mjs:19-23; ctr.mjs:16-20
+- Status: checked (read code + counted affected sixes in kip-job35-matches.json)
+- Proof:
+  * Input: Any of the 68 sixes with >= 10 games where >= 50% of sheets have protectLow = 1 (or the 1 noMega six with 10+ games) in kip-job35-matches.json.
+  * What happens now: six.mjs:19-23 computes xOf without MD.team (noMega = -0.7019, protectLow = -0.1565), so six.mjs overstates the baseline and absorbs the missing penalty into a negative delta. On the page, 58-strength.js:76-80 adds BOTH teamBasicsX and six.d, double-counting the penalty. In ctr.mjs:16-20, omitting MD.team leaks noMega/protectLow losses into species matchup counters C[a][b].
+  * What should happen: Import deckBasics from ./team-basics.mjs and add MD.team terms into xOf in both six.mjs and ctr.mjs.
+
+[HIGH] Finding 3: Test-set leakage in model.mjs feature selection, centering, useSets, calib, and ships
+- Files: model.mjs:28-44,67,144,174-199
+- Status: checked (Node script on kip-job35-matches.json)
+- Proof:
+  * Input: kip-job35-matches.json (49,250 games, 554 events).
+  * What happens now:
+    1) model.mjs:28-44 builds pairIx (>=30), setNames (>=40), and freq[j] across ALL G before splitting train/test (line 74). 85 of 700 pairs and 85 of 957 set features only passed the cutoff because of test games.
+    2) model.mjs:67 and 144 sort events with (a, b) => evDates[a] < evDates[b] ? -1 : 1, returning +1 on equal dates (violating strict weak ordering across 483 same-date events) and splitting boundary date 2026-11-11 across train (5 events) and test (2 events).
+    3) model.mjs:174-199 fits calib on test, chooses useSets by comparing test-calibrated cW.ll < cS.ll, and sets ships by comparing test-calibrated calFull.ll against uncalibrated raw_win_rates.logloss.
+    (Note: experiments/walk-forward.mjs:31-35 truncates matches.json to < cut before calling model.mjs, so walk-forward does not leak post-cut data, though each weekly inner model.mjs run still has the internal split leakage above.)
+  * What should happen: Split train/test by strict date boundary using comparator (a, b) => evDates[a].localeCompare(evDates[b]) || a - b; build pairIx/setNames/freq on train only during evaluation; fit calib on validation events rather than test.
+
+[HIGH] Finding 4: Double shrinkage (lb=40 + post-hoc evidK=1000) + uncentered b (meanX=0.4584) breaks Reg M-D Week 1 and penalizes unseen Pokemon by ~10 points
+- Files: model.mjs:124-132,224
+- Status: checked (Node replication & cold-start simulation on kip-job35-matches.json)
+- Proof:
+  * Input: (a) A 6-Pokemon team of unseen/brand-new Reg M-D species (b = 0); (b) Reg M-D Week-1 simulation (first 7 events of kip-job35-matches.json: 404 train, 353 test games).
+  * What happens now:
+    - 256 of 319 Pokemon (80.3%) have < 1,000 appearances in G. Post-hoc b[j] *= n/(n+1000) on top of Ridge lb=40 cuts a 300-appearance mon by another 77% and a 50-appearance Reg M-D Mega by 95.2%.
+    - Because b is shrunk toward 0 while meanX = +0.4584 (+0.0764/mon), an unseen 6-mon team (x = 0) gets fieldWin = 42.1% -> Strength Score 70.3 (~10 points below 80) purely for being new.
+    - On Reg M-D Days 1-3 (<5 events, e.g., 2 events / 109 games in Reg M-C), model.mjs:20-23 writes ships: false (falling back to v1 readiness). At 7 events (Week 1), evidK=1000 crushes max|b| to 0.0172, calib spikes to 2.114, and held-out accuracy drops to 50.99% (vs 56.09% with clean EB Ridge).
+    - monSd/pairSd (model.mjs:124-127) are computed BEFORE evidK/evidKp, so reported SDs do not match the shrunk weights.
+  * What should happen: Drop post-hoc evidK/evidKp, use single-stage Ridge (lb=100, lp=900), and usage-center b to mean 0 so unseen species default to the field mean.
+
+[HIGH] Finding 5: Unclamped Math.log(p) + unbounded Newton calib can produce NaN/null and zero out six.mjs
+- Files: model.mjs:136,168-169,199,321,325; six.mjs:16,28; ctr.mjs:14,21
+- Status: checked (code inspection)
+- Proof:
+  * Input: Any game with |eta| > 37 (p rounds to 1, 1-p = 0) or a small/separable test set on Reg M-D Day 3 (5 events).
+  * What happens now: In JS, 0 * Math.log(0) === NaN, poisoning score() -> ships = false. In Newton calib (w -= g / (h || 1)), unbounded steps can diverge to Infinity/NaN -> serialized as calib: null in out/model.json. While 35-win-model.js:40 guards calibK() (0 < c < 3), six.mjs:16,28 and ctr.mjs:14,21 do NOT guard MD.calib, so null * (X_A - X_B) silently becomes 0 (dropping the entire base model).
+  * What should happen: Clamp p to [1e-12, 1 - 1e-12] in all log-loss sums; clamp Newton step to [-0.5, 0.5] and w to [0.1, 2.5]; guard calib in six.mjs and ctr.mjs.
+
+[MEDIUM] Finding 6: Band calibration inflation & stale accuracy-gate.mjs / CH.WHY_TEST benchmarks
+- Files: 58-strength.js:17,21-26,224; experiments/accuracy-gate.mjs:6,17; experiments/accuracy-baseline.json:11-15
+- Status: checked (Node evaluation on 9,221 held-out games = 18,442 team-games)
+- Proof:
+  * Input: 9,221 held-out games (18,442 team-games) scored with production model.
+  * What happens now: Bands are strictly monotonic, but heavily top-shifted relative to copy and gate assumptions:
+      90+ (Top tier):         20.1% of team-games, 55.6% win rate (CH.WHY_TEST says 58.5%; comment says "best 2% about 92")
+      80-89 (Tournament ready): 55.4% of team-games, 51.7% win rate
+      70-79 (Solid):          20.5% of team-games, 43.1% win rate
+      60-69 (Needs work):      3.4% of team-games, 34.3% win rate
+      <60 (Missing a basic):   0.6% of team-games, 33.6% win rate
+    75.5% of all tournament team-games score 80+. Yet accuracy-gate.mjs:6,17 justifies its 60% top-4 floor as "twice what chance gives: B or better is the top 30%" — under Strength Score, 60% is BELOW the average tournament team rate (75.5%).
+  * What should happen: Update accuracy-gate.mjs floor relative to the true 80+ base rate (or evaluate top-4 lift above field base rate), and refresh CH.WHY_TEST from latest walk-forward output (with Sim's approval before any wording change).
+
+[MEDIUM] Finding 7: Player-skill under-separation for low-game players + single-game threshold cliffs + key collision limit
+- Files: model.mjs:30,38,64,95,109,209,217,236; six.mjs:34
+- Status: checked (Node analysis of kip-job35-matches.json)
+- Proof:
+  * Player skill: 65.7% of test players also appear in train, so joint s[p] helps. However, 2,084 of 6,234 players (33.4%) have 1-5 games and 4,974 (79.8%) have <= 20 games; ls = 15 (2*ls = 30 prior) shrinks 1-event strong players' skill close to 0, crediting wins to their team. Omitting s[pA] - s[pB] at prediction time also explains why calib = 0.925 < 1 (logistic marginal attenuation).
+  * Single-game jumps: Hard cutoffs at pairs >= 30, sets >= 40, tested >= 15, sixes >= 10, and especially setRange builds >= 5 (model.mjs:209) cause discontinuous day-over-day jumps when one game crosses the boundary.
+  * Key packing: model.mjs:64,109 uses key = t * 100000 + d (safe at 12,889 decks today; will silently collide if decks >= 100,000). Use string key t + ',' + d.
+  * Score bounds: CH.ssOfE (58-strength.js:22) clamps strictly to [0, 100]. CH.wordOf(s) (58-strength.js:24) throws only if passed s < -1.
+
+================================================================================
+PART 3: THE SHADOW MODEL (MODEL_SHADOW=1 & shadow-scoreboard.mjs)
+================================================================================
+
+1. Is the paired daily comparison fair today?
+   NO (checked in code + Node simulation).
+   - update.yml:60 trains live and shadow on yesterday's games BEFORE update.yml:88 runs shadow-scoreboard.mjs on yesterday's games (in-sample evaluation: 4x fake boost on 2026-11-24, -0.00646 vs true prospective -0.00164).
+   - shadow-scoreboard.mjs:20,53 reads shadow's sixDelta but ignores live's sixes, and omits model.team on both.
+
+2. Empirical Power Analysis (checked on 2026-11-11..2026-11-25, 9,635 prospective held-out games across 15 days):
+   - True prospective delta (shadow combo - live): -0.00164 log-loss (0.67889 vs 0.68052; acc 56.29% vs 56.01%).
+   - Per-game paired diff SD: 0.06094.
+   - Per-day paired diff SD:  0.00404 (mean 642 games/day; day-level clustering DEFF = 2.82).
+   - Required days for 95% confidence, 80% power (day-clustered, ~640 games/day):
+       Delta = -0.0015 (observed): 57 days (~36,500 games) two-sided | 45 days (~29,000 games) one-sided
+       Delta = -0.0020:            32 days (~20,500 games) two-sided | 25 days (~16,000 games) one-sided
+       Delta = -0.0030:            14 days (~9,000 games)  two-sided | 11 days (~7,000 games)  one-sided
+
+3. Decision Rule Code (plain text, Rule 21 compliant):
+
+export function judgeShadowScoreboard(history, {
+  minDays = 14,
+  minGames = 8000,
+  alpha = 0.05,
+  bootIters = 2000,
+  seed = 2026
+} = {}) {
+  const rows = (history || []).filter(r => r && r.games > 0 && Number.isFinite(r.delta?.logloss));
+  const totalGames = rows.reduce((a, r) => a + r.games, 0);
+  if (rows.length < minDays || totalGames < minGames) {
+    return { status: 'UNKNOWN', reason: `need >=${minDays} days and >=${minGames} games (have ${rows.length}d, ${totalGames}g)`, days: rows.length, totalGames };
+  }
+  const wMean = arr => {
+    let sw = 0, sx = 0;
+    for (const r of arr) { sw += r.games; sx += r.games * r.delta.logloss; }
+    return sx / sw;
+  };
+  const mean = wMean(rows);
+
+  let st = seed >>> 0;
+  const rnd = () => { st = (st * 1664525 + 1013904223) >>> 0; return st / 4294967296; };
+  const boots = new Float64Array(bootIters);
+  for (let b = 0; b < bootIters; b++) {
+    let sw = 0, sx = 0;
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[Math.floor(rnd() * rows.length)];
+      sw += r.games; sx += r.games * r.delta.logloss;
+    }
+    boots[b] = sx / sw;
+  }
+  boots.sort();
+  const ciLo = boots[Math.floor((alpha / 2) * bootIters)];
+  const ciHi = boots[Math.floor((1 - alpha / 2) * bootIters)];
+
+  let worstLooMean = -Infinity;
+  for (let i = 0; i < rows.length; i++) {
+    const m = wMean(rows.filter((_, j) => j !== i));
+    if (m > worstLooMean) worstLooMean = m;
+  }
+  const status = ciHi < 0 && worstLooMean < 0 ? 'BETTER' : ciLo > 0 ? 'WORSE' : 'UNKNOWN';
+  return { status, days: rows.length, totalGames, meanDeltaLL: +mean.toFixed(5), ci95: [+ciLo.toFixed(5), +ciHi.toFixed(5)], worstLooMean: +worstLooMean.toFixed(5) };
+}
+
+================================================================================
+PART 4: IMPROVEMENT PLAN (TOP 10 IDEAS, RANKED BY GAIN PER EFFORT)
+================================================================================
+
+1. Zero-centered Empirical-Bayes Ridge (drop evidK=1000 + train-only features/calib)
+   - Changes: Remove post-hoc evidK/evidKp (model.mjs:129-132), use Ridge lb=100, lp=900, usage-center b to 0, fix train/test leakage (model.mjs:28-44,67,174-199).
+   - Why: Eliminates double shrinkage on 80% of species, removes ~10-pt unseen-Pokemon penalty, fixes Reg M-D Week-1 collapse.
+   - Held-out test: 4-week walk-forward + cold-start week-1 test (already PASSED in kip35-zero-center-eb.mjs: -0.00046, 95% CI [-0.00072, -0.00021]).
+   - Risk: Low.
+
+2. Fix shadow-scoreboard.mjs ordering + six.mjs/ctr.mjs MD.team parity
+   - Changes: Run shadow-scoreboard.mjs before model.mjs in update.yml; include MD.team in six.mjs, ctr.mjs, shadow-scoreboard.mjs; read live.sixes.
+   - Why: Removes 4x in-sample shadow bias and stops double-counting noMega/protectLow on 68 real sixes.
+   - Held-out test: Walk-forward on noMega/protectLow sixes + prospective shadow test asserting model.mjs never saw gradeDate.
+   - Risk: Very low.
+
+3. Promote Blade-Chest (d=4) + hierarchical sixDelta (shadow "combo") after prospective gate passes
+   - Changes: Replace six.mjs + ctr.mjs with jointly validated combo (model.mjs:254-365).
+   - Why: Captures cyclic matchups directly; -0.00164 prospective log-loss over 15 days (checked in Node).
+   - Held-out test: Fixed prospective shadow-scoreboard.mjs until judgeShadowScoreboard() returns BETTER (>=14d, >=8k games, 95% CI < 0).
+   - Risk: Medium (256 KB JSON cap; dist.q / fieldWin integration).
+
+4. Uncertainty & "unknown" guardrails for low-sample teams (Rule 21)
+   - Changes: Compute post-shrinkage monSd/pairSd and team effective sample size n_eff; flag "unknown" when n_eff is below threshold (e.g., Reg M-D Days 1-7 or 3+ unseen mons).
+   - Why: Unseen teams currently show confident numeric scores; monSd is computed pre-shrinkage.
+   - Held-out test: Calibration stratified by n_eff deciles (verify 80% intervals cover ~80% of later outcomes).
+   - Risk: Low (UI wording requires Sim's review; data-side n_eff can ship first).
+
+5. Opponent-strength & Swiss-round-aware dynamic player skill
+   - Changes: Replace static Ridge s[p] (ls=15) with time-decayed / round-aware player skill; add opponent-team adjustment to pilot.mjs and leads.mjs.
+   - Why: 79.8% of players have <= 20 games; Swiss round g[6] (1-13) carries opponent-strength signal even for 1-event players.
+   - Held-out test: 4-week walk-forward teams-only log-loss + check rare-mon inflation by top players.
+   - Risk: Medium (over-fitting s[p] can absorb real team signal).
+
+6. Granular Item/Ability/Move set effects (targeted item Ridge + species-item-partner interactions)
+   - Changes: Separate Ridge penalties for items vs abilities vs moves and add high-signal interactions (e.g., Psychic Seed + Indeedee).
+   - Why: Items define roles more strongly than filler moves. (Note: naive setMin=15 + ls=8 tested INCONCLUSIVE in kip35-sets-and-skill.mjs, confirming targeted item/interaction tuning is needed.)
+   - Held-out test: 4-week walk-forward on 16+ move open-team-sheet games, 95% event-clustered CI < 0.
+   - Risk: Medium (small-sample overfitting and JSON size).
+
+7. Team-preview / Bring-4 & Lead effects from Showdown replays (out/replays.json)
+   - Changes: Fit opponent-team-adjusted lead-pair synergy and bring-rate weighting (weighting b[j] by P(bring | team)).
+   - Why: In VGC 6-bring-4, a 95%-bring Mega drives outcomes far more than a 20%-bring tech slot.
+   - Held-out test: Future Showdown replays log-loss + Limitless held-out check.
+   - Risk: Medium (ladder vs tournament distribution shift).
+
+8. Game-weighted dist.q + unified mixCredit & Mega cap
+   - Changes: Align dist.q with page mixCredit (0.75 + 0.25*min(1,k/6)) and Mega cap; test game-weighted dist.q or re-anchoring accuracy-gate.mjs base rate.
+   - Why: Eliminates page-vs-job drift and 75.5%-above-80 inflation.
+   - Held-out test: Band monotonicity + top-4 lift above field base rate; zero rank inversions vs page.
+   - Risk: Low-medium (shifts displayed numbers; needs Sim's sign-off).
+
+9. Separate Best-of-3 (Bo3) track & model (later, separate per Rule 21)
+   - Changes: Dedicated out/matches_bo3.json + model_bo3.mjs from Showdown Bo3 OTS replays (update.yml:40) and official Bo3 sets.
+   - Why: Bo3 OTS rewards consistency differently than Bo1/CTS.
+   - Held-out test: Future Bo3 matches only, never pooled with Bo1; 95% event-clustered CI < 0 vs single-game model.
+   - Risk: Low if kept strictly separate.
+
+10. Smooth continuous shrinkage for sixes, pairs, and setRange (remove hard cliffs)
+    - Changes: Replace builds >= 5 cliff in setRange (model.mjs:209) with shrunk quantile and drop MIN_G = 10 cliff in six.mjs:34 (prune only by |delta| < 0.002 for byte size).
+    - Why: Eliminates single-game day-over-day score jumps.
+    - Held-out test: Measure day-over-day MAD of unchanged teams + verify zero log-loss regression on 4-week walk-forward.
+    - Risk: Low (monitor 245 KB JSON guard).
+
+================================================================================
+PART 5: STANDALONE EXPERIMENT SCRIPTS & RESULTS
+================================================================================
+
+Both scripts read out/matches.json (or MATCHES=&lt;path&gt;), modify no existing files, and were executed on kip-job35-matches.json (ITERS=120, 4 strict 7-day walk-forward windows 2026-10-28..2026-11-26, 17,220 held-out games across 217 events, 1,000 event-clustered bootstrap draws):
+
+1. experiments/kip35-zero-center-eb.mjs (Idea #1) — checked (Node v18.20.4, exit 0):
+   - Pooled 4-week held-out: base ll=0.68101 (acc 56.11%) vs var ll=0.68055 (acc 56.11%)
+   - Delta (var - base): -0.00046 [95% event-clustered CI: -0.00072 to -0.00021] (won 4/4 weeks)
+   - Rule 21 verdict: KEEP (95% CI strictly better)
+   - Unseen 6-mon Strength Score (target ~80): baseline 70.6 (meanX=0.4093) vs variant 78.3 (meanX=0.0731)
+   - Cold-start Reg M-D Week-1 (404 train -> 353 test): baseline ll=0.68549 (51.84%, max|b|=0.0175) vs variant ll=0.68171 (56.09%, max|b|=0.0675)
+
+2. experiments/kip35-sets-and-skill.mjs (Idea #2) — checked (Node v18.20.4, exit 0):
+   - Set features kept (last window): baseline 907 (>=40) vs variant 1,584 (>=15)
+   - Pooled 4-week held-out: base ll=0.68101 (acc 56.11%) vs var ll=0.68067 (acc 55.88%)
+   - Delta (var - base): -0.00034 [95% event-clustered CI: -0.00086 to +0.00021]
+   - Rule 21 verdict: INCONCLUSIVE (95% CI crosses 0; proves test can fail)
+
+================================================================================
+FILES WE WOULD WANT NEXT
+================================================================================
+1. model-settings.json
+2. team-basics.mjs
+3. model-guard.mjs
+4. experiments/board.mjs, experiments/golden.mjs, experiments/compare.mjs, experiments/sealed.json
+5. out/model.json (full file) and out/replays.json (sample/schema)
+6. app/src/app/55-threats.js

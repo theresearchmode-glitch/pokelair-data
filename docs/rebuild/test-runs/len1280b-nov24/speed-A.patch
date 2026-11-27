@@ -1,0 +1,18 @@
+diff --git a/app/src/v2/css/pages.css b/app/src/v2/css/pages.css
+index 33f95b3c..bc2613d8 100644
+--- a/app/src/v2/css/pages.css
++++ b/app/src/v2/css/pages.css
+@@ -4528,3 +4528,13 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
+   .dr .k-plan>.k-step>.k-sec{margin-top:var(--s10)}
+   .dr .tp-piles{gap:var(--s6)}
+ }
++/* Speed Tiers option A at 1280-1439 (alt/len1280b, Nov 24): each blue band reads as one line plus its "outspeeds" line: the Yours tag
++   (and a Mega's "Mega") sit on the name's line instead of on lines of their own; the name column is 320px so "Mega Charizard Y" and
++   its tag fit; the bands keep their bar, sprite and both sentences. Nothing is hidden; 1440 and up, 1100-1279 and phones unchanged */
++@media (min-width:1280px) and (max-width:1439.98px){
++  .sp2-track{--c2c:320px}
++  .sp2-cut .sp2-m{min-height:0;row-gap:var(--s1);padding-block:var(--s1)}
++  .sp2-cut .sp2-bar{top:50%;bottom:auto;translate:0 -50%}
++  .sp2-cut .nm{align-self:center;flex-wrap:nowrap;align-items:center}
++  .sp2-cut .nm b,.sp2-cut .nm .sp2-form{flex-basis:auto}
++}

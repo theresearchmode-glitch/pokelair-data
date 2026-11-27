@@ -16,5 +16,5 @@ window.claude={use:function(n){return Promise.resolve(n==='db'?{doc:doc,collecti
 html = html.replace('<script>window.__SPR=null;</script>', () => boot);
 const note = `<div style="position:fixed;left:8px;top:8px;z-index:200;font:700 11px 'Space Mono',monospace;background:#FFE800;color:#1D2140;border:2px solid #1D2140;border-radius:6px;padding:2px 6px;pointer-events:none">PREVIEW · data snapshot ${L.updated.slice(0, 10)}</div>`;
 html = html.replace('<div class="toast" id="toast" hidden></div>', () => '<div class="toast" id="toast" hidden></div>' + note);
-const out = process.argv[2] || 'C:/Users/simra/OneDrive/Documents/NastyPlot/nastyplot-concept-h-preview.html';
+const out = process.argv[2] || 'C:/Users/<you>/OneDrive/Documents/NastyPlot/nastyplot-concept-h-preview.html';
 fs.writeFileSync(out, html); console.log(`preview: ${out} (${(html.length / 1048576).toFixed(1)} MB, ${Object.keys(SPR).length} sprites, ${Object.keys(D).length} data docs)`);

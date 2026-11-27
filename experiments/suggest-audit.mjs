@@ -14,10 +14,12 @@
 // Also: none of the 300 most-run tournament teams may be called a weather nobody uses (the rule must not flag real teams).
 // Uses the built page (run app/build.mjs first). Usage: node experiments/suggest-audit.mjs [teams=20] [steps=4]
 import fs from 'node:fs'; import {createRequire} from 'node:module';
+import {withFixtures} from './md-fixtures.mjs';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const APP = new URL('../app/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const NT = +(process.argv[2] || 20), STEPS = +(process.argv[3] || 4);
 const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
+withFixtures(D); /* Reg M-D day (gap G11): no real teams yet -> the fixture teams, with a "fixture teams" line (experiments/md-fixtures.mjs) */
 const page = APP + 'suggest-audit.html'; fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(APP + 'dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const b = await chromium.launch(), fails = [], ok = (c, m) => { console.log((c ? '  ok   ' : '  FAIL ') + m); if (!c) fails.push(m); };
 const pg = await (await b.newContext({viewport: {width: 1280, height: 900}})).newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
@@ -47,8 +49,8 @@ const STEP = `(()=>{fixSlots();planCache={key:null,plans:[]};const ms=members(),
     let ts=pl._ts;if(ts===undefined&&t.length===6){try{ts=tsOf(t)}catch(e){ts=null}}/* Nov 8 (commit f05576d, Phase 3): suggestions are chosen by the grade; readiness is background with a floor of -8, so the audit follows that floor */if(ts!=null&&base!=null&&ts<base-(side?2:8))f((ts-base)+' readiness points');
     const gb=ms.length===6?gradeTeam(ms):null,gp=planGrade(pl);/* a fix for an unmet check may cost more, but only with its cost written on the card (Sim, Nov 8: never 'none'; Phase 3 'stated amount') */const stated=((pl.gap&&pl.gap.why)||[]).some(w=>/grade points?/.test(w));if(gb!=null&&gp!=null&&gp<gb-(side?2:3)&&!stated)f('grade '+gb+' → '+gp);});
   if(row(g0,'weather').lone&&!plans.slice(0,2).some(pl=>pl.gap&&pl.gap.fix.includes('weather')))flags.push('nothing in the first two suggestions fixes the weather nobody uses');
-  const top=L[0];if(top){if(!ui.swOut||ui.swKey!==S.slots.map(x=>x.n||'').join())ui.swOut=new Set();top.ch.forEach(x=>{if(x.out)ui.swOut.add(x.out.p.b)});
-    top.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability||null,lock:false}});ui.swKey=S.slots.map(x=>x.n||'').join()}
+  const top=L[0];if(top){/* as applyPlan: the page's own key (swOutNow, review FP-4 Nov 16) */if(!swOutNow())ui.swOut=new Set();top.ch.forEach(x=>{if(x.out)ui.swOut.add(x.out.p.b)});
+    top.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability||null,lock:false}});ui.swKey=null}
   return JSON.stringify({team:ms.map(m=>m.p.n).sort().join(),flags,applied:top?top.ch.map(x=>(x.out?x.out.p.n+'>':'+')+x.c.p.n).join(' '):null})})()`;
 await pg.evaluate(() => window.__ev(`window.gp0x=ms=>gamePlan(ms.map(m=>({...m,_mv:memberMoves(m).moves})));S.box=[];ui.pool='all';S.maxMega=1;S.megaGoal=1;`));
 for (const [label, t] of teams) {

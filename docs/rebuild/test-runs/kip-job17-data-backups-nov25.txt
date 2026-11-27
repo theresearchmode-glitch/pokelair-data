@@ -1,0 +1,844 @@
+KIP JOB 17 — BACKUPS FOR OUR DATA SOURCES (BASE: 39ce8205, BRANCH: alt/gemini-dec2)
+Author: Kip | Date: 2026-11-24 | Scope: Research + Data/Code ONLY (NO design, NO new visible page copy, NO RK9 scraping, NO player names saved)
+
+================================================================================
+1-PAGE SUMMARY
+================================================================================
+APPLY STATUS: `update.mjs` diff + all 5 new files apply cleanly to commit 39ce8205 (`git apply --check`: CLEAN PASS). NOTE: `.github/workflows/test.yml` was NOT included in the 39ce8205 package, so its 2-line test wiring (`experiments/backup-sources-test.mjs`) is provided below as a ready-to-paste snippet instead of a blind diff hunk.
+
+VERDICT: Ready to review/merge. If Limitless goes down or goes stale (>=2 days, matching `md-watch.mjs`) around the Dec 2 regulation switch, NastyPlot now has a tested, polite-fetch (`http.mjs`), regulation-safe (`formats.mjs`) fallback pipeline behind `BACKUP_SOURCES=1` (OFF by default).
+
+WHAT CHANGES (1 modified file, 5 new files):
+1. `sources/fallback.mjs` (NEW): Shared backup coordinator implementing:
+   - `primaryStatus({list, index, format, today, staleDays: 2})` — reuses `md-watch.mjs`'s 2-day stale alarm + down/empty detection.
+   - `isDuplicateEvent(cand, existingIndex)` — prevents double-counting across sources via exact ID or normalized title + ±1 day UTC window.
+   - `fetchBackupEvents(...)` — runs ranked backup adapters in order, enforces `sameReg()` and `!offFormat()` from `formats.mjs` (never mixes regulations).
+2. `sources/victoryroad.mjs` (NEW): Backup adapter #1 (Victory Road WP REST API + VR Pastes JSON backend) returning exact `update.mjs` tournament + standings shapes (`vr_<slug>`, 6-Pokémon full open team sheets, W-L-T records; `getPairings` returns `[]` because VR has no round-by-round pairings). Uses `politeFetch` (`http.mjs`).
+3. `sources/showdown-ots.mjs` (NEW): Backup adapter #2 (Pokémon Showdown public Open-Team-Sheet Bo3 replays, `replay.pokemonshowdown.com/search.json` + `<id>.json`) grouping daily OTS replays into synthetic daily events (`sd_<fmt>_<YYYY-MM-DD>`) returning exact `update.mjs` tournament + standings + pairings shapes. Uses `politeFetch` (`http.mjs`).
+4. `update.mjs` (MODIFIED): Wired behind `USE_BACKUPS = process.env.BACKUP_SOURCES === '1'` (OFF by default — zero behavior change when unset). When enabled and primary is down/empty/stale, runs `[victoryRoadAdapter, showdownOtsAdapter]` and saves through `update.mjs`'s existing `pid()` hashing + `data/t`, `data/t2`, `data/p` pipeline (zero raw player names ever written to disk).
+5. `experiments/fixtures/backup-sources.json` & `experiments/backup-sources-test.mjs` (NEW): Offline, zero-network, fake-handle fixture test suite (6/6 S7 checks; fails on `39ce8205`, passes 6/6 after patch).
+
+TESTS & COMMANDS:
+- Offline S7 suite: `node experiments/backup-sources-test.mjs` -> FAILS on `39ce8205` (`ERR_MODULE_NOT_FOUND`), PASSES `6/6` after patch.
+- Syntax check: `node --check update.mjs sources/fallback.mjs sources/victoryroad.mjs sources/showdown-ots.mjs experiments/backup-sources-test.mjs` -> exit 0.
+- Patch check: `git apply --check` on `39ce8205` -> CLEAN PASS.
+- `.github/workflows/test.yml` (not in 39ce8205 package — add manually):
+  1) Add `'experiments/backup-sources-test.mjs'` and `'sources/**'` to `on.push.paths`.
+  2) Add `- run: node experiments/backup-sources-test.mjs` (`if: ${{ !cancelled() }}`) in the frozen-data `test` job.
+
+RISKS & KEY CAVEATS:
+- No public web API exists for in-game Champions Ranked ladder (OP.GG Terms explicitly forbid scraping/automated collection without written permission; Showdown ladder + Showdowntier remain the only permitted ladder proxies).
+- Pikalytics' `championstournaments` feed is downstream of Limitless (`sources.mjs:46`), so it goes stale when Limitless does — not an independent tournament backup.
+- Showdown OTS daily buckets represent Bo3 ladder/room matches rather than Swiss brackets; keep `BACKUP_SOURCES` OFF until needed (or isolate backup weights if Sim ever wants them blended full-time).
+
+================================================================================
+PART A — PUBLIC DATA SOURCES RESEARCH & RANKING (DATE: 2026-11-24)
+================================================================================
+Tier Key: T1 = Official/First-Party | T2 = Primary Platform/Docs/Terms | T3 = Community/Wiki | T4 = Third-party aggregator
+
+1. Limitless Online Tournament Platform (PRIMARY — currently used by `update.mjs`, `reg.mjs`, `md-watch.mjs`)
+   - URLs: https://play.limitlesstcg.com/tournaments/?game=VGC | https://docs.limitlesstcg.com/developer.html (T2, checked 2026-11-24)
+   - Data: Online VGC tournament list, full standings with W-L-T records, full open team sheets (`decklist`), round-by-round pairings (`matches`/`pairings`), phase structure (`tour-modes`).
+   - Freshness: Real-time / near-live as tournaments finish.
+   - Access: Public REST JSON API (`https://play.limitlesstcg.com/api/tournaments?game=VGC&format=M-C...`).
+   - Terms / Rate Limits (verbatim quote, Oct 26, 2026, https://docs.limitlesstcg.com/developer.html):
+     "With the exception of the /decks endpoint in /games (which contains deck categorization rules, not tournament data), you do NOT need an API key to access the API. Rate limits apply and can be checked through the rate limit response headers. If you need a higher usage limit, or access to the deck rules endpoint, you can apply for an API key. However, these are not meant for private use, and are only given out to public-facing projects that have a legitimate use-case."
+     "Our API provides several endpoints for accessing data like placings, decklists and matches, as well as a webhook system that can be used for updates on finished tournaments."
+     Repo-measured unauthenticated limit: 50 requests / 5 minutes (`update.mjs:2`, spaced at 6.5 s).
+   - Stability: High, but single point of failure for online tournaments.
+   - Replaces/Backs up Limitless? Primary source for (a) tournament list, (b) team sheets, (c) standings/pairings.
+
+2. Pokémon Showdown Public Replays (`replay.pokemonshowdown.com`) & Smogon Monthly Stats (`smogon.com/stats`)
+   - URLs: https://replay.pokemonshowdown.com/ | https://github.com/smogon/pokemon-showdown | https://github.com/colefoster/vgc-engine/blob/main/ATTRIBUTION.md (T2/T3, checked 2026-11-24)
+   - Data:
+     - Replays (`search.json?format=gen9championsvgc2026regmcbo3` + `<id>.json`): live public Bo3 Open-Team-Sheet games with FULL 6-Pokémon team sheets (`|showteam|p1|...`, `|showteam|p2|...`) AND match outcomes (`|win|...`).
+     - Monthly Stats (`smogon.com/stats/YYYY-MM/chaos/gen9championsvgc2026regmc-1760.json`): aggregate ladder usage, spreads, items, moves, abilities, teammates (monthly, ~1st-2nd of next month).
+   - Freshness: Replays = minutes/real-time; Smogon stats = monthly (stale up to 31 days).
+   - Access: Public JSON endpoints (already used in `reg.mjs`, `replays.mjs`, `ladder.mjs`).
+   - Terms / License: Pokémon Showdown is MIT licensed (`github.com/smogon/pokemon-showdown`). For `smogon.com/stats`, ATTRIBUTION.md (checked 2026-10-12) notes: "The stats index publishes no licence or terms of use (checked 2026-10-12)... They are credited to Smogon and Pokémon Showdown." Robots.txt for `replay.pokemonshowdown.com` was not directly fetched from our offline sandbox (see Part D).
+   - Rate Limits: Undocumented; polite pacing (1.1s+ via `http.mjs` `politeFetch`) keeps load negligible.
+   - Stability: Very high.
+   - Replaces/Backs up Limitless?
+     - (a) Tournament list: Synthetic daily OTS buckets only (no Swiss tournament metadata).
+     - (b) Team sheets: YES (complete 6-Pokémon OTS sheets in Bo3 replays!).
+     - (c) Standings/pairings: YES for game-level pairings (`matches.json`) and daily W-L records; no Swiss placements.
+
+3. Victory Road (`victoryroad.pro`) + VR Pastes (`vrpastes.com` / `vrpaste-backend.vercel.app`)
+   - URLs: https://victoryroad.pro/privacy-policy/ (T2, checked 2026-11-24) + `official.mjs:4-12` (already in repo at `39ce8205`).
+   - Data: Official Play! Pokémon VGC Regionals, Internationals, Specials, and Worlds — Masters standings (placement, W-L record, 6 Pokémon) + linked open team sheets via VR Pastes JSON (`/api/paste/<id>?lang=english`: species, item, ability, nature, moves).
+   - Freshness: Updated within hours to 1-2 days after each official weekend event (weekly/biweekly during season, NOT daily).
+   - Access: WordPress REST API (`victoryroad.pro/wp-json/wp/v2/pages`) + VR Pastes JSON API (`vrpaste-backend.vercel.app/api/paste/<id>?lang=english`).
+   - Terms / robots.txt: `official.mjs:7` documents `vrpastes.com` `robots.txt`: `Allow /`, `crawl-delay 1`; `official.mjs` spaces requests >= 1.1s per host with NastyPlot User-Agent. Victory Road Privacy Policy (`https://victoryroad.pro/privacy-policy/`) does not publish an API Terms page; written OK from Victory Road is still recommended for expanded use (see Part D).
+   - Stability: High for official events (already battle-tested in `official.mjs`).
+   - Replaces/Backs up Limitless?
+     - (a) Tournament list: YES for official Regionals/Internationals/Specials/Worlds; NO for daily online grassroots tours.
+     - (b) Team sheets: YES (full open team sheets, top 64 Masters).
+     - (c) Standings/pairings: Standings YES (placement + W-L record); Pairings NO (round-by-round pairings not published).
+
+4. Liquipedia Pokémon Wiki (`liquipedia.net/pokemon`)
+   - URLs: https://liquipedia.net/api-terms-of-use (T2, checked 2026-11-24)
+   - Data: Official event dates, player counts, top-cut brackets/placements (wikitext via MediaWiki API). No full 6-Pokémon open team sheets for top 64.
+   - Freshness: Updated live/same-day during major Regionals/Internationals/Worlds.
+   - Access: MediaWiki API (`liquipedia.net/pokemon/api.php`, already used by `official.mjs`).
+   - Terms / Rate Limits (verbatim quote, https://liquipedia.net/api-terms-of-use):
+     "Rate limit all HTTP requests to no more than 1 request per 2 seconds. API 'action=parse' requests should not exceed 1 request per 30 seconds as these are more resource intensive."
+     "Your HTTP client must support Content-Encoding: gzip responses..."
+     "Re-use / cache your API results for as long as possible - do not issue repeated requests which return the same data. Liquipedia content is licensed under CC-BY-SA 3.0, which requires that you attribute Liquipedia as the source of your data."
+     "Automated access to non-API endpoints (i.e., generated HTML pages) is not permitted."
+   - Replaces/Backs up Limitless? Cross-check / metadata backup only (dates, attendance, top-cut placements). Cannot supply team sheets or Swiss pairings.
+
+5. Pikalytics (`pikalytics.com`) & Showdowntier (`showdowntier.com`)
+   - URLs: https://www.pikalytics.com/champions (T4, checked 2026-11-24) | `sources.mjs:33-63`
+   - Data: Aggregate usage %, win %, top items/moves (Pikalytics `/ai/pokedex/championstournaments` and Showdowntier `/formats/dmc/index.html`).
+   - Freshness: Daily / biweekly rolling windows.
+   - Crucial Limitation: Pikalytics' `championstournaments` is built FROM Limitless (`sources.mjs:46`), so a Limitless outage stalls it too. Neither provides tournament lists, individual team sheets, or pairings.
+   - Replaces/Backs up Limitless? NO for (a)/(b)/(c); useful only as aggregate usage cross-check / fallback ratings input in `perf.mjs`.
+
+6. OP.GG (`op.gg`) — WHY PAUSED & ALTERNATIVE ENDPOINTS
+   - URL: https://op.gg/lol/policies/agreement (T2, updated Sep 14, 2026, checked 2026-11-24)
+   - Why paused (verbatim quote from OP.GG Terms of Use):
+     "No Site Content may be modified, copied, distributed, framed, reproduced, republished, downloaded, displayed, posted, transmitted, or sold in any form or by any means, in whole or in part, without our prior written permission"
+     "You are further prohibited from: scraping or data mining while using the Sites or Services; blocking, overwriting, modifying and copying of any contents of the Sites"
+     "use automated scripts to collect information from or otherwise interact with the Services or the Sites"
+   - Alternative endpoints for in-game Champions Ranked Battles: NONE publicly documented. Pokémon Champions / Pokémon HOME has no official public web API for Ranked Battles usage rankings (unofficial mobile-app endpoints require reverse-engineered auth headers and are not public APIs). Until OP.GG grants written permission (`service@op.gg`), `opgg.mjs` must remain paused and Showdown ladder (`smogon.com/stats` + `showdowntier.com`) is the permitted ladder proxy.
+
+7. Official Play! Pokémon / `pokemon.com` & In-Game News Feeds (`champions-news.pokemon-home.com`, `news.pokemon-home.com`)
+   - URLs: https://www.pokemon.com/us/news | https://championships.pokemon.com/en-us/competitors/leaderboards | `md-watch.mjs:21,54` (T1, checked 2026-11-24)
+   - Data: Official regulation announcements, balance patch notes, Mystery Gifts, Championship Points leaderboards, and top-8 editorial recap articles.
+   - Access: `champions-news.pokemon-home.com/en/json/list.json` and `news.pokemon-home.com/en/json/list.json` (public JSON feeds already read by `md-watch.mjs` and `post-news.mjs`).
+   - Replaces/Backs up Limitless? NO for (a)/(b)/(c) tournament data; T1 authoritative source for regulation switch dates and balance patches.
+
+8. Other Community Sites Checked (LabMaus `labmaus.net`, MunchStats `munchstats.com`, RK9 `rk9.gg`)
+   - **RK9 (`rk9.gg`)**: STRICTLY OFF-LIMITS (`rk9.gg/terms` 5.3 bans automated extraction; `CLAUDE.md` rule 22).
+   - **LabMaus (`labmaus.net`, T4)**: Official VGC tournament stats/teams; no public documented API or open data license, and heavily derived from RK9/Limitless — do NOT scrape without permission.
+   - **MunchStats (`munchstats.com`, `github.com/PizzaTimeJoshua/munchstats`, T4)**: Open-source UI over Smogon monthly stats + official top teams; downstream of Smogon/Victory Road, not an independent primary source.
+
+RANKING FOR BACKING UP LIMITLESS (BY DATA KIND):
+- (a) Tournament list: 1. Limitless (Primary) -> 2. Victory Road WP API (Official events) -> 3. Showdown OTS Replays (Daily synthetic buckets) -> 4. Liquipedia API (Official event dates/attendance verification)
+- (b) Team sheets (6-Pokémon OTS): 1. Limitless (Primary) -> 2. Victory Road + VR Pastes (Official top-64 OTS) -> 3. Showdown OTS Bo3 Replays (`|showteam|` full OTS)
+- (c) Standings / Pairings: 1. Limitless (Primary: Swiss standings + pairings) -> 2. Showdown OTS Bo3 Replays (game-level pairings + daily W-L) -> 3. Victory Road (standings + W-L only; no pairings) -> 4. Liquipedia API (top-cut placements only)
+- (d) Aggregate usage / ladder proxy: 1. Smogon Monthly Stats -> 2. Showdowntier -> 3. Pikalytics (`gen9championsvgc2026regmc` ladder; NOT `championstournaments` during a Limitless outage).
+
+================================================================================
+PART B — FALLBACK, STALE DETECTION & DEDUPLICATION DESIGN (DATA ONLY)
+================================================================================
+1. Fallback Order per Data Kind:
+   - Online + Official Tournament Pipeline (`update.mjs`, behind `BACKUP_SOURCES=1`, OFF by default):
+     1) Limitless API (primary)
+     2) `sources/victoryroad.mjs` (official Regionals/Internationals/Specials/Worlds — full OTS + W-L standings)
+     3) `sources/showdown-ots.mjs` (Showdown Bo3 OTS replays grouped by UTC day — full OTS + game-level pairings)
+   - Official Events Pipeline (`official.mjs`): already uses Victory Road + VR Pastes with Liquipedia API cross-check (no change needed).
+   - Regulation Detection (`reg.mjs` & `md-watch.mjs`): already checks Limitless + Showdown replays + official news feeds (no change needed).
+   - Ladder / Usage Proxy (`ladder.mjs` & `sources.mjs`): Smogon stats + Showdowntier + Pikalytics (OP.GG stays paused until written permission).
+
+2. Detecting "Primary Is Down or Stale" (`sources/fallback.mjs` `primaryStatus()`):
+   - Reuses `md-watch.mjs:69`'s exact threshold (`staleDays = 2`):
+     - `down`: Limitless `/tournaments` fetch threw an error (`list === null`).
+     - `empty`: Limitless returned `[]` for the active regulation.
+     - `stale`: newest saved tournament for the active regulation in `data/index.json` is `>= 2` calendar days old.
+     - `ok`: Limitless answered with events and newest saved tournament is `< 2` days old -> backup adapters are NOT called.
+
+3. Merging Without Double Counting (`sources/fallback.mjs` `isDuplicateEvent()`):
+   - Namespaced IDs: Limitless uses hex IDs (`6abc...`); Victory Road uses `vr_<slug>`; Showdown OTS uses `sd_<sdFmt>_<YYYY-MM-DD>`. No ID collision is possible.
+   - Cross-source event dedup: before accepting any backup tournament, `isDuplicateEvent()` checks (a) exact ID match in `index.tournaments` AND (b) normalized title match (stripping "Pokémon", "VGC", "Championship(s)", punctuation) with start date within `±1` day (catches UTC vs local timezone date shifts, e.g., Limitless indexing a Regional on Nov 15 UTC while Victory Road lists Nov 14).
+   - Player privacy (`CLAUDE.md` rule 22): adapters NEVER write files to disk; they return raw handles in memory to `update.mjs`, which immediately hashes every player handle through `pid()` before writing `data/t`, `data/t2`, `data/p`, followed by `scrub-names.mjs --check` in `.github/workflows/update.yml`.
+
+4. Strict Regulation Isolation (`formats.mjs` rules):
+   - Every backup tournament is filtered through `sameReg({f: t.format || format, d: t.date}, format)` and `!offFormat(t.name)`.
+   - Because `sameReg()` calls `regAt()`, any event dated at or after `REG_END['M-C']` (`2026-12-02T01:59:00Z`) is automatically rejected for Reg M-C even if mistagged `M-C`.
+   - `showdown-ots.mjs` additionally validates each replay's `formatid` via `sdReg()` so a `regmdbo3` replay can never enter a `M-C` daily bucket.
+
+================================================================================
+PART C — CODE & FIXTURE-BASED S7 TESTS
+================================================================================
+- `sources/fallback.mjs`: `primaryStatus`, `isDuplicateEvent`, `fetchBackupEvents` (uses `formats.mjs`).
+- `sources/victoryroad.mjs`: `victoryRoadAdapter` (`listTournaments`, `getStandings`, `getPairings`, uses `politeFetch` from `http.mjs`).
+- `sources/showdown-ots.mjs`: `showdownOtsAdapter` (`listTournaments`, `getStandings`, `getPairings`, uses `politeFetch` from `http.mjs`).
+- `update.mjs`: wired behind `USE_BACKUPS = process.env.BACKUP_SOURCES === '1'` (OFF by default).
+- `experiments/fixtures/backup-sources.json` & `experiments/backup-sources-test.mjs`:
+  - Offline, zero-network, fake handles only (`TrainerAlpha`, `TrainerBeta`, `TrainerGamma`, `TrainerDelta`, `PlayerOne`, `PlayerTwo`, `PlayerThree`, `PlayerFour`, `PlayerFive`).
+  - S7 execution proof:
+    - Before patch (`39ce8205`): FAILS (`ERR_MODULE_NOT_FOUND: sources/fallback.mjs`).
+    - After patch: PASSES `6/6` (`primaryStatus`, `victoryRoadAdapter`, `showdownOtsAdapter`, `isDuplicateEvent`, `fetchBackupEvents` + `REG_END`, `update.mjs` default-OFF switch + `politeFetch`).
+
+================================================================================
+PART D — WHAT COULD NOT BE VERIFIED + PERMISSION CHECKLIST FOR SIM
+================================================================================
+NOT VERIFIED (honesty rule):
+1. Live `robots.txt` files for `play.limitlesstcg.com`, `replay.pokemonshowdown.com`, `victoryroad.pro`, `pikalytics.com`, and `showdowntier.com` could not be fetched directly from our offline sandbox VM (only verified quotes indexed by web search / existing repo comments in `official.mjs` and `sources.mjs`).
+2. `.github/workflows/test.yml` was not in the `39ce8205` package -> not checked on `alt/gemini-dec2`.
+3. Full end-to-end live run of `BACKUP_SOURCES=1 node update.mjs` against real network endpoints (offline sandbox; verified against recorded fixtures in `experiments/backup-sources-test.mjs`).
+
+WHAT SIM SHOULD ASK SOURCES BEFORE ENABLING / EXPANDING:
+1. **Limitless (Public API Key)**: Once NastyPlot is public (`nastyplot.org`), apply for an official Limitless API key via user API settings (`https://docs.limitlesstcg.com/developer.html`) for higher rate limits and optional finished-tournament webhooks.
+2. **OP.GG (`service@op.gg`)**: Request written permission to read aggregate Pokémon Champions ranked usage stats with attribution (required by OP.GG Terms before re-enabling `opgg.mjs`).
+3. **Victory Road (`victoryroad.pro`)**: Send a brief courtesy email/DM confirming written OK to continue reading their WP REST API + VR Pastes JSON with attribution (`NastyPlot` credits Victory Road and links back) if `victoryroad.mjs` is ever enabled as a `update.mjs` fallback in addition to `official.mjs`.
+4. **Pikalytics / Showdowntier**: Confirm written permission for continued daily aggregate cross-checking once `nastyplot.org` launches publicly.
+5. **LabMaus**: Do NOT integrate unless LabMaus grants explicit written permission AND confirms its data is not restricted by RK9 terms.
+
+================================================================================
+PATCH & NEW FILES (SINGLE BLOCK — APPLY TO 39ce8205)
+================================================================================
+
+diff --git a/update.mjs b/update.mjs
+index 4fed738..547e65f 100644
+--- a/update.mjs
++++ b/update.mjs
+@@ -14,9 +14,12 @@ import {offFormat, oddEvents, activeReg, sameReg, REG_END, nextRegIds} from './f
+ import {stampReg} from './reg-stamp.mjs';
+ import {politeFetch} from './http.mjs';
+ import {lkey, lmap, reportUnknown, canonSet, canonReport, canonNature} from './names.mjs';
++import {primaryStatus, fetchBackupEvents} from './sources/fallback.mjs';
++import {victoryRoadAdapter} from './sources/victoryroad.mjs';
++import {showdownOtsAdapter} from './sources/showdown-ots.mjs';
+ // the regulation every number is built from (out/reg.json from reg.mjs; Reg M-C until a newer one has enough data)
+ const RG = activeReg();
+-const API = 'https://play.limitlesstcg.com/api', FORMAT = RG.id, MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500);
++const API = 'https://play.limitlesstcg.com/api', FORMAT = RG.id, MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500), USE_BACKUPS = process.env.BACKUP_SOURCES === '1';
+ const sleep = ms => new Promise(r => setTimeout(r, ms));
+ const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
+ fs.mkdirSync('data/t', {recursive: true}); fs.mkdirSync('data/t2', {recursive: true}); fs.mkdirSync('data/p', {recursive: true}); fs.mkdirSync('out', {recursive: true});
+@@ -43,13 +46,20 @@ const key = lkey; // shared with weekly.mjs and events.mjs (names.mjs)
+ 
+ // 1) tournament list, then standings for new ones and for anything from the last 3 days (results can still change)
+ const list = [];
+-for (let page = 1; page < 30; page++) { const r = await get(`/tournaments?game=VGC&format=${FORMAT}&limit=100&page=${page}`); if (!r.length) break; list.push(...r); }
+-const prevF = Object.keys(REG_END).find(k => nextRegIds(k)[0] === FORMAT);
+-if (prevF) { const seenIds = new Set(list.map(t => t.id)), cut = Date.parse(REG_END[prevF]);
+-  for (let page = 1; page <= 3; page++) { const r = await get(`/tournaments?game=VGC&format=${prevF}&limit=100&page=${page}`); if (!r.length) break;
+-    const kept = r.filter(t => !seenIds.has(t.id) && Date.parse(t.date) >= cut && sameReg({f: t.format || prevF, d: t.date}, FORMAT));
+-    for (const t of kept) { seenIds.add(t.id); list.push(t); }
+-    if (!r.some(t => Date.parse(t.date) >= cut)) break; } }
++let primaryFailed = false;
++try {
++  for (let page = 1; page < 30; page++) { const r = await get(`/tournaments?game=VGC&format=${FORMAT}&limit=100&page=${page}`); if (!r.length) break; list.push(...r); }
++  const prevF = Object.keys(REG_END).find(k => nextRegIds(k)[0] === FORMAT);
++  if (prevF) { const seenIds = new Set(list.map(t => t.id)), cut = Date.parse(REG_END[prevF]);
++    for (let page = 1; page <= 3; page++) { const r = await get(`/tournaments?game=VGC&format=${prevF}&limit=100&page=${page}`); if (!r.length) break;
++      const kept = r.filter(t => !seenIds.has(t.id) && Date.parse(t.date) >= cut && sameReg({f: t.format || prevF, d: t.date}, FORMAT));
++      for (const t of kept) { seenIds.add(t.id); list.push(t); }
++      if (!r.some(t => Date.parse(t.date) >= cut)) break; } }
++} catch (err) {
++  if (!USE_BACKUPS) throw err;
++  primaryFailed = true;
++  console.log(`::warning::update: Limitless list failed (${err.message}); checking backup sources`);
++}
+ // v2 files (full sheets + pairings) are backfilled for older tournaments too, newest first, within MAX_FETCH.
+ const now = Date.now(), hasP = id => fs.existsSync(`data/p/${id}.json`);
+ const has2 = id => { const T = readJSON(`data/t2/${id}.json`, null); return !!(T && T.v === 3) && hasP(id); };
+@@ -81,6 +91,26 @@ for (const t of todo) {
+     index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name, f: t.format || FORMAT}; fetched++;
+   } catch (err) { console.log('skip', t.id, err.message); }
+ }
++if (USE_BACKUPS) {
++  const st = primaryStatus({list: primaryFailed ? null : list, index, format: FORMAT});
++  if (!st.ok) {
++    console.log(`::warning::update: primary source ${st.reason} (newest ${st.newest || 'none'}); running backup adapters`);
++    const bk = await fetchBackupEvents({format: FORMAT, sdFormat: RG.sd, index, adapters: [victoryRoadAdapter, showdownOtsAdapter], maxFetch: Math.max(1, MAX_FETCH - fetched)});
++    const W = w => w == null ? null : String(w) === '0' || String(w) === '-1' ? String(w) : pid(w);
++    for (const t of bk.tournaments) {
++      const s = bk.standingsById.get(t.id) || [], P = bk.pairingsById.get(t.id) || [];
++      if (!s.length) continue;
++      const e = s.map(x => [pid(x.player || x.name || ''), x.record ? x.record.wins : 0, x.record ? x.record.losses : 0, (x.decklist || []).map(key)]);
++      fs.writeFileSync(`data/t/${t.id}.json`, JSON.stringify({d: t.date, p: t.players, e, f: t.format || FORMAT}));
++      const e2 = s.map(x => ({id: pid(x.player || ''), nm: pid(x.player || x.name || ''), pl: x.placing ?? null, w: x.record ? x.record.wins : 0, l: x.record ? x.record.losses : 0, ti: x.record ? (x.record.ties || 0) : 0, dk: (x.decklist || []).map(mv)}));
++      fs.writeFileSync(`data/t2/${t.id}.json`, JSON.stringify({v: 3, d: t.date, p: t.players, name: t.name, f: t.format || FORMAT, e: e2}));
++      const pr = P.map(x => [x.round ?? null, pid(x.player1 ?? ''), pid(x.player2 ?? ''), W(x.winner)]);
++      fs.writeFileSync(`data/p/${t.id}.json`, JSON.stringify(pr));
++      index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name, f: t.format || FORMAT}; fetched++;
++    }
++    if (bk.used.length) console.log(`backup sources added: ${bk.used.join(', ')}`);
++  }
++}
+ fs.writeFileSync('data/index.json', JSON.stringify(index));
+ console.log(`list ${list.length} tournaments, fetched ${fetched}, cached ${Object.keys(index.tournaments).length}`);
+ // one try per event, 30 s at most, and a rate limit ends the step for today (review Nov 17: the main job must never wait on it)
+
+----- BEGIN sources/fallback.mjs -----
+// Backup source coordinator for update.mjs (Job 17, off by default unless BACKUP_SOURCES=1).
+// Reuses md-watch.mjs's 2-day stale alarm threshold and formats.mjs's strict regulation rules (never mixes regulations).
+import {sameReg, offFormat} from '../formats.mjs';
+
+const DAY = 864e5;
+const normTitle = s => String(s || '').toLowerCase()
+  .replace(/pok[eé]mon/g, '')
+  .replace(/\bvgc\b/g, '')
+  .replace(/championships?/g, '')
+  .replace(/[^a-z0-9]+/g, ' ')
+  .trim();
+
+// Detect whether the primary source (Limitless) is down, empty, or stale (>= staleDays old, matching md-watch.mjs's 2-day alarm).
+export function primaryStatus({list, index, format, today, staleDays = 2}) {
+  const todayIso = today || new Date().toISOString().slice(0, 10);
+  const tours = (index && index.tournaments) || {};
+  const dates = Object.values(tours)
+    .filter(t => t && (!format || sameReg(t, format)))
+    .map(t => String(t.d || '').slice(0, 10))
+    .filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d))
+    .sort();
+  const newest = dates.length ? dates[dates.length - 1] : null;
+  const ageDays = newest ? Math.floor((Date.parse(todayIso) - Date.parse(newest)) / DAY) : null;
+  if (list === null) return {ok: false, reason: 'down', newest, ageDays};
+  if (Array.isArray(list) && list.length === 0) return {ok: false, reason: 'empty', newest, ageDays};
+  if (ageDays === null || ageDays >= staleDays) return {ok: false, reason: 'stale', newest, ageDays};
+  return {ok: true, reason: 'ok', newest, ageDays};
+}
+
+// Prevent double-counting when the same event appears in two sources (e.g. Limitless + Victory Road):
+// matches by exact id, OR normalized event name + date within 1 day (handles UTC vs local timezone shifts).
+export function isDuplicateEvent(cand, existingIndex) {
+  const tours = (existingIndex && existingIndex.tournaments) || {};
+  if (!cand || !cand.id) return true;
+  if (tours[cand.id]) return true;
+  const cName = normTitle(cand.name);
+  const cTime = Date.parse(String(cand.date || '').slice(0, 10) + 'T12:00:00Z');
+  if (!cName || !isFinite(cTime)) return false;
+  for (const t of Object.values(tours)) {
+    if (!t || !t.name) continue;
+    const tTime = Date.parse(String(t.d || '').slice(0, 10) + 'T12:00:00Z');
+    if (!isFinite(tTime) || Math.abs(cTime - tTime) > DAY) continue;
+    const tName = normTitle(t.name);
+    if (!tName) continue;
+    if (cName === tName || cName.includes(tName) || tName.includes(cName)) return true;
+  }
+  return false;
+}
+
+// Fetch normalized tournaments, standings, and pairings from ranked backup adapters.
+// Returns {tournaments, standingsById, pairingsById, used, errors}.
+export async function fetchBackupEvents({format, sdFormat, index, adapters, maxFetch = 20, fetchFn, log = console.log}) {
+  const tournaments = [], standingsById = new Map(), pairingsById = new Map(), used = [], errors = [];
+  const workingIndex = {tournaments: {...((index && index.tournaments) || {})}};
+  let remaining = maxFetch;
+  for (const adapter of adapters || []) {
+    if (remaining <= 0) break;
+    try {
+      const rawList = await adapter.listTournaments({format, sdFormat, fetchFn});
+      const valid = (Array.isArray(rawList) ? rawList : []).filter(t => {
+        if (!t || !t.id || !t.date) return false;
+        if (!sameReg({f: t.format || format, d: t.date}, format)) return false;
+        if (offFormat(t.name)) return false;
+        if (isDuplicateEvent(t, workingIndex)) return false;
+        return true;
+      }).slice(0, remaining);
+      let added = 0;
+      for (const t of valid) {
+        try {
+          const s = await adapter.getStandings(t, {fetchFn});
+          if (!Array.isArray(s) || !s.length) continue;
+          const p = adapter.getPairings ? await adapter.getPairings(t, {fetchFn}) : [];
+          tournaments.push(t);
+          standingsById.set(t.id, s);
+          pairingsById.set(t.id, Array.isArray(p) ? p : []);
+          workingIndex.tournaments[t.id] = {d: t.date, p: t.players, name: t.name, f: t.format || format};
+          remaining--;
+          added++;
+        } catch (err) {
+          errors.push(`${adapter.name}:${t.id}: ${err.message}`);
+        }
+      }
+      if (added) used.push(`${adapter.name}(${added})`);
+    } catch (err) {
+      errors.push(`${adapter.name}: ${err.message}`);
+      log(`::warning::backup source ${adapter.name} failed: ${err.message}`);
+    }
+  }
+  return {tournaments, standingsById, pairingsById, used, errors};
+}
+----- END sources/fallback.mjs -----
+
+----- BEGIN sources/victoryroad.mjs -----
+// Backup adapter: Victory Road (victoryroad.pro WP REST API) + VR Pastes JSON backend (vrpaste-backend.vercel.app).
+// Returns the exact tournament / standings / pairings shapes update.mjs expects (pairings are empty: VR has no pairings).
+// Uses politeFetch from http.mjs; raw player handles stay in memory only (update.mjs hashes them via pid() before saving).
+import {politeFetch} from '../http.mjs';
+
+const VR_PAGES = 'https://victoryroad.pro/wp-json/wp/v2/pages';
+const VR_PASTE_API = 'https://vrpaste-backend.vercel.app/api/paste';
+const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+
+const AMP = String.fromCharCode(38);
+const ENT = {amp: AMP, lt: '<', gt: '>', quot: '"', '#039': "'"};
+const dec = s => String(s || '')
+  .replace(new RegExp(AMP + '#(\\d+);', 'g'), (_, n) => String.fromCharCode(+n))
+  .replace(new RegExp(AMP + '(amp|lt|gt|quot|#039);', 'g'), (_, k) => ENT[k] || '');
+const strip = h => dec(String(h || '').replace(/<br\s*\/?>/g, ' ').replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim();
+
+export function parseVrDate(s) {
+  const m = String(s || '').replace(/\s+/g, ' ').match(/^(\d{1,2})(?: ([A-Za-z]+))?(?: ?[–-] ?\d{1,2})?(?: ([A-Za-z]+))? (\d{4})/);
+  if (!m) return null;
+  const mo = MONTHS.indexOf((m[2] || m[3] || '').toLowerCase());
+  if (mo < 0) return null;
+  let y = +m[4];
+  if (m[2] && m[3] && mo > MONTHS.indexOf(m[3].toLowerCase())) y--;
+  return `${y}-${String(mo + 1).padStart(2, '0')}-${String(+m[1]).padStart(2, '0')}T12:00:00.000Z`;
+}
+
+export function parseVrRecord(rec) {
+  const m = String(rec || '').match(/(\d+)\s*-\s*(\d+)(?:\s*-\s*(\d+))?/);
+  return m ? {wins: +m[1], losses: +m[2], ties: m[3] ? +m[3] : 0} : {wins: 0, losses: 0, ties: 0};
+}
+
+export function parseVrEventHtml(html) {
+  const info = {};
+  for (const m of String(html || '').matchAll(/&lt;tr&gt;<th[^>]*>([^<]+)<\/th><th[^>]*>([\s\S]*?)<\/th><\/tr>/g)) {
+    info[strip(m[1])] = strip(m[2]);
+  }
+  const cut = String(html || '').search(/<h[1-4][^>]*>[^<]*(?:<[^>]+>)*[^<]*(Senior|Junior)/);
+  const body = cut > 0 ? html.slice(0, cut) : String(html || '');
+  const rows = new Map();
+  for (const t of body.matchAll(/<table class="infobox2[^"]*">([\s\S]*?)<\/table>/g)) {
+    const head = strip((t[1].match(/&lt;thead&gt;([\s\S]*?)<\/thead>/) || [])[1]);
+    if (!/Player/.test(head) || !/Team/.test(head) || !/OTS/.test(head)) continue;
+    for (const r of t[1].matchAll(/&lt;tr&gt;([\s\S]*?)<\/tr>/g)) {
+      const td = [...r[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(x => x[1]);
+      if (td.length < 7) continue;
+      const st = parseInt(strip(td[0]), 10);
+      if (!(st > 0) || rows.has(st)) continue;
+      rows.set(st, {
+        st,
+        rec: strip(td[1]),
+        player: strip(td[3].split(/<br\s*\/?>/)[0]),
+        paste: ((td[6].match(/vrpastes\.com\/([A-Za-z0-9_-]+)/) || [])[1]) || null,
+      });
+    }
+  }
+  const ma = s => { const m = String(s || '').match(/([\d,]+)\s*(?:players\s*)?\(?MA\b/); return m ? +m[1].replace(/,/g, '') : null; };
+  const regMatch = String(info.Season || '').match(/Regulation(?:\s+Set)?\s+([A-Z]-[A-Z])\b/i);
+  return {
+    date: parseVrDate(info.Date || ''),
+    players: ma(info.Attendance) || ma(info.Capacity) || rows.size,
+    game: info.Videogame || '',
+    format: regMatch ? regMatch[1].toUpperCase() : '',
+    rows: [...rows.values()].sort((a, b) => a.st - b.st),
+  };
+}
+
+export function parseVrPasteToDecklist(j) {
+  if (!j || j.is_encrypted || !Array.isArray(j.teams)) return [];
+  return j.teams.slice(0, 6).map(t => ({
+    name: String(t.species || t.name || ''),
+    item: String(t.item || ''),
+    ability: String(t.ability || ''),
+    attacks: Array.isArray(t.moves) ? t.moves.filter(Boolean).slice(0, 4).map(String) : [],
+    tera: String(t.teraType || t.tera || ''),
+    nature: String(t.nature || ''),
+  })).filter(m => m.name);
+}
+
+async function fetchJson(url, fetchFn) {
+  const fn = fetchFn || politeFetch;
+  const r = await fn(url, {headers: {'Accept-Encoding': 'gzip'}});
+  if (!r.ok) throw new Error(`${url} ${r.status}`);
+  return r.json();
+}
+
+export const victoryRoadAdapter = {
+  name: 'victoryroad',
+  async listTournaments({format, fetchFn, season}) {
+    const yr = season || (new Date().getUTCMonth() >= 8 ? new Date().getUTCFullYear() + 1 : new Date().getUTCFullYear());
+    const list = await fetchJson(`${VR_PAGES}?search=${yr}&per_page=100&_fields=id,slug,modified,title`, fetchFn);
+    if (!Array.isArray(list)) return [];
+    const out = [];
+    for (const p of list) {
+      const title = strip(p && p.title && p.title.rendered);
+      if (!/^\d{4} .+ (Regional|International|Special|World) Championships$/.test(title)) continue;
+      const detail = await fetchJson(`${VR_PAGES}?slug=${encodeURIComponent(p.slug)}&_fields=id,slug,modified,title,content`, fetchFn);
+      const page = Array.isArray(detail) ? detail[0] : detail;
+      if (!page || !page.content || !page.content.rendered) continue;
+      const parsed = parseVrEventHtml(page.content.rendered);
+      if (!/Champions/i.test(parsed.game)) continue;
+      if (format && parsed.format && parsed.format !== format) continue;
+      if (!parsed.date || !parsed.rows.length) continue;
+      out.push({
+        id: `vr_${p.slug}`,
+        date: parsed.date,
+        players: parsed.players,
+        name: title.replace(/ (Regional|International|Special|World) Championships$/, ' Pokémon $1 Championships'),
+        format: parsed.format || format,
+        _rows: parsed.rows,
+      });
+    }
+    return out;
+  },
+  async getStandings(t, {fetchFn}) {
+    const standings = [];
+    for (const r of (t._rows || [])) {
+      if (!r.paste) continue;
+      try {
+        const j = await fetchJson(`${VR_PASTE_API}/${encodeURIComponent(r.paste)}?lang=english`, fetchFn);
+        const decklist = parseVrPasteToDecklist(j);
+        if (decklist.length !== 6) continue;
+        standings.push({
+          player: r.player,
+          placing: r.st,
+          record: parseVrRecord(r.rec),
+          decklist,
+        });
+      } catch (e) {
+        // Skip unreadable individual paste; caller enforces min-standing checks
+      }
+    }
+    return standings;
+  },
+  async getPairings() {
+    return [];
+  },
+};
+----- END sources/victoryroad.mjs -----
+
+----- BEGIN sources/showdown-ots.mjs -----
+// Backup adapter: Pokémon Showdown Open-Team-Sheet (Bo3) public replays (replay.pokemonshowdown.com/search.json + &lt;id&gt;.json).
+// Groups daily OTS replays for the active regulation into synthetic daily event buckets returning exact update.mjs shapes:
+//   - tournament list: [{id: 'sd_&lt;fmt&gt;_&lt;YYYY-MM-DD&gt;', date, players, name, format}]
+//   - standings: full 6-Pokémon open team sheets (species, item, ability, moves, nature) + wins/losses
+//   - pairings: game-level [round, player1, player2, winner] for matches.json
+// Uses politeFetch from http.mjs; raw usernames stay in memory only (update.mjs hashes them via pid() before saving).
+import {politeFetch} from '../http.mjs';
+import {sdReg} from '../formats.mjs';
+
+const BASE = 'https://replay.pokemonshowdown.com';
+
+// Parse Showdown's packed |showteam|p1|... string into update.mjs decklist entries.
+// Packed format per mon: Species|Nickname|Item|Ability|Moves|Nature|EVs|Gender|IVs|Shiny|Level|Misc (',,,,,Tera')
+export function parseShowteam(packed) {
+  if (!packed) return [];
+  return String(packed).split(']').map(chunk => {
+    const f = chunk.split('|');
+    const name = (f[0] || f[1] || '').trim();
+    if (!name) return null;
+    const item = (f[2] || '').trim();
+    const ability = (f[3] || '').trim();
+    const attacks = (f[4] || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 4);
+    const nature = (f[5] || '').trim();
+    const misc = (f[11] || '').split(',');
+    const tera = (misc[5] || '').trim();
+    return {name, item, ability, attacks, tera, nature};
+  }).filter(Boolean).slice(0, 6);
+}
+
+export function parseReplayLog(replay) {
+  const log = String((replay && replay.log) || '');
+  const players = {p1: '', p2: ''};
+  const teams = {p1: [], p2: []};
+  let winner = null;
+  for (const line of log.split('\n')) {
+    if (line.startsWith('|player|p1|')) { const n = line.split('|')[3]; if (n && !players.p1) players.p1 = n.trim(); }
+    else if (line.startsWith('|player|p2|')) { const n = line.split('|')[3]; if (n && !players.p2) players.p2 = n.trim(); }
+    else if (line.startsWith('|showteam|p1|')) teams.p1 = parseShowteam(line.slice('|showteam|p1|'.length));
+    else if (line.startsWith('|showteam|p2|')) teams.p2 = parseShowteam(line.slice('|showteam|p2|'.length));
+    else if (line.startsWith('|win|')) winner = line.slice('|win|'.length).trim();
+  }
+  if (!players.p1 && Array.isArray(replay && replay.players)) players.p1 = replay.players[0] || '';
+  if (!players.p2 && Array.isArray(replay && replay.players)) players.p2 = replay.players[1] || '';
+  if (!players.p1 || !players.p2 || teams.p1.length !== 6 || teams.p2.length !== 6) return null;
+  return {p1: players.p1, p2: players.p2, t1: teams.p1, t2: teams.p2, winner};
+}
+
+async function fetchJson(url, fetchFn) {
+  const fn = fetchFn || politeFetch;
+  const r = await fn(url);
+  if (!r.ok) throw new Error(`${url} ${r.status}`);
+  return r.json();
+}
+
+export const showdownOtsAdapter = {
+  name: 'showdown-ots',
+  async listTournaments({format, sdFormat, fetchFn}) {
+    const baseFmt = sdFormat || '';
+    if (!baseFmt) return [];
+    const otsFmt = baseFmt.endsWith('bo3') ? baseFmt : `${baseFmt}bo3`;
+    const fmtReg = sdReg(baseFmt.replace(/bo3$/, ''));
+    if (format && fmtReg && fmtReg !== format) return [];
+    const rows = await fetchJson(`${BASE}/search.json?format=${encodeURIComponent(otsFmt)}`, fetchFn);
+    if (!Array.isArray(rows)) return [];
+    const byDay = new Map();
+    for (const r of rows) {
+      if (!r || !r.id || !r.uploadtime) continue;
+      // Verify each replay's own formatid matches the requested regulation
+      const rFmt = String(r.formatid || otsFmt).replace(/bo3$/, '');
+      if (format && sdReg(rFmt) && sdReg(rFmt) !== format) continue;
+      const day = new Date(+r.uploadtime * 1000).toISOString().slice(0, 10);
+      if (!byDay.has(day)) byDay.set(day, []);
+      byDay.get(day).push(r);
+    }
+    return [...byDay.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1)).map(([day, replays]) => ({
+      id: `sd_${otsFmt}_${day}`,
+      date: `${day}T23:59:00.000Z`,
+      players: new Set(replays.flatMap(r => Array.isArray(r.players) ? r.players : [])).size,
+      name: `Showdown OTS Daily ${day}`,
+      format: format || fmtReg || '',
+      _replays: replays,
+    }));
+  },
+  async getStandings(t, {fetchFn}) {
+    const byPlayer = new Map();
+    const pairings = [];
+    let round = 0;
+    for (const r of (t._replays || [])) {
+      try {
+        const full = await fetchJson(`${BASE}/${encodeURIComponent(r.id)}.json`, fetchFn);
+        const parsed = parseReplayLog(full);
+        if (!parsed) continue;
+        round++;
+        const ensure = (pl, dk) => {
+          if (!byPlayer.has(pl)) byPlayer.set(pl, {player: pl, placing: null, record: {wins: 0, losses: 0, ties: 0}, decklist: dk});
+          return byPlayer.get(pl);
+        };
+        const a = ensure(parsed.p1, parsed.t1);
+        const b = ensure(parsed.p2, parsed.t2);
+        if (parsed.winner === parsed.p1) { a.record.wins++; b.record.losses++; }
+        else if (parsed.winner === parsed.p2) { b.record.wins++; a.record.losses++; }
+        else { a.record.ties++; b.record.ties++; }
+        pairings.push({round, player1: parsed.p1, player2: parsed.p2, winner: parsed.winner || '0'});
+      } catch (e) {
+        // Skip unreadable individual replay
+      }
+    }
+    t._pairings = pairings;
+    const sorted = [...byPlayer.values()].sort((x, y) => (y.record.wins - x.record.wins) || (x.record.losses - y.record.losses));
+    sorted.forEach((s, i) => { s.placing = i + 1; });
+    return sorted;
+  },
+  async getPairings(t) {
+    return Array.isArray(t._pairings) ? t._pairings : [];
+  },
+};
+----- END sources/showdown-ots.mjs -----
+
+----- BEGIN experiments/fixtures/backup-sources.json -----
+{
+  "vrPagesList": [
+    {
+      "id": 1001,
+      "slug": "2027-sample-city-regional",
+      "modified": "2026-11-22T18:00:00",
+      "title": {"rendered": "2027 Sample City Regional Championships"}
+    },
+    {
+      "id": 1002,
+      "slug": "2027-future-regmd-regional",
+      "modified": "2026-12-06T18:00:00",
+      "title": {"rendered": "2027 Future City Regional Championships"}
+    },
+    {
+      "id": 1003,
+      "slug": "2027-already-indexed-regional",
+      "modified": "2026-11-15T18:00:00",
+      "title": {"rendered": "2027 Harbor Town Regional Championships"}
+    }
+  ],
+  "vrPagesBySlug": {
+    "2027-sample-city-regional": [
+      {
+        "id": 1001,
+        "slug": "2027-sample-city-regional",
+        "modified": "2026-11-22T18:00:00",
+        "title": {"rendered": "2027 Sample City Regional Championships"},
+        "content": {
+          "rendered": "&lt;table&gt;&lt;tr&gt;&lt;th&gt;Date&lt;/th&gt;&lt;th&gt;21-22 November 2026&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Attendance&lt;/th&gt;&lt;th&gt;512 players (MA)&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Videogame&lt;/th&gt;&lt;th&gt;Pokemon Champions&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Season&lt;/th&gt;&lt;th&gt;2027 Regulation Set M-C&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;<table class=\"infobox2\">&lt;thead&gt;&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Record&lt;/th&gt;&lt;th&gt;Country&lt;/th&gt;&lt;th&gt;Player&lt;/th&gt;&lt;th&gt;CP&lt;/th&gt;&lt;th&gt;Team&lt;/th&gt;&lt;th&gt;OTS&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;14-2&lt;/td&gt;&lt;td&gt;US&lt;/td&gt;&lt;td&gt;TrainerAlpha&lt;/td&gt;&lt;td&gt;200&lt;/td&gt;&lt;td&gt;team&lt;/td&gt;&lt;td&gt;<a href=\"https://www.vrpastes.com/fakePaste1\">OTS&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;13-3&lt;/td&gt;&lt;td&gt;CA&lt;/td&gt;&lt;td&gt;TrainerBeta&lt;/td&gt;&lt;td&gt;160&lt;/td&gt;&lt;td&gt;team&lt;/td&gt;&lt;td&gt;<a href=\"https://www.vrpastes.com/fakePaste2\">OTS&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;"
+        }
+      }
+    ],
+    "2027-future-regmd-regional": [
+      {
+        "id": 1002,
+        "slug": "2027-future-regmd-regional",
+        "modified": "2026-12-06T18:00:00",
+        "title": {"rendered": "2027 Future City Regional Championships"},
+        "content": {
+          "rendered": "&lt;table&gt;&lt;tr&gt;&lt;th&gt;Date&lt;/th&gt;&lt;th&gt;5-6 December 2026&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Attendance&lt;/th&gt;&lt;th&gt;480 players (MA)&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Videogame&lt;/th&gt;&lt;th&gt;Pokemon Champions&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Season&lt;/th&gt;&lt;th&gt;2027 Regulation Set M-D&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;<table class=\"infobox2\">&lt;thead&gt;&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Record&lt;/th&gt;&lt;th&gt;Country&lt;/th&gt;&lt;th&gt;Player&lt;/th&gt;&lt;th&gt;CP&lt;/th&gt;&lt;th&gt;Team&lt;/th&gt;&lt;th&gt;OTS&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;14-1&lt;/td&gt;&lt;td&gt;US&lt;/td&gt;&lt;td&gt;TrainerGamma&lt;/td&gt;&lt;td&gt;200&lt;/td&gt;&lt;td&gt;team&lt;/td&gt;&lt;td&gt;<a href=\"https://www.vrpastes.com/fakePaste1\">OTS&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;"
+        }
+      }
+    ],
+    "2027-already-indexed-regional": [
+      {
+        "id": 1003,
+        "slug": "2027-already-indexed-regional",
+        "modified": "2026-11-15T18:00:00",
+        "title": {"rendered": "2027 Harbor Town Regional Championships"},
+        "content": {
+          "rendered": "&lt;table&gt;&lt;tr&gt;&lt;th&gt;Date&lt;/th&gt;&lt;th&gt;14-15 November 2026&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Attendance&lt;/th&gt;&lt;th&gt;600 players (MA)&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Videogame&lt;/th&gt;&lt;th&gt;Pokemon Champions&lt;/th&gt;&lt;/tr&gt;&lt;tr&gt;&lt;th&gt;Season&lt;/th&gt;&lt;th&gt;2027 Regulation Set M-C&lt;/th&gt;&lt;/tr&gt;&lt;/table&gt;<table class=\"infobox2\">&lt;thead&gt;&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Record&lt;/th&gt;&lt;th&gt;Country&lt;/th&gt;&lt;th&gt;Player&lt;/th&gt;&lt;th&gt;CP&lt;/th&gt;&lt;th&gt;Team&lt;/th&gt;&lt;th&gt;OTS&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;&lt;td&gt;15-1&lt;/td&gt;&lt;td&gt;JP&lt;/td&gt;&lt;td&gt;TrainerDelta&lt;/td&gt;&lt;td&gt;200&lt;/td&gt;&lt;td&gt;team&lt;/td&gt;&lt;td&gt;<a href=\"https://www.vrpastes.com/fakePaste1\">OTS&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;"
+        }
+      }
+    ]
+  },
+  "vrPastes": {
+    "fakePaste1": {
+      "title": "Sample Team 1",
+      "is_encrypted": false,
+      "teams": [
+        {"species": "Sneasler", "item": "Focus Sash", "ability": "Unburden", "nature": "Jolly", "moves": ["Close Combat", "Dire Claw", "Fake Out", "Protect"]},
+        {"species": "Incineroar", "item": "Sitrus Berry", "ability": "Intimidate", "nature": "Careful", "moves": ["Fake Out", "Flare Blitz", "Parting Shot", "Helping Hand"]},
+        {"species": "Gholdengo", "item": "Life Orb", "ability": "Good as Gold", "nature": "Modest", "moves": ["Make It Rain", "Shadow Ball", "Nasty Plot", "Protect"]},
+        {"species": "Rillaboom", "item": "Miracle Seed", "ability": "Grassy Surge", "nature": "Adamant", "moves": ["Grassy Glide", "Wood Hammer", "Fake Out", "U-turn"]},
+        {"species": "Garchomp", "item": "Garchompite", "ability": "Rough Skin", "nature": "Jolly", "moves": ["Earthquake", "Dragon Claw", "Stomping Tantrum", "Protect"]},
+        {"species": "Whimsicott", "item": "Mental Herb", "ability": "Prankster", "nature": "Timid", "moves": ["Tailwind", "Moonblast", "Encore", "Protect"]}
+      ]
+    },
+    "fakePaste2": {
+      "title": "Sample Team 2",
+      "is_encrypted": false,
+      "teams": [
+        {"species": "Kingambit", "item": "Black Glasses", "ability": "Defiant", "nature": "Adamant", "moves": ["Kowtow Cleave", "Sucker Punch", "Iron Head", "Protect"]},
+        {"species": "Charizard", "item": "Charizardite Y", "ability": "Blaze", "nature": "Timid", "moves": ["Heat Wave", "Solar Beam", "Overheat", "Protect"]},
+        {"species": "Indeedee-F", "item": "Psychic Seed", "ability": "Psychic Surge", "nature": "Bold", "moves": ["Follow Me", "Helping Hand", "Psychic", "Trick Room"]},
+        {"species": "Archaludon", "item": "Leftovers", "ability": "Stamina", "nature": "Modest", "moves": ["Electro Shot", "Flash Cannon", "Dragon Pulse", "Protect"]},
+        {"species": "Pelipper", "item": "Focus Sash", "ability": "Drizzle", "nature": "Modest", "moves": ["Weather Ball", "Hurricane", "Tailwind", "Protect"]},
+        {"species": "Basculegion", "item": "Choice Scarf", "ability": "Adaptability", "nature": "Adamant", "moves": ["Wave Crash", "Last Respects", "Aqua Jet", "Flip Turn"]}
+      ]
+    }
+  },
+  "sdSearch": [
+    {"id": "gen9championsvgc2026regmcbo3-100001", "formatid": "gen9championsvgc2026regmcbo3", "uploadtime": 1795350000, "players": ["PlayerOne", "PlayerTwo"]},
+    {"id": "gen9championsvgc2026regmcbo3-100002", "formatid": "gen9championsvgc2026regmcbo3", "uploadtime": 1795353600, "players": ["PlayerTwo", "PlayerThree"]},
+    {"id": "gen9championsvgc2026regmdbo3-999999", "formatid": "gen9championsvgc2026regmdbo3", "uploadtime": 1796550000, "players": ["PlayerFour", "PlayerFive"]}
+  ],
+  "sdReplays": {
+    "gen9championsvgc2026regmcbo3-100001": {
+      "id": "gen9championsvgc2026regmcbo3-100001",
+      "players": ["PlayerOne", "PlayerTwo"],
+      "log": "|player|p1|PlayerOne|1|\n|player|p2|PlayerTwo|2|\n|showteam|p1|Sneasler||FocusSash|Unburden|CloseCombat,DireClaw,FakeOut,Protect|Jolly|||||50|,,,,,]Incineroar||SitrusBerry|Intimidate|FakeOut,FlareBlitz,PartingShot,HelpingHand|Careful|||||50|,,,,,]Gholdengo||LifeOrb|GoodasGold|MakeItRain,ShadowBall,NastyPlot,Protect|Modest|||||50|,,,,,]Rillaboom||MiracleSeed|GrassySurge|GrassyGlide,WoodHammer,FakeOut,Uturn|Adamant|||||50|,,,,,]Garchomp||Garchompite|RoughSkin|Earthquake,DragonClaw,StompingTantrum,Protect|Jolly|||||50|,,,,,]Whimsicott||MentalHerb|Prankster|Tailwind,Moonblast,Encore,Protect|Timid|||||50|,,,,,|\n|showteam|p2|Kingambit||BlackGlasses|Defiant|KowtowCleave,SuckerPunch,IronHead,Protect|Adamant|||||50|,,,,,]Charizard||CharizarditeY|Blaze|HeatWave,SolarBeam,Overheat,Protect|Timid|||||50|,,,,,]Indeedee-F||PsychicSeed|PsychicSurge|FollowMe,HelpingHand,Psychic,TrickRoom|Bold|||||50|,,,,,]Archaludon||Leftovers|Stamina|ElectroShot,FlashCannon,DragonPulse,Protect|Modest|||||50|,,,,,]Pelipper||FocusSash|Drizzle|WeatherBall,Hurricane,Tailwind,Protect|Modest|||||50|,,,,,]Basculegion||ChoiceScarf|Adaptability|WaveCrash,LastRespects,AquaJet,FlipTurn|Adamant|||||50|,,,,,|\n|win|PlayerOne"
+    },
+    "gen9championsvgc2026regmcbo3-100002": {
+      "id": "gen9championsvgc2026regmcbo3-100002",
+      "players": ["PlayerTwo", "PlayerThree"],
+      "log": "|player|p1|PlayerTwo|2|\n|player|p2|PlayerThree|3|\n|showteam|p1|Kingambit||BlackGlasses|Defiant|KowtowCleave,SuckerPunch,IronHead,Protect|Adamant|||||50|,,,,,]Charizard||CharizarditeY|Blaze|HeatWave,SolarBeam,Overheat,Protect|Timid|||||50|,,,,,]Indeedee-F||PsychicSeed|PsychicSurge|FollowMe,HelpingHand,Psychic,TrickRoom|Bold|||||50|,,,,,]Archaludon||Leftovers|Stamina|ElectroShot,FlashCannon,DragonPulse,Protect|Modest|||||50|,,,,,]Pelipper||FocusSash|Drizzle|WeatherBall,Hurricane,Tailwind,Protect|Modest|||||50|,,,,,]Basculegion||ChoiceScarf|Adaptability|WaveCrash,LastRespects,AquaJet,FlipTurn|Adamant|||||50|,,,,,|\n|showteam|p2|Sneasler||FocusSash|Unburden|CloseCombat,DireClaw,FakeOut,Protect|Jolly|||||50|,,,,,]Incineroar||SitrusBerry|Intimidate|FakeOut,FlareBlitz,PartingShot,HelpingHand|Careful|||||50|,,,,,]Gholdengo||LifeOrb|GoodasGold|MakeItRain,ShadowBall,NastyPlot,Protect|Modest|||||50|,,,,,]Rillaboom||MiracleSeed|GrassySurge|GrassyGlide,WoodHammer,FakeOut,U-turn|Adamant|||||50|,,,,,]Garchomp||Garchompite|RoughSkin|Earthquake,DragonClaw,StompingTantrum,Protect|Jolly|||||50|,,,,,]Whimsicott||MentalHerb|Prankster|Tailwind,Moonblast,Encore,Protect|Timid|||||50|,,,,,|\n|win|PlayerTwo"
+    }
+  }
+}
+----- END experiments/fixtures/backup-sources.json -----
+
+----- BEGIN experiments/backup-sources-test.mjs -----
+// Fixture-based tests (no network, fake handles only) for Job 17 backup data sources.
+// S7: every check fails on base 39ce8205 (no sources/*.mjs or update.mjs wiring) and passes after patch.
+// Usage: node experiments/backup-sources-test.mjs
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {fileURLToPath} from 'node:url';
+import {primaryStatus, isDuplicateEvent, fetchBackupEvents} from '../sources/fallback.mjs';
+import {victoryRoadAdapter} from '../sources/victoryroad.mjs';
+import {showdownOtsAdapter} from '../sources/showdown-ots.mjs';
+
+const ROOT = fileURLToPath(new URL('../', import.meta.url));
+const FIX = JSON.parse(fs.readFileSync(ROOT + 'experiments/fixtures/backup-sources.json', 'utf8'));
+
+function mockFetch(url) {
+  const u = String(url);
+  const ok = body => Promise.resolve({ok: true, status: 200, json: async () => body, text: async () => JSON.stringify(body)});
+  if (u.includes('victoryroad.pro/wp-json/wp/v2/pages?search=')) return ok(FIX.vrPagesList);
+  const slugM = u.match(/victoryroad\.pro\/wp-json\/wp\/v2\/pages\?slug=([^&]+)/);
+  if (slugM) return ok(FIX.vrPagesBySlug[decodeURIComponent(slugM[1])] || []);
+  const pasteM = u.match(/vrpaste-backend\.vercel\.app\/api\/paste\/([^?]+)/);
+  if (pasteM) return ok(FIX.vrPastes[decodeURIComponent(pasteM[1])] || null);
+  if (u.includes('replay.pokemonshowdown.com/search.json')) return ok(FIX.sdSearch);
+  const repM = u.match(/replay\.pokemonshowdown\.com\/([^/]+)\.json$/);
+  if (repM) return ok(FIX.sdReplays[decodeURIComponent(repM[1])] || null);
+  return Promise.resolve({ok: false, status: 404, json: async () => ({})});
+}
+
+let passed = 0;
+async function test(name, fn) {
+  await fn();
+  console.log(`PASS  ${name}`);
+  passed++;
+}
+
+// 1. Primary down / empty / stale detection (matches md-watch.mjs 2-day alarm)
+await test('1. primaryStatus detects down, empty, stale (>=2d), and ok (<=1d)', async () => {
+  const idxFresh = {tournaments: {a: {d: '2026-11-23T12:00:00Z', f: 'M-C'}}};
+  const idxStale = {tournaments: {a: {d: '2026-11-21T12:00:00Z', f: 'M-C'}}};
+  assert.equal(primaryStatus({list: null, index: idxFresh, format: 'M-C', today: '2026-11-24'}).reason, 'down');
+  assert.equal(primaryStatus({list: [], index: idxFresh, format: 'M-C', today: '2026-11-24'}).reason, 'empty');
+  assert.equal(primaryStatus({list: [{id: 'x'}], index: idxStale, format: 'M-C', today: '2026-11-24'}).reason, 'stale');
+  assert.equal(primaryStatus({list: [{id: 'x'}], index: idxFresh, format: 'M-C', today: '2026-11-24'}).ok, true);
+});
+
+// 2. Victory Road adapter: exact update.mjs shapes + regulation filter
+await test('2. victoryRoadAdapter returns update.mjs shapes and excludes Reg M-D when active is M-C', async () => {
+  const list = await victoryRoadAdapter.listTournaments({format: 'M-C', fetchFn: mockFetch, season: 2027});
+  assert.equal(list.length, 2, 'should include the 2 M-C regionals and exclude M-D');
+  assert.ok(list.every(t => t.format === 'M-C' && t.id.startsWith('vr_')));
+  const sample = list.find(t => t.id === 'vr_2027-sample-city-regional');
+  assert.ok(sample);
+  const standings = await victoryRoadAdapter.getStandings(sample, {fetchFn: mockFetch});
+  assert.equal(standings.length, 2);
+  assert.equal(standings[0].placing, 1);
+  assert.deepEqual(standings[0].record, {wins: 14, losses: 2, ties: 0});
+  assert.equal(standings[0].decklist.length, 6);
+  assert.equal(standings[0].decklist[0].attacks.length, 4);
+  const pairings = await victoryRoadAdapter.getPairings(sample);
+  assert.deepEqual(pairings, []);
+});
+
+// 3. Showdown OTS adapter: daily buckets + full team sheets + pairings + regulation filter
+await test('3. showdownOtsAdapter builds daily buckets with full team sheets, pairings, and no reg mixing', async () => {
+  const list = await showdownOtsAdapter.listTournaments({format: 'M-C', sdFormat: 'gen9championsvgc2026regmc', fetchFn: mockFetch});
+  assert.equal(list.length, 1, 'should group the 2 M-C replays into 1 day and exclude the M-D replay');
+  const dayEv = list[0];
+  assert.ok(dayEv.id.startsWith('sd_gen9championsvgc2026regmcbo3_'));
+  assert.equal(dayEv.players, 3);
+  const standings = await showdownOtsAdapter.getStandings(dayEv, {fetchFn: mockFetch});
+  assert.equal(standings.length, 3);
+  assert.ok(standings.every(s => s.decklist.length === 6));
+  const p2 = standings.find(s => s.player === 'PlayerTwo');
+  assert.deepEqual(p2.record, {wins: 1, losses: 1, ties: 0});
+  const pairings = await showdownOtsAdapter.getPairings(dayEv);
+  assert.equal(pairings.length, 2);
+  assert.equal(pairings[0].winner, 'PlayerOne');
+  assert.equal(pairings[1].winner, 'PlayerTwo');
+});
+
+// 4. Deduplication without double counting (same Regional already in Limitless index)
+await test('4. isDuplicateEvent prevents double counting an event already indexed from Limitless', async () => {
+  const existingIndex = {
+    tournaments: {
+      '6abc1234': {d: '2026-11-15T00:00:00Z', p: 600, name: '2027 Harbor Town Regional Championships', f: 'M-C'},
+    },
+  };
+  assert.equal(isDuplicateEvent({id: 'vr_2027-already-indexed-regional', date: '2026-11-14T12:00:00.000Z', name: '2027 Harbor Town Pokémon Regional Championships'}, existingIndex), true);
+  assert.equal(isDuplicateEvent({id: 'vr_2027-sample-city-regional', date: '2026-11-21T12:00:00.000Z', name: '2027 Sample City Pokémon Regional Championships'}, existingIndex), false);
+});
+
+// 5. End-to-end fallback coordinator + regulation end-date enforcement (REG_END['M-C'])
+await test('5. fetchBackupEvents deduplicates, enforces REG_END, and merges both adapters cleanly', async () => {
+  const existingIndex = {
+    tournaments: {
+      '6abc1234': {d: '2026-11-15T00:00:00Z', p: 600, name: '2027 Harbor Town Regional Championships', f: 'M-C'},
+    },
+  };
+  const postEndAdapter = {
+    name: 'post-end-fake',
+    listTournaments: async () => [{id: 'fake_dec3', date: '2026-12-03T12:00:00Z', players: 100, name: 'Dec 3 Cup', format: 'M-C'}],
+    getStandings: async () => [{player: 'FakeP', placing: 1, record: {wins: 3, losses: 0}, decklist: []}],
+  };
+  const bk = await fetchBackupEvents({
+    format: 'M-C',
+    sdFormat: 'gen9championsvgc2026regmc',
+    index: existingIndex,
+    adapters: [victoryRoadAdapter, showdownOtsAdapter, postEndAdapter],
+    fetchFn: mockFetch,
+    log: () => {},
+  });
+  // Harbor Town deduplicated; Future City (M-D) excluded; Dec 3 Cup (past REG_END['M-C']) excluded
+  assert.equal(bk.tournaments.length, 2);
+  assert.ok(bk.tournaments.some(t => t.id === 'vr_2027-sample-city-regional'));
+  assert.ok(bk.tournaments.some(t => t.id.startsWith('sd_')));
+  assert.ok(!bk.tournaments.some(t => t.id === 'vr_2027-already-indexed-regional'));
+  assert.ok(!bk.tournaments.some(t => t.id === 'fake_dec3'));
+});
+
+// 6. update.mjs wiring: OFF by default, politeFetch used, pid() hashing preserved
+await test('6. update.mjs backup switch is OFF by default and adapters use politeFetch', async () => {
+  const upd = fs.readFileSync(ROOT + 'update.mjs', 'utf8');
+  assert.ok(upd.includes("USE_BACKUPS = process.env.BACKUP_SOURCES === '1'"));
+  assert.ok(upd.includes('fetchBackupEvents('));
+  assert.ok(upd.includes('pid(x.player'));
+  const vr = fs.readFileSync(ROOT + 'sources/victoryroad.mjs', 'utf8');
+  const sd = fs.readFileSync(ROOT + 'sources/showdown-ots.mjs', 'utf8');
+  assert.ok(vr.includes("from '../http.mjs'") && vr.includes('politeFetch'));
+  assert.ok(sd.includes("from '../http.mjs'") && sd.includes('politeFetch'));
+});
+
+console.log(`\n${passed}/6 passed (backup-sources-test)`);
+----- END experiments/backup-sources-test.mjs -----

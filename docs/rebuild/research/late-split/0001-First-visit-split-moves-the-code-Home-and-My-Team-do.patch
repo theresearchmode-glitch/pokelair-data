@@ -1,0 +1,324 @@
+From b5b778c1b4c48e0f5914404ff687d2d4c14ba6fd Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 18 Nov 2026 07:55:24 +0000
+Subject: [PATCH 1/4] First visit: --split moves the code Home and My Team
+ don't need at start into v2-late.js
+
+Change 3 of docs/rebuild/research/first-visit-nov18.md, behind --split only (the one-file build is unchanged).
+- parts-v2.json "late": 26 files (the Battle, Calc, Speed, Meta, Usage, Sets, Types, Practice, Test run, Guide, Compare,
+  Events, This Week, Track, share-image pages and their data) go in dist/v2-late.js.
+- app/split-late.mjs: esbuild does the scope work between the main closure and the late file.
+- app/src/v2/late.js: the loader. A late page shows the loading panel, then draws; taps that need late code wait for it;
+  the file is asked for when idle after today's numbers, or at the first tap or key.
+- Kept in the main script, because Home or My Team read them at start: archetypes.js (Home's Archetypes band,
+  V2.arData), box.js (V2.shareTxt in the Pokemon sheet), 31-box-data.js and winning.js (box and archetypes pages).
+- Behaviour harness copies v2-late.js and can serve over http (HTTP=1); Preview kit copies and publishes v2-late.js.
+
+Claude-Session: https://claude.ai/code/session_01YGeTVQdFPaKNkn33jSEpxs
+---
+ app/build.mjs                               | 21 ++++++--
+ app/parts-v2.json                           | 29 ++++++++++
+ app/split-late.mjs                          | 60 +++++++++++++++++++++
+ app/src/v2/late.js                          | 50 +++++++++++++++++
+ app/test/behaviour/.gitignore               |  1 +
+ app/test/behaviour/harness.mjs              | 16 +++++-
+ docs/rebuild/preview-kit/README.md          |  7 +--
+ docs/rebuild/preview-kit/rebuild-preview.sh |  5 +-
+ 8 files changed, 178 insertions(+), 11 deletions(-)
+ create mode 100644 app/split-late.mjs
+ create mode 100644 app/src/v2/late.js
+
+diff --git a/app/build.mjs b/app/build.mjs
+index 39ac511c..a1b909e1 100644
+--- a/app/build.mjs
++++ b/app/build.mjs
+@@ -65,7 +65,7 @@ if (process.argv.includes('--v2')) {
+      an old cached file. Without --split the page is one file, as the tests (file://) and CI read it. */
+   const SPLIT = process.argv.includes('--split'), hash = t => crypto.createHash('sha256').update(t).digest('hex').slice(0, 12);
+   let previewJson = null;
+-  for (const f of ['dist/v2.js', 'dist/preview.json']) fs.rmSync(dir + f, {force: true}); /* no stale split files beside a one-file build */
++  for (const f of ['dist/v2.js', 'dist/v2-late.js', 'dist/preview.json']) fs.rmSync(dir + f, {force: true}); /* no stale split files beside a one-file build */
+   let prevTag = '';
+   if (process.argv.includes('--preview-data')) { const o = f => { try { return JSON.parse(fs.readFileSync(dir + '../out/' + f, 'utf8')); } catch (e) { return null; } }, L = o('limitless.json') || {};
+     const D = {'meta/results': L.results, 'meta/perf': perfDoc(L, o('perf.json')), /* Nov 15: all of out/perf.json as the morning refresh writes it (ratings-snapshot.mjs); with adj alone the page fell back to its built-in Nov 1 ratings */ 'meta/doubles_tour': o('meta_tour.json'), 'meta/teams': o('teams.json'), 'meta/calendar': o('calendar.json'), 'meta/weekly': o('weekly.json'), 'meta/model': o('model.json'), 'meta/doubles': o('meta_ladder.json'), 'meta/events': o('events.json'), 'meta/track': o('track.json'), 'meta/history': o('history.json'), 'meta/practice': o('practice.json'), 'meta/doubles_ingame': o('meta_ingame.json')};
+@@ -96,15 +96,28 @@ if (process.argv.includes('--v2')) {
+   /* code review B-I1 (Nov 17): the scripts ship without comments and spare whitespace (esbuild, whitespace only: no renaming, so
+      nothing that looks a name up changes). About 300 KB of comments came along before. --keep-comments skips it; without esbuild
+      installed the page ships as before. */
+-  let jsOut = js; if (!process.argv.includes('--keep-comments')) { let esb = null; try { esb = (await import('node:module')).createRequire(import.meta.url)('esbuild'); } catch (e) { console.log('v2: esbuild not installed, scripts ship unminified'); }
++  /* --split, part 3 (Nov 18, first-visit change 3): the files in parts-v2.json "late" go in dist/v2-late.js, loaded after the first screen
++     (app/split-late.mjs does the scope work, src/v2/late.js is the loader). Without --split nothing here runs: the one-file page is as before. */
++  let SJ = null; if (SPLIT && (P.late || []).length) { let esb; try { esb = (await import('node:module')).createRequire(import.meta.url)('esbuild'); } catch (e) { throw new Error('--split with late files needs esbuild'); }
++    const LATE = new Set(P.late), miss = P.late.filter(f => !L.includes(f) && !P.scripts.includes(f)); if (miss.length) throw new Error('parts-v2.json late lists files that are not in logic or scripts: ' + miss.join(', '));
++    if (LATE.has(L[0]) || P.late.some(f => /(shell|bridge|test-hook|late)\.js$/.test(f))) throw new Error('parts-v2.json late: 00-main.js, bridge.js, shell.js and test-hook.js stay in the main script');
++    const mL = L.filter(f => !LATE.has(f)), mS = P.scripts.filter(f => !LATE.has(f) && !(PUBLIC && f.endsWith('test-hook.js'))), lateFiles = [...L.filter(f => LATE.has(f)), ...P.scripts.filter(f => LATE.has(f))];
++    const lateBody = lateFiles.map(rd).join('\n'), mainBody = mL.map(rd).join('\n') + '\n' + mS.map(rd).join('\n') + '\nV2.draw();';
++    const {splitLate} = await import('./split-late.mjs'), first = splitLate(esb, {mainBody, lateBody, lateSrcs: lateFiles.map(rd), mainSrcs: [...mL, ...mS].map(rd), url: ''});
++    const url = 'v2-late.js?v=' + hash(first.late), table = 'V2.LATE=' + JSON.stringify({url, pages: first.info.pages, props: first.info.props, clicks: first.info.clicks}) + ';';
++    const m0 = rd(mL[0]); if (!m0.startsWith('(function(){\n')) throw new Error('00-main.js must open the closure on its first line');
++    const scr = mS.map(f => rd(f) + (f.endsWith('src/v2/shell.js') ? '\n' + table + '\n' + rd('src/v2/late.js') : '')).join('\n');
++    const jsS = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\n` + '(function(){\n' + first.lx + '\n' + m0.slice(13) + '\n' + mL.slice(1).map(rd).join('\n') + '\n' + scr + '\n' + first.scope + '\nV2.draw();\n})();';
++    SJ = {late: first.late, main: esb.transformSync(jsS, {loader: 'js', minifyWhitespace: !process.argv.includes('--keep-comments'), charset: 'utf8', legalComments: 'none', define: first.mainDefine}).code, info: first.info, n: lateFiles.length}; }
++  let jsOut = js; if (SJ) jsOut = SJ.main; else if (!process.argv.includes('--keep-comments')) { let esb = null; try { esb = (await import('node:module')).createRequire(import.meta.url)('esbuild'); } catch (e) { console.log('v2: esbuild not installed, scripts ship unminified'); }
+     if (esb) jsOut = esb.transformSync(js, {loader: 'js', minifyWhitespace: true, charset: 'utf8', legalComments: 'none'}).code; }
+   /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words) */
+   const v2Fail = `window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}`;
+   const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}" onerror="${v2Fail.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"></script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
+   const page = head.replace('<meta charset="utf-8">', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + mainTag + `</body></html>\n`;
+   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
+-  if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);
+-    console.log(`v2 --split: dist/v2.js ${(jsOut.length / 1024).toFixed(0)} KB${previewJson ? `, dist/preview.json ${(previewJson.length / 1024).toFixed(0)} KB` : ''} (publish them beside the page)`); }
++  if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson); if (SJ) fs.writeFileSync(dir + 'dist/v2-late.js', SJ.late);
++    console.log(`v2 --split: dist/v2.js ${(jsOut.length / 1024).toFixed(0)} KB${SJ ? `, dist/v2-late.js ${(SJ.late.length / 1024).toFixed(0)} KB (${SJ.n} files; ${SJ.info.used.length} of their names read by the main script, ${SJ.info.props.length} V2 names)` : ''}${previewJson ? `, dist/preview.json ${(previewJson.length / 1024).toFixed(0)} KB` : ''} (publish them beside the page)`); }
+   /* Sim, Nov 16 (B-I3, option B): a static first screen. A phone used to show a blank page for about 2 s while the script ran (first paint
+      2,016 -> 628 ms measured at 4x CPU with the header already in the HTML). The build opens the page it just made, copies the header and
+      the phone bar the script draws (current-page marks removed: the right one is set by the first draw), and puts them in #app, so the
+diff --git a/app/parts-v2.json b/app/parts-v2.json
+index e0d93028..eeca11bc 100644
+--- a/app/parts-v2.json
++++ b/app/parts-v2.json
+@@ -129,5 +129,34 @@
+     "src/app/55-threats.js",
+     "src/app/58-strength.js",
+     "src/app/59-matchup-data.js"
++  ],
++  "_late": "--split builds only (Nov 18, first-visit change 3): these files leave the main script and load after the first screen (dist/v2-late.js; app/split-late.mjs, src/v2/late.js). The one-file build ignores this list.",
++  "late": [
++    "src/app/21-sets.js",
++    "src/app/41-replay-data.js",
++    "src/app/33-move-edits.js",
++    "src/app/38-gauntlet-data.js",
++    "src/app/63-practice-data.js",
++    "src/app/63-weekly-data.js",
++    "src/app/20-types-data.js",
++    "src/v2/pages/guide.js",
++    "src/v2/pages/compare.js",
++    "src/v2/pages/compare-faceoff.js",
++    "src/v2/pages/events.js",
++    "src/v2/pages/thisweek.js",
++    "src/v2/pages/track.js",
++    "src/v2/pages/share-slab.js",
++    "src/v2/pages/share-tape.js",
++    "src/v2/pages/battle.js",
++    "src/v2/pages/battle-pbp.js",
++    "src/v2/pages/speed.js",
++    "src/v2/pages/calc.js",
++    "src/v2/pages/types.js",
++    "src/v2/pages/practice.js",
++    "src/v2/pages/gauntlet.js",
++    "src/v2/pages/test-piles.js",
++    "src/v2/pages/meta.js",
++    "src/v2/pages/usage.js",
++    "src/v2/pages/sets.js"
+   ]
+ }
+diff --git a/app/split-late.mjs b/app/split-late.mjs
+new file mode 100644
+index 00000000..c7b6e0d6
+--- /dev/null
++++ b/app/split-late.mjs
+@@ -0,0 +1,60 @@
++// --split, part 3 (Nov 18, first-visit speed change 3; docs/rebuild/research/first-visit-nov18.md): the files listed in parts-v2.json
++// "late" leave the main script and go in dist/v2-late.js, loaded after the first screen (src/v2/late.js is the loader).
++// The site's code is one closure, so the late files can't see its names by themselves. esbuild (already used by the build) does the
++// scope work, so nothing is guessed from the text:
++//  - late code -> main: each main top-level name the late code uses is rewritten to __m.<name> (esbuild `define` replaces only free
++//    names, never a local of the same name). __m is V2.lateScope(), made inside the closure: plain values for functions and consts
++//    nobody reassigns, live getters and setters for everything else.
++//  - main -> late: each late top-level name the main code uses is rewritten to __LX.<name>; __LX reads it from the late code's
++//    exports, loading the file first if it isn't in yet (V2.lateNow). The checks expect this never to happen at start on Home or My Team.
++//  - V2.x set only by late files: src/v2/late.js puts a stand-in on V2 that loads the file first when read (V2.LATE.props).
++// Only used with --split; the one-file build never reads this module.
++const RES = new Set(('break case catch class const continue debugger default delete do else export extends false finally for function if import in instanceof new null ' +
++  'return super switch this throw true try typeof var void while with yield let static enum await implements package protected interface private public arguments eval ' +
++  'undefined NaN Infinity async of get set').split(' '));
++const toks = s => [...new Set(s.match(/[A-Za-z_$][\w$]*/g))].filter(t => !RES.has(t) && !t.startsWith('__FREE_'));
++const def = names => Object.fromEntries(names.map(n => [n, '__FREE_' + n]));
++// names among `names` that are bound at the top of `body` (a function body that is closed by `tail`): a probe array at its end
++function topBound(esb, body, names, tail) {
++  if (!names.length) return new Set();
++  const out = esb.transformSync(body + '\n;__PROBE__=[' + names.join(',') + '];\n' + tail, {define: def(names), logLevel: 'silent'}).code, i = out.lastIndexOf('__PROBE__ = [');
++  const arr = out.slice(i + 13, out.indexOf(']', i)).split(',').map(s => s.trim());
++  if (i < 0 || arr.length !== names.length) throw new Error('split-late: probe failed'); return new Set(names.filter((n, k) => !arr[k].startsWith('__FREE_'))); }
++function freeIn(esb, code, names) { if (!names.length) return new Set(); const out = esb.transformSync(code, {define: def(names), logLevel: 'silent'}).code;
++  return new Set([...out.matchAll(/__FREE_([A-Za-z_$][\w$]*)/g)].map(m => m[1])); }
++const reEsc = s => s.replace(/\$/g, '\\$');
++/* mainBody: the closure's code from "(function(){" up to (not including) the final "})();"; lateBody: the late files joined.
++   Returns what the build needs: the late file's text, the defines for the main script, and the code to add inside the closure. */
++export function splitLate(esb, {mainBody, lateBody, lateSrcs, mainSrcs, url}) {
++  // late -> main
++  const lateFree = freeIn(esb, '(function(){\n' + lateBody + '\n})();', toks(lateBody));
++  const mainTop = [...topBound(esb, mainBody, [...lateFree], '})();')].sort();
++  const allSrc = mainSrcs.join('\n') + '\n' + lateSrcs.join('\n');
++  const fixed = n => { const e = reEsc(n), decl = mainSrcs.some(s => new RegExp('^(?:async\\s+)?function\\s+' + e + '\\s*\\(', 'm').test(s) || new RegExp('^const\\s+' + e + '\\s*=', 'm').test(s));
++    if (!decl) return false; /* a function nobody reassigns, or a const: a plain value is the same thing */
++    return !new RegExp('(?:^|[^.\\w$])' + e + '\\s*(?:[-+*/%&|^]|\\*\\*|<<|>>>?|&&|\\|\\||\\?\\?)?=(?!=)|(?:\\+\\+|--)\\s*' + e + '\\b|(?:^|[^.\\w$])' + e + '\\s*(?:\\+\\+|--)', 'm').test(allSrc.replace(new RegExp('^(?:async\\s+)?function\\s+' + e + '\\s*\\(|^const\\s+' + e + '\\s*=', 'gm'), '')); };
++  const scope = 'V2.lateScope=()=>({' + mainTop.map(n => fixed(n) ? n : `get ${n}(){return ${n}},set ${n}(v){${n}=v}`).join(',') + '});';
++  // main -> late
++  const lateTop = [...topBound(esb, '(function(){\n' + lateBody, toks(lateBody), '})();')];
++  const used = [...freeIn(esb, mainBody + '\n})();', lateTop)].sort();
++  const mainDefine = Object.fromEntries(used.map(n => [n, '__LX.' + n]));
++  /* __LXG: before the main script has finished (V2.lateScope is made last) the late code can't run at all; that would be a file listed as
++     late that the start needs, so it is said loudly (console error) and the checks fail on it; the fix is to keep that file in the main script */
++  const lx = 'const __LX={' + used.map(n => `get ${n}(){return __LXG('${n}').${n}},set ${n}(v){__LXG('${n}').${n}=v}`).join(',') + '};' +
++    'function __LXG(n){const V=window.V2;if(!V||!V.lateScope){console.error("late code needed before the main script finished: "+n);(window.__NP_LATE_EARLY=window.__NP_LATE_EARLY||[]).push(n);return {};}return V.lateNow();}';
++  const exp = 'return {' + used.map(n => `get ${n}(){return ${n}},set ${n}(v){${n}=v}`).join(',') + '};';
++  // the late file: one function the loader calls with V2.lateScope()
++  const lateDefine = Object.fromEntries(mainTop.map(n => [n, '__m.' + n]));
++  const late = esb.transformSync('window.__NP_LATE=function(__m){\n' + lateBody + '\n' + exp + '\n};', {define: lateDefine, minifyWhitespace: true, charset: 'utf8', legalComments: 'none', logLevel: 'silent'}).code;
++  // V2 names only the late files set, and the late pages with their menu place
++  const setIn = s => new Set([...s.matchAll(/V2\.([A-Za-z_$][\w$]*)\s*=(?!=)/g)].map(m => m[1]));
++  const mainSet = setIn(mainSrcs.join('\n')), props = [...setIn(lateBody)].filter(k => !mainSet.has(k) && k !== 'pages').sort();
++  const pages = {}; for (const m of lateBody.matchAll(/V2\.pages(?:\.([\w$]+)|\[['"]([\w$-]+)['"]\])\s*=\s*(\{\s*place:\s*'([^']*)')?/g)) pages[m[1] || m[2]] = m[4] || '';
++  // the data-* attributes only the late files' click code looks for: a tap on one before the file lands waits for it, then happens
++  const sel = s => new Set([...s.matchAll(/(?:closest|matches)\(\s*['"`]([^'"`]*)['"`]/g)].flatMap(m => [...m[1].matchAll(/\[(data-[\w-]+)/g)].map(x => x[1])));
++  const mainSrc = mainSrcs.join('\n'), clicks = new Set([...sel(lateBody)].filter(a => !new RegExp('\\[' + a + '[\\]=~^$*|]').test(mainSrc)));
++  /* and the main script's own click code that reaches late code (Home's "Prep for this team" sets Battle's opponent, V2.btSetOpp): its
++     taps wait for the file too, instead of loading it synchronously. A statement is a line starting at column 0 plus its indented lines. */
++  const needs = new RegExp('V2\\.(?:' + props.map(reEsc).join('|') + ')\\b' + (used.length ? '|(?:^|[^.\\w$])(?:' + used.map(reEsc).join('|') + ')\\b' : ''));
++  for (const s of mainSrcs) for (const st of s.split(/\n(?=\S)/)) if (/addEventListener\(\s*['"]click['"]/.test(st) && props.length && needs.test(st)) for (const a of sel(st)) clicks.add(a);
++  return {late, mainDefine, lx, scope, info: {mainTop: mainTop.length, fixed: mainTop.filter(fixed).length, used, props, pages, clicks: [...clicks].sort()}}; }
+diff --git a/app/src/v2/late.js b/app/src/v2/late.js
+new file mode 100644
+index 00000000..99306f5c
+--- /dev/null
++++ b/app/src/v2/late.js
+@@ -0,0 +1,50 @@
++// ---------- Late code (--split builds only; first-visit speed change 3, Nov 18; docs/rebuild/research/first-visit-nov18.md) ----------
++// The build moves the files Home and My Team don't need at start (parts-v2.json "late") into v2-late.js, loaded after the first
++// screen. This file is added by app/build.mjs with --split only (never in the one-file build the tests and CI read); the build puts
++// V2.LATE in front of it: {url, pages: {route: place}, props: [V2 names the late files set], clicks: [data-* only late code handles]}.
++// - A page whose code is late is a small stand-in until the file arrives: it shows the site's loading panel, asks for the file, and
++//   the page draws when it lands (deep links like #calc or #pokemon=... on a cold load go the same way).
++// - Anything else on the site that needs late code before it has arrived (a V2.x the late files set, or one of their names; see
++//   app/split-late.mjs) loads the file at once, synchronously, so it is never missing. V2.lateSync counts those (the checks expect 0
++//   at start on Home and My Team).
++// - Otherwise the file is asked for when the page is idle after today's numbers are drawn, or at the first tap or key press.
++V2.lateState = 0; /* 0 not asked, 1 loading, 2 running, 3 ready, 4 failed */ V2.lateSync = 0; V2.lateExp = null;
++V2.lateRun = () => { if (V2.lateState >= 2 && V2.lateState !== 4) return; const f = window.__NP_LATE; if (typeof f !== 'function') throw new Error('v2-late.js did not define its code');
++  V2.lateState = 2; try { V2.lateExp = f(V2.lateScope()); V2.lateState = 3; } catch (e) { V2.lateState = 4; throw e; } };
++V2.lateDone = () => { if (V2._lateWas) { V2._lateWas = 0; V2.redraw(); } }; /* a stand-in was on screen: draw the page (or say it failed) */
++V2.loadLate = () => { if (V2._lateP) return V2._lateP;
++  V2._lateP = new Promise((ok, no) => { if (V2.lateState === 3) { ok(); return; }
++    if (typeof window.__NP_LATE === 'function') { try { V2.lateRun(); ok(); } catch (e) { console.error(e); no(e); } V2.lateDone(); return; } /* already fetched by V2.lateNow */
++    V2.lateState = 1; const s = document.createElement('script'); s.src = V2.LATE.url; s.async = true;
++    s.onload = () => { try { V2.lateRun(); ok(); } catch (e) { console.error(e); no(e); } V2.lateDone(); };
++    s.onerror = () => { if (V2.lateState < 2) { V2.lateState = 4; V2.lateDone(); } no(new Error('v2-late.js could not be loaded')); };
++    document.head.appendChild(s); });
++  V2._lateP.catch(() => {}); return V2._lateP; };
++// the synchronous way in, for code that needs a late name right now (never at start on Home or My Team: checked)
++V2.lateNow = () => { if (V2.lateState === 3 || V2.lateState === 2) return V2.lateExp || {};
++  if (!V2.lateScope) { console.error('late code needed before the main script finished'); (window.__NP_LATE_EARLY = window.__NP_LATE_EARLY || []).push('V2'); return {}; } /* a late file the start needs: keep it in the main script */
++  V2.lateSync++; try { (V2.lateSyncWhy = V2.lateSyncWhy || []).push(String(new Error('late code needed early').stack).split('\n').slice(2, 6).join(' | ')); } catch (e) {}
++  try { if (typeof window.__NP_LATE !== 'function') { const x = new XMLHttpRequest(); x.open('GET', V2.LATE.url, false); x.send();
++    if (x.status && x.status !== 200) throw new Error('v2-late.js: ' + x.status); const s = document.createElement('script'); s.text = x.responseText; document.head.appendChild(s); }
++    V2.lateRun(); } catch (e) { console.error(e); } return V2.lateExp || {}; };
++// the V2 names the late files set: reading one before the file is in loads it first; the late file's own assignment replaces the stand-in
++for (const k of V2.LATE.props) if (!(k in V2)) Object.defineProperty(V2, k, {configurable: true, enumerable: true,
++  get() { if (V2.lateState !== 2) V2.lateNow(); return Object.getOwnPropertyDescriptor(V2, k).get ? undefined : V2[k]; },
++  set(v) { Object.defineProperty(V2, k, {value: v, writable: true, configurable: true, enumerable: true}); }});
++// a stand-in for each late page, with the same place in the menus; the loading panel until the code arrives, then the page itself
++V2.lateFail = () => '<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn’t load.</h1><p class="tm-sub">Part of the site couldn’t be fetched. Check the connection and reload to try again; the rest of the site still works.</p></div></section>';
++for (const [k, place] of Object.entries(V2.LATE.pages)) V2.pages[k] = {place: place || undefined, lateStub: 1, draw() { if (V2.lateState === 4) return V2.lateFail(); V2._lateWas = 1; V2.loadLate(); return V2.loadingHtml(); }};
++{ const dn = V2.dataNote; V2.dataNote = () => { const P = V2.pages[V2.route()]; return P && P.lateStub ? '' : dn(); }; } /* the stand-in is the loading panel alone */
++// a tap that needs the late code (V2.LATE.clicks: something only the late code handles, e.g. an event's placings button on the News
++// page, or main code that reaches late code, e.g. Home's Prep for Battle) before it has arrived: held, and made again on the same
++// button once the code is in, so it is never lost and never waits on a synchronous load
++if (V2.LATE.clicks.length) { const sel = V2.LATE.clicks.map(a => '[' + a + ']').join(',');
++  document.addEventListener('click', e => { if (V2.lateState === 3) return; const t = e.target && e.target.closest && e.target.closest(sel); if (!t) return;
++    e.preventDefault(); e.stopImmediatePropagation(); V2.loadLate().then(() => { if (t.isConnected) { V2._tapAt = 0; t.click(); } }, () => {}); }, true); } /* _tapAt: the double-tap guard (shell.js) must not take the replay for a second tap */
++// when to ask for it: idle after today's numbers are drawn, or the first tap or key press, whichever comes first
++{ const go = () => { if (!V2._lateP) V2.loadLate(); }, idle = () => typeof requestIdleCallback === 'function' ? requestIdleCallback(go, {timeout: 2000}) : setTimeout(go, 200);
++  const wait = () => { if (V2._lateP) return; if (V2._dataOk) idle(); else setTimeout(wait, 250); };
++  /* a deep link to a late page (#calc, #speed...): its stand-in's first draw asks for the file. (Not asked here: this runs before Home
++     is registered, so V2.route() would name the first page, a late one, and Home would fetch the file during its start.) */
++  if (document.readyState === 'complete') wait(); else addEventListener('load', wait, {once: true});
++  for (const ev of ['pointerdown', 'keydown', 'touchstart']) addEventListener(ev, go, {once: true, passive: true, capture: true}); }
+diff --git a/app/test/behaviour/.gitignore b/app/test/behaviour/.gitignore
+index 29e23ae2..6f3dff63 100644
+--- a/app/test/behaviour/.gitignore
++++ b/app/test/behaviour/.gitignore
+@@ -2,3 +2,4 @@ _page-*.html
+ _*.mjs
+ results.json
+ v2.js
++v2-late.js
+diff --git a/app/test/behaviour/harness.mjs b/app/test/behaviour/harness.mjs
+index ea132366..96bb4fe4 100644
+--- a/app/test/behaviour/harness.mjs
++++ b/app/test/behaviour/harness.mjs
+@@ -44,9 +44,21 @@ function page() { if (built) return PAGE; let h = fs.readFileSync(PAGE_SRC, 'utf
+   // the new site reads its self-hosted fonts from fonts/ beside the page (Nov 12): copy them next to this test copy too
+   const fd = PAGE_SRC.replace(/[^\/\\]*$/, '') + 'fonts'; if (fs.existsSync(fd)) { const to = ROOT + 'app/test/behaviour/fonts'; fs.mkdirSync(to, {recursive: true}); for (const f of fs.readdirSync(fd)) if (f.endsWith('.woff2')) fs.copyFileSync(fd + '/' + f, to + '/' + f); }
+   /* a --split build (Nov 18) loads its main script from v2.js beside the page: copy it next to this test copy too */
+-  const js = PAGE_SRC.replace(/[^\/\\]*$/, '') + 'v2.js'; if (/<script src="v2\.js/.test(h) && fs.existsSync(js)) fs.copyFileSync(js, ROOT + 'app/test/behaviour/v2.js');
++  /* and (Nov 18, first-visit change 3) its late code, v2-late.js, which the page loads after the first screen */
++  for (const f of ['v2.js', 'v2-late.js']) { const js = PAGE_SRC.replace(/[^\/\\]*$/, '') + f; if (/<script src="v2\.js/.test(h) && fs.existsSync(js)) fs.copyFileSync(js, ROOT + 'app/test/behaviour/' + f); }
+   built = true; return PAGE; }
+ process.on('exit', () => { try { fs.unlinkSync(PAGE); } catch (e) {} });
++/* HTTP=1 (Nov 18): open the test copy from http://127.0.0.1 instead of file://, as a hosted page is (a --split build's late code then
++   loads the way it does on the Preview). A small static server for the repo folder, started once; it doesn't keep the run alive. */
++let HTTP_BASE = null;
++async function pageUrl() { const p = page(); if (!process.env.HTTP) return 'file://' + p; const path = await import('node:path');
++  if (!HTTP_BASE) { const http = await import('node:http'), root = path.resolve(ROOT);
++    const TY = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.css': 'text/css'};
++    const srv = http.createServer((q, r) => { const f = path.join(root, decodeURIComponent(q.url.split('?')[0]));
++      if (!f.startsWith(root) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); r.end(); return; }
++      r.writeHead(200, {'content-type': TY[path.extname(f)] || 'application/octet-stream', 'cache-control': 'no-store'}); r.end(fs.readFileSync(f)); });
++    await new Promise(ok => srv.listen(0, '127.0.0.1', ok)); srv.unref(); HTTP_BASE = 'http://127.0.0.1:' + srv.address().port + '/'; }
++  return HTTP_BASE + path.relative(path.resolve(ROOT), p).split('\\').join('/'); }
+ 
+ const AD_NAME = process.env.ADAPTER || 'current';
+ export const ADAPTER = (await import(`./adapters/${AD_NAME}.mjs`)).default;
+@@ -113,7 +125,7 @@ export async function open(o = {}) {
+       if (n === 'user') return o.account === false ? null : {id: async () => 'u_test', isOwner: () => true, canEdit: () => true, can: () => true, me: async () => ({id: 'u_test'})};
+       return null; }};
+   }, [DOCS, state, {fresh: !!o.fresh, mode: o.mode, account: o.account, stored: o.stored}]);
+-  await pg.goto('file://' + page() + (o.hash || ''));
++  await pg.goto(await pageUrl() + (o.hash || ''));
+   await pg.waitForTimeout(o.wait ?? 1500);
+   /* review C-I7 (Nov 17): then wait for the page itself, not only the clock: fonts loaded, the first draw done (new site) and the
+      main thread quiet for two idle turns (it waits longer on a busy machine, where a fixed wait was too short; at most 10 s) */
+diff --git a/docs/rebuild/preview-kit/README.md b/docs/rebuild/preview-kit/README.md
+index de4bc504..ac0e2f88 100644
+--- a/docs/rebuild/preview-kit/README.md
++++ b/docs/rebuild/preview-kit/README.md
+@@ -21,10 +21,11 @@ The mock-up pages are built from `docs/rebuild/mocks/*.tpl.html`.
+ 1. `S=<scratch> PREVIEW=1 bash docs/rebuild/preview-kit/rebuild-preview.sh` (prints COPY-OK).
+ 2. Copy `index.html` into `$S/redesign/`.
+ 3. Artifact publish: file_path `$S/redesign/index.html`, url the artifact above,
+-   files `{"foundation.html": "$S/redesign/foundation.html", "v2.js": "$S/redesign/v2.js", "preview.json": "$S/redesign/preview.json"}`
+-   (Nov 18: the Preview build is `--split`; without v2.js the page never draws, without preview.json it has no data) plus the 7 font files, each as `"fonts/<name>.woff2":
++   files `{"foundation.html": "$S/redesign/foundation.html", "v2.js": "$S/redesign/v2.js", "v2-late.js": "$S/redesign/v2-late.js", "preview.json": "$S/redesign/preview.json"}`
++   (Nov 18: the Preview build is `--split`; without v2.js the page never draws, without preview.json it has no data, without v2-late.js
++   the pages whose code loads after the first screen (Meta, Battle, Calc, Pokémon pages...) say "This page didn't load") plus the 7 font files, each as `"fonts/<name>.woff2":
+    "$S/redesign/fonts/<name>.woff2"` (Nov 12: the fonts are hosted by NastyPlot itself; the page has no Google Fonts link).
+-4. Artifact list, scope files: must show 394 files (Nov 18: plus v2.js and preview.json, and the later additions in the header above): 346 `v2art/*.webp` and 7 `fonts/*.woff2`. Tell Sim the version number and
++4. Artifact list, scope files: must show 394 files (Nov 18: plus v2.js and preview.json, plus v2-late.js (one more file), and the later additions in the header above): 346 `v2art/*.webp` and 7 `fonts/*.woff2`. Tell Sim the version number and
+    the file count. (The first publish with the fonts adds them; later publishes keep them unless they change.)
+    The list must also show `v2.js` and `preview.json` (review Nov 18, C5/C6), each the same size as the copy in `$S/redesign/`: without
+    v2.js the page shows "This page didn't load."; without preview.json it shows "This Preview couldn't read today's data" and the
+diff --git a/docs/rebuild/preview-kit/rebuild-preview.sh b/docs/rebuild/preview-kit/rebuild-preview.sh
+index ae819ed9..2ee96a17 100755
+--- a/docs/rebuild/preview-kit/rebuild-preview.sh
++++ b/docs/rebuild/preview-kit/rebuild-preview.sh
+@@ -4,13 +4,14 @@
+ #   S        a scratch folder (default /tmp/np-preview). The Preview page lands at $S/redesign/foundation.html
+ #   PREVIEW  set to 1 to also make the Preview build (--art=v2art/ --preview-data: player names replaced by "Player N")
+ #            Nov 18 (first-visit speed): built with --split, so $S/redesign/ also holds v2.js (the main script) and preview.json (the
+-#            data). Publish both beside foundation.html, or the Preview shows no page / no data. The privacy check reads preview.json.
++#            data), and (change 3) v2-late.js, the code loaded after the first screen. Publish all three beside foundation.html, or the
++#            Preview shows no page / no data / no late pages. The privacy check reads preview.json.
+ # Saved from the Nov 11 chat's scratch script extract/rebuild-mine.sh (same steps, folder made a variable).
+ # Takes up to ~15 minutes; run it with a 900 s timeout or in the background.
+ REPO="$(cd "$(dirname "$0")/../../.." && pwd)"; S="${S:-/tmp/np-preview}"; mkdir -p "$S/redesign"; cd "$REPO"
+ rm -rf "$S/bc3" && mkdir -p "$S/bc3/app" && (cd app && tar cf - --exclude=./dist --exclude=./node_modules .) | (cd "$S/bc3/app" && tar xf -) && for d in out node_modules docs; do ln -s "$REPO/$d" "$S/bc3/$d"; done
+ (cd "$S/bc3" && node app/build.mjs --v2 2>&1 | tail -2) || exit 1
+-if [ -n "$PREVIEW" ]; then (cd "$S/bc3" && cp app/dist/v2.html app/dist/v2-plain.html && node app/build.mjs --v2 --art=v2art/ --preview-data --one-art-size --split 2>&1 | tail -1 && cp app/dist/v2.html "$S/redesign/foundation.html" && cp app/dist/v2.js app/dist/preview.json "$S/redesign/" && node app/test/no-names.mjs "$S/redesign/foundation.html" | tail -1 && mv app/dist/v2-plain.html app/dist/v2.html); fi
++if [ -n "$PREVIEW" ]; then (cd "$S/bc3" && cp app/dist/v2.html app/dist/v2-plain.html && node app/build.mjs --v2 --art=v2art/ --preview-data --one-art-size --split 2>&1 | tail -1 && cp app/dist/v2.html "$S/redesign/foundation.html" && cp app/dist/v2.js app/dist/v2-late.js app/dist/preview.json "$S/redesign/" && node app/test/no-names.mjs "$S/redesign/foundation.html" | tail -1 && mv app/dist/v2-plain.html app/dist/v2.html); fi
+ # fonts (Nov 12): NastyPlot hosts its fonts itself; the page reads them from fonts/ beside it, so they are copied next to foundation.html
+ mkdir -p "$S/redesign/fonts" && cp "$REPO"/app/src/v2/fonts/*.woff2 "$S/redesign/fonts/" && echo "fonts: $(ls "$S/redesign/fonts" | wc -l) files"
+ echo COPY-OK
+-- 
+2.43.0
+

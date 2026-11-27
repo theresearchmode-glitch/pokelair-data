@@ -57,6 +57,13 @@ jobs:
       - run: node weekly.mjs || node skip.mjs "weekly digest skipped"
       # upcoming official VGC events from Victory Road's season calendar (out/calendar.json; keeps yesterday's file on failure)
       - run: node calendar.mjs || node skip.mjs "calendar skipped"
+      # The Champions Dispatch and Mystery Gifts (Nov 18, switch blocker 5): new headlines from the official in-game news feed go into
+      # app/src/data/post.js and out/post.json, the page's daily document meta/post, so News updates without a republish (headline, date,
+      # type and link only; gifts are only suggested, in out/post-suggest.json). A feed that fails or changed shape keeps yesterday's list.
+      - run: node post-news.mjs || node skip.mjs "news feed skipped (yesterday's list kept)"
+      # then the list is checked (every link https, dates parse, codes cited; out/post.json fits one document); if it fails, yesterday's
+      # post.js and out/post.json are put back, so a bad day never reaches the page and the rest of the day's data is still saved
+      - run: node experiments/post-data-test.mjs || { git checkout -- app/src/data/post.js; git checkout -- out/post.json 2>/dev/null || rm -f out/post.json; node skip.mjs "news check skipped (the list failed post-data-test; yesterday's list put back)"; }
       # opt-in shadow model scoreboard (rule 21 gate 3): paired daily grading when MODEL_SHADOW=1. BEFORE model.mjs (Kip job 35 #1,
       # Nov 25): yesterday's committed models grade only the events they never saw (not in yesterday's committed matches.json)
       - run: if [ "${{ vars.MODEL_SHADOW || '0' }}" = "1" ]; then git show HEAD:out/matches.json > /tmp/prev-matches.json 2>/dev/null; PREV_MATCHES=/tmp/prev-matches.json node shadow-scoreboard.mjs || node skip.mjs "shadow scoreboard skipped"; fi
@@ -86,6 +93,9 @@ jobs:
       # our numbers against the outside sources (out/crosscheck.json; summary and warnings in the Data health step)
       - run: node crosscheck.mjs || node skip.mjs "crosscheck skipped"
       - run: node ratings-snapshot.mjs || node skip.mjs "ratings snapshot skipped"
+      # the checklist's 'recent winners' numbers, worked out once here instead of on every visitor's phone (code review B-C1, Nov 16;
+      # stored in out/events.json as ckwin; the page uses them only when their stamps match today's data)
+      - run: node ckwin-snapshot.mjs || node skip.mjs "checklist numbers skipped (the page works them out itself)"
       - run: node scoreboard.mjs || node skip.mjs "scoreboard skipped"
       # the ratings' track record: each saved snapshot against the events played after it (out/track.json, page meta/track)
       - run: node track.mjs || node skip.mjs "track record skipped"

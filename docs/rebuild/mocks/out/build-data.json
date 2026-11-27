@@ -1,0 +1,700 @@
+{
+ "around": "Garchomp",
+ "btnLabel": "Build around Garchomp",
+ "megas": "2",
+ "megaTip": "73% of tournament teams and 81% of event winners carry 2 Mega options. Only one can Mega Evolve per battle.",
+ "boxN": "0 in your box",
+ "secs": 0.938,
+ "hero": "Winning tournament teams you can field from your box.",
+ "how": "Six that work together, the why, and how ready they are",
+ "opts": [
+  {
+   "kicker": "Proven team",
+   "arch": "Sun, Tailwind",
+   "opt": "Option 1 of 3",
+   "score": 91,
+   "band": "Top tier",
+   "rank": "Top 2% of tournament teams",
+   "guess": "",
+   "six": [
+    "Basculegion",
+    "Charizard-Mega-Y",
+    "Floette-Mega",
+    "Garchomp",
+    "Kingambit",
+    "Whimsicott"
+   ],
+   "sets": [
+    {
+     "d": "Basculegion",
+     "item": "Life Orb",
+     "teams": "2,021 teams",
+     "tier": "S tier 92",
+     "role": "Priority",
+     "box": "To catch"
+    },
+    {
+     "d": "Mega Charizard Y",
+     "item": "Charizardite Y",
+     "teams": "2,362 teams",
+     "tier": "S tier 94",
+     "role": "Sun, Mega",
+     "box": "To catch"
+    },
+    {
+     "d": "Mega Floette",
+     "item": "Floettite",
+     "teams": "1,688 teams",
+     "tier": "S tier 92",
+     "role": "Attacker, Mega",
+     "box": "To catch"
+    },
+    {
+     "d": "Garchomp",
+     "item": "Choice Scarf",
+     "teams": "1,912 teams",
+     "tier": "S tier 92",
+     "role": "Attacker",
+     "box": "To catch"
+    },
+    {
+     "d": "Kingambit",
+     "item": "Chople Berry",
+     "teams": "3,238 teams",
+     "tier": "S tier 96",
+     "role": "Priority",
+     "box": "To catch"
+    },
+    {
+     "d": "Whimsicott",
+     "item": "Focus Sash",
+     "teams": "1,200 teams",
+     "tier": "A tier 88",
+     "role": "Tailwind",
+     "box": "To catch"
+    }
+   ],
+   "ready": "24/30",
+   "readyNote": "6 shaky",
+   "checks": "4/4",
+   "missing": "",
+   "chips": [
+    "Speed control",
+    "Weather",
+    "2 Mega options"
+   ],
+   "why": [
+    "83 players brought this exact team at Limitless events (496 games), winning about 58% of them",
+    "Basculegion + Kingambit + Whimsicott: 327 tournament teams, 57.3% wins",
+    "83% ready for the top 30 threats: handles 24, 6 shaky, 0 with no answer",
+    "Basculegion isn't in your box: the best one to catch for this team",
+    "Mega Charizard Y isn't in your box: the best one to catch for this team",
+    "Mega Floette isn't in your box: the best one to catch for this team",
+    "Garchomp isn't in your box: the best one to catch for this team",
+    "Kingambit isn't in your box: the best one to catch for this team",
+    "Whimsicott isn't in your box: the best one to catch for this team"
+   ],
+   "scoreTip": "Strength Score 91, Top tier: Rating 91 = 89 from its Pokémon and sets + 1 matchups + 1 from its own games. Top 2% of tournament teams. Based on 479 real games.",
+   "checkTip": "✓ Speed control\n✓ Spread damage\nnote: Lead support\n✓ Mega Evolution\n✓ No major weak spot\n✓ Weak spots spread out\n✓ Ready for the top threats",
+   "actions": [
+    "Use this team",
+    "Copy for Showdown",
+    "Save",
+    "Try another"
+   ],
+   "mons": [
+    {
+     "n": "Basculegion",
+     "d": "Basculegion",
+     "item": "Life Orb",
+     "teams": "2,021 teams",
+     "tier": "S tier 92",
+     "role": "Priority",
+     "box": "To catch"
+    },
+    {
+     "n": "Charizard-Mega-Y",
+     "d": "Mega Charizard Y",
+     "item": "Charizardite Y",
+     "teams": "2,362 teams",
+     "tier": "S tier 94",
+     "role": "Sun, Mega",
+     "box": "To catch"
+    },
+    {
+     "n": "Floette-Mega",
+     "d": "Mega Floette",
+     "item": "Floettite",
+     "teams": "1,688 teams",
+     "tier": "S tier 92",
+     "role": "Attacker, Mega",
+     "box": "To catch"
+    },
+    {
+     "n": "Garchomp",
+     "d": "Garchomp",
+     "item": "Choice Scarf",
+     "teams": "1,912 teams",
+     "tier": "S tier 92",
+     "role": "Attacker",
+     "box": "To catch"
+    },
+    {
+     "n": "Kingambit",
+     "d": "Kingambit",
+     "item": "Chople Berry",
+     "teams": "3,238 teams",
+     "tier": "S tier 96",
+     "role": "Priority",
+     "box": "To catch"
+    },
+    {
+     "n": "Whimsicott",
+     "d": "Whimsicott",
+     "item": "Focus Sash",
+     "teams": "1,200 teams",
+     "tier": "A tier 88",
+     "role": "Tailwind",
+     "box": "To catch"
+    }
+   ]
+  },
+  {
+   "kicker": "Proven team",
+   "arch": "Sun, TailRoom",
+   "opt": "Option 2 of 3",
+   "score": 88,
+   "band": "Tournament ready",
+   "rank": "Top 8% of tournament teams",
+   "guess": "",
+   "six": [
+    "Charizard-Mega-Y",
+    "Farigiraf",
+    "Garchomp",
+    "Raichu-Mega-Y",
+    "Sneasler",
+    "Whimsicott"
+   ],
+   "sets": [
+    {
+     "d": "Mega Charizard Y",
+     "item": "Charizardite Y",
+     "teams": "2,362 teams",
+     "tier": "S tier 94",
+     "role": "Sun, Mega",
+     "box": "To catch"
+    },
+    {
+     "d": "Farigiraf",
+     "item": "Sitrus Berry",
+     "teams": "1,966 teams",
+     "tier": "A tier 89",
+     "role": "Trick Room",
+     "box": "To catch"
+    },
+    {
+     "d": "Garchomp",
+     "item": "Life Orb",
+     "teams": "1,912 teams",
+     "tier": "S tier 92",
+     "role": "Attacker",
+     "box": "To catch"
+    },
+    {
+     "d": "Mega Raichu Y",
+     "item": "Raichunite Y",
+     "teams": "3,056 teams",
+     "tier": "S tier 93",
+     "role": "Fake Out, Mega",
+     "box": "To catch"
+    },
+    {
+     "d": "Sneasler",
+     "item": "White Herb",
+     "teams": "5,212 teams",
+     "tier": "S tier 97",
+     "role": "Fake Out",
+     "box": "To catch"
+    },
+    {
+     "d": "Whimsicott",
+     "item": "Focus Sash",
+     "teams": "1,200 teams",
+     "tier": "A tier 88",
+     "role": "Tailwind",
+     "box": "To catch"
+    }
+   ],
+   "ready": "23/30",
+   "readyNote": "7 shaky",
+   "checks": "4/4",
+   "missing": "",
+   "chips": [
+    "Speed control",
+    "Weather",
+    "Lead support",
+    "2 Mega options"
+   ],
+   "why": [
+    "3 players brought this exact team at Limitless events (18 games), winning about 58% of them",
+    "Mega Charizard Y + Farigiraf + Sneasler: 45 tournament teams, 58.3% wins",
+    "85% ready for the top 30 threats: handles 23, 7 shaky, 0 with no answer",
+    "Mega Charizard Y isn't in your box: the best one to catch for this team",
+    "Farigiraf isn't in your box: the best one to catch for this team",
+    "Garchomp isn't in your box: the best one to catch for this team",
+    "Mega Raichu Y isn't in your box: the best one to catch for this team",
+    "Sneasler isn't in your box: the best one to catch for this team",
+    "Whimsicott isn't in your box: the best one to catch for this team"
+   ],
+   "scoreTip": "Strength Score 88, Tournament ready: Rating 88 = 87 from its Pokémon and sets + 1 matchups. Top 8% of tournament teams. Based on 20 real games.",
+   "checkTip": "✓ Speed control\n✓ Spread damage\n✓ Lead support\n✓ Mega Evolution\n✓ No major weak spot\n✓ Weak spots spread out\n✓ Ready for the top threats",
+   "actions": [
+    "Use this team",
+    "Copy for Showdown",
+    "Save",
+    "Try another"
+   ],
+   "mons": [
+    {
+     "n": "Charizard-Mega-Y",
+     "d": "Mega Charizard Y",
+     "item": "Charizardite Y",
+     "teams": "2,362 teams",
+     "tier": "S tier 94",
+     "role": "Sun, Mega",
+     "box": "To catch"
+    },
+    {
+     "n": "Farigiraf",
+     "d": "Farigiraf",
+     "item": "Sitrus Berry",
+     "teams": "1,966 teams",
+     "tier": "A tier 89",
+     "role": "Trick Room",
+     "box": "To catch"
+    },
+    {
+     "n": "Garchomp",
+     "d": "Garchomp",
+     "item": "Life Orb",
+     "teams": "1,912 teams",
+     "tier": "S tier 92",
+     "role": "Attacker",
+     "box": "To catch"
+    },
+    {
+     "n": "Raichu-Mega-Y",
+     "d": "Mega Raichu Y",
+     "item": "Raichunite Y",
+     "teams": "3,056 teams",
+     "tier": "S tier 93",
+     "role": "Fake Out, Mega",
+     "box": "To catch"
+    },
+    {
+     "n": "Sneasler",
+     "d": "Sneasler",
+     "item": "White Herb",
+     "teams": "5,212 teams",
+     "tier": "S tier 97",
+     "role": "Fake Out",
+     "box": "To catch"
+    },
+    {
+     "n": "Whimsicott",
+     "d": "Whimsicott",
+     "item": "Focus Sash",
+     "teams": "1,200 teams",
+     "tier": "A tier 88",
+     "role": "Tailwind",
+     "box": "To catch"
+    }
+   ]
+  },
+  {
+   "kicker": "Proven team",
+   "arch": "Sun, TailRoom",
+   "opt": "Option 3 of 3",
+   "score": 88,
+   "band": "Tournament ready",
+   "rank": "Top 9% of tournament teams",
+   "guess": "",
+   "six": [
+    "Aerodactyl-Mega",
+    "Charizard-Mega-Y",
+    "Farigiraf",
+    "Garchomp",
+    "Kingambit",
+    "Sylveon"
+   ],
+   "sets": [
+    {
+     "d": "Mega Aerodactyl",
+     "item": "Aerodactylite",
+     "teams": "202 teams",
+     "tier": "C tier 68",
+     "role": "Tailwind, Mega",
+     "box": "To catch"
+    },
+    {
+     "d": "Mega Charizard Y",
+     "item": "Charizardite Y",
+     "teams": "2,362 teams",
+     "tier": "S tier 94",
+     "role": "Sun, Mega",
+     "box": "To catch"
+    },
+    {
+     "d": "Farigiraf",
+     "item": "Sitrus Berry",
+     "teams": "1,966 teams",
+     "tier": "A tier 89",
+     "role": "Trick Room",
+     "box": "To catch"
+    },
+    {
+     "d": "Garchomp",
+     "item": "Life Orb",
+     "teams": "1,912 teams",
+     "tier": "S tier 92",
+     "role": "Attacker",
+     "box": "To catch"
+    },
+    {
+     "d": "Kingambit",
+     "item": "Chople Berry",
+     "teams": "3,238 teams",
+     "tier": "S tier 96",
+     "role": "Priority",
+     "box": "To catch"
+    },
+    {
+     "d": "Sylveon",
+     "item": "Fairy Feather",
+     "teams": "1,528 teams",
+     "tier": "A tier 85",
+     "role": "Priority",
+     "box": "To catch"
+    }
+   ],
+   "ready": "26/30",
+   "readyNote": "4 shaky",
+   "checks": "4/4",
+   "missing": "",
+   "chips": [
+    "Speed control",
+    "Weather",
+    "2 Mega options"
+   ],
+   "why": [
+    "90 players brought this exact team at Limitless events (572 games), winning about 59% of them",
+    "Mega Aerodactyl + Farigiraf + Garchomp: 97 tournament teams, 59.5% wins",
+    "90% ready for the top 30 threats: handles 26, 4 shaky, 0 with no answer",
+    "Mega Aerodactyl isn't in your box: the best one to catch for this team",
+    "Mega Charizard Y isn't in your box: the best one to catch for this team",
+    "Farigiraf isn't in your box: the best one to catch for this team",
+    "Garchomp isn't in your box: the best one to catch for this team",
+    "Kingambit isn't in your box: the best one to catch for this team",
+    "Sylveon isn't in your box: the best one to catch for this team"
+   ],
+   "scoreTip": "Strength Score 88, Tournament ready: Rating 88 = 87 from its Pokémon and sets + 1 from its own games. Top 9% of tournament teams. Based on 576 real games.",
+   "checkTip": "✓ Speed control\n✓ Spread damage\nnote: Lead support\n✓ Mega Evolution\n✓ No major weak spot\n✓ Weak spots spread out\n✓ Ready for the top threats",
+   "actions": [
+    "Use this team",
+    "Copy for Showdown",
+    "Save",
+    "Try another"
+   ],
+   "mons": [
+    {
+     "n": "Aerodactyl-Mega",
+     "d": "Mega Aerodactyl",
+     "item": "Aerodactylite",
+     "teams": "202 teams",
+     "tier": "C tier 68",
+     "role": "Tailwind, Mega",
+     "box": "To catch"
+    },
+    {
+     "n": "Charizard-Mega-Y",
+     "d": "Mega Charizard Y",
+     "item": "Charizardite Y",
+     "teams": "2,362 teams",
+     "tier": "S tier 94",
+     "role": "Sun, Mega",
+     "box": "To catch"
+    },
+    {
+     "n": "Farigiraf",
+     "d": "Farigiraf",
+     "item": "Sitrus Berry",
+     "teams": "1,966 teams",
+     "tier": "A tier 89",
+     "role": "Trick Room",
+     "box": "To catch"
+    },
+    {
+     "n": "Garchomp",
+     "d": "Garchomp",
+     "item": "Life Orb",
+     "teams": "1,912 teams",
+     "tier": "S tier 92",
+     "role": "Attacker",
+     "box": "To catch"
+    },
+    {
+     "n": "Kingambit",
+     "d": "Kingambit",
+     "item": "Chople Berry",
+     "teams": "3,238 teams",
+     "tier": "S tier 96",
+     "role": "Priority",
+     "box": "To catch"
+    },
+    {
+     "n": "Sylveon",
+     "d": "Sylveon",
+     "item": "Fairy Feather",
+     "teams": "1,528 teams",
+     "tier": "A tier 85",
+     "role": "Priority",
+     "box": "To catch"
+    }
+   ]
+  }
+ ],
+ "cores": [
+  {
+   "rank": 1,
+   "names": "Mega Floette + Kingambit",
+   "tags": [
+    "Mega"
+   ],
+   "win": "54.8%",
+   "vsAvg": "+3.8 points vs avg",
+   "teams": "671 teams",
+   "together": "+1.2 points together",
+   "share": "4.9% of all teams",
+   "n": [
+    "Floette-Mega",
+    "Kingambit"
+   ]
+  },
+  {
+   "rank": 2,
+   "names": "Basculegion + Kingambit",
+   "tags": [],
+   "win": "54.8%",
+   "vsAvg": "+3.8 points vs avg",
+   "teams": "862 teams",
+   "together": "+2.2 points together",
+   "share": "6.2% of all teams",
+   "n": [
+    "Basculegion",
+    "Kingambit"
+   ]
+  },
+  {
+   "rank": 3,
+   "names": "Mega Delphox + Incineroar",
+   "tags": [
+    "Fake Out",
+    "Intimidate"
+   ],
+   "win": "54.8%",
+   "vsAvg": "+3.8 points vs avg",
+   "teams": "489 teams",
+   "together": "+2.4 points together",
+   "share": "3.5% of all teams",
+   "n": [
+    "Delphox-Mega",
+    "Incineroar"
+   ]
+  },
+  {
+   "rank": 4,
+   "names": "Mega Delphox + Mega Floette",
+   "tags": [
+    "Mega"
+   ],
+   "win": "54.5%",
+   "vsAvg": "+3.4 points vs avg",
+   "teams": "248 teams",
+   "together": "+0.8 points together",
+   "share": "1.8% of all teams",
+   "n": [
+    "Delphox-Mega",
+    "Floette-Mega"
+   ]
+  },
+  {
+   "rank": 5,
+   "names": "Mega Delphox + Sinistcha",
+   "tags": [
+    "Speed control",
+    "Redirection"
+   ],
+   "win": "54.4%",
+   "vsAvg": "+3.4 points vs avg",
+   "teams": "386 teams",
+   "together": "+1.4 points together",
+   "share": "2.8% of all teams",
+   "n": [
+    "Delphox-Mega",
+    "Sinistcha"
+   ]
+  },
+  {
+   "rank": 6,
+   "names": "Sinistcha + Sneasler",
+   "tags": [
+    "Speed control",
+    "Fake Out"
+   ],
+   "win": "54.4%",
+   "vsAvg": "+3.4 points vs avg",
+   "teams": "405 teams",
+   "together": "+2.2 points together",
+   "share": "2.9% of all teams",
+   "n": [
+    "Sinistcha",
+    "Sneasler"
+   ]
+  },
+  {
+   "rank": 7,
+   "names": "Mega Floette + Sinistcha",
+   "tags": [
+    "Speed control",
+    "Redirection"
+   ],
+   "win": "54.4%",
+   "vsAvg": "+3.4 points vs avg",
+   "teams": "287 teams",
+   "together": "+1.1 points together",
+   "share": "2.1% of all teams",
+   "n": [
+    "Floette-Mega",
+    "Sinistcha"
+   ]
+  },
+  {
+   "rank": 8,
+   "names": "Mega Delphox + Kingambit",
+   "tags": [
+    "Mega"
+   ],
+   "win": "54.3%",
+   "vsAvg": "+3.3 points vs avg",
+   "teams": "482 teams",
+   "together": "+0.9 points together",
+   "share": "3.5% of all teams",
+   "n": [
+    "Delphox-Mega",
+    "Kingambit"
+   ]
+  },
+  {
+   "rank": 9,
+   "names": "Mega Charizard Y + Kingambit",
+   "tags": [
+    "Sun",
+    "Mega"
+   ],
+   "win": "54.2%",
+   "vsAvg": "+3.2 points vs avg",
+   "teams": "734 teams",
+   "together": "+0.8 points together",
+   "share": "5.3% of all teams",
+   "n": [
+    "Charizard-Mega-Y",
+    "Kingambit"
+   ]
+  },
+  {
+   "rank": 10,
+   "names": "Mega Floette + Incineroar",
+   "tags": [
+    "Fake Out",
+    "Intimidate"
+   ],
+   "win": "54.1%",
+   "vsAvg": "+3.1 points vs avg",
+   "teams": "1,148 teams",
+   "together": "+1.5 points together",
+   "share": "8.3% of all teams",
+   "n": [
+    "Floette-Mega",
+    "Incineroar"
+   ]
+  }
+ ],
+ "coreIntro": "From 13,826 tournament teams. Average team wins 51.0% of games. Ranked by win rate, pulled toward the average.",
+ "moreLeft": 529,
+ "coreTotal": 539,
+ "kinds": [
+  "Pairs",
+  "Trios",
+  "Full teams"
+ ],
+ "winners": [
+  {
+   "place": "1st",
+   "record": "9-1",
+   "event": "Champions Arena #18",
+   "date": "Nov 9",
+   "players": 66,
+   "mons": [
+    "Pelipper",
+    "Mega Venusaur",
+    "Archaludon",
+    "Mega Charizard Y",
+    "Grimmsnarl",
+    "Annihilape"
+   ],
+   "tags": [
+    "Sun-Rain",
+    "Tailwind"
+   ]
+  },
+  {
+   "place": "1st",
+   "record": "9-1",
+   "event": "Torre Lotta Cup #3",
+   "date": "Nov 7",
+   "players": 68,
+   "mons": [
+    "Basculegion",
+    "Kingambit",
+    "Mega Salamence",
+    "Mega Charizard Y",
+    "Whimsicott",
+    "Sneasler"
+   ],
+   "tags": [
+    "Sun",
+    "Tailwind"
+   ]
+  },
+  {
+   "place": "1st",
+   "record": "11-1",
+   "event": "Friday Fight Night 80",
+   "date": "Nov 6",
+   "players": 139,
+   "mons": [
+    "Mega Staraptor",
+    "Mega Raichu Y",
+    "Rillaboom",
+    "Hisuian Arcanine",
+    "Primarina",
+    "Gholdengo"
+   ],
+   "tags": [
+    "Grassy Terrain",
+    "Tailwind"
+   ]
+  }
+ ],
+ "winFold": "3 winning teams, full sets, ready to load"
+}

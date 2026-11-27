@@ -157,7 +157,10 @@ function v3Evidence(map) { let res = null; try { res = RES; } catch (e) {}
 // team preview from Showdown replays (shown, not scored until there are enough games): [games, % brought, % led]
 function bringLead(p) { let res = null; try { res = RES; } catch (e) {} const br = res && res.tc && res.tc.br; if (!br || !p) return null;
   const k = p.n === 'Floette-Mega' ? 'Floette-Eternal' : p.n.replace(/-Mega(-[XYZ])?$/, ''), r = br[k]; return Array.isArray(r) && r[0] >= 30 ? {g: r[0], b: r[1], l: r[2], forms: k !== p.n} : null; }
-function v3Apply(map) { const E = v3Evidence(map); if (E.size < 30) return; const R = RATE_V3, sc = new Map(), edge = e => (e.wr - e.base) / 100 * e.g / (e.g + R.K);
+/* backstop (Nov 25, Sim's "Not rated yet"): with fewer than 30 Pokémon with results (a new regulation's first days) the v3 rating can't run,
+   and the totals above are stats-led (Gyarados 97 with no results). A Pokémon with no results still gets the same rough floor as below,
+   never above the bottom of C; the few with results keep the fallback blend. With 30+ (every day of Reg M-C) this never runs. */
+function v3Apply(map) { const E = v3Evidence(map); if (E.size < 30) { for (const [n, v] of map) if (!E.has(n)) { v.formula = v.total; v.total = Math.max(1, Math.min(30, Math.round(6 + .24 * (v.intrinsic || 0)))); v.tc = null; v.band = 18; v.parts = null; } return; } const R = RATE_V3, sc = new Map(), edge = e => (e.wr - e.base) / 100 * e.g / (e.g + R.K);
   for (const [n, e] of E) sc.set(n, Math.log(Math.max(1e-4, e.top / 100)) + R.rw * Math.log(Math.max(1e-4, e.rw / 100)) + R.lift * Math.log(Math.max(.2, e.lift)) + R.wr * edge(e));
   const smax = Math.max(...sc.values()), ks = [...sc.keys()], P = f => { const pr = pctRanks(ks.map(n => f(E.get(n)))); return new Map(ks.map((n, i) => [n, Math.round(pr[i])])); };
   const pTop = P(e => e.top), pRw = P(e => e.rw), pLift = P(e => e.lift), pWr = P(edge);
@@ -165,7 +168,7 @@ function v3Apply(map) { const E = v3Evidence(map); if (E.size < 30) return; cons
     // thin evidence (a handful of games) leans on the same placeholder a never-used Pokémon gets, so being brought twice
     // and missing top cut can't rate below never being tried
     if (e) { const t = R.top + R.slope * (sc.get(n) - smax), fl = Math.min(30, 6 + .24 * (v.intrinsic || 0)), w = e.g / (e.g + 300);
-      v.total = Math.max(1, Math.min(99, Math.round(w * t + (1 - w) * Math.max(t, fl)))); v.tc = e; v.band = Math.round(3 + 15 * (1 - e.g / (e.g + R.K)));
+      v.exact = +Math.max(1, Math.min(99, w * t + (1 - w) * Math.max(t, fl))).toFixed(4); v.total = Math.round(v.exact); v.tc = e; /* exact: the rating before rounding, kept to break ties in the rank (Sim, Nov 25) */ v.band = Math.round(3 + 15 * (1 - e.g / (e.g + R.K)));
       v.parts = {top: pTop.get(n), rw: pRw.get(n), lift: e.full ? pLift.get(n) : null, wr: pWr.get(n)}; }
     // no tournament results: a rough floor from stats, typing and tools, never above the bottom of C
     else { v.total = Math.max(1, Math.min(30, Math.round(6 + .24 * (v.intrinsic || 0)))); v.tc = null; v.band = 18; v.parts = null; } } }
@@ -202,4 +205,6 @@ function probit(p) { const a = [-39.69683028665376, 220.9460984245205, -275.9285
 const GEM_STABLE = .8;
 function isGem(p) { const r = rating(p), e = r.tc; if (r.proven || !e) return false;
   return e.full ? e.g >= 300 && e.lift >= 1.15 && e.wr > e.base + 1 && (e.gs == null || e.gs >= GEM_STABLE) : e.g >= 300 && e.wr > e.base + 2; }
-
+/* shown rating: piecewise-linear, each tier's band maps onto its school band (80-99 → 90-99, 70-79 → 80-89, ..., 0-34 → 1-49) */
+function RS(t) { t = Math.max(0, Math.min(99, +t || 0)); const B = [[80, 99, 90, 99], [70, 80, 80, 90], [60, 70, 70, 80], [50, 60, 60, 70], [35, 50, 50, 60], [0, 35, 1, 50]];
+  for (const [a, b, c, d] of B) if (t >= a) return Math.round(c + (Math.min(t, b) - a) * (d - c) / (b - a)); return 1; }

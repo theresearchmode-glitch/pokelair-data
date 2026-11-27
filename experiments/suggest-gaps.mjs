@@ -4,9 +4,11 @@
 // setter says so; Sand Rush gets sand, a Trick Room team gets a slow attacker; no top suggestion lowers the checklist score
 // or takes away lead support, speed control, Trick Room attackers, terrain or weather.
 import fs from 'node:fs'; import {createRequire} from 'node:module';
+import {withFixtures, fixtureDecks} from './md-fixtures.mjs';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const APP = new URL('../app/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json'), 'meta/teams': rd('teams.json')};
+withFixtures(D); /* Reg M-D day (gap G11): no real teams yet -> the fixture teams, with a "fixture teams" line (experiments/md-fixtures.mjs) */
 const page = APP + 'suggest-gaps.html'; fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(APP + 'dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const b = await chromium.launch(), fails = [], ok = (c, m) => { console.log((c ? '  ok   ' : '  FAIL ') + m); if (!c) fails.push(m); };
 const pg = await (await b.newContext({viewport: {width: 1280, height: 900}})).newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));
@@ -131,7 +133,7 @@ for (const [label, team] of [['sun team, Incineroar the only lead support', ['To
   let TB = null; try { TB = await import('../team-basics.mjs'); } catch (e) {}
   ok(!!TB, 'team-basics.mjs (the trainer\'s team basics) exists');
   if (TB) { ok(JSON.stringify([...TB.SPEED_DROP].sort()) === JSON.stringify(r.drop), 'the trainer and the game plan use the same speed-drop moves');
-    const M = rd('matches.json'), decks = M.decks.map(d => d.map(f => M.feats[f])).filter(nm => nm.filter(n => n.includes(':')).length >= 16 && new Set(nm.map(n => n.split(/[@:#]/)[0])).size === 6);
+    const M = rd('matches.json'), decks = (M.decks.length ? M.decks.map(d => d.map(f => M.feats[f])) : fixtureDecks()).filter(nm => nm.filter(n => n.includes(':')).length >= 16 && new Set(nm.map(n => n.split(/[@:#]/)[0])).size === 6);
     const pageNS = await pg.evaluate(D => window.__ev(`(${JSON.stringify(D)}).map(nm=>{const sp=[...new Set(nm.map(n=>n.split(/[@:#]/)[0]))];if(sp.some(n=>!byName.get(n)))return null;
       const ms=sp.map(n=>{const p=byName.get(n),ab=(nm.find(f=>f.startsWith(n+'#'))||'#').split('#')[1],it=(nm.find(f=>f.startsWith(n+'@'))||'@').split('@')[1],x=nm.filter(f=>f.startsWith(n+':')).map(f=>({name:f.slice(n.length+1)}));
         return {...memberFrom(p,ab||undefined),p,d:p.d,ability:ab||undefined,heldItem:it||undefined,custom:true,moves:x,_mv:x}});return teamBasicsOf(sp,ms).noSpeed})`), decks);

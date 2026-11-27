@@ -1,0 +1,460 @@
+{
+ "N": 7870,
+ "first": "2026-10-21",
+ "last": "2026-11-18",
+ "Rock Slide": {
+  "kind": "mv",
+  "teams": 3624,
+  "pct": 46,
+  "nUsers": 53,
+  "users": [
+   [
+    "Garchomp",
+    1621,
+    62,
+    2634
+   ],
+   [
+    "Sneasler",
+    763,
+    24,
+    3118
+   ],
+   [
+    "Tyranitar",
+    747,
+    99,
+    757
+   ],
+   [
+    "Excadrill",
+    542,
+    85,
+    636
+   ],
+   [
+    "Aerodactyl",
+    199,
+    98,
+    204
+   ],
+   [
+    "Blaziken",
+    142,
+    79,
+    179
+   ],
+   [
+    "Hisuian Arcanine",
+    95,
+    19,
+    503
+   ],
+   [
+    "Lycanroc Dusk",
+    73,
+    95,
+    77
+   ]
+  ]
+ },
+ "Fake Out": {
+  "kind": "mv",
+  "teams": 5215,
+  "pct": 66.3,
+  "nUsers": 28,
+  "users": [
+   [
+    "Rillaboom",
+    2929,
+    99,
+    2959
+   ],
+   [
+    "Incineroar",
+    2500,
+    99,
+    2517
+   ],
+   [
+    "Raichu",
+    1872,
+    90,
+    2079
+   ],
+   [
+    "Sneasler",
+    1309,
+    42,
+    3118
+   ],
+   [
+    "Kangaskhan",
+    76,
+    100,
+    76
+   ],
+   [
+    "Pawmot",
+    37,
+    77,
+    48
+   ],
+   [
+    "Lopunny",
+    35,
+    90,
+    39
+   ],
+   [
+    "Sableye",
+    29,
+    33,
+    87
+   ]
+  ]
+ },
+ "Wide Guard": {
+  "kind": "mv",
+  "teams": 1415,
+  "pct": 18,
+  "nUsers": 17,
+  "users": [
+   [
+    "Pelipper",
+    965,
+    80,
+    1208
+   ],
+   [
+    "Armarouge",
+    175,
+    65,
+    271
+   ],
+   [
+    "Toxapex",
+    85,
+    89,
+    95
+   ],
+   [
+    "Aerodactyl",
+    78,
+    38,
+    204
+   ],
+   [
+    "Araquanid",
+    29,
+    94,
+    31
+   ],
+   [
+    "Aegislash",
+    27,
+    52,
+    52
+   ],
+   [
+    "Gallade",
+    23,
+    38,
+    60
+   ],
+   [
+    "Chesnaught",
+    13,
+    32,
+    41
+   ]
+  ]
+ },
+ "Psych Up": {
+  "kind": "mv",
+  "teams": 53,
+  "pct": 0.7,
+  "nUsers": 21,
+  "users": [
+   [
+    "Politoed",
+    17,
+    6,
+    303
+   ],
+   [
+    "Delphox",
+    9,
+    2,
+    487
+   ],
+   [
+    "Slowbro",
+    6,
+    13,
+    46
+   ],
+   [
+    "Sinistcha",
+    3,
+    0,
+    793
+   ],
+   [
+    "Empoleon",
+    3,
+    20,
+    15
+   ],
+   [
+    "Sableye",
+    3,
+    3,
+    87
+   ],
+   [
+    "Primarina",
+    3,
+    0,
+    673
+   ],
+   [
+    "Milotic",
+    3,
+    0,
+    699
+   ]
+  ]
+ },
+ "Heavy Slam": {
+  "kind": "mv",
+  "teams": 57,
+  "pct": 0.7,
+  "nUsers": 9,
+  "users": [
+   [
+    "Aggron",
+    17,
+    94,
+    18
+   ],
+   [
+    "Orthworm",
+    11,
+    65,
+    17
+   ],
+   [
+    "Mudsdale",
+    11,
+    69,
+    16
+   ],
+   [
+    "Hisuian Goodra",
+    7,
+    32,
+    22
+   ],
+   [
+    "Steelix",
+    6,
+    86,
+    7
+   ],
+   [
+    "Excadrill",
+    2,
+    0,
+    636
+   ],
+   [
+    "Snorlax",
+    1,
+    2,
+    54
+   ],
+   [
+    "Bastiodon",
+    1,
+    100,
+    1
+   ]
+  ]
+ },
+ "Intimidate": {
+  "kind": "a",
+  "teams": 4220,
+  "pct": 53.6,
+  "nUsers": 16,
+  "users": [
+   [
+    "Incineroar",
+    2503,
+    99,
+    2517
+   ],
+   [
+    "Staraptor",
+    998,
+    96,
+    1043
+   ],
+   [
+    "Salamence",
+    880,
+    97,
+    906
+   ],
+   [
+    "Mawile",
+    38,
+    46,
+    82
+   ],
+   [
+    "Scrafty",
+    38,
+    95,
+    40
+   ],
+   [
+    "Hisuian Arcanine",
+    21,
+    4,
+    503
+   ],
+   [
+    "Gyarados",
+    18,
+    86,
+    21
+   ],
+   [
+    "Overqwil",
+    12,
+    71,
+    17
+   ]
+  ]
+ },
+ "Unseen Fist": {
+  "kind": "a",
+  "teams": 0,
+  "pct": 0,
+  "nUsers": 0,
+  "users": []
+ },
+ "Focus Sash": {
+  "kind": "i",
+  "teams": 5451,
+  "pct": 69.3,
+  "nUsers": 98,
+  "users": [
+   [
+    "Whimsicott",
+    1052,
+    84,
+    1259
+   ],
+   [
+    "Excadrill",
+    617,
+    97,
+    636
+   ],
+   [
+    "Sneasler",
+    587,
+    19,
+    3118
+   ],
+   [
+    "Hisuian Arcanine",
+    488,
+    97,
+    503
+   ],
+   [
+    "Venusaur",
+    424,
+    64,
+    661
+   ],
+   [
+    "Basculegion ♀",
+    404,
+    90,
+    449
+   ],
+   [
+    "Pelipper",
+    262,
+    22,
+    1208
+   ],
+   [
+    "Kingambit",
+    236,
+    10,
+    2339
+   ]
+  ]
+ },
+ "Sitrus Berry": {
+  "kind": "i",
+  "teams": 4216,
+  "pct": 53.6,
+  "nUsers": 87,
+  "users": [
+   [
+    "Incineroar",
+    1625,
+    65,
+    2517
+   ],
+   [
+    "Farigiraf",
+    919,
+    82,
+    1121
+   ],
+   [
+    "Pelipper",
+    406,
+    34,
+    1208
+   ],
+   [
+    "Milotic",
+    382,
+    55,
+    699
+   ],
+   [
+    "Politoed",
+    152,
+    50,
+    303
+   ],
+   [
+    "Indeedee ♀",
+    120,
+    15,
+    820
+   ],
+   [
+    "Sinistcha",
+    85,
+    11,
+    793
+   ],
+   [
+    "Primarina",
+    68,
+    10,
+    673
+   ]
+  ]
+ }
+}

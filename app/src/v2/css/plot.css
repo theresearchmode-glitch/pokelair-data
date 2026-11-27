@@ -1,0 +1,463 @@
+/* ---------- Build: The Plot (Sim locked Nov 20; build-plot.js; pictures docs/rebuild/pics/nov20/Q93-Q98) ----------
+   Four colours, one job each: blue = what you can tap to change the plot; red = the action and the score (and the plot line);
+   white plates = answers; ink = text and structure. Piece a: the page before a build. */
+section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* scoped to the Plot sections (Nov 21): a bare .pl also hit every headline's blue word (<span class="pl">), pushing it 40-64px right (v2-q31/q33) */
+.pl-step{position:relative}
+.pl-node{position:absolute;z-index:1;left:calc(-1 * var(--s16));top:0;width:26px;height:26px;display:grid;place-items:center;border:2px solid var(--pick);border-radius:50%;background:var(--bg);color:var(--pick-text);font:700 var(--t13)/1 var(--b)}
+.pl-s1::before{content:"";position:absolute;left:calc(var(--s3) - var(--s16));top:var(--s6);bottom:calc(-1 * var(--s10));border-left:2px solid var(--pick)}
+.pl-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:var(--s2) var(--s6);margin-bottom:var(--s3)}.pl-top .np-eyebrow{margin:0}
+.pl-intro{margin:var(--s1) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-hint{margin:0;text-align:right;font:600 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-sw{position:relative}
+.pl-sent{display:flex;flex-direction:column;align-items:flex-start;gap:.14em;font-size:var(--d-plot);line-height:1.12;color:var(--ink)}
+.pl-ln{display:flex;flex-wrap:nowrap;align-items:center;gap:.14em .24em;max-width:100%}.pl-wrap .pl-ln,.pl-wrap .pl-grp{flex-wrap:wrap}
+.pl-w{white-space:nowrap}
+.pl-grp,.pl-ar{display:inline-flex;align-items:center;gap:.14em}
+.pl-or{margin:0 .06em}
+.pl-pl{display:inline-flex;align-items:center;gap:.18em;min-height:var(--tap);margin:0;padding:.04em .3em .06em;border:.05em solid var(--plot-text);border-radius:0;background:transparent;color:var(--plot-text);font:inherit;font-size:1em;line-height:1.05;text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg);cursor:pointer}
+.pl-pl > *{transform:skewX(8deg)}
+.pl-grp[data-v2slide="sgmega"] .pl-pl{min-width:var(--tap);justify-content:center} /* spec 4: every tappable thing at least 44 wide (the Megas plates were 36 wide at 320-390, qcheck TAP) */
+.pl-pl[aria-pressed="true"]{background:var(--plot);border-color:var(--plot);color:var(--on-mark)}
+.pl-grp[data-v2slide="bdsrc"] .pl-pl[aria-pressed="true"] > span::before{content:"";display:inline-block;width:.34em;height:.18em;margin:0 .26em .2em 0;border-left:.08em solid currentColor;border-bottom:.08em solid currentColor;transform:rotate(-45deg)}
+.pl-pl:focus-visible,.pl-go:focus-visible,.pl-chip:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.pl-find{cursor:text}.pl-find .np-ic,.pl-find svg{width:.5em;height:.5em;flex:none}
+.pl-find input{width:9.4em;min-width:0;margin:0;padding:0;border:0;background:transparent;color:var(--plot-text);font:inherit;font-size:1em;text-transform:uppercase;outline:none}
+.pl-find input::placeholder{color:var(--plot-text);opacity:1}
+.pl-find:focus-within{border-color:var(--ink)}
+/* the site's own × (V2.CLR, X-05): only while the box has text, the plate no taller (its 44px tap overlaps the plate's padding), the
+   browser's own × hidden; the plate may shrink (the input scrolls) so the × never pushes the line past the page */
+.pl-find input::-webkit-search-cancel-button,.pl-find input::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+.pl-find input:placeholder-shown~.np-clr{display:none}
+.pl-find .np-clr{margin:calc(-1 * var(--s3)) 0;color:inherit}.pl-find .np-clr .np-ic,.pl-row .pl-find .np-clr svg{display:block;width:20px;height:20px}
+.pl-ar,.pl-find{min-width:0;max-width:100%}
+.pl-pick img{width:1.1em;height:1.1em;object-fit:contain;transform:skewX(8deg)}
+.pl-x{display:grid;place-items:center;min-width:var(--tap);min-height:var(--tap);margin:0;padding:0;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}.pl-x span{display:block;transform:scale(.6)}
+.pl-dot{color:var(--ink)}
+.pl-sent{--d-plotq:max(var(--t13),calc(var(--d-plot) * .55))}.pl-opt{font-size:var(--d-plotq);color:var(--ink-2)} /* Q99 A (Sim, Nov 20): the plot is complete without a pick; "Optional: build around" is the quieter fourth line (never under 13px, the type scale's smallest: 11px at 390 before) */
+.pl-go{display:inline-flex;align-items:center;min-height:var(--tap);margin:0;padding:.06em .32em;border:0;background:var(--pick);color:var(--on-mark);font:inherit;font-size:1em;line-height:1.05;text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg);cursor:pointer}
+.pl-go > span:first-child{transform:skewX(8deg)}
+.pl-go[disabled]{opacity:.6;cursor:progress}
+.pl-hits{max-width:520px}
+.pl-help{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s6);margin-top:var(--s6)}
+.pl-hc{padding-top:var(--s3);border-top:2px solid var(--plot)}.pl-hr{border-top-color:var(--pick)}
+.pl-hc b{display:block;font:700 var(--t16)/1.5 var(--b);color:var(--ink)}.pl-hc b span{font-weight:400;color:var(--ink-3)}
+.pl-hc p{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,max(8.5em,calc(50% - var(--s1)))),1fr));gap:var(--s2);margin-top:var(--s2)}
+.pl-chip{display:inline-flex;align-items:center;gap:var(--s2);min-width:0;min-height:var(--tap);margin:0;padding:0 var(--s2);border:2px solid var(--plot-text);border-radius:0;background:transparent;color:var(--plot-text);font:700 var(--t15)/1.2 var(--b);cursor:pointer}
+.pl-chip img{width:28px;height:28px;object-fit:contain;flex:none}.pl-chip span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* (polish, Nov 20: two across (never three) only where a name fits beside its sprite, else one across; at 320 and 1120-1280 two across cut "Kingambit" to "Kinga…") */
+.pl-chip[aria-pressed="true"]{background:var(--plot);border-color:var(--plot);color:var(--on-mark)}
+.pl-waits{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s6);align-items:center;margin-top:var(--s10)}
+.pl-waits::before{content:"";position:absolute;left:calc(var(--s3) - var(--s16));top:0;bottom:0;border-left:2px dashed var(--pick)}
+.pl-wait{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s3);margin:var(--s4) 0}
+.pl-wait .pl-node{border-style:dashed}
+.pl-h{margin:0;font-size:var(--t28);color:var(--ink-3)}
+.pl-w8{font:400 var(--t15)/1.5 var(--b);color:var(--ink-3)}
+.pl-places{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4);margin:0 0 var(--s4)}
+.pl-places i{height:104px;border:2px dashed var(--rule);transform:skewX(-8deg)}
+.pl-dog{display:flex;align-items:center;gap:var(--s3);max-width:400px}
+.pl-dog p{margin:0;text-align:right;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pl-dog b{display:block;font-weight:700;color:var(--ink)}
+.pl-dogst{flex:none;margin:0;padding:0;border:0;background:none;cursor:pointer}.pl-dog .np-mon{--iw:120px}
+@media (max-width:1199.98px){.pl-help{grid-template-columns:repeat(2,minmax(0,1fr))}} /* spec 5 and 10: helper columns 2 x 2 from 1199 down (was 1099) */
+@media (max-width:699.98px){
+  section.pl{padding-left:var(--s10)}.pl-node{left:calc(-1 * var(--s10));width:22px;height:22px}
+  .pl-s1::before,.pl-waits::before{left:calc(var(--s2) + 2px - var(--s10))}
+  .pl-hint{text-align:left}
+  .pl-help{grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+  .pl-waits{grid-template-columns:minmax(0,1fr)}.pl-dog{max-width:none}.pl-dog p{text-align:left}.pl-dog .np-mon{--iw:88px}
+  .pl-places{display:none}.pl-h{font-size:var(--t20)}.pl-wait{margin:var(--s1) 0}.pl-waits{margin-top:var(--s4);gap:var(--s2)}.pl-top{margin-bottom:var(--s2)}
+  /* Nov 20: shorter on phones (Sim's phone-length rule): the sentence and the hint already say what Build from does, so its note goes;
+     Build Me a Team keeps only How It Works; the faint steps lose their empty places */
+  .pl-help{gap:var(--s2)}.pl-hc:first-child,.pl-ht,.pl-hr b{display:none}.pl-hr{padding-top:0;border-top:0}.pl-hc{padding-top:var(--s2)}
+  .pl-dog{gap:var(--s2)}.pl-dog .np-mon{--iw:72px}
+}
+.pl-hc .np-link{padding:var(--s3) 0;margin:calc(-1 * var(--s3)) 0} /* a 44 px tap target without moving the line */
+/* ---------- Piece 2: after a build (Q97 A / Q98; spec docs/rebuild/plot-spec.md sections 6-7) ---------- */
+.pl1 .pl-s1::before{bottom:calc(-1 * var(--s8))}
+.pl-row{flex-direction:row;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s2);font-size:var(--t15)}
+.pl-row .pl-ln{flex-wrap:wrap;gap:var(--s2)}
+.pl-row .pl-pl{padding:0 var(--s3);border-width:2px}
+.pl-row .pl-grp[data-v2slide="sgmega"] .pl-pl{min-width:var(--tap);justify-content:center}
+.pl-row .pl-find input{font-size:var(--t15)}
+.pl-row .pl-go{margin-left:auto;padding:0 var(--s4);font-size:var(--t17)}
+.pl-row .pl-opt{font-size:var(--t15)}
+.bd-ans.bp .pl-ans{margin:var(--s4) 0 var(--s6)}
+.pl-eb{margin:0;font-size:var(--t20);color:var(--ink-2)}
+.pl-arow{display:grid;grid-template-columns:minmax(0,1fr) 196px;gap:var(--s6);align-items:end}
+.pl-tl{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s2) var(--s5);padding-bottom:var(--s1);border-bottom:2px solid var(--pick);min-width:0}
+.pl-title{margin:0;font-size:var(--d-hero);color:var(--ink);text-wrap:balance}
+.pl-tm{font-size:var(--t34)}
+.pl-six{display:flex;align-items:flex-end;flex-wrap:nowrap;min-width:0}
+.pl-mon{position:relative;display:grid;place-items:end center;width:88px;height:96px;margin:0 -2px;padding:0;border:0;background:none;cursor:pointer;transition:transform var(--dur-1)}
+.pl-mon img{max-width:88px;max-height:92px;object-fit:contain;filter:drop-shadow(0 6px 4px var(--rule))}
+.pl-mon:hover,.pl-mon:focus-visible{transform:translateY(-4px)}.pl-mon:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.pl-catch::after{content:"";position:absolute;top:var(--s2);right:var(--s2);width:12px;height:12px;border:2px solid var(--bg);border-radius:50%;background:var(--pick)}
+.pl-seal{display:grid;justify-items:center;align-content:center;min-height:120px;border-radius:var(--r-l);background:var(--pick);color:var(--on-mark);box-shadow:inset 0 0 0 5px var(--pick),inset 0 0 0 7px var(--on-mark)}
+.pl-seal small{font:700 var(--t13)/1.2 var(--b);letter-spacing:.08em;text-transform:uppercase}
+.pl-seal b{font-size:var(--d64);line-height:1}
+.pl-seal .w span{font-size:var(--t17)}
+.pl-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);margin-top:var(--s3)}
+.pl-tags{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.pl-tag{padding:var(--s1) var(--s2);border:2px solid var(--ink);border-radius:var(--r-s);font:700 var(--t13)/1.2 var(--b);color:var(--ink)}
+.pl-tagr{border-color:var(--pick);background:var(--pick);color:var(--on-mark)}
+.pl-cline{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-meta2{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s2);margin-top:var(--s2);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-meta2 b{color:var(--ink)}.pl-meta2 .bd-brk{margin:0}
+@media (max-width:1199.98px){.pl-arow{grid-template-columns:minmax(0,1fr) 196px}.pl-tl{display:block;border-bottom:0;padding:0}.pl-six{margin-top:var(--s3);padding-bottom:var(--s1);border-bottom:2px solid var(--pick)}}
+@media (max-width:699.98px){
+  .pl-arow{grid-template-columns:minmax(0,1fr) 122px;gap:var(--s3)}.pl-seal{min-height:92px;box-shadow:inset 0 0 0 4px var(--pick),inset 0 0 0 6px var(--on-mark)}.pl-seal b{font-size:var(--t34)}.pl-seal small{font-size:var(--t13);letter-spacing:0}.pl-seal .w span{font-size:var(--t13)}
+  .pl-title{font-size:var(--t22)}.pl-tm{font-size:var(--t17)}
+  .pl-mon{width:calc((100vw - var(--s16)) / 6);height:60px}.pl-mon img{max-width:100%;max-height:56px}
+  .pl-row .pl-go{margin-left:0;width:100%;justify-content:center}.pl-row .pl-w{display:none}
+}
+/* the Blueprint sheet's score rules (pages.css .bp .bp-score, .bp .bd-brk) must not reach the seal or the meta line */
+.bd-ans .pl-seal{display:grid;gap:0}.bd-ans .pl-seal b{font:900 var(--d64)/1 var(--u);font-style:italic;letter-spacing:-.03em;color:var(--on-plot-seal)}
+.bd-ans .pl-seal small,.bd-ans .pl-seal .w span{color:var(--on-plot-seal)}.bd-ans .pl-seal .w{display:block}
+.bd-ans.bp .pl-meta2 .bd-brk{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.bd-ans.bp .pl-meta2 .np-link{font-size:var(--t15);color:var(--plot-text)}
+@media (max-width:699.98px){.bd-ans .pl-seal b{font-size:var(--t34)}.bd-ans.bp .pl-meta2 .bd-brk{display:none}}
+.bd-ans .pl-seal{padding:var(--s3) var(--s2)}
+.bd-ans .pl-seal{height:156px} /* every band the same size, with room for a two-line word ("Tournament ready"); Sim's stamp bug + v2-q83 */
+@media (max-width:699.98px){.bd-ans .pl-seal{height:116px}}
+/* contrast (Nov 20, found by v2-q83's new seal check): white on the logo red #E8364F is about 4:1, under 4.5:1 for small words; the seal,
+   the "N to catch" tag and the small HATCH ANOTHER use the deeper seal colour (--plot-seal), the big HATCH IT keeps the logo colour */
+.pl-seal,.bd-ans .pl-seal{background:var(--plot-seal);box-shadow:inset 0 0 0 5px var(--plot-seal),inset 0 0 0 7px var(--on-plot-seal)}
+.pl-tagr{border-color:var(--plot-seal);background:var(--plot-seal);color:var(--on-plot-seal)}
+.pl-row .pl-go{background:var(--plot-seal);color:var(--on-plot-seal)}
+@media (max-width:699.98px){.pl-seal,.bd-ans .pl-seal{box-shadow:inset 0 0 0 4px var(--plot-seal),inset 0 0 0 6px var(--on-plot-seal)}}
+/* phone, after a build (spec section 6-7): plates share rows and never run off the page; "or" hidden; the six on their own full-width
+   line under the title + seal; Why This Score stays (breakdown text hidden) */
+@media (max-width:699.98px){
+  .pl-row{gap:var(--s2)}.pl-row .pl-ln{display:contents}.pl-row .pl-or{display:none}
+  .pl-row .pl-grp[data-v2slide="bdsrc"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);width:100%}
+  .pl-row .pl-grp[data-v2slide="bdsrc"] .pl-pl{justify-content:center;min-width:0}
+  .pl-row .pl-grp[data-v2slide="sgmega"]{flex:none}.pl-row .pl-ar{flex:1 1 0;min-width:0}.pl-row .pl-find{width:100%;min-width:0}.pl-row .pl-find input{width:100%;min-width:0}
+  .pl-arow{grid-template-columns:minmax(0,1fr) 122px;align-items:start}.pl-tl{display:contents}
+  .pl-arow .pl-title{grid-column:1;align-self:center;font-size:var(--t22);text-wrap:balance}.pl-arow .pl-seal{grid-column:2;grid-row:1}
+  .pl-six{grid-column:1/-1;margin-top:var(--s3);justify-content:space-between;padding-bottom:var(--s1);border-bottom:2px solid var(--pick)}
+  .pl-mon{width:auto;flex:1 1 0;min-width:var(--tap);height:64px;margin:0}.pl-mon img{max-width:100%;max-height:60px}
+  .bd-ans.bp .pl-meta2 .bd-brk{display:block}.bd-ans.bp .pl-meta2 .bd-brkt{display:none}
+  .pl-seal small{font-size:var(--t13);line-height:1.1}
+}
+@media (max-width:699.98px){
+  .pl-row .pl-pl{padding:0 var(--s2);font-size:var(--t13)}.pl-row .pl-pl > *{min-width:0;overflow:hidden;text-overflow:clip}
+  .pl-row .pl-find input{font-size:var(--t13)}
+  .pl-ans .pl-eb{font-size:var(--t17)}.pl-arow{margin-top:0;align-items:center}.pl-arow .pl-title{align-self:center}
+}
+@media (max-width:699.98px){
+  /* the check mark took 15 px of "Whole Roster" (Nov 20 measure: 143 needed in 128): smaller words, the mark drawn smaller */
+  .pl-row .pl-pl,.pl-row .pl-find input{letter-spacing:-.02em}.pl-row .pl-grp[data-v2slide="bdsrc"] .pl-pl[aria-pressed="true"] > span::before{width:.28em;margin-right:.16em}
+  .pl-row .pl-grp[data-v2slide="bdsrc"] .pl-pl > span{overflow:visible}.pl-row .pl-pl{gap:var(--s1)}
+  .pl-row .pl-find .np-ic,.pl-row .pl-find svg{display:none}
+  .pl-arow{grid-template-rows:auto auto}.pl-arow .pl-seal{align-self:start}.pl-arow .pl-title{align-self:start;margin-top:var(--s1)}
+}
+@media (max-width:699.98px){.pl-row .pl-grp[data-v2slide="bdsrc"] .pl-pl{padding:0 var(--s1)}.pl-row .pl-grp[data-v2slide="bdsrc"]{grid-template-columns:minmax(0,4fr) minmax(0,5fr)}}
+@media (max-width:699.98px){
+  /* the six sit directly under the title + seal (the grid row was sized by the desktop rules' 96 px items) */
+  .pl-arow{grid-template-rows:auto;row-gap:0}.pl-six{grid-row:2;align-self:start;margin-top:var(--s3)}
+  .pl-row .pl-find{padding:0 var(--s1)}.pl-row .pl-find input{letter-spacing:-.04em}
+}
+.pl-fresh{margin:var(--s2) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+/* ---------- Piece 3: the accomplices (spec section 8) ---------- */
+.pl-s2{position:relative;margin-top:var(--s8)}.pl-s2 > .pl-node{top:var(--s1)}
+.pl-h2{margin:0;font-size:var(--t24);color:var(--ink)}.pl-sub{margin:var(--s1) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-3)}
+.pl-plates{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s3);margin-top:var(--s16)}
+.pl-plate{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:var(--s1);min-width:0;margin:0;padding:var(--s16) var(--s3) var(--s3);border:0;background:var(--pt);color:var(--on-pt);text-align:center;cursor:pointer;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);overflow:visible}
+.pl-plates .pl-plate{clip-path:none;transform:skewX(-4deg)}.pl-plates .pl-plate > *{transform:skewX(4deg)}
+.pl-art{position:absolute;left:0;right:0;top:calc(-1 * var(--s16));height:120px;display:grid;place-items:end center;pointer-events:none}
+.pl-art img{max-width:92%;max-height:120px;object-fit:contain;filter:drop-shadow(0 6px 4px rgba(var(--cp,0,0,0),.25))}
+.pl-plate:hover .pl-art,.pl-plate:focus-visible .pl-art{translate:0 -4px}.pl-plate:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.pl-tier{align-self:center;margin-top:0;padding:var(--s1) var(--s2);background:var(--ink);color:var(--bg);font-size:var(--t15);line-height:1}
+.pl-batag{align-self:center;padding:0 var(--s2);background:var(--on-pt);color:var(--pt);font:700 var(--t13)/1.5 var(--b)}
+.pl-mg{min-height:15px;font-size:var(--t13);line-height:1.15;opacity:.85}
+.pl-nm{font-size:var(--t15);line-height:1.3;overflow-wrap:normal}
+.pl-fact{font:400 var(--t13)/1.5 var(--b);opacity:.9}.pl-out{align-self:stretch;padding:0 var(--s1);background:var(--on-pt);color:var(--plot-seal);font-weight:700;opacity:1}
+.pl-pc{display:flex;justify-content:space-between;gap:var(--s2);padding:2px var(--s2);font:700 var(--t13)/1.5 var(--b);text-align:right}
+.pl-pc i{font-style:normal;font-weight:400;opacity:.75}
+.pl-it{background:var(--on-pt);color:var(--ink)}.pl-ab{background:var(--plate);color:var(--on-plate)}
+.pl-mvs{display:grid;gap:var(--s1);margin-top:var(--s1)}.pl-mv{justify-content:center;background:rgba(var(--cp-ink,0,0,0),.3);text-align:center}
+@media (max-width:1199.98px){.pl-plates{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s16)}}
+@media (max-width:699.98px){.pl-plates{gap:var(--s2);row-gap:var(--s12);margin-top:var(--s12)}.pl-plate{padding:var(--s12) var(--s1) var(--s2)}
+  .pl-art{top:calc(-1 * var(--s10));height:80px}.pl-art img{max-height:80px}.pl-tier{margin-top:0;font-size:var(--t13)}
+  .pl-nm{font-size:var(--t13)}.pl-pc i{display:none}.pl-pc{justify-content:center;padding:2px var(--s1)}.pl-h2{font-size:var(--t20)}}
+@media (max-width:379.98px){.pl-plates{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* the new page drops the Blueprint sheet frame (paper, grid, cut corners, crosses): the answer and the plates sit on the page, on the
+   plot line's grid like step 1, and the red plot line runs on through them */
+.pl2 .bd-result .bd-ans.bp{position:relative;margin:0;padding:0 0 var(--s4) var(--s16);border:0;background:none;clip-path:none}
+.pl2 .bd-result .bd-ans.bp > .bp-x{display:none}
+.pl2 .bd-result .bd-ans.bp::before{content:"";position:absolute;left:var(--s3);top:0;bottom:0;border-left:2px solid var(--pick)}
+@media (max-width:699.98px){.pl2 .bd-result .bd-ans.bp{padding-left:var(--s10)}.pl2 .bd-result .bd-ans.bp::before{left:calc(var(--s2) + 2px)}
+  .pl-plates .pl-plate{transform:none}.pl-plates .pl-plate > *{transform:none}.pl-plate{padding-left:var(--s1);padding-right:var(--s1)}
+  .pl-pc{letter-spacing:-.02em;white-space:nowrap}.pl-nm{white-space:nowrap;letter-spacing:-.02em}.pl-out{font-size:var(--t13);line-height:1.3}}
+@media (max-width:699.98px){.pl-nm{font:800 var(--t13)/1.3 var(--b);font-style:italic;letter-spacing:0}.pl-yet{display:none}}
+.pl-oshort{display:none}
+@media (max-width:699.98px){.pl-olong{display:none}.pl-oshort{display:inline}} /* 3 across at 380-699: the plate is ~96 px, "To catch" (the site's word) fits one line */
+.pl-mvs,.pl-pc{min-width:0}.pl-pc{overflow:hidden}.pl-t{white-space:nowrap;transform-origin:center}.pl-it .pl-t,.pl-ab .pl-t{transform-origin:right}
+.pl-plates{align-items:stretch}.pl-plates .pl-plate{height:100%}
+/* ---------- Piece 4: Why it works, Got a Plan B? (spec section 9) ---------- */
+.pl-s3,.pl-s4{position:relative;margin-top:var(--s10)}.pl-s3 > .pl-node,.pl-s4 > .pl-node{top:var(--s1)}
+.pl-why{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6) var(--s12);margin:var(--s5) 0 0;padding:0;list-style:none}
+.pl-wl{min-width:0}.pl-ws{margin:0;font-size:var(--t20);line-height:1.3;color:var(--ink)}
+.pl-wp{display:inline-block;padding:0 var(--s2);border:2px solid var(--ink);background:var(--surface);color:var(--ink);transform:skewX(-8deg)}
+.pl-wl small{display:block;margin-top:var(--s1);font:400 var(--t15)/1.5 var(--b);color:var(--ink-3)}
+.pl-trio{display:inline-flex;vertical-align:middle;gap:var(--s1)}.pl-trio img{width:40px;height:36px;object-fit:contain}
+.pl-prov{margin:var(--s4) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s6) var(--s12);margin-top:var(--s5)}
+.pl-plan{display:flex;flex-direction:column;gap:var(--s1);min-width:0;padding-top:var(--s3);border-top:2px solid var(--ink)}
+.pl-pk{margin:0;font:700 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.pl-ps{margin:0;display:flex;align-items:baseline;gap:var(--s2)}.pl-ps b{font-size:var(--t34);color:var(--ink)}.pl-ps span{font-size:var(--t17);color:var(--ink)}
+.pl-pn{margin:0;font-size:var(--t15);color:var(--ink)}.pl-pm{margin:0;font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.pl-psix{display:flex;align-items:flex-end;justify-content:space-between;margin-top:var(--s2);padding-bottom:var(--s1);border-bottom:2px solid var(--pick)}
+.pl-psix span{position:relative;flex:1 1 0;display:grid;place-items:end center;height:56px;min-width:0}.pl-psix img{max-width:100%;max-height:52px;object-fit:contain}
+.pl-psix .pl-catch::after{top:0;right:0;width:8px;height:8px}
+.pl-sw2{align-self:flex-start;min-height:var(--tap);margin-top:var(--s3);padding:0 var(--s4);border:0;background:var(--plot);color:var(--on-mark);font-size:var(--t15);transform:skewX(-8deg);cursor:pointer}
+.pl-sw2:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.pl-pon{margin:var(--s3) 0 0;font:700 var(--t15)/1.5 var(--b);color:var(--ink-3)}
+.pl-plan.on{opacity:.6}
+@media (max-width:1199.98px){.pl-plans{gap:var(--s5) var(--s6)}}
+/* (q83, Nov 20) 700-1199: three Plan columns leave each sprite a 27-33 px slot, and a wide sprite (240x127 file) fitted to it stood 14-18 px
+   tall. Each may reach 8 px into its neighbours' slots (the files' clear margins overlap, spec 7/9: neighbours overlap), so none is under 20 px */
+@media (min-width:700px) and (max-width:1199.98px){.pl-psix img{max-width:calc(100% + var(--s4));margin:0 calc(-1 * var(--s2))}}
+@media (max-width:699.98px){.pl-why{grid-template-columns:minmax(0,1fr);gap:var(--s4)}.pl-ws{font-size:var(--t17)}.pl-plans{grid-template-columns:minmax(0,1fr);gap:var(--s5)}.pl-psix span{height:44px}.pl-psix img{max-height:40px}}
+/* ---------- the action row under the six (spec section 8): LOAD TEAM (red), SAVE (ink), COPY FOR SHOWDOWN (ink outline), one row ---------- */
+.pl2 .bd-ans.bp .bp-near{margin-top:var(--s5)}
+.pl2 .bd-ans.bp .bd-acts{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1.6fr);gap:var(--s4);align-items:stretch;margin:0}
+.pl2 .bd-ans.bp .bd-acts > button{min-height:48px;margin:0;padding:0 var(--s4);border:2px solid var(--ink);border-radius:0;font:900 var(--t24)/1 var(--u);font-style:italic;letter-spacing:-.02em;text-transform:uppercase;transform:skewX(-8deg);clip-path:none;cursor:pointer}
+.pl2 .bd-ans.bp .bd-acts > button > *{display:inline-block;transform:skewX(8deg)}
+.pl2 .bd-ans.bp .bd-acts [data-bduse]{border-color:var(--plot-seal);background:var(--plot-seal);color:var(--on-plot-seal)}
+.pl2 .bd-ans.bp .bd-acts [data-bdsave]{background:var(--ink);color:var(--bg)}
+.pl2 .bd-ans.bp .bd-acts [data-bdcopy]{background:transparent;color:var(--ink)}
+.pl2 .bd-ans.bp .bd-acts [data-bdsave][disabled]{opacity:.38;cursor:not-allowed}
+.pl2 .bd-ans.bp .bd-acts > button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.pl2 .bd-ans.bp .bd-acts .bd-catch{grid-column:1/-1;margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+@media (max-width:699.98px){.pl2 .bd-ans.bp .bd-acts{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}.pl2 .bd-ans.bp .bd-acts [data-bduse]{grid-column:1/-1}.pl2 .bd-ans.bp .bd-acts > button{font-size:var(--t17);min-height:var(--tap)}}
+@media (max-width:699.98px){.pl2 .bd-ans.bp .bd-acts [data-bdsave],.pl2 .bd-ans.bp .bd-acts [data-bdcopy]{padding:0 var(--s2);font:700 var(--t15)/1.2 var(--b);text-transform:none;letter-spacing:0;white-space:nowrap}}
+/* the action row below 1200 (Nov 20 measure: "Copy for Showdown" needs 143 px on phones, 355 px at 24 px type): Load Team on its own row,
+   then Save | Copy for Showdown with Copy given two parts of three */
+@media (max-width:1199.98px){.pl2 .bd-ans.bp .bd-acts{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}.pl2 .bd-ans.bp .bd-acts [data-bduse]{grid-column:1/-1}.pl2 .bd-ans.bp .bd-acts > button{font-size:var(--t20)}}
+@media (max-width:699.98px){.pl2 .bd-ans.bp .bd-acts > button{font-size:var(--t17)}}
+/* ---------- Piece 5: 5 Plots that worked, 6 Partners in crime, the end (spec section 9; picture Q98-4b / 9b) ----------
+   One ink band, the full window width, under the answer (and under the waiting steps before a build); the plot line runs on through it
+   (solid after a build and ends at the filled end node; dashed before, ending at step 6). No tabs: both sections always show. */
+.pl0{padding-bottom:var(--s10)}.pl0 .pl-waits::before{bottom:calc(-1 * var(--s10))}
+.pl2 .bd-result .bd-ans.bp{padding-bottom:var(--s10)}
+.pl2 .pl-low.bd-lower{display:block;margin:0 var(--gut);padding:0 0 var(--s10) var(--s16);border:0;background:var(--pl-band);color:var(--on-pl-band);box-shadow:0 0 0 100vmax var(--pl-band);clip-path:inset(0 -100vmax)}
+.pl-low .bd-wins,.pl-low .bd-cores{display:block}
+.pl-low > .pl-step{position:relative;padding-top:28px}
+.pl-low > .pl-step::before{content:"";position:absolute;left:calc(var(--s3) - var(--s16));top:0;bottom:0;border-left:2px solid var(--pick)}
+.pl-low0 > .pl-step::before{border-left-style:dashed}
+.pl-low > .pl-step:last-child::before{bottom:auto;height:calc(28px + 15px)}
+.pl-low > .pl-step > .pl-node{top:calc(28px + 2px);background:var(--pl-band);color:var(--on-pl-band)}
+.pl-low > .pl-end{padding-top:var(--s10)}
+.pl-low > .pl-end > .pl-node{top:calc(var(--s10) + 9px);background:var(--pick);border-color:var(--pick)}
+.pl-low > .pl-end:last-child::before{height:calc(var(--s10) + 22px)}
+.pl-hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3)}
+.pl-low .pl-h2{color:var(--on-pl-band)}.pl-low .pl-hd .pl-sub{margin:0;color:var(--pl-band-2)}
+.pl-low .np-link{font:600 var(--t13)/1.4 var(--b);color:var(--on-pl-band);text-decoration:underline;text-underline-offset:3px}
+.pl-low .np-link:focus-visible,.pl-out2:focus-visible,.pl-wsets > summary:focus-visible{outline:3px solid var(--on-pl-band);outline-offset:3px}
+/* the outlined plate (LOAD TEAM, ADD): ink band text colour, slanted like the plot's plates */
+.pl-out2{display:inline-flex;align-items:center;justify-content:center;flex:none;min-height:var(--tap);margin:0;padding:0 var(--s4);border:2px solid var(--on-pl-band);border-radius:0;background:transparent;color:var(--on-pl-band);font-size:var(--t15);line-height:1;text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg);cursor:pointer}
+.pl-out2 > span{display:inline-block;transform:skewX(8deg)}
+@media (hover:hover){.pl-out2:hover{background:var(--on-pl-band);color:var(--pl-band)}}
+/* 5 Plots that worked: three columns, each a winner */
+.pl-wins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s6) var(--s12);margin-top:var(--s5)}
+.pl-win{min-width:0;padding-top:var(--s3);border-top:2px solid var(--pl-band-edge)}
+.pl-wr{display:flex;align-items:center;gap:var(--s3)}
+.pl-rec{flex:none;padding:var(--s1) var(--s3);background:var(--pl-band-plate);color:var(--on-pl-band-plate);font-size:var(--t24);line-height:1.1;transform:skewX(-8deg)}
+.pl-wm{min-width:0;font:600 var(--t13)/1.4 var(--b);color:var(--on-pl-band)}.pl-wm > span{white-space:nowrap} /* "1st of 139 players ·" and the date wrap as two pieces, never mid-phrase */
+.pl-wr .pl-out2{margin-left:auto;padding:0 var(--s3)} /* 15 px: Unbounded never under 15 (v2-unbounded) */
+.pl-wt{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:var(--s3);margin-top:var(--s1)}
+.pl-wev{margin:0;font-size:var(--t15);line-height:1.3;color:var(--on-pl-band);overflow-wrap:anywhere}
+.pl-wsets{min-width:0}.pl-wsets[open]{grid-column:1/-1}
+.pl-wsets > summary{display:flex;align-items:center;justify-content:flex-end;min-height:var(--tap);list-style:none;font:600 var(--t13)/1.4 var(--b);color:var(--on-pl-band);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.pl-wsets > summary::-webkit-details-marker{display:none}
+.pl-wsets .bd-wwho{margin:0;color:var(--pl-band-2)}
+.pl-wsets .bd-sets{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin:var(--s2) 0 var(--s2)}
+.pl-wsets .bd-set b,.pl-wsets .bd-set .bd-mv{color:var(--on-pl-band)}.pl-wsets .bd-at,.pl-wsets .bd-set small{color:var(--pl-band-2)}
+.pl-wsix{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;margin-top:var(--s1)}
+.pl-wsix span{display:grid;place-items:end center;height:56px;min-width:0}.pl-wsix img{max-width:100%;max-height:56px;object-fit:contain}
+.pl-wa{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s6);margin-top:var(--s1)}
+.pl-wa .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+.pl-win .wt-sure{justify-content:flex-start;margin:var(--s2) 0;color:var(--on-pl-band)}
+.pl-win .wt-sure .np-btn{min-height:var(--tap);padding:0 var(--s5);background:var(--plot-seal);box-shadow:none;color:var(--on-plot-seal)} /* Replace is the action (red); the page's main colour is the band's own ink by day */
+.pl-low .np-btn2{border-color:var(--on-pl-band);color:var(--on-pl-band)}
+/* 6 Partners in crime: one control row, the hint, then rows in two columns (one from 1199 down) */
+.pl-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);margin-top:var(--s4)}
+.pl-low .np-slide{display:inline-grid;width:auto;background:transparent;border-radius:var(--r-s);box-shadow:inset 0 0 0 2px var(--on-pl-band);clip-path:none}
+.pl-low .np-slide .thumb{background:var(--on-pl-band);border-radius:var(--r-s);box-shadow:none;clip-path:none}
+.pl-low .np-slide button{flex-direction:row;min-height:var(--tap);padding:0 var(--s4);font:700 var(--t15)/1 var(--b);color:var(--on-pl-band);white-space:nowrap}
+.pl-low .np-slide button[aria-pressed="true"]{color:var(--pl-band)}
+.pl-low .np-slide .np-ic{display:none} /* the picture's segments are words only */
+.pl-low .mg{color:inherit} /* Mega in the core names: the band's text colour (the page's blue is 3:1 on the band) */
+.pl-low .np-slide button:focus-visible{outline:3px solid var(--on-pl-band);outline-offset:2px}
+.pl-ctl .bd-cfind{flex:0 1 240px;min-width:200px;max-width:none}.pl-ctl .bd-cpick{flex:0 1 auto}
+.pl-low .np-field{min-height:var(--tap);padding:0 var(--s3);border:2px solid var(--pl-band-2);border-radius:var(--r-s);transform:none;color:var(--pl-band-2)}
+.pl-low .np-field > *{transform:none}.pl-low .np-field .np-ic{color:var(--pl-band-2)}
+.pl-low .np-field input{min-height:40px;color:var(--on-pl-band)} /* 40 + the 2 px edges = 44, as the segments (was 44 + edges = 48) */.pl-low .np-field input::placeholder{color:var(--pl-band-2);opacity:1}
+.pl-low .np-field:focus-within{outline:3px solid var(--on-pl-band);outline-offset:3px}
+.pl-low .bd-pick{min-height:var(--tap);border-color:var(--on-pl-band);color:var(--on-pl-band)}.pl-low .bd-x{color:var(--on-pl-band)}
+.pl-chint{flex:1 1 320px;min-width:0;margin:0;font:400 var(--t13)/1.5 var(--b);color:var(--pl-band-2)}
+.pl-chint .np-link{display:inline;min-height:0} /* Sim, Nov 23 (iPhone 393): the 44px link stretched its line, so "toward the average. How Cores Are Ranked" sat 12px lower than the lines above; the 44px tap area stays, drawn by the shared .bd-hint .np-link::before (components.css) */
+.pl-cores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s12);margin:var(--s2) 0 0;padding:0;list-style:none}
+.pl-core{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:0 var(--s4);min-width:0;min-height:76px;padding:var(--s2) 0;border-top:1px solid var(--pl-band-rule)}
+.pl-csp{display:flex;align-items:flex-end;gap:var(--s1);min-width:104px}
+.pl-csp img{width:50px;height:50px;object-fit:contain;object-position:bottom}
+.pl-c3 .pl-csp img{width:40px;height:44px}.pl-c3 .pl-csp img+img{margin-left:calc(-1 * var(--s1))}
+.pl-c4 .pl-csp{gap:0}.pl-c4 .pl-csp img{width:32px;height:40px}.pl-c4 .pl-csp img+img{margin-left:calc(-1 * var(--s1))}
+.pl-cwho{min-width:0}.pl-cwho b{display:block;font:700 var(--t15)/1.3 var(--b);color:var(--on-pl-band)}
+.pl-cwho small{display:block;font:500 var(--t13)/1.4 var(--b);color:var(--pl-band-2)}
+.pl-cacts{display:flex;flex-wrap:wrap;gap:0 var(--s4)}
+.pl-cwv{text-align:right}.pl-cwv b{display:block;font-size:var(--t22);line-height:1.1;color:var(--on-pl-band)}
+.pl-cwv small{display:block;font:500 var(--t13)/1.4 var(--b);color:var(--pl-band-2);white-space:nowrap}
+.pl-cadd{min-width:64px}
+/* full teams (6 sprites + LOAD TEAM): in a row under 720 px the names had 8-90 px (one word a line; measured at 700, 1280, 1440) and the win
+   line ran into them; there the six sit on top with the win % beside them, and the names take the width with LOAD TEAM to their right */
+.pl-c4{container:plcore / inline-size}
+@media (min-width:700px){@container plcore (max-width:719.98px){
+  .pl-c4 .pl-csp{grid-column:1/3;grid-row:1}.pl-c4 .pl-cwv{grid-column:3/5;grid-row:1;justify-self:end}
+  .pl-c4 .pl-cwho{grid-column:1/4;grid-row:2}.pl-c4 .pl-cadd{grid-column:4;grid-row:2}
+}}
+.pl-low .bd-cnone{color:var(--pl-band-2)}
+.pl-cmore{margin-top:var(--s3)}
+/* the end: a filled red node, the line, HATCH ANOTHER (data-plgo presses the control row's data-bdgo) */
+.pl-endn{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);min-height:var(--tap)}
+.pl-low .pl-endn .pl-h2{font-size:var(--t24)}
+.pl-goend{padding:0 var(--s4);background:var(--plot-seal);color:var(--on-plot-seal);font:900 var(--t20)/1.05 var(--u);font-style:italic;letter-spacing:-.02em}
+.pl-goend:focus-visible{outline:3px solid var(--on-pl-band);outline-offset:3px}
+.pl-endq{font:400 var(--t15)/1.5 var(--b);color:var(--pl-band-2)}
+@media (max-width:1199.98px){.pl-wins{gap:var(--s5) var(--s6)}.pl-wr{flex-wrap:wrap}.pl-cores{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:699.98px){
+  .pl0{padding-bottom:var(--s6)}.pl0 .pl-waits::before{bottom:calc(-1 * var(--s6))}.pl2 .bd-result .bd-ans.bp{padding-bottom:var(--s6)}
+  .pl2 .pl-low.bd-lower{padding-left:var(--s10);padding-bottom:var(--s6)}
+  .pl-low > .pl-step{padding-top:var(--s6)}
+  .pl-low > .pl-step::before{left:calc(var(--s2) + 2px - var(--s10))}
+  .pl-low > .pl-step > .pl-node{top:calc(var(--s6) + 1px)}
+  .pl-low > .pl-step:last-child::before{height:calc(var(--s6) + 12px)}
+  .pl-low > .pl-end{padding-top:var(--s8)}.pl-low .pl-endn .pl-h2{flex-basis:100%} /* phones: the words on their line, the node beside them */
+  .pl-low > .pl-end > .pl-node{top:calc(var(--s8) - 2px)}.pl-low > .pl-end:last-child::before{height:calc(var(--s8) + 9px)}
+  .pl-wins{grid-template-columns:minmax(0,1fr);gap:var(--s5);margin-top:var(--s3)}
+  .pl-wr{flex-wrap:nowrap;gap:var(--s2)}.pl-rec{font-size:var(--t20)}.pl-out2{padding:0 var(--s3)}
+  .pl-wsix span{height:38px}.pl-wsix img{max-height:38px}
+  .pl-w1{display:none} /* phones: "68 players · Nov 7" (the mock-up's phone line; the section says they are winners) */
+  .pl-wa{justify-content:space-between;gap:0 var(--s2);letter-spacing:-.01em}
+  .pl-wsets .bd-sets{grid-template-columns:minmax(0,1fr)}
+  .pl-ctl{gap:var(--s2)}.pl-low .np-slide button{padding:0 var(--s2);font-size:var(--t13)}
+  .pl-ctl .bd-cfind{flex:1 1 120px;min-width:0}.pl-low .np-field{gap:var(--s1);padding:0 var(--s2)}.pl-low .np-field input{font-size:var(--t13)}.pl-low .np-field .np-ic{width:16px;height:16px}.pl-chint{flex-basis:100%}
+  .pl-core{grid-template-columns:84px minmax(0,1fr) auto;align-items:start;gap:0 var(--s2);min-height:0;padding:var(--s2) 0}
+  .pl-csp{grid-column:1;grid-row:1;min-width:0}.pl-csp img{width:40px;height:40px}.pl-c3 .pl-csp img{width:28px;height:36px}.pl-c4 .pl-csp{flex-wrap:wrap}.pl-c4 .pl-csp img{width:28px;height:28px}.pl-c4 .pl-csp img+img{margin-left:0}
+  .pl-cwho{grid-column:2;grid-row:1/3}.pl-cwho b{font-size:var(--t13)}
+  .pl-cwv{grid-column:3;grid-row:1/3}.pl-cwv b{font-size:var(--t17)}.pl-cdot{display:none}.pl-cvs{display:block} /* phones: "wins" over "+3.9 vs avg", so the names keep the width */
+  .pl-cadd{grid-column:1;grid-row:2;justify-self:start;margin-top:var(--s1);min-width:56px}
+  .pl-c4 .pl-cadd{grid-column:1/-1;grid-row:3;margin-top:var(--s2)} /* full teams: LOAD TEAM (~150 px) is wider than the 84 px sprite column; it takes its own line under the row */
+  .pl-low .pl-endn .pl-h2{font-size:var(--t17)}.pl-goend{font-size:var(--t17)}
+}
+.pl-cacts .np-link{white-space:nowrap}
+@media (max-width:379.98px){
+  /* under 380 the record, the players line and LOAD TEAM don't share one row: LOAD TEAM takes the next line; a core's win % goes under
+     its names so the names keep the width */
+  .pl-wr{flex-wrap:wrap;row-gap:var(--s2)}
+  .pl-core{grid-template-columns:84px minmax(0,1fr)}.pl-cwho{grid-row:1}
+  .pl-cwv{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2);margin-top:var(--s1);text-align:left}.pl-cvs{display:inline}
+}
+/* ---------- Piece 6: every width, dark mode (plot-spec.md sections 3, 4, 8, 9; Q98) ---------- */
+/* every step's heading has its line beside it, as in Q98 (steps 2-4 put it below); it wraps under only when there is no room */
+.pl-hd .pl-sub{margin:0}
+/* the plates of Plots that worked hug their words (spec 4: padding .06em x .32em; type -0.02em) */
+.pl-rec{padding:var(--s1) var(--s2);letter-spacing:-.02em}
+.pl-wr .pl-out2{padding:0 var(--s2);letter-spacing:-.02em}
+/* each winner column lays itself out by its own width (700 and up; phones keep their own rules): the record, "1st of 68 players · Nov 7"
+   and LOAD TEAM on one line when all three fit (400 px); else the record and LOAD TEAM share the top line and the players line sits under
+   them, whole; under 240 px the three stack, LOAD TEAM the column's width. The links: one line from 352 px; else Copy for Showdown on
+   its line and Set as Opponent + Compare together (16 px apart under 230 px); under 196 px one per line. Never a lone LOAD TEAM or Compare left hanging. */
+.pl-win{container:plwin / inline-size}
+@media (min-width:700px){
+  @container plwin (max-width:399.98px){
+    .pl-wr{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"rec lt" "wm wm";align-items:center;gap:var(--s2) var(--s3)}
+    .pl-wr .pl-rec{grid-area:rec;justify-self:start}.pl-wr .pl-wm{grid-area:wm}.pl-wr .pl-out2{grid-area:lt;justify-self:end;margin-left:0}
+  }
+  @container plwin (max-width:239.98px){
+    .pl-wr{grid-template-columns:minmax(0,1fr);grid-template-areas:"rec" "wm" "lt"}.pl-wr .pl-out2{justify-self:stretch}
+  }
+  @container plwin (max-width:351.98px){.pl-wa{display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:var(--s6)}.pl-wa .np-link:first-child{grid-column:1/-1;justify-self:start}}
+  @container plwin (max-width:229.98px){.pl-wa{column-gap:var(--s4)}}
+  @container plwin (max-width:195.98px){.pl-wa{grid-template-columns:auto}}
+}
+/* phones (their links are 2 px tighter, 315 px on one line): the same two lines under 317 px, only where they would wrap anyway (at 390
+   with a desktop scrollbar Compare was left alone on a row); a phone's 318 px column keeps one line, so no extra row. Under
+   380 LOAD TEAM, on its own line already, takes the column's width as it does when the columns stack at 700-879 */
+@media (max-width:699.98px){@container plwin (max-width:316.98px){.pl-wa{display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:var(--s6)}.pl-wa .np-link:first-child{grid-column:1/-1;justify-self:start}}}
+@media (max-width:379.98px){.pl-wr .pl-out2{flex:1 1 100%}}
+/* phones: "With a Pokémon…" fits its box at 380-699 (it read "With a Pokémo…": 89 px for 111); the segments keep 44 px */
+@media (max-width:699.98px){.pl-low .np-slide button{padding:0 var(--s1);min-width:var(--tap)}.pl-low .np-field{padding:0 var(--s1)}}
+/* Sim, Nov 23 (iPhone 393): at 4px sides "Full Teams" and "Most Used" touched their box's right border; Pairs / Trios / Full Teams has its own row,
+   so 8px; Top Rated / Most Used shares its row with the search box, so 6px from 390, where "With a Pokémon…" still fits (under 390 it keeps 4px).
+   Only under 440: from 440 the two groups share a row and more width would push the search box onto a line of its own */
+@media (max-width:439.98px){.pl-low [data-v2slide="bdckind"] button{padding:0 var(--s2)}}
+@media (min-width:390px) and (max-width:439.98px){.pl-low [data-v2slide="bdcsort"] button{padding:0 6px}}
+/* contrast: the Item chip's words are ink on its white in day AND night (night ink on white was 1.3:1); MEGA and "In your box" at
+   full white (4.1:1 and 4.3:1 at .85 / .9) */
+.pl-it{color:var(--on-pt-it)}
+.pl-mg,.pl-fact{opacity:1}
+/* the action row at 1200 and up (spec 8): each button its words plus an equal share of the rest (Copy for Showdown spilled its button
+   at 1200-1280 in the fixed 2 : 1 : 1.6 columns); the catch line under them takes no part in the sizing */
+@media (min-width:1200px){.pl2 .bd-ans.bp .bd-acts{grid-template-columns:repeat(3,auto)}.pl2 .bd-ans.bp .bd-acts > :not(button){contain:inline-size}}
+/* the control row on phones: My Box | Whole Roster each its words plus an equal share (at 320 "WHOLE ROSTER" ran 16 px out of its
+   plate); under 380 the search plate takes its own row (ANY POKÉMON had 77 px for 128) */
+@media (max-width:699.98px){.pl-row .pl-grp[data-v2slide="bdsrc"]{grid-template-columns:repeat(2,auto)}}
+@media (max-width:379.98px){.pl-row .pl-ar{flex:1 1 100%}}
+/* the before page's sentence is measured with the search plate at full width (build-plot.js V2.plotFit) */
+.pl-meas .pl-ar,.pl-meas .pl-find{max-width:none;flex-shrink:0}
+/* 700-879: "The end. Or is it?" on its line, HATCH ANOTHER and its words together under it (Build Me a Team was left alone on a row) */
+@media (min-width:700px) and (max-width:879.98px){.pl-low .pl-endn .pl-h2{flex-basis:100%}.pl-low > .pl-end > .pl-node{top:var(--s10)}.pl-low > .pl-end:last-child::before{height:calc(var(--s10) + 12px)}}
+/* Got a Plan B?: the Switch buttons sit on one line across the three columns (a name on two lines pushed one down) */
+.pl-psix{margin-bottom:var(--s3)}.pl-plan .pl-sw2,.pl-plan .pl-pon{margin-top:auto}
+/* X-05 (v2-minors main1, found after piece 5): the cores box is 44 tall now (was 48), so its × (44) lost a pixel row to rounding at 1280
+   (tap 44x43). The × is 48 tall, centred on the box (its 4 px past each edge are taps on the ×); the box stays 44 */
+.pl-low .np-field .np-clr{height:calc(var(--tap) + var(--s1));margin-top:calc(-1 * var(--s1));margin-bottom:calc(-1 * var(--s1))}
+/* polish (Nov 21, authority): at 700-879 the winner's event column is 91-151px; the name broke inside a word ("Champion/s-MC").
+   There it uses the small-label font (Instrument Sans bold 15px, Sim's type rule: small labels in Instrument Sans), which is narrow enough
+   for every word, and wraps only between words or at a hyphen (break-word keeps the column at the longest word) */
+@media (min-width:700px) and (max-width:879.98px){.pl-wev{font:700 var(--t15)/1.3 var(--b);font-style:normal;overflow-wrap:break-word}}
+
+/* reskin proposal (Nov 21): the newest winner runs full width with its six as kit roster cards; the next two sit side by side under it */
+.pl-wins .pl-big{grid-column:1 / -1}.pl-wins{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pl-wsixk .k-roster{padding-top:var(--s10)}
+@media (max-width:699.98px){.pl-wins{grid-template-columns:minmax(0,1fr)}}
+/* phones: the winner's six cards sit tighter (lower plates, art a little smaller), and the three links stay on one line */
+@media (max-width:699.98px){.pl-wsixk .k-roster{gap:var(--s8) var(--s2);padding-top:var(--s5)}.pl-wsixk .k-small .k-plate{padding:52px 8px 4px}.pl-wsixk .k-small .k-art{top:-28px;height:88px} /* Sim, Nov 21 (option A): under the 3,200 px cap at 390 (q83) */.pl-wins{gap:var(--s2)}.pl-win{padding-top:var(--s2)}
+  @container plwin (min-width:300px){.pl-wa{display:flex;flex-wrap:nowrap;justify-content:space-between;gap:0 var(--s1)}.pl-wa .np-link{font-size:var(--t13);white-space:nowrap;letter-spacing:-.02em}}}
+/* phones (Sim, Nov 21: "recommended is good"): the two older winners are compact rows: their links and "Full sets" keep 44 px taps
+   but take one text line of room (the tap reaches 12 px above and below), and the six sit a little smaller; the page stays no longer than today */
+@media (max-width:699.98px){.pl-win:not(.pl-big) .pl-wa .np-link,.pl-win:not(.pl-big) .pl-wsets > summary{margin-block:calc(var(--s3) * -1)}
+  .pl-win:not(.pl-big) .pl-wt{margin-block:var(--s1) 0}.pl-win:not(.pl-big) .pl-wsix span{height:32px}.pl-win:not(.pl-big) .pl-wsix img{max-height:32px}}
+/* Build top A (Sim, Nov 22, 6:58 AM): the hint sits under the sentence, left, quiet */
+.pl-hint2{margin:var(--s2) 0 0;text-align:left;font-weight:500}
+/* before a plot (HH, design authority to 9 AM Mon, Sim 9:12 PM): the accomplices' row shows five empty slots (your pick + five = the six,
+   in the same slanted dashed boxes) across the whole lane, and the underdog stands bigger beside them, so the waiting part reads as the
+   team about to be hatched rather than a mostly empty strip */
+@media (min-width:1100px){.pl-places{grid-template-columns:repeat(5,minmax(0,1fr))}.pl-dog .np-mon{--iw:168px}.pl-dog{max-width:440px}}
+/* the plate's name is its button and covers the whole plate (a tap anywhere opens the Pokémon); its item, Ability and moves sit above that
+   cover as their own info words, in the plate's own ink with an underline (blue would fight the type colour) (Nov 22, HH design authority) */
+.pl-nmb{position:static;padding:0;margin:0;border:0;background:none;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer}
+.pl-nmb::after{content:"";position:absolute;inset:0;z-index:0}
+.pl-nmb:focus-visible{outline:none}.pl-plate:has(.pl-nmb:focus-visible){outline:3px solid var(--k-plot);outline-offset:3px}
+.pl-plate .is-w,.pl-plate .pl-mv{position:relative;z-index:1}
+.pl-plate .pl-pc .is-w,.pl-plate .pl-pc .is-w:hover{color:inherit;text-decoration-color:currentColor}
+button.pl-mv{width:100%;border:0;color:inherit;cursor:pointer}button.pl-mv .pl-t{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+/* Build at 1280-1439 (alt/len1280, Nov 23: the desktop length rule; 1280x800 was 3.40 screens, cap 3): the four "tap one" picks sit two by
+   two in a wider third column, so each name stays whole (they stood one under another and made the help row 293px tall); Partners in crime gives its names the width they have at 1440:
+   40px sprites, "wins" over "+3.9 vs avg" as on phones, a 12px gap (32px between the two lists, ADD 12px padded), so names and counts stop breaking onto extra lines;
+   the gaps around the help row, under the two plan bands and over the dark band's two headings are 16-24px (were 24-40px).
+   Nothing is hidden; 1440 and up, 1100-1279 and phones are unchanged */
+@media (min-width:1280px) and (max-width:1439.98px){
+  .pl-help{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr) minmax(0,1fr)}.pl-help .pl-chips{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pl-core{gap:0 var(--s3)}
+  .pl-csp{min-width:84px}.pl-csp img{width:40px;height:40px}
+  .pl-cdot{display:none}.pl-cvs{display:block}
+  .pl-help{margin-top:var(--s4)}.pl-waits{margin-top:var(--s6)}.pl0{padding-bottom:var(--s6)}.pl0 .pl-waits::before{bottom:calc(-1 * var(--s6))}.pl-low{padding-bottom:var(--s6)}
+  .pl-cores{column-gap:var(--s8)}.pl-core .pl-cadd{padding:0 var(--s3)}
+  .pl-low > .pl-step{padding-top:var(--s4)}
+}
+/* Partners in crime with no tournament teams yet (a new regulation's day one, Nov 25): the underdog aside sits in the dark cores band,
+   so its words take the band's own text colours (the plot's ink was dark on dark), picture first and words to its right */
+.bd-cores .pl-dog{flex-direction:row-reverse;justify-content:flex-end;max-width:none}.bd-cores .pl-dog p{text-align:left;color:inherit}.bd-cores .pl-dog b{color:inherit}

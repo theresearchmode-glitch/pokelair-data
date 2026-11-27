@@ -19,7 +19,7 @@ const SPD = (() => { try { const t = fs.readFileSync(ROOT + 'app/src/data/data.j
 // nm: the sheet's feature names. Returns null when the sheet lists fewer than 16 moves (unknown).
 export function deckBasics(nm) {
   const mv = nm.filter(n => n.includes(':'));
-  if (mv.length < 16) return null; const prot = mv.filter(n => /:Protect$/.test(n)).length;
+  if (mv.length < 16) return null; const prot = mv.filter(n => (process.env.PROT_FAMILY !== '0' ? /:(Protect|Detect|Spiky Shield|King's Shield|Baneful Bunker|Silk Trap|Burning Bulwark|Obstruct)$/ : /:Protect$/).test(n)).length; /* the whole Protect family (Sim, Nov 16, batch 2B; PROT_FAMILY=0 for Protect alone) */
   const trU = new Set(mv.filter(n => /:Trick Room$/.test(n)).map(n => n.slice(0, n.indexOf(':')))), deckMons = new Set(mv.map(n => n.slice(0, n.indexOf(':'))));
   const slow = [...deckMons].filter(n => !trU.has(n) && (SPD.get(n) ?? 100) <= 60).length;
   const abs = nm.filter(n => n.includes('#')).map(n => n.slice(n.indexOf('#') + 1)), wx = new Set(abs.map(a => WEATHER_OF[a]).filter(Boolean));

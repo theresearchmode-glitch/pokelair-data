@@ -13,7 +13,10 @@
 //   const t = group('A-team');
 //   t('TEAM-03', 'Remove a Pokémon with its ×', async () => { const {pg, ui} = await open({team: TEAM}); ... ; ui.close(); });
 // Run: node app/test/behaviour/run.mjs [A-team|B-build|C-battle|D-meta-shell] [--only=ID,ID]   PAGE=path ADAPTER=name
-import fs from 'node:fs'; import zlib from 'node:zlib'; import {fileURLToPath} from 'node:url'; import {chromium} from 'playwright';
+import fs from 'node:fs'; import zlib from 'node:zlib'; import {fileURLToPath} from 'node:url'; import {chromium, webkit} from 'playwright';
+/* BROWSER=webkit runs a group in Safari's engine (review C-I8, Nov 17: Sim tests on iPhone and iPad; the suites were Chromium only) */
+export const BROWSER = process.env.BROWSER === 'webkit' ? 'webkit' : 'chromium';
+import {perfDoc} from '../../data-docs.mjs';
 
 export const HERE = fileURLToPath(new URL('.', import.meta.url)), ROOT = HERE + '../../../';
 export const PAGE_SRC = process.env.PAGE || ROOT + 'app/dist/page.html';
@@ -24,7 +27,7 @@ export const OPP = ['Incineroar', 'Garchomp', 'Sneasler', 'Kingambit', 'Whimsico
 // ---------- frozen data, served as the page's shared database documents ----------
 const fx = f => { try { return JSON.parse(zlib.gunzipSync(fs.readFileSync(HERE + 'fixture/' + f + '.json.gz')).toString('utf8')); } catch (e) { return null; } };
 const L = fx('limitless') || {};
-export const DOCS = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null,
+export const DOCS = {'meta/results': L.results, 'meta/perf': perfDoc(L, fx('perf')),
   'meta/doubles_tour': fx('meta_tour'), 'meta/teams': fx('teams'), 'meta/model': fx('model'), 'meta/doubles': fx('meta_ladder'),
   'meta/doubles_ingame': fx('meta_ingame'), 'meta/history': fx('history'), 'meta/events': fx('events'), 'meta/weekly': fx('weekly'),
   'meta/track': fx('track'), 'meta/practice': fx('practice'), 'meta/calendar': fx('calendar')};
@@ -33,8 +36,16 @@ export const DOCS = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj
 const PAGE = ROOT + `app/test/behaviour/_page-${process.pid}.html`;
 let built = false;
 function page() { if (built) return PAGE; let h = fs.readFileSync(PAGE_SRC, 'utf8');
+  /* code review C-M6 (Nov 16): today's page gets its hook by this string; if the string ever changes, say so instead of running without it
+     (the new site carries its own hook, test-hook.js, switched on by window.__PL_TEST, and its adapter works without it) */
+  if ((process.env.ADAPTER || 'current') !== 'v2' && !h.includes('render();setView(view,false);')) throw new Error('harness: today\'s page lost its hook point (render();setView(view,false);): the tests would run without __ev');
   h = h.replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);');
-  fs.writeFileSync(PAGE, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + h); built = true; return PAGE; }
+  fs.writeFileSync(PAGE, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + h);
+  // the new site reads its self-hosted fonts from fonts/ beside the page (Nov 12): copy them next to this test copy too
+  const fd = PAGE_SRC.replace(/[^\/\\]*$/, '') + 'fonts'; if (fs.existsSync(fd)) { const to = ROOT + 'app/test/behaviour/fonts'; fs.mkdirSync(to, {recursive: true}); for (const f of fs.readdirSync(fd)) if (f.endsWith('.woff2')) fs.copyFileSync(fd + '/' + f, to + '/' + f); }
+  /* a --split build (Nov 18) loads its main script from v2.js beside the page: copy it next to this test copy too */
+  const js = PAGE_SRC.replace(/[^\/\\]*$/, '') + 'v2.js'; if (/<script src="v2\.js/.test(h) && fs.existsSync(js)) fs.copyFileSync(js, ROOT + 'app/test/behaviour/v2.js');
+  built = true; return PAGE; }
 process.on('exit', () => { try { fs.unlinkSync(PAGE); } catch (e) {} });
 
 const AD_NAME = process.env.ADAPTER || 'current';
@@ -57,16 +68,27 @@ export async function closeAll() { if (browser) await browser.close(); browser =
  *   team: array of names (default none), box: names, opp: names, saved: [{name, team:[names]}],
  *   account: true = signed in (data saved to the fake account, readable via acct()), false = this browser only,
  *   fresh: true = first-time visitor (no welcome dismissal, nothing saved),
- *   stored: extra raw localStorage entries {key: value}, hash: '#team=...' etc.
+ *   stored: extra raw localStorage entries {key: value}, hash: '#team=...' etc.,
+ *   acctDelay: ms the player's own account doc takes to answer its first read (a slow account on first load; Nov 18, X-01c).
  * Returns {pg, ctx, errs, ui, acct, ls, close}. `ui` is the adapter bound to this page. */
+// the page a test opened last (FAILSHOT=dir in run.mjs saves a picture + its text when a test fails; Nov 12, SAVED-06 PC-only)
+let LAST = null; export const lastPage = () => LAST;
 export async function open(o = {}) {
-  if (!browser) browser = await chromium.launch();
+  if (!browser) browser = await (BROWSER === 'webkit' ? webkit : chromium).launch();
   const width = o.width || 1280, touch = o.touch ?? width < 700;
   const ctx = await browser.newContext({viewport: {width, height: o.height || 900}, deviceScaleFactor: 1, isMobile: touch, hasTouch: touch,
     colorScheme: o.mode === 'dark' ? 'dark' : 'light'});
-  const pg = await ctx.newPage(), errs = [];
+  const pg = await ctx.newPage(), errs = []; LAST = pg;
   pg.on('pageerror', e => errs.push(e.message.slice(0, 200)));
   const state = o.team || o.box || o.opp || o.saved ? ADAPTER.stateFor(o) : null;
+  /* WebKit leaves a styled dropdown's options out of innerText (measured Nov 17: Edit Set's Ability field read "Ability Mega Ability",
+     Chrome "Ability Mega Ability Drought ★"; the dropdown shows its value on screen in both). The tests read text the way Chrome
+     does, so on WebKit only innerText includes each dropdown's option texts, as Chrome's does. */
+  if (BROWSER === 'webkit') await pg.addInitScript(() => { const d = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerText');
+    Object.defineProperty(HTMLElement.prototype, 'innerText', {configurable: true, set: d.set, get() {
+      const sels = this.tagName === 'SELECT' ? [] : [...this.querySelectorAll('select')].filter(x => x.getClientRects().length); if (!sels.length) return d.get.call(this);
+      const tmp = sels.map(x => { const t = document.createElement('span'); t.textContent = [...x.options].map(o => o.text).join('\n'); t.style.cssText = 'display:block'; x.after(t); return t; });
+      try { return d.get.call(this); } finally { tmp.forEach(t => t.remove()); } }}); });
   await pg.addInitScript(([D, st, o]) => {
     window.__PL_TEST = 1;
     // copies are recorded here as well as sent to the real clipboard (Nov 11: reading the clipboard back fails on Windows)
@@ -82,7 +104,8 @@ export async function open(o = {}) {
     window.__acct = kept || (st && o.account !== false ? {[mine]: JSON.parse(JSON.stringify(st))} : {});
     const keep = () => { try { sessionStorage.setItem('__np_acct', JSON.stringify(window.__acct)); } catch (e) {} }; keep();
     const docOf = p => ({
-      get: async () => ({exists: p in window.__acct || !!D[p], data: () => p in window.__acct ? JSON.parse(JSON.stringify(window.__acct[p])) : D[p]}),
+      get: async () => { if (p === mine && o.acctDelay) await new Promise(r => setTimeout(r, o.acctDelay));
+        return {exists: p in window.__acct || !!D[p], data: () => p in window.__acct ? JSON.parse(JSON.stringify(window.__acct[p])) : D[p]}; },
       set: async v => { window.__acct[p] = JSON.parse(JSON.stringify(v)); keep(); },
       update: async v => { window.__acct[p] = Object.assign(window.__acct[p] || {}, JSON.parse(JSON.stringify(v))); keep(); },
       onSnapshot: cb => { setTimeout(() => cb({exists: p in window.__acct || !!D[p], metadata: {}, data: () => p in window.__acct ? window.__acct[p] : D[p]}), 5); return () => {}; }});
@@ -91,9 +114,12 @@ export async function open(o = {}) {
       if (n === 'db') return o.account === false ? null : db;
       if (n === 'user') return o.account === false ? null : {id: async () => 'u_test', isOwner: () => true, canEdit: () => true, can: () => true, me: async () => ({id: 'u_test'})};
       return null; }};
-  }, [DOCS, state, {fresh: !!o.fresh, mode: o.mode, account: o.account, stored: o.stored}]);
+  }, [DOCS, state, {fresh: !!o.fresh, mode: o.mode, account: o.account, stored: o.stored, acctDelay: o.acctDelay || 0}]);
   await pg.goto('file://' + page() + (o.hash || ''));
   await pg.waitForTimeout(o.wait ?? 1500);
+  /* review C-I7 (Nov 17): then wait for the page itself, not only the clock: fonts loaded, the first draw done (new site) and the
+     main thread quiet for two idle turns (it waits longer on a busy machine, where a fixed wait was too short; at most 10 s) */
+  await settle(pg);
   const ui = ADAPTER.bind(pg, o); for (const X of EXTRAS) Object.assign(ui, X.fn(ui, pg, o));
   for (const X of EXTRAS) if (X.group === CUR_GROUP) Object.assign(ui, X.fn(ui, pg, o));
   const acct = () => pg.evaluate(() => window.__acct['data/users/u_test/state'] || null);
@@ -114,4 +140,9 @@ export const visibleText = (pg, sel = 'body') => pg.evaluate(s => { const e = do
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 /** retry a check until it passes or time runs out (Nov 11: a fast PC checked before the page finished redrawing).
  *  fn returns truthy when the condition holds; resolves true/false. */
+/** wait until the page is ready: fonts loaded, the new site's first draw done, and two idle turns of the main thread (C-I7) */
+export async function settle(pg, ms = 10000) { try { await pg.evaluate(ms => new Promise(res => { const end = Date.now() + ms;
+  const idle = n => (window.requestIdleCallback || (f => setTimeout(() => f({didTimeout: false}), 50)))(d => n <= 1 || Date.now() > end ? res(true) : idle(d.didTimeout ? n : n - 1), {timeout: 1000});
+  const go = () => (typeof V2 === 'object' && V2 && !V2.drawN && Date.now() < end) ? setTimeout(go, 50) : (document.fonts && document.fonts.ready || Promise.resolve()).then(() => idle(2));
+  go(); }), ms); } catch (e) { /* a page that navigates away mid-wait: the fixed wait above still applies */ } }
 export async function eventually(fn, ms = 4000, step = 150) { const end = Date.now() + ms; for (;;) { try { if (await fn()) return true; } catch (e) {} if (Date.now() > end) return false; await sleep(step); } }

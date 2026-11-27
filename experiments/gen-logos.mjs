@@ -1,6 +1,6 @@
 // Inline the final NastyPlot logo (Stat Boost) into the page as SVG strings. node experiments/gen-logos.mjs
 import fs from 'node:fs';
-const D = 'C:/Users/simra/code/pl-mech/logos/final/', F = {hdrL: 'nastyplot-header-light', hdrD: 'nastyplot-header-dark', fullL: 'nastyplot-logo-light', fullD: 'nastyplot-logo-dark', icon: 'nastyplot-icon', iconS: 'nastyplot-icon-small', iconD: 'nastyplot-icon-dark', iconT: 'nastyplot-icon-tiny'};
+const D = 'C:/Users/<you>/code/pl-mech/logos/final/', F = {hdrL: 'nastyplot-header-light', hdrD: 'nastyplot-header-dark', fullL: 'nastyplot-logo-light', fullD: 'nastyplot-logo-dark', icon: 'nastyplot-icon', iconS: 'nastyplot-icon-small', iconD: 'nastyplot-icon-dark', iconT: 'nastyplot-icon-tiny'};
 const VARS = {'0078BF': '--chblue', 'E8364F': '--chred', 'C41E35': '--chpen', '1D2140': '--chink', 'FFE800': '--chyel', '3FA9FF': '--chblue', 'FF5C77': '--chred', 'FF8C7A': '--chpen', 'F3EBDC': '--chink'};
 const out = {}; for (const [k, f] of Object.entries(F)) { let s = fs.readFileSync(D + f + '.svg', 'utf8').trim();
   // unique ids per variant, so several logos on one page never share a mask

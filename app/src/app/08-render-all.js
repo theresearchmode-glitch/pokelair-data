@@ -4,6 +4,8 @@ let renderQueued=false,planCache={key:null,plans:[]},metaVersion=0;
 // one redraw instead of one each. Nov 1 (load speed): the wait restarts with each new piece (up to 0.7 s after the first one
 // waiting), so pieces that trickle in ~150 ms apart share one redraw instead of one each (a full redraw is ~0.3-0.7 s on a phone).
 let renderQAt=0,renderQT=0;
+// the usage source in use (ui.metaSrc) falls back to one that has data today: tournament, then ladder, then in-game (shared with the rebuild)
+function fixMetaSrc(){if(!META[SRC[ui.metaSrc]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaSrc=alt}}
 function scheduleRender(){const now=performance.now();if(now>=6000){if(renderQueued)return;renderQueued=true;setTimeout(()=>{renderQueued=false;bgRender()},0);return}
   if(!renderQueued){renderQueued=true;renderQAt=now}clearTimeout(renderQT);renderQT=setTimeout(()=>{renderQueued=false;bgRender()},Math.max(0,Math.min(200,renderQAt+700-now)))}
 // Background updates (data arriving, slow checks finishing) wait while someone is typing in a box: a redraw would rebuild the box
@@ -20,20 +22,22 @@ function planKeep(key,plans){planLRU.delete(key);planLRU.set(key,plans);while(pl
 // The plans being worked out in the background: the same planner (planFixesG), run about 30 ms at a time between frames.
 // A newer team replaces it; when it finishes, the page redraws with the plans (from the cache, so that redraw is quick).
 let planJob=null;
+// The whole background planning pass as one generator (R4, Nov 11: moved unchanged out of planJobStart, shared with the rebuild):
+// the fix plans, then the hidden gems for Quick add, then the readiness reports the redraw will look up. Yields between slices;
+// returns the plans (with .gems).
+function planAllG(ms,pool,useA,a){const gems=!OFFMETA;return (function*(){
+  const main=planFixesG(ms,pool,useA);let plans,gem=null;for(;;){const r=main.next();if(r.done){plans=r.value;break}yield}
+  // hidden gems for Quick add: the same search, scored on power and fit, over strong Pokémon outside the usual meta picks
+  if(gems){const gp=pool.filter(p=>!isMetaPick(p)&&((p.s||0)>=470||p.m));try{gem=withOffMeta(()=>planFixesG(ms,gp,useA,{singlesOnly:true}))}catch(e){plans.gems=null}}
+  if(gem){try{for(;;){const r=withOffMeta(()=>gem.next());if(r.done){plans.gems=r.value;break}yield}}catch(e){plans.gems=null}}
+  // then the readiness reports the redraw will look up, so the redraw itself is quick
+  const warm=planWarmG(ms,plans,a);for(;;){let r;try{r=warm.next()}catch(e){break}if(r.done)break;yield}
+  return plans})()}
 function planJobStart(key,ms,pool,useA,a){if(planJob&&planJob.key===key)return;
-  const job={key};planJob=job;const gems=!OFFMETA;let main=null,gem=null,plans=null,warm=null;
+  const job={key};planJob=job;const g=planAllG(ms,pool,useA,a);let plans=null;
   const fail=(e,what)=>{try{console.error('Champions Team Coverage: '+what+' failed',e)}catch(x){}};
   const step=()=>{if(planJob!==job)return;const t=performance.now();
-    try{
-      if(!main)main=planFixesG(ms,pool,useA);
-      if(!plans){for(;;){const r=main.next();if(r.done){plans=r.value;break}if(performance.now()-t>30){setTimeout(step,0);return}}
-        // hidden gems for Quick add: the same search, scored on power and fit, over strong Pokémon outside the usual meta picks
-        if(gems){const gp=pool.filter(p=>!isMetaPick(p)&&((p.s||0)>=470||p.m));try{gem=withOffMeta(()=>planFixesG(ms,gp,useA,{singlesOnly:true}))}catch(e){plans.gems=null}}}
-      if(gem){try{for(;;){const r=withOffMeta(()=>gem.next());if(r.done){plans.gems=r.value;gem=null;break}if(performance.now()-t>30){setTimeout(step,0);return}}}catch(e){plans.gems=null;gem=null}}
-      // then the readiness reports the redraw will look up, so the redraw itself is quick
-      if(!warm)warm=planWarmG(ms,plans,a);
-      for(;;){let r;try{r=warm.next()}catch(e){break}if(r.done)break;if(performance.now()-t>30){setTimeout(step,0);return}}
-    }catch(e){fail(e,'fix plans');plans=[]}
+    try{for(;;){const r=g.next();if(r.done){plans=r.value;break}if(performance.now()-t>30){setTimeout(step,0);return}}}catch(e){fail(e,'fix plans');plans=[]}
     planJob=null;
     // the team or settings changed without a redraw yet: the next redraw starts over
     if(planKeyOf($('useAbil').checked)!==key)return;
@@ -44,7 +48,7 @@ function planJobStart(key,ms,pool,useA,a){if(planJob&&planJob.key===key)return;
 // Readiness reports (cached by THR.teamReport) for the six-Pokémon teams the plan cards, Quick add and the My team suggestions
 // look up: worked out here one at a time, so the redraw that shows the plans finds them ready. Only warms the cache; the
 // numbers are the same either way.
-function* planWarmG(ms,plans,a){const seen=new Set(),warm=function*(team){if(!team||team.length!==6||seen.has(team))return;seen.add(team);prepOf(team);yield};
+function* planWarmG(ms,plans,a){const seen=new Set(),warm=function*(team){if(!team||team.length!==6||seen.has(team))return;seen.add(team);yield* prepOfG(team)/* speed (Nov 18, 2d): a pause after each threat */;yield};
   for(const pl of [...plans,...(plans.more||[])])yield* warm(pl.team);
   // Quick add: the same keys and shortlists renderProblems / quickPicks use
   const keys=[];const gp=plans.gp?plans.gp:gamePlan(ms);
@@ -88,12 +92,23 @@ const lazyDirty=new Map();
 function lazyShown(id){const el=$(id);return !el||!el.closest('[hidden]')}
 function lazy(name,id,fn){if(lazyShown(id)){lazyDirty.delete(name);safe(name,fn)}else lazyDirty.set(name,[id,fn])}
 function lazyFlush(){for(const [name,[id,fn]] of [...lazyDirty])if(lazyShown(id)){lazyDirty.delete(name);safe(name,fn)}}
+// Offense, per type: who on the team hits it super effectively (R4, Nov 11: moved unchanged out of render(), shared with the
+// rebuild's Suggestions, whose Why? reasons and problem rows read it)
+function offenseRows(ms,useA){const ctx=teamContext(useA?ms:[]);
+  const perMon=ms.map(m=>{const mm=memberMoves(m);return {m,src:mm.src,en:attackEntries({...m,ability:useA?m.ability:null},mm.moves,ctx)}});
+  const entries=perMon.flatMap(x=>x.en);
+  const stabOnly=perMon.filter(x=>x.src==='stab').map(x=>x.m.d);
+  const tRows=TYPES.map(t=>{const hits=perMon.map(x=>({m:x.m,b:bestHit(x.en,[t],null)})).filter(h=>h.b&&h.b.x>=2);
+    return {t,hits,best:bestHit(entries,[t],null)}});
+  const covered=tRows.filter(r=>r.hits.length).length;return {perMon,entries,stabOnly,tRows,covered}}
+// every redraw starts from fresh calculations (shared with the rebuild, R4 Nov 11)
+function clearCaches(){pmCache=new Map();vCache=new Map();setCache=new Map();pairCache=new Map();relCache=new Map()}
 function render(){
-  pmCache=new Map();vCache=new Map();setCache=new Map();pairCache=new Map();relCache=new Map();persist();renderSlots();
+  clearCaches();persist();renderSlots();
   const useA=$('useAbil').checked;const ms=members();const msPlay=playForm(ms);const a=analyze(msPlay,useA);
   {const empty=!ms.length;const sc=$('startCard');if(sc)sc.hidden=!empty;for(const id of ['defense','fixes']){const e=$(id);if(e)e.hidden=empty}}
   document.querySelectorAll('[data-megas]').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.megas===megaGoal()));
-  $('eyebrow').textContent='Pokémon Champions · Regulation M-C · VGC Doubles · bring 6, pick 4';showDataDate();
+  $('eyebrow').textContent='Pokémon Champions · Regulation ' + regId() + ' · VGC Doubles · bring 6, pick 4';showDataDate();
   const loaded=S.teams.find(t=>t.id===S.loadedId);
   $('teamTitle').textContent=loaded?loaded.name:'Team';document.querySelectorAll('.tc').forEach(tc=>tc.textContent=ms.length?ms.length+'/6':'');
   $('saveBtn').textContent=loaded?'Update saved team':'Save team';
@@ -105,8 +120,8 @@ function render(){
   // threat preparation behind the defense and offense headlines (the same report as the threat card)
   const RDf=ms.length?prepOf(ms):null,RDd=RDf?{over:RDf.rows.filter(r=>r.losers.length>=3),hit:RDf.rows.filter(r=>r.rows.some(x=>x.du&&x.du.nM<=2)).length,noHit:RDf.rows.filter(r=>!r.rows.some(x=>x.du&&x.du.nM<=2)).sort((x,y)=>y.t.w-x.t.w)}:null;
   $('chkCard').innerHTML=`<div class="ckhead vtx"><div><div class="k">Team checks${CK&&!CK.full?' · so far':''}</div><div class="v">${CK?`${CK.pass} of ${CK.n} checks`:'Add Pokémon to see the checks'}</div></div></div>
-     <div class="t2">What recent event winners usually have, measured live from the Events data. A missing check is a gap to know about, not a verdict: plenty of winning teams miss one, and play decides most games. A ~ means only partly there, and doesn't count as passed.</div>
-     ${CK?(L=>`<ul class="cklist">${L(CK.items.filter(x=>!x.note))}</ul>${CK.items.some(x=>x.note)?`<div class="cknotes"><b>Notes, not counted</b><span>In 38,513 real games, with player skill taken into account, teams with these won no more often.</span></div><ul class="cklist ckn3">${L(CK.items.filter(x=>x.note),1)}</ul>`:''}`)((a,nt)=>a.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro&&!nt?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')):''}`;
+     <div class="t2">${CK_TXT.intro}</div>
+     ${CK?(L=>`<ul class="cklist">${L(CK.items.filter(x=>!x.note))}</ul>${CK.items.some(x=>x.note)?`<div class="cknotes"><b>${CK_TXT.notes}</b><span>${CK_TXT.notesWhy}</span></div><ul class="cklist ckn3">${L(CK.items.filter(x=>x.note),1)}</ul>`:''}`)((a,nt)=>a.map(x=>`<li>${ckIcon(x)}<div><b>${x.label}</b><div class="t2">${esc(x.ok?x.have:x.miss)}</div>${x.pro&&!nt?`<div class="ckpro">${x.pro}</div>`:''}</div></li>`).join('')):''}`;
   safe('verdict',()=>renderVerdict(ms,a,PG,CK));safe('team hero',()=>renderTeamHero(ms));
   $('defCard').innerHTML=`<div class="vtx"><div class="k">Defense${PG&&!PG.full?' · so far':''}</div><div class="v">${!ms.length?'—':a.excess?`${a.excess} more weakness${a.excess===1?'':'es'} than resistances`:'Every weakness is covered by a resist'}</div>
      <div class="vsub">${ms.length}/6 Pokémon${RDd?` · ${RDd.over.length} of the top 30 threats beat 3+ of yours 1-on-1${RDd.over.length?` (${RDd.over.slice(0,3).map(r=>esc(r.t.d)).join(', ')}${RDd.over.length>3?` and ${RDd.over.length-3} more`:''})`:''}`:''}</div></div>
@@ -116,13 +131,7 @@ function render(){
      </div>
      <div class="t2">×2 next to a type means 2 more of yours are weak to it than resist it.</div>${megaPickHtml(ms)}`;
   // offense
-  const ctx=teamContext(useA?ms:[]);
-  const perMon=ms.map(m=>{const mm=memberMoves(m);return {m,src:mm.src,en:attackEntries({...m,ability:useA?m.ability:null},mm.moves,ctx)}});
-  const entries=perMon.flatMap(x=>x.en);
-  const stabOnly=perMon.filter(x=>x.src==='stab').map(x=>x.m.d);
-  const tRows=TYPES.map(t=>{const hits=perMon.map(x=>({m:x.m,b:bestHit(x.en,[t],null)})).filter(h=>h.b&&h.b.x>=2);
-    return {t,hits,best:bestHit(entries,[t],null)}});
-  const covered=tRows.filter(r=>r.hits.length).length;
+  const {entries,stabOnly,tRows,covered}=offenseRows(ms,useA);
   $('offCard').innerHTML=`<div class="vtx"><div class="k">Offense${PG&&!PG.full?' · so far':''}</div><div class="v">${RDd?`You OHKO or 2HKO ${RDd.hit} of the top 30 threats`:'—'}</div>
      <div class="vsub">${covered}/18 types hit super effectively by at least one of yours</div></div>
      <div class="kv">${RDd&&RDd.noHit.length?`<span>Nothing 2HKOs</span><div style="font-size:13px">${RDd.noHit.slice(0,6).map(r=>esc(r.t.d)).join(', ')}<div class="t2">Top threats none of yours can OHKO or 2HKO with your moves (damage calc against their usual sets)</div></div>`:''}<span>Nobody hits super effectively</span><div class="chips">${tRows.filter(r=>!r.hits.length).map(r=>chip(r.t)).join('')||'<span class="none">None</span>'}</div>
@@ -150,13 +159,14 @@ function render(){
   else if(!ms.length){ui.plansStale=false;ui.planMore=0;planCache={key:planKey,plans};planKeep(planKey,plans)}
   else{ui.plansStale=false;if(!planJob||planJob.key!==planKey)ui.planMore=0;planJobStart(planKey,ms,pool,useA,a);plans=[];plans.pending=true}
   ui.plans=plans;ui.planCtx={key:planKey,ms,a,tRows,useA,covered};plansDraw(ui.planCtx,plans);
-  if(ckWinNeeded())safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);lazy('auto-build','abOut',()=>renderAutoBuild());safe('pool',renderPoolCtl);if(!META[SRC[ui.metaSrc]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaSrc=alt}if(!META[SRC[ui.metaView]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaView=alt}lazy('meta','metaList',()=>renderMeta());{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
+  if(ckWinNeeded())safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);lazy('auto-build','abOut',()=>renderAutoBuild());safe('pool',renderPoolCtl);fixMetaSrc();if(!META[SRC[ui.metaView]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaView=alt}lazy('meta','metaList',()=>renderMeta());{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
   lazy('threats','threats',()=>renderThreats(members(),$('useAbil').checked));if(typeof view!=='undefined'){if(view==='speed')safe('speed tiers',renderSpeed);if(view==='calc')safe('damage calc',renderCalc);if(view==='gauntlet')safe('gauntlet',renderGauntlet);if(view==='battle')safe('battle',renderBattle);if(view==='cores')safe('cores',renderCores);if(view==='events')safe('events',renderEvents);if(view==='top')safe('team search',renderTeamSearch);if(view==='practice'&&typeof renderPractice==='function'&&(!META.practice||pr.step==='start'))safe('practice',renderPractice);if(view==='compare')safe('compare',renderCompare)}{const cv=document.querySelector('[data-pane="coverage"]');if(cv&&cv.hidden===false)setTimeout(()=>safe('additions',renderRecs),0)}safe('types',renderTypes);safe('matchup',renderMatchup);lazy('top teams','ttList',()=>renderTopTeams());safe('battle log',renderLog);lazy('sets','sets',()=>renderSets());safe('paste',renderPastePanel);safe('home',renderHome);
 }
 // The scouting report's header: legal and items first, then how ready the team is for the top threats, the checklist, and
 // real results. Facts only: no win chance, no prediction (Oct 28).
-function renderVerdict(ms,a,PG,CK){
-  const el=$('verdict');ui.vProven=false;ui.vsum=null;if(!el)return;if(!ms.length){el.innerHTML='';return}
+// The verdict block's facts as data (R4, Nov 11: moved unchanged out of renderVerdict, shared with the rebuild): its rows [label, HTML],
+// the headline and level, the threat report, whether the team is legal, and a real-results match if there is one
+function verdictData(ms,a,PG,CK){
   const n=ms.length,miss=CK?CK.items.filter(x=>!x.ok&&!x.skip&&!x.note):[];
   const rows=[];let best=null;
   // a real tournament team with 5+ of these six, brought by 3+ players (one player's team is a result, not a pattern)
@@ -164,9 +174,7 @@ function renderVerdict(ms,a,PG,CK){
     for(const e of RES.proven){const [ns,c,wr]=e;if(!(c>=3))continue;const k=ns.filter(x=>names.has(x)).length;if(k>=5&&(!best||k>best.k||(k===best.k&&wr>best.wr)))best={k,c,wr,g:e[3]}}}
   const tr=typeof teamRecord==='function'?teamRecord(ms):null;
   // 1. legal and items
-  const bs=ms.map(m=>m.p.b),dup=ms.find((m,i)=>bs.indexOf(m.p.b)!==i);
-  let ip=[];try{ip=typeof itemProblems==='function'?itemProblems(ms):[]}catch(e){}
-  const clause=ip.filter(x=>x.k==='clause'),illegal=!!dup||clause.length>0,mc=megaCount(ms);
+  const {dup,ip,clause,illegal}=legalOf(ms),mc=megaCount(ms);
   const legalBits=[];if(dup)legalBits.push(`<span class="warnline">Not legal: only one ${esc(dup.p.b)} (any form) is allowed</span>`);
   for(const x of clause)legalBits.push(`<span class="warnline">Not legal: ${esc(x.why)}</span>`);
   for(const x of ip.filter(x=>x.k!=='clause'))legalBits.push(`<span class="warnline">${esc(x.why)}</span>`);
@@ -186,6 +194,10 @@ function renderVerdict(ms,a,PG,CK){
   const score=RD?RD.score:null;
   const lvl=illegal?'bad':n<6?'mid':score==null?'mid':score>=80?'good':score>=65?'mid':'bad';
   const head=illegal?'Not a legal team yet':score==null?`${n} of 6 picked`:n<6?`${n} of 6 picked · ready for ${score}% of the top threats so far`:`Ready for ${score}% of the top 30 threats`;
+  return {rows,best,tr,illegal,RD,score,lvl,head,n}}
+function renderVerdict(ms,a,PG,CK){
+  const el=$('verdict');ui.vProven=false;ui.vsum=null;if(!el)return;if(!ms.length){el.innerHTML='';return}
+  const {rows,best,tr,illegal,RD,score,lvl,head}=verdictData(ms,a,PG,CK);
   ui.vsum={lvl,head,best,tr,CK,excess:a.excess,RD:score==null?null:{score},legal:!illegal};
   ui.vProven=!!(best&&best.k===6&&best.wr>=.55);el.className='verdict '+lvl;
   const chips=[score!=null?`<span class="rchip"><b>${score}%</b> ready${typeof tip==='function'?tip('readiness'):''}</span>`:'',CK?`<span class="rchip"><b>${CK.pass}/${CK.n}</b> checks${typeof tip==='function'?tip('checklist'):''}</span>`:'',`<span class="rchip ${illegal?'bad':'ok'}"><b>${illegal?'Not legal':'Legal'}</b></span>`].join('');
@@ -198,14 +210,11 @@ document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.targ
 // Threat preparation card: every top threat, grouped by how ready the team is, each with the calc behind the verdict.
 const THR_LV=[['No answer','l0'],['Shaky','l1'],['Handles it','l2'],['Beats it','l3']];
 function renderThreatCard(ms,RD){const el=$('thrCard');if(!el)return;if(!RD||!ms.length){el.innerHTML='';return}
-  const pc=x=>Math.round(x*100),open=ui.thrOpen||{};
-  const det=r=>{const L=[];for(const x of r.solid)L.push(`<li class="ok">${esc(x.why)}</li>`);for(const x of r.soft)L.push(`<li class="part">${esc(x.why)}</li>`);for(const x of r.warn)L.push(`<li class="no">${esc(x.why)}</li>`);
-    if(r.losers.length)L.push(`<li class="no">It beats ${r.losers.map(x=>`${esc(x.m.d)} (${esc(x.du.d.mv)} ${pc(x.du.d.min)}-${pc(x.du.d.pct)}%${x.du.nT===1?', OHKO':', 2HKO'}${x.du.first?'':`, speed ${x.du.st} vs ${x.du.sm}`})`).join(', ')} 1-on-1${r.overloaded?`: only ${r.holders} of your Pokémon hold up against it, so any 4 you bring includes at least 2 it beats`:''}</li>`);
-    if(r.mode)L.push(`<li class="t2">Judged by its job: ${esc(r.mode.map(x=>x.name).join(' and '))}</li>`);
-    if(!L.length)L.push('<li class="no">Nothing on the team beats it 1-on-1 or stops what it does</li>');
-    const f=r.field||{};return `<ul class="thrd">${L.join('')}</ul><div class="t2">Field: ${f.weather?esc(f.weather):'no weather'}, ${f.terrain?esc(f.terrain)+' terrain':'no terrain'} · its usual set: ${esc(r.t.moves.slice(0,4).map(m=>m.name).join(', '))}${r.t.item?' @ '+esc(r.t.item):''}</div>`};
+  const open=ui.thrOpen||{};
+  /* the calc reasons are worked out in 59-matchup-data.js (thrReasons), shared with the new build */
+  const det=r=>{const R=thrReasons(r);return `<ul class="thrd">${R.list.map(x=>x.k==='t2'?`<li class="t2">${esc(x.text)}</li>`:`<li class="${x.k}">${esc(x.text)}</li>`).join('')}</ul><div class="t2">Field: ${esc(R.field)} · its usual set: ${esc(R.set)}</div>`};
   const row=r=>{const p=byName.get(r.t.n);return `<details class="thrrow" data-thr="${esc(r.t.n)}"${open[r.t.n]?' open':''}><summary>${p?sprite(p,'mini'):''}<span class="thrn"><b>${esc(r.t.d)}</b><span class="vsub">${pctTxt(+r.t.w)} of top cuts</span></span><span class="thre">${esc(THR.evidence(r))}</span></summary>${det(r)}</details>`};
-  const grp=(lv,start)=>{const rs=RD.rows.filter(r=>r.level===lv).sort((x,y)=>y.t.w-x.t.w);if(!rs.length)return '';const [lab,c]=THR_LV[lv];
+  const grp=(lv,start)=>{const rs=thrGroup(RD,lv);if(!rs.length)return '';const [lab,c]=THR_LV[lv];
     return `<details class="thrg ${c}"${start?' open':''}><summary><span class="thrl ${c}">${lab}</span> <span class="vsub">${rs.length} threat${rs.length===1?'':'s'}</span></summary>${rs.map(row).join('')}</details>`};
   const un=RD.rows.filter(r=>r.level===0).length;
   el.innerHTML=`<div class="vtx"><div class="k">Threat preparation${ms.length<6?' · so far':''}</div><div class="v">Ready for ${RD.score}% of the top 30 threats</div>
@@ -267,12 +276,7 @@ function setRows(p,o){const st=setFor(p),it=o&&o.noItem?null:topItems(p),na=st.n
 // Nature and stat points in Edit set (Sim, Nov 6: "i dont even know where to look"): a nature dropdown like Ability (players'
 // share and the stat it raises and lowers, ★ most run) that saves on pick, and six labelled stat point boxes with a live total.
 function natFx(n){const u=Object.keys(NAT_UP).find(k=>NAT_UP[k].includes(n)),d=Object.keys(NAT_DN).find(k=>NAT_DN[k].includes(n));return u&&d?`+${u} −${d}`:'no change'}
-function spreadBlock(s,i,m){const p=m.p,cs=typeof commonSpread==='function'?commonSpread(p):null,own=s.sp&&s.sp[S.format],mine=m.spread;
-  let na=[];try{na=setFor(p).na||[]}catch(e){}const pc=new Map(na.map(x=>[x[0],x[1]])),top=(na[0]&&na[0][0])||(cs&&cs.nat)||null;
-  const nat=(own&&own.nat)||top||'Hardy',ownNat=!!(own&&own.nat&&own.nat!==top),ownPts=!!(own&&!own.assumed&&own.v);
-  const pts=ownPts?{hp:own.v[0],atk:own.v[1],def:own.v[2],spa:own.v[3],spd:own.v[4],spe:own.v[5]}:cs,K=['hp','atk','def','spa','spd','spe'],L=['HP','Atk','Def','SpA','SpD','Spe'];
-  const v=K.map(k=>pts?pts[k]:0),sum=v.reduce((a,b)=>a+b,0);
-  const order=[...na.map(x=>x[0]).filter(n=>NATURES.includes(n)),...NATURES.filter(n=>!pc.has(n)).sort()];
+function spreadBlock(s,i,m){const p=m.p,{cs,own,pc,top,nat,ownNat,ownPts,v,sum,order}=natureChoices(s,p),L=['HP','Atk','Def','SpA','SpD','Spe'];
   const opt=n=>`<option value="${esc(n)}"${n===nat?' selected':''}>${esc(n)} · ${natFx(n)}${pc.has(n)?` (${(+pc.get(n)).toFixed(pc.get(n)<1?1:0)}%)`:''}${n===top?' ★':''}</option>`;
   /* two cells, so the Edit set grid pairs Nature | Stat points, then Ability | Item, each at its own height (Nov 7) */
   return `<div class="spnew spnat"><div class="lblrow"><span class="lbl">Nature</span>${ownNat?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-spnatreset="${i}">Use ${esc(top||'most run')}</button>`:top?'<span class="tag rec">MOST RUN</span>':''}</div>
@@ -280,17 +284,14 @@ function spreadBlock(s,i,m){const p=m.p,cs=typeof commonSpread==='function'?comm
     <div class="spnew sppts"><div class="lblrow"><span class="lbl">Stat points</span>${ownPts?`<span class="tag mine">YOURS</span><button class="linkbtn" type="button" data-spptsreset="${i}">Use most common</button>`:own&&own.assumed&&cs?'<span class="asm" title="No stat points were set: these are the most common ones, with your nature">assumed</span>':cs?'<span class="tag rec">MOST COMMON</span>':''}<span class="vsub sptot" id="sptot${i}">${sum} of ${SP_TOTAL}</span></div>
     <div class="spgrid">${L.map((l,j)=>`<label><span>${l}</span><input class="field" type="number" min="0" max="32" step="1" inputmode="numeric" data-spi="${i}:${j}" value="${v[j]}" aria-label="${l} stat points for ${esc(p.d)}"></label>`).join('')}</div>
     <div class="spacts"><button class="btn sm ar-btn" style="--edge:var(--ar-blue)" type="button" data-spsave2="${i}">Save stat points</button><span class="vsub" id="spmsg${i}" role="status"></span></div></div>`}
-document.addEventListener('change',e=>{const t=e.target;if(!t.matches||!t.matches('[data-spnat]'))return;const i=+t.dataset.spnat,s=S.slots[i];if(!s||!natOK(t.value))return;
-  const own=s.sp&&s.sp[S.format];s.sp=Object.assign({},s.sp,{[S.format]:own&&!own.assumed&&own.v?{nat:t.value,v:own.v}:{nat:t.value,assumed:true}});render();toast('Nature saved')});
+document.addEventListener('change',e=>{const t=e.target;if(!t.matches||!t.matches('[data-spnat]'))return;if(!setNature(+t.dataset.spnat,t.value))return;render();toast('Nature saved')});
 document.addEventListener('input',e=>{const t=e.target;if(!t.matches||!t.matches('[data-spi]'))return;const i=t.dataset.spi.split(':')[0];
   const v=[...document.querySelectorAll(`[data-spi^="${i}:"]`)].map(x=>+x.value||0),tot=v.reduce((a,b)=>a+b,0),el=$('sptot'+i);if(el){el.textContent=`${tot} of ${SP_TOTAL}`;el.classList.toggle('over',tot>SP_TOTAL)}});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-spsave2],[data-spnatreset],[data-spptsreset]');if(!b)return;
-  if(b.dataset.spnatreset!=null){const s=S.slots[+b.dataset.spnatreset],own=s&&s.sp&&s.sp[S.format];if(!own)return;if(own.v&&!own.assumed){let top=null;try{top=(setFor(byName.get(s.n)).na[0]||[])[0]}catch(x){}s.sp[S.format]={nat:top||own.nat,v:own.v}}else delete s.sp[S.format];render();toast('Using the nature most players run');return}
-  if(b.dataset.spptsreset!=null){const s=S.slots[+b.dataset.spptsreset],own=s&&s.sp&&s.sp[S.format];if(!own)return;let top=null;try{top=(setFor(byName.get(s.n)).na[0]||[])[0]}catch(x){}
-    if(own.nat&&own.nat!==top)s.sp[S.format]={nat:own.nat,assumed:true};else delete s.sp[S.format];render();toast('Using the most common stat points');return}
+  if(b.dataset.spnatreset!=null){if(!resetNature(+b.dataset.spnatreset))return;render();toast('Using the nature most players run');return}
+  if(b.dataset.spptsreset!=null){if(!resetPoints(+b.dataset.spptsreset))return;render();toast('Using the most common stat points');return}
   const i=+b.dataset.spsave2,s=S.slots[i],v=[...document.querySelectorAll(`[data-spi^="${i}:"]`)].map(x=>x.value===''?0:Number(x.value)),msg=$('spmsg'+i),sel=document.querySelector(`[data-spnat="${i}"]`),nat=sel?sel.value:null;
-  const tot=v.reduce((a,b)=>a+b,0),bad=v.length!==6||v.some(n=>!Number.isInteger(n)||n<0||n>32)?'Each box takes a whole number, 0-32':tot>SP_TOTAL?`That's ${tot} points; Champions allows ${SP_TOTAL}`:!natOK(nat)?'Pick a nature':'';
-  if(bad){if(msg)msg.textContent=bad;return}s.sp=Object.assign({},s.sp,{[S.format]:{nat,v}});render();toast('Stat points saved')});
+  const bad=savePoints(i,nat,v);if(bad){if(msg)msg.textContent=bad;return}render();toast('Stat points saved')});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-spedit],[data-spsave],[data-spclear]');if(!b)return;
   if(b.dataset.spedit!=null){ui.spEdit=b.dataset.spedit===''?null:+b.dataset.spedit;renderSlots();const f=$('spv'+ui.spEdit);if(f)f.focus();return}
   if(b.dataset.spclear!=null){const s=S.slots[+b.dataset.spclear];if(s&&s.sp)delete s.sp[S.format];ui.spEdit=null;render();toast('Using the most common spread');return}
@@ -305,3 +306,7 @@ function renderGamePlan(ms){const el=$('gplan');if(!el)return;
   if(!ms.length){el.innerHTML='<div class="empty-note">Add Pokémon to see which jobs the team covers.</div>';$('gplanSub').textContent='';return}
   const gp=gamePlan(ms);{let lb='';try{const a=teamArchetype(ms);lb=a?a.label:''}catch(e){}$('gplanSub').innerHTML=(lb?`<span class="archchips">${archChips(lb)}</span>`:'')}
   el.innerHTML=gp.rows.map(r=>{const [c,t]=GP_TAG[r.st];return `<div class="gprow"><span class="gplbl">${esc(r.label)}</span><span class="sev ${c}">${t}</span><div class="gpwho">${r.who?esc(r.who):''}${r.note?`<div class="t2">${esc(r.note)}</div>`:''}</div></div>`}).join('')}
+// legality of a team (R4, Nov 11; shared with the new build): one Pokémon per species (any form) and the item clause
+function legalOf(ms){const bs=ms.map(m=>m.p.b),dup=ms.find((m,i)=>bs.indexOf(m.p.b)!==i);
+  let ip=[];try{ip=typeof itemProblems==='function'?itemProblems(ms):[]}catch(e){}
+  const clause=ip.filter(x=>x.k==='clause');return {dup,ip,clause,illegal:!!dup||clause.length>0}}
