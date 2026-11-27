@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 11:36 PM (11:36:51)  date: Thu Nov 26, 2026
-NOW: (11:38 PM) gate.sh alt/batch8 waits for the rerun of the flaked v2-minors main1 job (pid in .main-running). Then: switch-merge.sh on the new design6, merge-check main, the switch.
+Updated: time: 12:31 AM (12:31:07)  date: Fri Nov 27, 2026
+NOW: (12:31 AM) THE SWITCH steps 1-3 running (switch-run.sh: preflight, merge on design6 ee87a267, merge-check main), pid in .main-running; Preview rebuild first.
 NOW: helper Job II (alt/batch9 = batch8 + Maggi M2/M3 + dec2patch, [skip ci]). Kip/Maggi out until 3 AM; 71 and M6 queued.
 NEXT: gate alt/batch8 (F3 + qcheck fixes + calc tile + preflight-skip + sweep fixes) when GitHub is green and the helper report is read.
 NEXT: Preview republish after batch8 merges; tell Sim (iPhone check in the morning); end the helper by midnight (trig_01LjNsUYs9wEtHwagBYqvYCH).
