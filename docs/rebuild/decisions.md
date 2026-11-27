@@ -2954,3 +2954,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:00 PM: Sim checked live v162 on his phone: 'they feel good'. t3 merged origin/claude/design6 (30cf2b8e); its accidental GitHub run 46060594435 cancelled. Preview rebuild started.
 - 3:01 PM: Preview v271 (1795809679-8724): today's merged work + data 2026-11-27T19:19Z (live 4b9f9fbd); no-names 0, COPY-OK, exit 0.
 - 3:06 PM: Sim: Build page (before building) looks incomplete, not intuitive; put a helper on it, redesign OK. Helper Job OO started: critique + 3 coded directions (close / between / bold) on alt/build-dir-a/b/c with pictures at 1440, ~810, iPhone, light+dark; all functionality kept; Sim picks.
+- 3:11 PM: Sim (Build page): 'no site in mind, just make it feel like nastyplot af ... we do our own thing, ALWAYS'. Passed to helper Job OO: no outside references; each direction states what makes it only-NastyPlot.
