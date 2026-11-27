@@ -74,3 +74,7 @@ Push with [skip ci]; report as always. This counts toward the hard stop before t
 ## JOB M9: the wrapper test on iPhone and iPad (WebKit), Sim's devices
 Branch alt/maggi-m9-webkit from origin/alt/host-wrapper-fix (612d0364). Extend experiments/host-wrapper-test.mjs (an env switch, e.g. BROWSER=webkit) to run in WebKit at iPhone 15, iPhone SE and iPad Pro 11 (Playwright devices), light and dark, and also on 4 more pages besides Home: My Team with a full saved team, Meta, a Pokémon page (Garchomp), Battle. Wrapped vs unwrapped must be pixel-identical (allow 0 differing pixels; if WebKit has anti-alias noise between two loads of the SAME file, measure that first and report it). If a difference shows, find the cause (another host rule?) and fix it in the same revert-layer block, with proof.
 Push with [skip ci]. Stop before ten, as above.
+
+## HH (time: 7:07 AM (7:07:30)  date: Fri Nov 27, 2026): M9 received (1e1b06af): 60/60 WebKit + 8/8 Chromium with 0 differing pixels. That is the proof Sim asked for. Thank you.
+## JOB M10 (if time before the stop): the other 7 pages in WebKit
+Same branch line (alt/maggi-m10-webkit-all from your 1e1b06af): add Build, My Box, Track Record, Search open, Spicy picks on, How We Calculate, About to the WebKit run (iPhone 15 and iPad Pro 11, light and dark). 0 differing pixels expected; report any difference with its cause. Push with [skip ci]; stop before ten as above.
