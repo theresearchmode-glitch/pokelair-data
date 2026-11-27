@@ -12,7 +12,8 @@ sid=$(echo "$in" | jq -r '.session_id // empty')
 # How many Claude helpers Sim allows right now (Sim, Thu Nov 26, 8:26 PM: helper until midnight, then none): docs/rebuild/.helpers-need, default 1
 out=$(NEED=$(cat /home/user/pokelair-data/docs/rebuild/.helpers-need 2>/dev/null || echo 1) bash /home/user/pokelair-data/docs/rebuild/work-check.sh "$sid" 2>/dev/null)
 n=$(echo "$out" | sed -n 's/^HELPERS_ACTIVE=//p'); n=${n:-0}
-if [ "$n" -lt 1 ]; then  # Sim, Nov 22, 1:29 AM: 1 helper is the rule
+NEED=$(cat /home/user/pokelair-data/docs/rebuild/.helpers-need 2>/dev/null || echo 1)
+if [ "$n" -lt "$NEED" ]; then  # Sim, Nov 22, 1:29 AM: 1 helper is the rule; .helpers-need overrides it when Sim says so
   jq -n --arg r "WORK CHECK (CLAUDE.md rules 24 and 'Helpers'): only $n helper(s) active. Before ending the turn: refill the free slot(s) with approved build work, make sure the main thread has its next task started, and set a wake-up. Facts:
 $out" '{decision:"block", reason:$r}'; exit 0
 fi
