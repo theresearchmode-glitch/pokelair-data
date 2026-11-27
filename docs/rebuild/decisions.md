@@ -2950,3 +2950,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:36 PM: Hourly 1:36: no problems (helper line ignored: as needed). Disk 12 GB. main-merge.sh waiting for GitHub on design6 ea0dd5f4.
 - 2:36 PM: Hourly 2:36: design6 ea0dd5f4 GitHub green (46049850769); main merge df1617f3 (no conflicts) merge-check running. Game Plan v119. Disk 10 GB.
 - 2:36 PM: Main merge df1617f3 passed merge-check but main moved meanwhile (data commit 4b9f9fbd); not pushed. Re-running main-merge.sh on the new main.
+- 2:59 PM: main 1ba2a7a1 pushed (design6 ea0dd5f4 + data 4b9f9fbd; merge-check main ALL PASSED). Live artifact v162 (1795809589-fe4f) from main's build: host-wrapper-test 8/8 (0 px), WebKit iPhone 15 light/dark + iPad landscape dark: our colours/fonts, back buttons shown, 0 page errors; v2.js read back 3,826,665 B sha bee5efbd. Published while main's own GitHub run (watching) was still going: the same code passed GitHub on design6 ea0dd5f4.
