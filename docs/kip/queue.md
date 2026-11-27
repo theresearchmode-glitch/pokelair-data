@@ -462,3 +462,15 @@ Push with [skip ci].
 
 ## JOB 71 (for when you're back, after 3 AM Eastern): bring your speed chain up to date
 By then claude/design6 should contain alt/batch8 (Final 3 + slogan, quality fixes, the calc tile; check with: git merge-base --is-ancestor origin/alt/batch8 origin/claude/design6). If it does: branch alt/gemini-speed-chain from origin/alt/gemini-deploy-smoke (your 64c-70 chain), merge origin/claude/design6, resolve (keep both sides' intent; prerender reads V2.f3Page, no copied hero text), then rerun page-speed-check, first-screen-guard, split-routes-cross-test, deploy-smoke, seo-audit, prerender-test, v2-public, and v2-minors main1/main2/groups. Report each exit code. Push with [skip ci]. If design6 does not have batch8 yet, write a question line in status.md and run your watcher.
+
+## HH (time: 2:56 AM (2:56:17)  date: Fri Nov 27, 2026): independent review of your speed chain (eb89d52e) by HH's helper: NOT ready to merge yet. Report: origin/alt/kip-chain-review 7e5d314e, docs/rebuild/test-runs/kip-chain-review.md (read it in full).
+## JOB 71 (replaces the earlier 71): merge design6 + fix the 4 must-fixes, each with a check that FAILS on eb89d52e first
+Branch alt/gemini-speed-chain from origin/alt/gemini-deploy-smoke (eb89d52e). Note: your chain's base is 99e172ba, not ba95fd61, so it lacks the slogan commit.
+1. Merge origin/claude/design6 (it has the slogan, the calc tile, the switch-check fix, and soon batch9). The one known conflict, shell.js V2.openSearch: keep your needRoute line AND design6's short phone placeholder (innerWidth < 430 ? 'Pokémon, move, item or page' : ...).
+2. M1: a failing page chunk loads forever (shell.js ~:652, V2.loadRoute lost its 'V2.pages[r] &&' early return): /routes/calc.js failing = 1910 requests in 4 s. Must show "This page didn't load" after ONE request, like design6.
+3. M2: an Ability tap loops forever when info-text.js fails (infosheet.js ~:31, needRoute calls back on failure and the callback is openInfo again): 1999 requests in 4 s. One request, then a plain message.
+4. M3: returning visitors see the SAMPLE team and its score first on prerendered /team, /box, /compare ('Sun Tailwind (sample)' 92, then their own team 35). Personal pages must not show a prerendered sample when the visitor has saved state (don't prerender them, or drop [data-np-pre] when saved state exists before first paint). No wrong team or score may ever show.
+5. M4: v2-minors main1 FAIL "Sprites A (Nov 17) ... no sprite set larger than 80px gets one (7)" (job 66 put the 240px file in src): src = the 384px file for slots over 80px, keep the srcset. Do NOT change the test.
+6. F1 (fix too): keyboard order on My Team (team.js ~:494-499): Tab must follow the visual order (WCAG 2.4.3).
+7. Extend split-routes-cross-test (or a new test) so chunk FAILURES are tested (it never made a chunk fail): it must catch M1 and M2 on eb89d52e.
+Then rerun: v2-minors main1/main2/groups, A-team, split-routes-cross-test, page-speed-check, first-screen-guard, deploy-smoke, prerender-test, v2-public. Exit codes in the report. Push with [skip ci].
