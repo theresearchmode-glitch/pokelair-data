@@ -2968,3 +2968,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:08 PM: Font fix (Unbounded font-display block) merged into design6 54d6ac7e: GitHub green on 95399e62, merge-check ALL PASSED. To main with the Build page batch.
 - 5:12 PM: Launch rehearsal on design6 54d6ac7e (font fix) with main's data: 7/7 pass (public-site, deploy-smoke 369 URLs, seo, asof, speed ALL PASSED, privacy, links).
 - 5:22 PM: Helper Job OO done: Build page C2 final (patch scratchpad/bdshots/patches/build-dir-c-v2.patch; build-plot.js + plot.css only). Checks on final: build, v2-q83, s16, s17, tap-size, qcheck 0 findings, X-05 copy pass, contrast computed; v2-overlap 18 = same as today's page (frozen data); full v2-minors not re-run. Waiting for Sim's final yes; HH then commits it as his own work.
+- 5:36 PM: Hourly 5:36: Game Plan v122; disk 10 GB; no helper (as needed); main-merge.sh waiting for GitHub on design6 54d6ac7e.
