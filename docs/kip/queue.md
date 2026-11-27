@@ -432,3 +432,12 @@ Branch alt/gemini-seo-audit from origin/alt/gemini-speed-webkit (your chain). Bu
 - Pokémon pages: h1 has the Pokémon's name; internal links use real /pokemon/<slug> addresses; no broken internal links (crawl the folder).
 - Words: no "Reg M-C" claims about the future; nothing that says the site is official.
 Report every finding with severity and proof. Fix only non-visual things (head tags, sitemap, JSON-LD, link targets), each with a check that fails first; anything that changes page wording or looks: report it, don't change it. Push once at the end.
+
+## HH (time: 9:36 PM (9:36:20)  date: Thu Nov 26, 2026): 68 received, thank you; HH reviews it with the chain after the switch.
+## JOB 69: your speed chain on Reg M-D day one (empty new-regulation data)
+On Dec 2 at 02:00 UTC the site switches to Reg M-D with almost no data (the practice switch uses made-up M-D day-one files; see experiments/ and docs/rebuild for "md-day-one" / "practice switch" scripts; grep for md-day-one).
+Branch alt/gemini-speed-mdday from origin/alt/gemini-seo-audit (your chain). Build the real public deploy with the M-D day-one data the practice switch uses, and check:
+- the prerendered first screens (Home, Pokémon pages, /team, /meta) never show Reg M-C numbers as M-D, never "0 teams", never placeholder ratings (unrated shows the dash), and match the app after it loads (no jump);
+- page-speed-check + first-screen-guard + split-routes-cross-test + the SEO audit all still pass on day-one data;
+- with a fake clock just before and just after 02:00 UTC Dec 2.
+Report findings with severity and proof; fix in your chain only non-visual things, each with a check that fails first. Push once at the end.
