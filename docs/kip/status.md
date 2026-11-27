@@ -63,3 +63,4 @@
 70 | started | alt/gemini-deploy-smoke a41fc6dd | writing experiments/deploy-smoke.mjs for nastyplot.org launch verification | Thu Nov 26, 9:56 PM
 70 | done | alt/gemini-deploy-smoke eb89d52e | added read-only experiments/deploy-smoke.mjs (369 sitemap URLs + robots.txt + 404 + pokemon + /team cold-open); ALL PASSED on ./site (158.6s, exit 0) and 5 FAILED on broken folder (missing garchomp + injected JS error in about, exit 1); report docs/rebuild/test-runs/kip-job70-deploy-smoke.md | Thu Nov 26, 10:10 PM
 72 | started | alt/gemini-showdown-pin 23520831 | auditing Showdown pin since 1242c1e, bumping pin, regenerating move-meta/info-text, running before/after checks | Thu Nov 26, 10:13 PM
+71 | started | alt/gemini-speed-chain eb89d52e | merging origin/claude/design6 + fixing M1/M2/M3/M4/F1 from kip-chain-review with fail-first checks | Fri Nov 27, 6:28 AM
