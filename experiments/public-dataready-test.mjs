@@ -47,7 +47,11 @@ ok(!!bDate, `built-in numbers when /data/ is missing: "Data as of ${bDate}"${bTe
 for (const pth of ['/', '/meta']) {
   const R = await run(pth, 'slow');
   ok(bDate && !R.dates.includes(bDate) && (!bTeams || !R.teams.includes(bTeams)), `${pth} at 390, /data/ 1 s late: the built-in numbers never drawn (dates seen ${JSON.stringify(R.dates)}, team counts ${JSON.stringify(R.teams)})`);
-  ok(R.dates.length >= 1 && R.loading > 0, `${pth}: "Getting today's numbers" until the data came, then today's date (${R.dates.join(', ') || 'none'})`);
+  /* speed chain (Kip job 64, review MM Nov 27): Home's static HTML carries its prerendered first screen (data-np-pre="home", drawn at build
+     time from the same out/ that is published as /data/), so "/" shows that screen, not the loading line, while /data/ is on its way. The
+     check above (built-in numbers never drawn) still holds it; a page without that prerender must still show the loading line. */
+  const pre = pth === '/' && /data-np-pre="home"/.test(fs.readFileSync(path.join(DIST, 'index.html'), 'utf8'));
+  ok(R.dates.length >= 1 && (R.loading > 0 || pre), `${pth}: ${pre ? 'its prerendered first screen' : '"Getting today\'s numbers"'} until the data came, then today's date (${R.dates.join(', ') || 'none'})`);
   ok(R.cls < 0.02 && !R.errs.length, `${pth}: CLS ${R.cls.toFixed(4)} (under 0.02), page errors ${R.errs.length}${R.cls >= 0.02 ? ' | shifts: ' + R.src.join(' ; ').slice(0, 400) : ''}`);
 }
 await b.close(); srv.close();
