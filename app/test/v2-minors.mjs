@@ -523,7 +523,7 @@ const HQ = async () => {
     ok(!rm.length, `HQ Q4b (Sim: B): This Week shows its rating moves ("Our ratings moved too.", kit, Nov 22) under the movers: every rating mover as a button (name, rating, arrow + points; up/down spoken), nothing spills 320-1440${rm.length ? ': ' + rm.join(' | ') : ''}`); }
   // Q7a B: the hero crowd comes from 4 sprite sheets at 128px, except the 35 nearest (highest rated), which keep their own 384px file; every
   // Pokémon is still drawn, and Home asks for far fewer picture files (before: 345-359 at 1440, after: about 60)
-  { const sh = []; for (const [w, h] of [[1440, 900], [390, 844]]) { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  { const sh = []; for (const [w, h] of [[1440, 900], [390, 844]]) { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; /* the Stampede hero's own crowd (Job DD) */ });
       const seen = new Set(); q.on('request', r => { if (/\.webp/.test(r.url())) seen.add(r.url()); }); await q.goto('file://' + PAGE + '#home');
       await q.waitForFunction(() => document.querySelectorAll('#main .sdh-c').length > 0, null, {timeout: 20000}).catch(() => {}); await q.waitForTimeout(1500);
       const r = await q.evaluate(async () => { const C = [...document.querySelectorAll('#main .sdh-c')], cs = C.filter(e => e.classList.contains('sdh-cs')), im = C.filter(e => e.tagName === 'IMG');
@@ -1476,6 +1476,32 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(seen.length === 12 && !bad.length, `Audit Nov 19 #4 (the Arena since Nov 19: one bar, not two wings): the KO Board bar's counts are exactly the board's tiles, on one line (3 teams x 1100/1280 x both directions; ${bad.join(' | ') || 'e.g. "' + seen.slice(0, 2).join('" / "') + '"'})`); }
 } // main1 end
 if (part('main2')) {
+// ---------- Pre-switch sweep finds (Job FF, Nov 26): "Reg M-D." never splits; the Search placeholder fits on phones ----------
+{ const ctx = await b.newContext({viewport: {width: 320, height: 568}, isMobile: true, hasTouch: true}); const q = await ctx.newPage();
+  await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+  // PS-1: at every phone width 300-430 the regulation words in Home's h1 ("Reg M-D." / "Reg M-C.") stay on one line
+  const split = [];
+  for (let w = 300; w <= 430; w++) { await q.setViewportSize({width: w, height: 568}); await q.waitForTimeout(30);
+    const r = await q.evaluate(() => { const h = document.querySelector('#main .f3-h1s'); if (!h) return 'no line'; const t = [...(function walk(n, a) { for (const c of n.childNodes) c.nodeType === 3 ? a.push(c) : walk(c, a); return a; })(h, [])];
+      const node = t.find(x => /Reg\s?M-[A-Z]\./.test(x.textContent)) || t.find(x => /M-[A-Z]\./.test(x.textContent)); if (!node) return 'no reg words';
+      const full = h.textContent, k = full.search(/Reg\s?M-[A-Z]\./); if (k < 0) return 'no reg words';
+      // walk the text nodes to the offsets of "Reg" and the final "."
+      let a = k, z = k + full.slice(k).search(/\./) + 1, rg = document.createRange(), seen = 0, sN = null, sO = 0, eN = null, eO = 0;
+      for (const n of t) { const L = n.textContent.length; if (!sN && a < seen + L) { sN = n; sO = a - seen; } if (!eN && z <= seen + L) { eN = n; eO = z - seen; } seen += L; }
+      rg.setStart(sN, sO); rg.setEnd(eN, eO); const tops = new Set([...rg.getClientRects()].filter(x => x.width > 1).map(x => Math.round(x.top))); return tops.size; });
+    if (r !== 1) split.push(`${w}: ${r}`); }
+  ok(!split.length, `PS-1 (Job FF): Home's "Reg M-D." stays on one line at every phone width 300-430 (${split.slice(0, 6).join(', ') || 'all one line'}${split.length > 6 ? ' … ' + split.length + ' widths' : ''})`);
+  // PS-2: the Search box's placeholder fits inside the box at every phone width 320-429; from 430 the long one ("…item, team style or page") stays
+  const cut = [], keep = [];
+  for (const w of [320, 340, 360, 375, 390, 414, 429, 430, 768, 1440]) { await q.setViewportSize({width: w, height: w < 700 ? 844 : 900}); await q.waitForTimeout(60);
+    const r = await q.evaluate(() => { if (!document.querySelector('[data-v2q]')) V2.openSearch(); const i = document.querySelector('[data-v2q]'); const s = getComputedStyle(i), c = document.createElement('canvas').getContext('2d');
+      c.font = `${s.fontStyle} ${s.fontWeight} ${s.fontSize} ${s.fontFamily}`; const room = i.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight);
+      const r = {ph: i.placeholder, need: Math.ceil(c.measureText(i.placeholder).width), room: Math.floor(room)}; document.querySelector('.np-sheet [data-v2close], .np-sheet .np-x, .np-sheet button[aria-label="Close"]') ? document.querySelector('.np-sheet [data-v2close], .np-sheet .np-x, .np-sheet button[aria-label="Close"]').click() : V2.closeSheet && V2.closeSheet(); return r; });
+    await q.waitForTimeout(200);
+    if (w < 430 && r.need > r.room) cut.push(`${w}: "${r.ph}" ${r.need}px in ${r.room}px`);
+    if (w >= 430 && !/team style or page/.test(r.ph)) keep.push(`${w}: "${r.ph}"`); }
+  ok(!cut.length && !keep.length, `PS-2 (Job FF): the Search placeholder fits its box at 320-429 and the long one stays from 430 (${[...cut, ...keep].join(' | ') || 'all good'})`);
+  await ctx.close(); }
 // ---------- Home's first screen: Final 3 on this build too (Job DD, Nov 26; pubhome-f3.js V2.f3Home, V2.F3_CLAUDE) ----------
 /* Sim picked Final 3 as Home's FIRST SCREEN (nothing else removed): F3's hero replaces only the Stampede's hero; the Top 10, your six, the
    tools rack and the post band stay below in today's order. Each check failed on design6 52fa60e6 (the Stampede's hero: no .f3-hero). */
@@ -1488,8 +1514,8 @@ if (part('main2')) {
       const bars = [...document.querySelectorAll('#main .f3-bar')];
       return {seq: ['.f3-hero', '.sd-top', '.sd-six', '.sd-tools', '.sd-post'].map(at), old: at('.sdh'), h1: [...document.querySelectorAll('#main h1')].map(h => h.textContent.trim()),
         bars: bars.length, barsOk: bars.every(a => a.tagName === 'A' && (/^(\d+), .+'s Rating$/.test(a.getAttribute('aria-label') || '') && (a.getAttribute('aria-label') || '').startsWith(a.textContent.trim()) || /, not rated$/.test(a.getAttribute('aria-label') || '')))}; });
-    ok(r.seq.every((x, i) => x >= 0 && (!i || x > r.seq[i - 1])) && r.old < 0 && r.h1.length === 1 && /^Rate your Pokémon Champions team/.test(r.h1[0]) && r.bars === 6 && r.barsOk && !r.errs,
-      `F3-1 (Job DD): Home is Final 3's hero, then Top 10, your six, tools rack, post band; no Stampede hero; one h1 (F3's); 6 receipt bars, each a link whose spoken name starts with its number: "<n>, <name>'s Rating" (${JSON.stringify(r)})`); }
+    ok(r.seq.every((x, i) => x >= 0 && (!i || x > r.seq[i - 1])) && r.old < 0 && r.h1.length === 1 && /^Sharply raise your win rate\. Rate your Pokémon Champions team (before|for) Reg M-D\.$/.test(r.h1[0].replace(/\s+/g, ' ')) && r.bars === 6 && r.barsOk && !r.errs,
+      `F3-1 (Job DD): Home is Final 3's hero, then Top 10, your six, tools rack, post band; no Stampede hero; one h1, the slogan then the Reg M-D line (Sim, option A); 6 receipt bars, each a link whose spoken name starts with its number: "<n>, <name>'s Rating" (${JSON.stringify(r)})`); }
   // F3-2: the first screen. At 1440x900 the hero ends at the window's bottom even under the Preview's data note, and Home stays within its
   // 4 screens; Score My Team is on the first screen (above the phone tab bar) at the sizes Sim checks
   { const bad = []; for (const [w, h] of [[390, 844], [1280, 800], [1366, 768], [1440, 900], [1920, 1080]]) {
@@ -1505,6 +1531,62 @@ if (part('main2')) {
         cut: [...document.querySelectorAll('#main .f3-n b, #main .f3-n small, #main .f3-t, #main .f3-meta, #main .f3-h1')].filter(e => e.scrollWidth > e.clientWidth + 1).map(e => e.textContent.slice(0, 16))}), {night});
       if (!r.hero || r.sw > 0 || r.cut.length || r.errs) bad.push(`${w}${night ? ' night' : ''}: ${JSON.stringify(r)}`); }
     ok(!bad.length, `F3-3 (Job DD): Final 3's hero at 320-2560, day and night: no sideways scroll, nothing cut, no page error (${bad.slice(0, 3).join(' | ') || 'all good'})`); }
+  // F3-4 (M2 #1): after Dec 2 02:00 UTC while the data is still Reg M-C, a winner whose event name has no "(Reg M-C)" is still labelled "The last Reg M-C winning team"
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const on = Date.now; Date.now = () => Date.parse('2026-12-02T03:00:00Z'); V2._f3 = null;
+      try { const D = V2.f3Data(), h = V2.f3Page(), m = h.match(/<h2 class="f3-meta"[^>]*>([^<]+)/);
+        return {reg: D && D.reg, evReg: D && D.evReg, old: !!(D && D.old), meta: m ? m[1] : ''}; }
+      finally { Date.now = on; V2._f3 = null; } })()`));
+    ok(r.reg === 'M-D' && r.evReg === 'M-C' && r.old && r.meta.startsWith('The last Reg M-C winning team · ') && !r.errs,
+      `F3-4 (M2 #1): after Dec 2 02:00 UTC with Reg M-C data, evReg falls back to regInfo().id and the receipt reads "The last Reg M-C winning team" (${JSON.stringify(r)})`); }
+  // F3-5 (M2 #2): receipt bar links use "#pokemon=<name>" on the Claude build and "/pokemon/<slug>" only on the public build
+  { const r = await f3(1440, 900, () => { const hrefs = [...document.querySelectorAll('#main .f3-bar')].map(a => a.getAttribute('href') || '');
+      const check = window.__ev(`(() => { const o = window.__NP_PUBLIC; try { delete window.__NP_PUBLIC; const cl = V2.f3Link('Charizard-Mega-Y'); window.__NP_PUBLIC = 1; const pub = V2.f3Link('Charizard-Mega-Y'); return {cl, pub}; } finally { if (o === undefined) delete window.__NP_PUBLIC; else window.__NP_PUBLIC = o; } })()`);
+      return {hrefs, ...check}; });
+    ok(r.hrefs.length === 6 && r.hrefs.every(h => h.startsWith('#pokemon=')) && r.cl === '#pokemon=Charizard-Mega-Y' && r.pub === '/pokemon/charizard-mega-y' && !r.errs,
+      `F3-5 (M2 #2): V2.f3Link uses "#pokemon=..." on the Claude build and "/pokemon/<slug>" only with window.__NP_PUBLIC (${JSON.stringify(r)})`); }
+  // F3-6 (M2 #3): when RES is null or RES.teams is 0, the lead omits "against 0 real tournament teams"
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const o = RES, read = () => { const m = V2.f3Words(V2.f3Data()).html.match(/<p class="k-lead f3-lead">([\\s\\S]*?)<\\/p>/); return m ? m[1].replace(/<[^>]+>/g, '') : ''; };
+      try { RES = null; const n0 = read(); RES = {teams: 0}; const z0 = read(); return {n0, z0}; } finally { RES = o; } })()`));
+    ok(r.n0.includes('out of 100') && !/against 0|0 real tournament/.test(r.n0) && r.z0.includes('out of 100') && !/against 0|0 real tournament/.test(r.z0) && !r.errs,
+      `F3-6 (M2 #3): when RES is null or teams is 0, the lead omits "against 0 real tournament teams" (${JSON.stringify(r)})`); }
+  // F3-7 (M2 #4): V2.f3Rate returns null for V2.unrated(p) during a new regulation's first 28 days (bar shows "–" and "not rated")
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const P = META.perf, o1 = META.reg, o2 = P && P.reg, on = Date.now;
+      META.reg = {id: 'M-D', since: '2026-12-02', now: null}; if (P) P.reg = META.reg; Date.now = () => Date.parse('2026-12-03T12:00:00Z');
+      try { const un = ROSTER.find(q => { const x = ratings().get(q.n); return x && !x.tc; }), rd = ROSTER.find(q => { const x = ratings().get(q.n); return x && x.tc; });
+        return {unMon: un && un.n, isUn: !!(un && V2.unrated(un)), unRate: un ? V2.f3Rate(un.n) : 'none', rdMon: rd && rd.n, rdRate: rd ? V2.f3Rate(rd.n) : null}; }
+      finally { META.reg = o1; if (P) P.reg = o2; Date.now = on; } })()`));
+    ok(r.isUn && r.unRate === null && typeof r.rdRate === 'number' && !r.errs,
+      `F3-7 (M2 #4): V2.f3Rate returns null for V2.unrated(p) while keeping numeric ratings for rated Pokémon (${JSON.stringify(r)})`); }
+  // F3-8 (M3): Final 3 hero contrast (day and night): slogan, Reg M-D line, lead, receipt text and bar numbers meet WCAG thresholds
+  for (const night of [false, true]) {
+    const r = await f3(1440, 900, () => {
+      const rgb = s => (s.match(/[\d.]+/g) || []).map(Number);
+      const L = c => { const [R, G, B] = c.slice(0, 3).map(x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }); return .2126 * R + .7152 * G + .0722 * B; };
+      const cr = (a, b) => { const x = L(a), y = L(b); return +((Math.max(x, y) + .05) / (Math.min(x, y) + .05)).toFixed(2); };
+      const bgOf = e => { for (let a = e; a; a = a.parentElement) { const c = rgb(getComputedStyle(a).backgroundColor); if (c.length >= 3 && (c.length === 3 || c[3] > .5)) return c; } return [255, 255, 255]; };
+      const fg = s => { const e = document.querySelector('#main ' + s); return e ? rgb(getComputedStyle(e).color) : null; };
+      const pageBg = bgOf(document.querySelector('#main .f3-hero'));
+      const paperBg = rgb(getComputedStyle(document.querySelector('#main .f3-paper')).backgroundColor);
+      const bars = [...document.querySelectorAll('#main .f3-bar')].map(a => cr(rgb(getComputedStyle(a.querySelector('.f3-r')).color), rgb(getComputedStyle(a).backgroundColor)));
+      return {sl: cr(fg('.f3-sl'), pageBg), em: cr(fg('.f3-sl em'), pageBg), h1s: cr(fg('.f3-h1s'), pageBg), lead: cr(fg('.f3-lead'), pageBg),
+        meta: cr(fg('.f3-meta'), paperBg), big: cr(fg('.f3-big'), paperBg), barMin: Math.min(...bars)}; }, {night});
+    ok(r.sl >= 4.5 && r.em >= 3 && r.h1s >= 4.5 && r.lead >= 4.5 && r.meta >= 4.5 && r.big >= 3 && r.barMin >= 3 && !r.errs,
+      `F3-8 (M3, ${night ? 'night' : 'day'}): Final 3 hero contrast meets WCAG (sl ${r.sl}, em ${r.em}, h1s ${r.h1s}, lead ${r.lead}, meta ${r.meta}, big ${r.big}, barMin ${r.barMin})`); }
+  // F3-9 (M3): short-window fold check for BOTH start buttons (Score My Team + Build Me a Team) at 1000x650 and 393x659
+  { const bad = []; for (const [w, h] of [[1000, 650], [393, 659]]) {
+      const r = await f3(w, h, () => { const g1 = document.querySelector('#main .f3-acts .k-go'), g2 = document.querySelector('#main .f3-acts .k-btn'), bar = document.querySelector('.np-bar');
+        const fold = innerHeight - (bar && getComputedStyle(bar).position === 'fixed' ? bar.offsetHeight : 0);
+        return {b1: g1 ? Math.round(g1.getBoundingClientRect().bottom) : null, b2: g2 ? Math.round(g2.getBoundingClientRect().bottom) : null, fold, sw: document.documentElement.scrollWidth - document.documentElement.clientWidth}; });
+      if (r.b1 == null || r.b1 > r.fold || r.b2 == null || r.b2 > r.fold || r.sw > 0 || r.errs) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); }
+    ok(!bad.length, `F3-9 (M3): both start buttons (Score My Team + Build Me a Team) sit above the fold with no sideways scroll at 1000x650 and 393x659 (${bad.join(' | ') || 'all good'})`); }
+  // F3-10 (M3): V2._f3 cache invalidates across regulation change / Dec 2 02:00 UTC without manual reset, and unused V2.f3Seo is gone
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const on = Date.now;
+      try { Date.now = () => Date.parse('2026-12-01T12:00:00Z'); V2._f3 = null; const before = V2.f3Data();
+        Date.now = () => Date.parse('2026-12-02T03:00:00Z'); const after = V2.f3Data();
+        return {bReg: before && before.reg, bOld: !!(before && before.old), aReg: after && after.reg, aOld: !!(after && after.old), seo: typeof V2.f3Seo}; }
+      finally { Date.now = on; V2._f3 = null; } })()`));
+    ok(r.bReg === 'M-C' && !r.bOld && r.aReg === 'M-D' && r.aOld && r.seo === 'undefined' && !r.errs,
+      `F3-10 (M3): V2._f3 cache key includes regulation / Dec 2 rollover (no stale cache) and unused V2.f3Seo is removed (${JSON.stringify(r)})`); }
 }
 // ---------- Home, The Stampede: the hero band (Nov 18; app/src/v2/pages/stampede-hero.js, css/sd-hero.css, sd-shared.css) ----------
 { const hero = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: o.rm || "no-preference"}); const q = await ctx.newPage();

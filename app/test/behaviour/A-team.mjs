@@ -30,10 +30,11 @@ async function homePage() { let r = HOMEP ? await HOMEP : null; HOMEP = warmHome
 const noErrs = r => ok(!r.errs.length, 'page errors: ' + r.errs.join(' | '));
 
 // ================= 1. Home =================
-t('HOME-01', 'Home leads with the tagline "Sharply raise your win rate."', async () => {
+t('HOME-01', 'Home leads with the slogan "Sharply raise your win rate." and, in the same h1, the Pokémon Champions / Reg M-D line', async () => {
+  /* Job DD (Nov 26, Sim, option A): Final 3's one h1 holds the slogan (the brand lockup) and the line Google reads for the regulation */
   const {ui} = await view('home', {team: TEAM});
   const h = await ui.homeHeadline();
-  ok(h === 'Sharply raise your win rate.', `first heading reads "${h}"`); });
+  ok(h.startsWith('Sharply raise your win rate.') && h.includes('Pokémon Champions'), `first heading reads "${h}"`); });
 
 t('HOME-02', 'Most used #1 card opens that Pokémon\'s info sheet', async () => {
   if (NEW) { /* new build (Home piece 1, decisions.md Nov 12, from the approved mock-up; Preview v74, Sim "love it"): "Most used right
@@ -78,12 +79,13 @@ t('HOME-05b', 'This week chip\'s rating matches the info sheet it opens', async 
   ok(NEW ? pr === rating : s.startsWith('✕ ' + rating + ' ') || new RegExp('^\\D*' + rating + ' ').test(s), `chip says rating ${rating}, ${NEW ? 'the page says ' + pr : 'info sheet hero says ' + s.slice(0, 12)}`); await r.close(); },
   {known: NEW ? '' : 'chip label "Whimsicott, rating 78" but its info sheet shows 88 (This week reads the weekly track data, the sheet the live rating)'});
 
-t('HOME-06', 'Start buttons: "Score my team" first with a team, "Build me a team" first with none', async () => {
+t('HOME-06', 'Start buttons: "Score My Team" first and "Build Me a Team" second, with or without a team; each opens its page', async () => {
+  /* Job DD (Nov 26, HH, option b): Final 3 keeps Score My Team as the big first button for everyone (it was Build Me a Team first with no team) */
   // new build: Title Case on buttons (decisions.md Nov 11, "Title Case on buttons and headings"); same buttons, same order
   const r = await homePage(); let b = await r.ui.homeStartButtons();
   ok(b.join('|') === (NEW ? 'Score My Team|Build Me a Team|Battle' /* Sim, Nov 14 naming */ : 'Score my team|Build a team|Plan a match'), 'with a team buttons are ' + b.join('|'));
   await r.ui.tapText('Score my team'); ok(await r.ui.current() === 'report', 'Score my team did not open My Team'); await r.close();
-  const e = await aopen({team: []}); b = await e.ui.homeStartButtons(); ok(NEW ? b[0] === 'Build Me a Team' && b.includes('Score My Team') && b.includes('Battle') : b[0] === (NEW ? 'Build Me a Team' : 'Build me a team') && b.includes('Score my team') && b.includes('Plan a match'), 'empty team buttons are ' + b.join('|'));
+  const e = await aopen({team: []}); b = await e.ui.homeStartButtons(); ok(NEW ? b.join('|') === 'Score My Team|Build Me a Team|Battle' : b[0] === (NEW ? 'Build Me a Team' : 'Build me a team') && b.includes('Score my team') && b.includes('Plan a match'), 'empty team buttons are ' + b.join('|'));
   await e.ui.tapText((NEW ? 'Build Me a Team' : 'Build me a team')); ok(await e.ui.current() === 'auto', (NEW ? 'Build Me a Team did not open Build' : 'Build me a team did not open Build')); await e.close(); });
 
 t('HOME-07', '"Import from Showdown" opens My Team with the Import box ready', async () => {
