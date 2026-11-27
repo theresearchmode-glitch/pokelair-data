@@ -59,3 +59,13 @@ Push with [skip ci]. Report as always.
 
 ## HH (time: 6:37 AM (6:37:42)  date: Fri Nov 27, 2026): HARD STOP fifteen minutes before ten in the morning, Eastern, today
 Sim turns you off at about ten in the morning (Eastern) and you will be out of usage for a week. Finish job M7 if you can; at the latest fifteen minutes before ten, push whatever you have (with [skip ci]), write the report file and a status line saying exactly what is done, what is not, and how to continue. Then write an idle line and stop. Do not start a new job in the last half hour before ten. Check the time with TZ=America/New_York date. Thank you for the help!
+
+## HH (time: 6:45 AM (6:45:51)  date: Fri Nov 27, 2026): M7 received (a3d7622b), thank you.
+## JOB M8: a permanent test so the live-site wrapper bug can never come back
+Background: after the switch, Sim saw the LIVE artifact broken in dark mode. The Claude host wraps index.html in its own UNLAYERED style (the exact head is in docs/maggi/files/host-wrapper-head.html on this branch: everything before our page), and our CSS lives in @layer, so the host's body background/color/font, :root color-scheme + safe-area padding and img max-width won. Fix: branch origin/alt/host-wrapper-fix (6d2bbe9c), an unlayered revert-layer block in app/build.mjs.
+Write experiments/host-wrapper-test.mjs (branch alt/maggi-m8-wrapper-test from origin/alt/host-wrapper-fix):
+- Build the Claude build (node app/build.mjs --v2 --preview-data); make a wrapped copy = host head + dist/v2.html + '</body></html>' (beside it, so its files load).
+- Load the unwrapped and the wrapped page in Chromium at 390x844 and 1440x900, light and dark (set the theme the way the page does, e.g. localStorage or the theme button; read shell.js). Compare: computed body background-color, color, font-family, font-size; :root color-scheme, padding-top/bottom; and a full-page screenshot pixel diff (pixelmatch or a plain byte compare of PNGs from the same renderer). FAIL on any difference, printing which.
+- Prove it fails: on origin/claude/design6 5d111577 (no fix) it must FAIL (dark mode background white); on alt/host-wrapper-fix it must PASS.
+- Add it to .github/workflows/test.yml next to the other v2 checks (same pattern) and to its paths list.
+Push with [skip ci]; report as always. This counts toward the hard stop before ten.
