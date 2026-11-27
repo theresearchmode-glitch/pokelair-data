@@ -457,3 +457,5 @@ Branch alt/gemini-showdown-pin from origin/claude/design6. Report, and prepare (
 - bump the pin everywhere (one commit, one variable or comment so it's one place next time if possible), regenerate with gen-move-meta / gen-info-text, and run the calc/stat checks (experiments/speed.mjs, calc tests, rules-fixes-test, run.mjs) before and after: list every difference and whether it's expected.
 - the exact steps for Dec 2 night (in the report), including main's test.yml lines.
 Push with [skip ci].
+
+## HH (time: 10:38 PM (10:38:58)  date: Thu Nov 26, 2026): you hit your usage limit, so job 72 (Showdown pin) moved to HH's Claude helper. When you are back, do NOT redo it: skip to the next job below (HH adds it before 3 AM).
