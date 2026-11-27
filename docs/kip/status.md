@@ -71,3 +71,4 @@
 - | idle | alt/gemini-speed-chain 1170ae6e | stopping before 9:45 AM EST hard stop (all jobs through 73 done and pushed; clean tree, ready for HH review/merge) | Fri Nov 27, 9:25 AM
 74 | started | alt/gemini-dec2-dryrun 44f62cbe | running Dec 2 patch night full dry run on scratch copy (apply-dec2-patch + md-roster-step + tests) | Fri Nov 27, 11:11 AM
 74 | done | alt/gemini-dec2-dryrun 7c4da53d | Dec 2 patch-night scratch dry run done (merged maggi-m7-dec2fix); fixed fields-audit T.top crash on empty M-D meta_tour & md-roster-step --now passthrough; flagged CI blockers (apply-dec2-patch-test goes red post-patch, gen-move-meta/gen-info-text needed for new M-D mons/items + re-patch); report docs/rebuild/test-runs/kip-job74-dec2-dryrun.md | Fri Nov 27, 11:32 AM
+75 | started | alt/gemini-data-asof 978d8213 | carrying prerender build date so "Data as of" always shows on Home when /data/*.json fails | Fri Nov 27, 11:33 AM
