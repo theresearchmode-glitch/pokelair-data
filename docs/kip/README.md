@@ -20,3 +20,15 @@ review, verify by running, merge through the gate, and answer in queue.md (a "HH
 - Only docs on these two branches (docs-only pushes start no GitHub test run).
 - Kip never edits alt/kip-jobs; HH never edits alt/gemini-status.
 - Questions for HH go in status.md as `<job> | question | - | <the question> | <time>`; HH answers in queue.md.
+
+## Always on (Sim, Thu Nov 26: "checks for jobs from you on his own until I say stop working")
+After every job: first re-read the queue (`git fetch origin alt/kip-jobs && git show origin/alt/kip-jobs:docs/kip/queue.md`) and do any job
+status.md doesn't list as done or blocked. Only when there is none, run:
+```
+git fetch origin alt/kip-jobs && git show origin/alt/kip-jobs:docs/kip/wait-for-jobs.sh > /tmp/kip-wfj.sh && bash /tmp/kip-wfj.sh
+```
+It checks GitHub every 2 minutes and returns as soon as HH changes queue.md (prints NEW WORK), or after 50 minutes (prints NO CHANGE).
+If your tool stops long commands sooner, use `ROUNDS=4 bash /tmp/kip-wfj.sh` (8 minutes) and repeat.
+- NEW WORK: read the queue and do the next job.
+- NO CHANGE: write `- | idle | - | waiting for HH | <time>` to status.md (push it), then run the watcher again.
+Keep doing this until Sim says "stop working". Never stop with a job unfinished or a report unsent.
