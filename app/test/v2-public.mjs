@@ -19,6 +19,13 @@ await p.goto('file://' + OUT + '#home'); await p.waitForTimeout(2500);
 const s = await p.evaluate(() => ({ev: typeof window.__ev, h1: !!document.querySelector('#app h1'), hash: location.hash}));
 ok(s.ev === 'undefined', 'the test flag opens no way in (window.__ev is ' + s.ev + ')');
 ok(s.h1, 'Home draws');
+/* Job DD (Nov 26; Sim picked Final 3 as Home's FIRST SCREEN, never removed the rest, rule 18): the public Home is F3's hero, then the
+   Stampede's Top 10, your six, tools rack and post band in today's order, and the Stampede's own hero is gone (one h1). Failed on
+   design6 52fa60e6, where the public Home was the hero alone. */
+{ const o = await p.evaluate(() => { const at = s => { const e = document.querySelector('#main ' + s); return e ? [...document.querySelectorAll('#main *')].indexOf(e) : -1; };
+    return {hero: at('.f3-hero'), top: at('.sd-top'), six: at('.sd-six'), tools: at('.sd-tools'), post: at('.sd-post'), old: at('.sdh'), h1: document.querySelectorAll('#main h1').length}; });
+  const seq = [o.hero, o.top, o.six, o.tools, o.post];
+  ok(seq.every(x => x >= 0) && seq.every((x, i) => !i || x > seq[i - 1]) && o.old < 0 && o.h1 === 1, `public Home: Final 3's hero first, then Top 10, your six, tools rack, post band; no Stampede hero; one h1 (${JSON.stringify(o)})`); }
 for (const r of ['guide', 'sheet', 'team-empty']) { await p.goto('file://' + OUT + '#' + r); await p.waitForTimeout(800);
   /* Sim's Q24 A (Nov 19): an unknown address shows the not-found page ('Nothing here.'), no longer Home */
   const t = await p.evaluate(() => document.title); ok(t === 'Page not found · NastyPlot', `#${r} is not a page here: it shows the not-found page like any unknown address (tab title: ${t})`); }

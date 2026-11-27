@@ -44,7 +44,16 @@ if (process.argv.includes('--v2')) {
   // code review C3 (Nov 15): /* */ comments are dropped from the shipped CSS (69 KB of 490), as the live build does; the source keeps them.
   // `--keep-comments` keeps them. JS comments are dropped by esbuild further down (code review B-I1).
   const noCom = c => process.argv.includes('--keep-comments') ? c : c.replace(/\/\*[\s\S]*?\*\//g, '');
-  const css = `@layer ${layers};\n` + P.css.map(([n, f]) => `@layer ${n} {\n${noCom(rd(f))}\n}`).join('\n');
+  const css = `@layer ${layers};\n` + P.css.map(([n, f]) => `@layer ${n} {\n${noCom(rd(f))}\n}`).join('\n')
+    /* Nov 27 (Sim saw dark mode broken on the live artifact): the Claude artifact host wraps index.html in its own UNLAYERED style
+       (:root color-scheme light + safe-area padding, html scroll-padding-top, body margin/padding/font/background/color, img max-width).
+       Every rule above is in @layer, so the host's rules won. revert-layer in this one unlayered block sets those properties back to
+       what our layers say, so the wrapped page renders exactly like the unwrapped one (the Preview). */
+    + '\n:root:root{color-scheme:revert-layer;box-sizing:revert-layer;padding-top:revert-layer;padding-bottom:revert-layer}'
+    + 'html:root{scroll-padding-top:revert-layer}'
+    + 'html body{margin:revert-layer;padding:revert-layer;font:revert-layer;background:revert-layer;color:revert-layer}'
+    + 'html body img{max-width:revert-layer}'
+    + 'html body [hidden]:not([hidden=until-found i]){display:revert-layer!important}';
   const helpers = rd('src/app/15-visual-helpers.js'), i0 = helpers.indexOf('SPRITE_ID ='), sprite = helpers.slice(helpers.indexOf('{', i0), helpers.indexOf('}', i0) + 1);
   JSON.parse(sprite); // fails the build if the shared sprite table ever stops being plain JSON
   const meta = fs.existsSync(dir + 'src/v2/art/meta.json') ? rd('src/v2/art/meta.json') : '{}';
@@ -55,9 +64,10 @@ if (process.argv.includes('--v2')) {
   const itemImg = fs.existsSync(dir + 'src/v2/art/items.json') ? JSON.stringify(JSON.parse(rd('src/v2/art/items.json'))) : '{}';
   /* Claude-hosted builds (--one-art-size: the Preview / live artifact) hold at most 511 files and already carry ~443, so the 166 item
      pictures go inside the page as data: URIs (192px WebP, about 1.2 MB) instead of files; the public site keeps the files (Nov 23) */
-  /* --item-files (phone speed, Nov 25, night plan 9): the Cloudflare site (public-site.mjs) has no 511-file limit, so it keeps the item
-     pictures as files (art/items/) even with --one-art-size; inlined they were 1.56 MB of v2.js and phone LCP waited for them */
-  const itemImgOut = !process.argv.includes('--one-art-size') || process.argv.includes('--item-files') ? itemImg : JSON.stringify(Object.fromEntries(Object.entries(JSON.parse(itemImg)).map(([n, f]) => { const fp = dir + 'src/v2/art/items/' + f + '.webp'; return fs.existsSync(fp) ? [n, 'data:image/webp;base64,' + fs.readFileSync(fp).toString('base64')] : null; }).filter(Boolean)));
+  /* --item-files / --public (phone speed, Nov 25-26): the public site has no 511-file limit, so --public always keeps the item
+     pictures as files (art/items/) even with --one-art-size; inlined they were 1.56 MB of v2.js and phone LCP waited for them.
+     Claude-hosted builds (--one-art-size without --public/--item-files) keep them inlined. */
+  const itemImgOut = PUBLIC || !process.argv.includes('--one-art-size') || process.argv.includes('--item-files') ? itemImg : JSON.stringify(Object.fromEntries(Object.entries(JSON.parse(itemImg)).map(([n, f]) => { const fp = dir + 'src/v2/art/items/' + f + '.webp'; return fs.existsSync(fp) ? [n, 'data:image/webp;base64,' + fs.readFileSync(fp).toString('base64')] : null; }).filter(Boolean)));
   // today's logic (P.logic, in today's order) is one closure: 00-main.js opens it, so the v2 shell and pages go inside it and it is
   // closed after the first draw. 15-visual-helpers.js brings SPRITE_ID itself when it is included.
   const L = P.logic || [], hasIds = L.some(f => f.endsWith('15-visual-helpers.js'));
@@ -156,7 +166,7 @@ if (process.argv.includes('--v2')) {
       jsOut = esb.transformSync(js, {loader: 'js', minifyWhitespace: true, charset: 'utf8', legalComments: 'none'}).code;
     }
   }
-  const routeManifest = {};
+  const routeManifest = {}, routeDeps = {};
   if (SPLIT_ROUTES) {
     fs.mkdirSync(dir + 'dist/routes', {recursive: true});
     for (const [rk, files] of Object.entries(ROUTE_CHUNKS)) {
@@ -167,6 +177,17 @@ if (process.argv.includes('--v2')) {
       fs.writeFileSync(dir + 'dist/routes/' + fn, code);
       routeManifest[rk] = `/routes/${fn}?v=${hash(code)}`; /* from the site root: /pokemon/x would look in /pokemon/routes/ (Nov 25) */
     }
+    /* speed review (Nov 26): a page's file can call helpers that live in another page's file (Events draws Winning Teams' cards, This
+       Week draws Events' tickets, "Set as Opponent" needs Battle's, Build's "Compare" needs Compare's: 9 crashes when a page was opened
+       cold, experiments/split-routes-cross-test.mjs). Worked out here from the code itself, never by hand: for each page file, the other
+       page files whose V2.<name> it uses and the main script doesn't define. The page loads them with it (shell.js V2.loadRoute). */
+    const defs = s => new Set([...s.matchAll(/\bV2\.([A-Za-z_$][\w$]*)\s*=(?!=)/g)].map(m => m[1])), uses = s => new Set([...s.matchAll(/\bV2\.([A-Za-z_$][\w$]*)/g)].map(m => m[1]));
+    const mainDefs = defs(jsOut), chunkSrc = Object.fromEntries(Object.keys(routeManifest).map(rk => [rk, fs.readFileSync(dir + 'dist/routes/' + rk + '.js', 'utf8')]));
+    const owner = {}; for (const [rk, s] of Object.entries(chunkSrc)) for (const n of defs(s)) if (!mainDefs.has(n)) (owner[n] = owner[n] || new Set()).add(rk);
+    for (const [rk, s] of Object.entries(chunkSrc)) { const own = defs(s), need = new Set();
+      const soft = n => s.includes('V2.' + n + '&&') || s.includes('V2.' + n + '?'); /* only checked for (V2.FB && …, V2.buildHits ? …): optional, not a reason to load another page's file first */
+      for (const n of uses(s)) if (!mainDefs.has(n) && !own.has(n) && owner[n] && !soft(n)) for (const o of owner[n]) if (o !== rk) need.add(o);
+      if (need.size) routeDeps[rk] = [...need].sort(); }
   }
   let pubTag = '', seoRows = [], pokemonLd = null;
   if (PUBLIC) {
@@ -187,7 +208,7 @@ if (process.argv.includes('--v2')) {
     const {websiteJsonLd, jsonLdScriptTag, pokemonPageGraphJsonLd} = await import('./public-jsonld.mjs'); pokemonLd = (s, name) => jsonLdScriptTag(pokemonPageGraphJsonLd(s, name, seoMap.home || null));
     const wsLd = websiteJsonLd(seoMap.home || null);
     const ldRuntime = `(function(){var base=${JSON.stringify(wsLd).replace(/</g, '\\u003c')};function syncLd(){var el=document.getElementById('np-jsonld');if(!el)return;var p=String(location.pathname||'/').replace(/\\/+$/,'')||'/';if(p.indexOf('/pokemon/')===0){var slug='';try{slug=decodeURIComponent(p.slice(9)).replace(/\\.html$/,'')}catch(e){el.textContent=JSON.stringify(base);return}if(el.textContent.indexOf('"item":"https://nastyplot.org/pokemon/'+encodeURIComponent(slug)+'"')>=0)return;var label=null;try{var m=typeof byName==='object'&&byName&&byName.get(slug);if(m&&m.d)label=m.d;else if(typeof ROSTER==='object'&&window.V2&&V2.pubSlug){for(var i=0;i<ROSTER.length;i++)if(V2.pubSlug(ROSTER[i].n)===slug){label=typeof disp==='function'?disp(ROSTER[i].n):ROSTER[i].n;break}}}catch(e){}if(!label||document.querySelector('meta[name="robots"][content*="noindex"]')){el.textContent=JSON.stringify(base);return}var ws=Object.assign({},base);delete ws['@context'];el.textContent=JSON.stringify({'@context':'https://schema.org','@graph':[ws,{'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'NastyPlot',item:'https://nastyplot.org/'},{'@type':'ListItem',position:2,name:'Pokémon A to Z',item:'https://nastyplot.org/pokemon'},{'@type':'ListItem',position:3,name:label,item:'https://nastyplot.org/pokemon/'+encodeURIComponent(slug)}]}]})}else{el.textContent=JSON.stringify(base)}}window.__npSyncJsonLd=syncLd;addEventListener('popstate',syncLd);addEventListener('hashchange',syncLd);var ps=history.pushState,rs=history.replaceState;if(ps)history.pushState=function(){var r=ps.apply(this,arguments);syncLd();return r};if(rs)history.replaceState=function(){var r=rs.apply(this,arguments);syncLd();return r};syncLd()})();`;
-    pubTag = jsonLdScriptTag(wsLd) + '\n' + `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest).replace(/</g, '\\u003c')};` : ''}${ldRuntime}</script>\n`;
+    pubTag = jsonLdScriptTag(wsLd) + '\n' + `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest).replace(/</g, '\\u003c')};window.__NP_RDEPS=${JSON.stringify(routeDeps).replace(/</g, '\\u003c')};` : ''}${ldRuntime}</script>\n`;
   }
   /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words).
      Security (Kip job 24, Nov 25): moved from an inline onerror attribute into a separate inline <script> right after it, which the
@@ -247,7 +268,7 @@ if (process.argv.includes('--v2')) {
        so a remaining rule targets /v2; /<tool>/ answers 301 to /<tool> (it gave 404); the old /data/*, /art/*, /art-s/*, /fonts/*, /routes/*
        rules rewrote to themselves and are gone (files are served as they are; /data/* goes through the Worker). No splat lines left. */
     fs.writeFileSync(dir + 'dist/_redirects', pubPaths.map(p => `${p}/ ${p} 301\n`).join('') + pubPaths.filter(p => !ownFile.has(p)).map(p => `${p} /v2 200\n`).join(''));
-    const cacheHeaders = '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n';
+    const cacheHeaders = '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/static.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n';
     writeHeaders = html => fs.writeFileSync(dir + 'dist/_headers', securityHeaders(html) + cacheHeaders);
     writeHeaders(page);
   }
@@ -262,6 +283,24 @@ if (process.argv.includes('--v2')) {
           return g('.np-skip') + g('.np-head') + '<main class="np-main" id="main">' + (window.V2 && V2.loadingHtml ? V2.loadingHtml() : '') + '</main>' + g('.np-bar'); }); /* pre-launch 2b (Nov 17): the loading panel from the first paint (slow 4G showed an empty page for ~3 s) */
         if (parts.includes('np-head') && page.includes('<div id="app"></div>')) { fs.writeFileSync(dir + 'dist/v2.html', page.replace('<div id="app"></div>', `<div id="app">${parts}</div>`)); console.log(`v2: static first screen ${(parts.length / 1024).toFixed(0)} KB`); }
       } catch (e) { console.log('v2: static first screen skipped (' + String(e.message).slice(0, 80) + ')'); } finally { await b.close(); } } }
+  /* Job W (Nov 26, SEO): each public page's words in its static HTML (shell.js V2.preBlock). The build opens the page once with the day's data
+     (out/, the same documents public-site.mjs publishes as /data/*.json), waits for the first real draw of Home, and asks V2.preBlock for
+     every page in the SEO map. The blocks go into the static #main of index.html and the tool pages below (never v2.html, 404 or the
+     Pokémon pages); they are visually hidden beside today's loading panel, and the first draw replaces #main as before. */
+  const PRE = {};
+  if (PUBLIC && !process.argv.includes('--no-static')) { let chromium = null; try { ({chromium} = await import('playwright')); } catch (e) {}
+    if (chromium) { const cwd = process.cwd(); let docs = null;
+      try { process.chdir(dir + '..'); const {DOC_SOURCES} = await import(dir + '../split-docs.mjs'), {perfDoc} = await import(dir + 'data-docs.mjs');
+        const rdo = f => { try { return JSON.parse(fs.readFileSync(dir + '../out/' + f, 'utf8')); } catch (e) { return null; } };
+        docs = Object.fromEntries(Object.entries(DOC_SOURCES).map(([k, get]) => [k, get()])); docs.perf = perfDoc(rdo('limitless.json'), rdo('perf.json')); } catch (e) { docs = null; } finally { process.chdir(cwd); }
+      if (!docs || !docs.results) console.log('public: no out/ data, pages keep only the loading panel in their static HTML');
+      else { const b = await chromium.launch(), pg = await b.newPage({viewport: {width: 1280, height: 900}});
+        try { await pg.addInitScript(D => { const snap = v => ({exists: v != null, data: () => v}); window.__NP_CLAUDE = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { const k = p.startsWith('meta/') ? p.slice(5) : ''; setTimeout(() => cb(snap(k && !k.endsWith('_2') ? D[k] : null)), 0); return () => {}; }, get: async () => snap(null), set: async () => {}, update: async () => {}})} : null}; }, docs);
+          await pg.goto('file://' + dir + 'dist/v2.html#home'); await pg.waitForFunction(() => window.V2 && V2._dataOk && document.querySelector('#main h1'), null, {timeout: 30000});
+          const keys = seoRows.map(r => r.key); Object.assign(PRE, await pg.evaluate(ks => Object.fromEntries(ks.map(k => [k, V2.preBlock ? V2.preBlock(k) : ''])), keys));
+          console.log(`public: static words for ${Object.values(PRE).filter(Boolean).length} pages (home: ${(String(PRE.home || '').match(/<h1>([^<]*)/) || [])[1] || 'none'})`);
+        } catch (e) { console.log('public: static words skipped (' + String(e.message).slice(0, 80) + ')'); } finally { await b.close(); } } } }
+  const addPre = (html, key) => PRE[key] ? html.replace('<main class="np-main" id="main">', m => m + PRE[key]) : html;
   /* Public site, Nov 25 (Sim: quiet launch Dec 2-3; Kip job 31: one page per Pokémon is the fastest Google win).
      1. The page's own files load from the site root: on a two-level address (/pokemon/garchomp) a relative "v2.js" asked for
         /pokemon/v2.js and got the page back ("This page didn't load"). Done after the static first screen, which opens the file locally.
@@ -297,6 +336,7 @@ if (process.argv.includes('--v2')) {
     /* the 840 KB stylesheet goes in one shared file (/v2.css) for the Pokémon pages: 346 inline copies made 322 MB (checked Nov 25) */
     let ph = h; const st = [...h.matchAll(/<style>\n?([\s\S]*?)\n?<\/style>/g)].sort((x, y) => y[1].length - x[1].length)[0];
     if (st && st[1].length > 100000) { const css = st[1]; fs.writeFileSync(dir + 'dist/v2.css', css); ph = h.replace(st[0], `<link rel="stylesheet" href="/v2.css?v=${hash(css)}">`); }
+    if (SPLIT) { h = ph; fs.writeFileSync(dir + 'dist/v2.html', h); }
     const spriteIds = JSON.parse(sprite), artBase = (b => /^[a-z]/i.test(b) ? '/' + b : b)(artArg || 'art/');
     const seen = new Map(); fs.rmSync(dir + 'dist/pokemon', {recursive: true, force: true}); fs.mkdirSync(dir + 'dist/pokemon', {recursive: true}); /* only this build's pages (Kip job 33 F4) */
     for (const p of roster) {
@@ -311,18 +351,24 @@ if (process.argv.includes('--v2')) {
          <head>, after the stylesheet and font preloads; measured on a mid phone: LCP 6.2 -> 5.7 s, first paint 2.43 -> 2.57 s, the picture's
          27 KB sharing the throttled line with the CSS and fonts). Same address
          as V2.art: ART_BASE from shell.js line 4 (the public build serves a bare folder name from the site root) */
-      const sid = spriteIds[p.n], pre = sid == null || sid === '' ? '' : `<link rel="preload" as="image" href="${esc(artBase + sid + '.webp')}">`;
+      const sid = spriteIds[p.n], pre = (SPLIT_ROUTES && routeManifest.pokemon ? `<link rel="preload" as="script" href="${routeManifest.pokemon}">` : '') + (sid == null || sid === '' ? '' : `<link rel="preload" as="image" href="${esc(artBase + sid + '.webp')}">`);
       const page = ownHead(ph, title, desc, `https://nastyplot.org/pokemon/${s}`).replace(/<script type="application\/ld\+json" id="np-jsonld">[\s\S]*?<\/script>/, () => pokemonLd(s, name)).replace('</head>', () => pre + '</head>');
       fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
     }
     /* SEO fix 2 (Nov 25): one file per tool page (dist/team.html at /team) with its own words from the SEO map, on the shared stylesheet */
-    for (const r of ownFileRows) fs.writeFileSync(dir + `dist${r.path}.html`, ownHead(ph, r.title, r.desc, `https://nastyplot.org${r.path}`));
+    for (const r of ownFileRows) {
+      let tp = ownHead(ph, r.title, r.desc, `https://nastyplot.org${r.path}`);
+      if (SPLIT_ROUTES && routeManifest[r.key]) tp = tp.replace('</head>', () => `<link rel="preload" as="script" href="${routeManifest[r.key]}"></head>`);
+      fs.writeFileSync(dir + `dist${r.path}.html`, addPre(tp, r.key)); /* Job W: + its static words */
+    }
     const urls = [...seen.keys()].map(s => `  <url><loc>https://nastyplot.org/pokemon/${s}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n');
     fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', urls + '\n</urlset>'));
     /* No /pokemon/:name rule (Nov 25): Pages serves dist/pokemon/<slug>.html at /pokemon/<slug> by itself (docs: Serving Pages, route
        matching), and a rule would also catch unknown names. An unknown Pokémon has no file, so it gets 404.html with status 404.
        "/" is index.html, the same page; 404.html is the same page with noindex, so the site's own not-found view draws there. */
-    fs.writeFileSync(dir + 'dist/index.html', h);
+    /* "/" (index.html) matches v2.html: on --split both use the shared /v2.css (Job 57); on non-split (--public without --split,
+       e.g. v2-public.mjs file:// test) both stay self-contained. */
+    fs.writeFileSync(dir + 'dist/index.html', addPre(h, 'home')); /* Job W: Home's static words */
     /* night queue 8 (Nov 26; SEO audit #9, #10): /pokemon, the A-to-Z page of every Pokémon page (plain links, in the sitemap), and a light
        static 404 with today's underdog; a wrong /pokemon/<name> keeps the app's own "No Pokémon here." view (dist/pokemon/404.html:
        Cloudflare serves the nearest 404.html). app/static-pages.mjs; checked by experiments/static-pages-test.mjs */
@@ -331,6 +377,10 @@ if (process.argv.includes('--v2')) {
       fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', sp.sitemap + '\n</urlset>'));
       fs.appendFileSync(dir + 'dist/_redirects', '/pokemon/ /pokemon 301\n');
       console.log(`public: /pokemon (${(sp.sizeIndex / 1024).toFixed(0)} KB, ${seen.size} links) and a light 404 (${(sp.size404 / 1024).toFixed(1)} KB, underdog ${sp.underdog}; ${sp.asOf || 'no data date'})`); }
+    /* the item pictures as external files beside the public build (art/items/*.webp, loaded only when an item picture is shown) */
+    const itemArtDir = dir + 'src/v2/art/items/';
+    if (fs.existsSync(itemArtDir)) { fs.mkdirSync(dir + 'dist/art/items', {recursive: true});
+      for (const f of fs.readdirSync(itemArtDir)) if (f.endsWith('.webp')) fs.copyFileSync(itemArtDir + f, dir + 'dist/art/items/' + f); }
     /* the brand kit's icons at the site root (search engines look for /favicon.ico and a real icon URL; never redrawn, copied as is) */
     const icoDir = dir + '../docs/brand/nastyplot-brand-assets/3-website-icons/';
     for (const f of ['favicon.ico', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png']) if (fs.existsSync(icoDir + f)) fs.copyFileSync(icoDir + f, dir + 'dist/' + f);

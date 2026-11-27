@@ -1,5 +1,6 @@
 {
   "name": "nastyplot",
+  "license": "UNLICENSED",
   "private": true,
   "description": "NastyPlot: a team builder for Pokémon Champions VGC doubles. Dependencies are for the build, tests and data jobs only; the site itself ships as one HTML file.",
   "type": "commonjs",

@@ -16,6 +16,9 @@
 //   AS-1..9 (Nov 18): the All Suggestions sheet, option C (Sim's Q5): Suggest from, sections, card facts, Show 6 More, notes, height (ONLY=AS)
 //   TP3-1 (Nov 26): long event names are cut at a whole word, never mid-word (ONLY=TP3 runs it alone)
 //   TF-1, TF-2 (Nov 26): Test Run and Track Record at most 3 screens at 1440x900 (ONLY=TF runs them alone)
+//   MT390-1 (Nov 26): My Team at 390 with no optional swap is at most 4.35 screens, its links in one row (ONLY=MT390 runs it alone)
+//   MD-1, MD-2 (Nov 26): documents with no producer (singles, status) never hold the numbers back; a real one still does (ONLY=MD)
+//   SP-1..6 (Nov 26): Spicy picks, an extra on top: off = the normal suggestions as before; on = a labelled group, Apply graded as shown, Search finds it (ONLY=SP)
 //   BR-C1..C7 (Nov 18): behaviour review: the Apply and Remove holds end on any scroll they didn't make and on leaving My Team,
 //              redraws at 1100-1439 don't move My Team, keyboard Apply keeps the focus (ONLY=BR runs these alone)
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
@@ -25,7 +28,7 @@ const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') +
 /* Parts (Nov 18): the whole file took 18-21 min on GitHub, which pushed the code-tests job past its 35-min limit (runs 1331-1351
    cancelled; golden, same-grade and the logic checks never ran). test.yml runs it as parallel jobs, one per PART; together they run every
    check once. PART=all (the default) runs everything in one go, as before. Parts: main1 (Build ... the Dispatch), main2 (Home's bands, My
-   Team height, NPR, Base Stats), groups (BR, MQ, AS, HQ, WebKit pair). ONLY=BR|MQ|AS|HQ still runs one group alone. */
+   Team height, NPR, Base Stats), groups (BR, MQ, AS, SP, HQ, WebKit pair). ONLY=BR|MQ|AS|SP|HQ still runs one group alone. */
 const PART = process.env.PART || 'all', part = k => PART === 'all' || PART.split(',').includes(k);
 if (!['all', 'main1', 'main2', 'groups'].includes(PART)) { console.log('v2-minors: unknown PART ' + PART + ' (all, main1, main2, groups)'); process.exit(1); }
 /* q59 (Sim's yes, Nov 20): under 700 My Team's Matchups / Suggestions / Team Checks are tabs, one shown at a time. A check of something
@@ -288,6 +291,99 @@ const AS = async () => {
     const bad = all.filter(t => /tell it apart|no clear edge/.test(t) || !/^(Add fills your empty spot|Fix )/.test(t)); /* W1a (Sim, Nov 19): 'Add · fills your empty spot' (a Fix line stays) */
     ok(mtL.length >= 1 && shL.length >= 1 && !bad.length, `AS-11 (audit Nov 19 #3): with 5 of 6, ${mtL.length} My Team and ${shL.length} sheet card(s) fill the empty spot; none says it's a small change real games can't tell apart (${[...new Set(bad.length ? bad : all)].slice(0, 3).join(' | ')})`); await c.close(); } };
 if (process.env.ONLY === 'AS') { await AS(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// MT390-1 (Sim, Nov 26 "fix it"; HH's Job K): My Team at 390 with NO optional swap is at most 4.35 screens (Sim's "Take 4.35", Nov 25).
+// On the frozen data the sample team shows an optional swap (Mega Floette from Box + Catch), so the 4.35 state was never measured here.
+// The no-swap state, built the same way every run: the sample team and its box (as the page makes them) with Suggest from set to My Box,
+// where no swap helps; Suggestions then says "Nothing to fix" with its links. Failed on design6 dcefa24f (3716px, 4.40 screens).
+const MT390 = async () => { const SL = ['Charizard-Mega-Y:Drought', 'Whimsicott:Prankster', 'Basculegion:Adaptability', 'Kingambit:Defiant', 'Garchomp:Rough Skin', 'Sneasler:Unburden'].map(x => ({n: x.split(':')[0], a: x.split(':')[1], lock: false}));
+  const BOX = ['Rotom-Wash', 'Glimmora', 'Tyranitar', 'Absol', 'Incineroar', 'Corviknight', 'Archaludon', 'Blastoise', 'Staraptor', 'Rillaboom', 'Pelipper', 'Meowscarada', 'Sylveon', 'Primarina', 'Salamence', 'Lucario', 'Hydreigon', 'Gardevoir', 'Kingambit', 'Dragonite', 'Mimikyu', 'Dragalge', 'Serperior', 'Swampert', 'Tinkaton', 'Greninja', 'Empoleon', 'Drampa', 'Whimsicott', 'Steelix', 'Azumarill', 'Gengar', 'Charizard', 'Basculegion', 'Garchomp', 'Sneasler'];
+  const st = {slots: SL, box: BOX, teams: [{id: 't1795692527298', name: 'Sun Tailwind (sample)', slots: SL, format: 'doubles', saved: 1795692527298}], loadedId: 't1795692527298', format: 'doubles', opp: ['', '', '', '', '', ''], boxV: 2, maxMega: 2, megaV: 1, megaGoal: 2, excl: [], log: []};
+  const c = await b.newContext({viewport: {width: 390, height: 844}, hasTouch: true}), q = await c.newPage();
+  await q.addInitScript(([S]) => { window.__PL_TEST = 1; if (sessionStorage.getItem('mt390')) return; sessionStorage.setItem('mt390', 1); localStorage.setItem('cc2.state', JSON.stringify(S)); localStorage.setItem('cc2.pool', '"box"'); }, [st]);
+  await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2000); await q.waitForTimeout(600); await q.waitForFunction(() => !document.querySelector('.sg2-wait'), null, {timeout: 90000}).catch(() => {}); await q.waitForTimeout(1200);
+  const r = await q.evaluate(() => { const L = [...document.querySelectorAll('#tm-sg .sg2-nact a, #tm-sg .sg2-all')].filter(e => e.getClientRects().length);
+    return {H: document.documentElement.scrollHeight, scr: +(document.documentElement.scrollHeight / 844).toFixed(3), opt: /Optional swaps:/.test(document.body.innerText), none: !!document.querySelector('#tm-sg .sg2-none'),
+      links: L.map(e => e.textContent.replace(/\s+/g, ' ').trim()), rows: new Set(L.map(e => Math.round(e.getBoundingClientRect().top))).size, sw: document.documentElement.scrollWidth}; });
+  ok(r.none && !r.opt && r.scr <= 4.35 && r.links.length >= 3 && r.rows === 1 && r.sw <= 390, `MT390-1: My Team at 390 with no optional swap ("Nothing to fix", Suggest from My Box) is at most 4.35 screens (${r.scr}, ${r.H}px); its ${r.links.length} links (${r.links.join(' | ')}) on ${r.rows} row(s)`);
+  await c.close(); };
+if (process.env.ONLY === 'MT390') { await MT390(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// SP-1..6 (Job E, rebuilt to Sim's choices in Job L, Nov 26): Spicy picks (sugs.js V2.sgSpicy; research docs/rebuild/research/spicy-picks-nov26.md).
+// Spicy is an extra on top: off, the normal suggestions are exactly as they were (rare picks included; the README team's list brings in
+// Mega Dragonite, under 5% of teams); on, a separate labelled group, the normal list and the sheet unchanged. Usage, games and the PROVEN
+// rule are worked out here from activePerf() (the tournament numbers in use), not from the page's own helpers. All failed on design6 9bab576f.
+const SP = async () => {
+  const BOXA = ['Absol', 'Archaludon', 'Azumarill', 'Basculegion', 'Garchomp', 'Incineroar', 'Kingambit', 'Sneasler', 'Whimsicott', 'Rillaboom', 'Charizard', 'Gengar', 'Dragonite', 'Tyranitar', 'Hydreigon', 'Amoonguss', 'Talonflame', 'Pelipper', 'Torkoal', 'Farigiraf'];
+  const T68 = ['Garchomp', 'Kingambit', 'Sneasler', 'Basculegion', 'Archaludon', 'Azumarill'];
+  const st = {slots: T68.map(n => ({n, a: null, lock: false})), box: BOXA, teams: [], loadedId: null, format: 'doubles', maxMega: 1, opp: [], excl: [], log: []};
+  const c = await b.newContext({viewport: {width: 1440, height: 900}}), q = await c.newPage();
+  await q.addInitScript(([S]) => { window.__PL_TEST = 1; if (sessionStorage.getItem('sp1')) return; sessionStorage.setItem('sp1', 1); localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.state', JSON.stringify(S)); localStorage.setItem('cc2.pool', '"all"'); }, [st]);
+  await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2000);
+  const idle = () => q.waitForFunction(() => window.V2 && V2.plan && V2.plan.plans && !document.querySelector('#main .sg2-wait'), null, {timeout: 120000}).catch(() => {});
+  await idle(); await q.waitForTimeout(500);
+  // the cards on My Team (and in the All Suggestions sheet): each incoming Pokémon with its share of teams, and the card's labels
+  const cards = () => q.evaluate(() => JSON.parse(window.__ev(`(() => { const d = (activePerf() || {}).doubles || {}, us = p => d[p.n] ? d[p.n][0] : U(p), z = 1.96;
+    const lo = (w, n) => { const k = 1 + z * z / n; return ((w + z * z / (2 * n)) - z * Math.sqrt(w * (1 - w) / n + z * z / (4 * n * n))) / k; };
+    const sure = p => { const r = d[p.n]; return !!r && r[2] >= 300 && lo(r[1] / 100, r[2] / 3) > .5; };
+    const one = (b, pl) => ({el: b.tagName, ins: pl ? pl.ch.map(x => ({n: x.c.p.n, u: us(x.c.p), sure: sure(x.c.p), g: d[x.c.p.n] ? d[x.c.p.n][2] : 0})) : null, tags: [...b.closest('li').querySelectorAll('.k-tag')].map(t => t.textContent.trim())});
+    const norm = [...document.querySelectorAll('#main [data-v2plan]')].map(b => one(b, (ui.planList || [])[+b.dataset.v2plan]));
+    const sp = [...document.querySelectorAll('#main [data-v2spl]')].map(b => one(b, (V2.spShown || [])[+b.dataset.v2spl]));
+    const t = document.querySelector('#main [data-v2spicy]');
+    return JSON.stringify({norm, sp, tog: t ? {tag: t.tagName, type: t.type, pressed: t.getAttribute('aria-pressed'), text: t.textContent.trim(), inAdj: !!t.closest('[data-v2adj]')} : null}); })()`)));
+  const rare = x => x.ins && x.ins.some(i => i.u < 5), names = r => r.norm.map(x => (x.ins || []).map(i => i.n).join('+')).join(' | ');
+  const r0 = await cards();
+  ok(r0.tog && r0.tog.tag === 'BUTTON' && r0.tog.pressed === 'false' && r0.tog.inAdj && /Spicy picks/.test(r0.tog.text) && r0.norm.length >= 1 && r0.norm.some(rare) && !r0.sp.length && !r0.norm.some(x => x.tags.length),
+    `SP-1: Spicy picks is off by default (a button in Adjust Suggestions: ${r0.tog && r0.tog.inAdj}, aria-pressed ${r0.tog && r0.tog.pressed}); off, the ${r0.norm.length} normal card(s) are the planner's own, rare picks included and unlabelled (${r0.norm.map(x => (x.ins || []).map(i => i.n + ' ' + i.u).join('+')).join(' | ')}), and no spicy card shows`);
+  const sheet = async () => { await q.evaluate(() => window.__ev('V2.openAllSugs()')); await q.waitForTimeout(1000);
+    const r = await q.evaluate(() => JSON.parse(window.__ev(`JSON.stringify([...document.querySelectorAll('.np-sheet [data-v2plana]')].map(b => (V2.sgAll.list[+b.dataset.v2plana] || {ch: []}).ch.map(x => x.c.p.n).join('+')))`)));
+    await q.keyboard.press('Escape'); await q.waitForTimeout(600); return r; };
+  const sh0 = await sheet();
+  // on, by keyboard: open Adjust Suggestions (the toggle sits there while off), focus the toggle and press Enter
+  await q.evaluate(() => { const d = document.querySelector('#main [data-v2adj]'); if (d && !d.open) d.querySelector('summary').click(); }); await q.waitForTimeout(300);
+  await q.evaluate(() => { const t = document.querySelector('#main [data-v2spicy]'); if (t) t.focus(); }); await q.keyboard.press('Enter'); await q.waitForTimeout(800);
+  await q.waitForFunction(() => document.querySelector('#main .sg2-sp') && !document.querySelector('#main .sg2-spwait'), null, {timeout: 120000}).catch(() => {}); await q.waitForTimeout(500);
+  const r1 = await cards(), LAB = i => i.sure ? `Rare pick, plenty of games (${i.g.toLocaleString('en-US')})` : 'Spicy: too few games to tell';
+  const bad1 = r1.sp.filter(x => !rare(x) || x.ins.filter(i => i.u < 5).some(i => !x.tags.includes(LAB(i))) || x.tags.some(t => /better|as good|as often/i.test(t)));
+  const hd = await q.evaluate(() => ((document.querySelector('#main .sg2-sp .sg2-spc') || {}).textContent || '').trim());
+  const foc = await q.evaluate(() => !!(document.activeElement && document.activeElement.matches('[data-v2spicy]')));
+  ok(r1.tog && r1.tog.pressed === 'true' && !r1.tog.inAdj && foc && r1.sp.length >= 1 && !bad1.length && names(r1) === names(r0) && /fewer than 5% of teams/.test(hd) && !/as often|as good|better/i.test(hd),
+    `SP-3: Enter on the toggle turns it on (aria-pressed ${r1.tog && r1.tog.pressed}, now heading its group: ${r1.tog && !r1.tog.inAdj}, focus kept ${foc}); ${r1.sp.length} spicy card(s), each bringing in a rare Pokémon with its label (proven: "Rare pick, plenty of games (N)", else "Spicy: too few games to tell"), no claim it wins as often; header "${hd}"; the normal cards unchanged (${names(r1) === names(r0)}) (${r1.sp.map(x => x.ins.map(i => i.n + ' ' + i.u + (i.sure ? ' proven' : '')).join('+') + ' [' + x.tags.join('; ') + ']').join(' | ')})`);
+  const sh1 = await sheet();
+  ok(r1.tog && r1.tog.pressed === 'true' && sh1.length >= 1 && JSON.stringify(sh1) === JSON.stringify(sh0), `SP-2: All Suggestions is the same with Spicy picks off and on (${sh0.length} and ${sh1.length} cards${sh0.join(' ').includes('Dragonite-Mega') ? ', Mega Dragonite included' : ''})`);
+  // rule 20: Apply on a spicy card gives exactly that six, and its Strength Score is the one the card showed
+  const ap = await q.evaluate(() => JSON.parse(window.__ev(`(() => { const pl = (V2.spShown || [])[0]; if (!pl) return '{}'; const want = Math.round(planGrade(pl)), ins = pl.ch.map(x => x.c.p.n), shown = (document.querySelector('#main [data-v2spl="0"]').closest('li').querySelector('.tm-mv span') || {}).textContent || '';
+    document.querySelector('#main [data-v2spl="0"]').click(); const ms = members(); return JSON.stringify({want, shown, ins, now: ms.map(m => m.p.n), got: ms.length === 6 ? Math.round(gradeTeam(ms)) : null}); })()`)));
+  ok(ap.ins && ap.ins.every(n => ap.now.includes(n)) && ap.got === ap.want && new RegExp('→ ' + ap.want + '$').test(ap.shown.trim()),
+    `SP-4 (rule 20): Apply on Spicy pick 1 brings in ${(ap.ins || []).join(' and ')}; the new six scores ${ap.got}, as the card said (${ap.shown})`);
+  await q.waitForTimeout(800); await idle();
+  // off again by keyboard (Space); the choice is kept in this browser
+  const r1b = await cards();
+  await q.evaluate(() => { const t = document.querySelector('#main [data-v2spicy]'); if (t) t.focus(); }); await q.keyboard.press('Space'); await q.waitForTimeout(800); await idle();
+  const r2 = await cards(), kept = await q.evaluate(() => localStorage.getItem('np2.spicy'));
+  ok(r2.tog && r2.tog.pressed === 'false' && !r2.sp.length && names(r2) === names(r1b) && r1b.tog && r1b.tog.pressed === 'true' && kept === '0', `SP-5: Space turns it off again (aria-pressed ${r2.tog && r2.tog.pressed}, kept as ${kept}); no spicy card, and the ${r2.norm.length} normal card(s) are the same as with it on (${names(r2)})`);
+  // rule 16: Search finds it ("spicy", and "rare picks"), and the result turns it on with the toggle in view (from another page, at 390 too)
+  const fd = [];
+  for (const [W, word] of [[1440, 'spicy'], [390, 'rare picks']]) { await q.setViewportSize({width: W, height: W < 700 ? 844 : 900}); await q.evaluate(() => { location.hash = '#meta'; }); await q.waitForTimeout(1500);
+    const r = await q.evaluate(w => JSON.parse(window.__ev(`(() => { const f = V2.find(${JSON.stringify(w)}), k = V2.findPlaces.findIndex(p => p[1] === 'Spicy Picks'); const hit = !!(f && f.places.some(p => p[1] === 'Spicy Picks')); if (k >= 0) V2.goPlace(k); return JSON.stringify({hit, k}); })()`)), word);
+    await q.waitForTimeout(2500); await q.waitForFunction(() => document.querySelector('#main .sg2-sp') && !document.querySelector('#main .sg2-spwait'), null, {timeout: 120000}).catch(() => {}); await q.waitForTimeout(400);
+    const v = await q.evaluate(() => { const t = document.querySelector('#main [data-v2spicy]'), r = t && t.getBoundingClientRect(); return {on: t && t.getAttribute('aria-pressed'), seen: !!r && r.width > 0 && r.top >= 0 && r.bottom <= innerHeight, foc: document.activeElement === t, hash: location.hash}; });
+    if (!r.hit || v.on !== 'true' || !v.seen || !v.foc || v.hash !== '#team') fd.push(`${W} "${word}": ${JSON.stringify({...r, ...v})}`);
+    await q.evaluate(() => { const t = document.querySelector('#main [data-v2spicy]'); if (t && t.getAttribute('aria-pressed') === 'true') t.click(); }); await q.waitForTimeout(800); }
+  ok(!fd.length, `SP-6 (rule 16): Search finds Spicy Picks ("spicy" at 1440, "rare picks" at 390); the result opens My Team with it on, the toggle in view and focused (${fd.join(' | ') || 'both'})`);
+  // SP-7 (Job P, Nov 26; WebKit check wkb-10): the label pill is slanted (skewX -8deg); when a long label wraps to two lines on a phone its
+  // corners reached 3px past the card. With the longest label put in ("Rare pick, plenty of games (1,598)"), at 360-430 both slanted
+  // corners stay inside the card. Failed on alt/kl-batch 14325eb1.
+  { const pb = []; for (const W of [360, 375, 390, 430]) { const c2 = await b.newContext({viewport: {width: W, height: 844}, hasTouch: true}), q2 = await c2.newPage();
+      await q2.addInitScript(([S]) => { window.__PL_TEST = 1; if (sessionStorage.getItem('sp7')) return; sessionStorage.setItem('sp7', 1); localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.state', JSON.stringify(S)); localStorage.setItem('cc2.pool', '"all"'); localStorage.setItem('np2.spicy', '1'); }, [st]);
+      await q2.goto('file://' + PAGE + '#team'); await q2.waitForTimeout(2000);
+      await q2.waitForFunction(() => document.querySelector('#main .sg2-spl .k-tag'), null, {timeout: 120000}).catch(() => {}); await q2.waitForTimeout(800);
+      const r = await q2.evaluate(async () => { const t = document.querySelector('#main .sg2-spl .k-tag'); if (!t) return {none: 1}; t.textContent = 'Rare pick, plenty of games (1,598)';
+        await new Promise(f => requestAnimationFrame(() => requestAnimationFrame(f))); const a = t.getBoundingClientRect(), li = t.closest('li').getBoundingClientRect();
+        return {lines: Math.round(a.height / 25), left: +(a.left - li.left).toFixed(1), right: +(li.right - a.right).toFixed(1)}; });
+      if (r.none || r.left < -0.5 || r.right < -0.5) pb.push(`${W}: ${JSON.stringify(r)}`); else pb.ok = (pb.ok || []).concat(`${W}: ${r.lines} line(s), ${r.left}/${r.right}px inside`); await c2.close(); }
+    ok(!pb.length, `SP-7 (Job P): the longest Spicy label's slanted pill stays inside its card at 360, 375, 390 and 430, wrapped or not (${pb.length ? pb.join(' | ') : (pb.ok || []).join(' | ')})`); }
+  await c.close(); };
+if (process.env.ONLY === 'SP') { await SP(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+
 const TP3 = async () => { /* TP3-1 (small touches pass 3, Nov 26): a long event name is cut at a whole word. evShort cut every name over 28 letters at
   letter 27, so Test Run's rows read "Buenos Aires Special Champi…" (and 13 more names mid-word, in the rows' screen-reader labels too, and in
   Battle's opponent line). Checked over every event in the tournament data and on Test Run's rows at 1100x800. Failed on design6 b96f3a5e. */
@@ -302,6 +398,20 @@ const TP3 = async () => { /* TP3-1 (small touches pass 3, Nov 26): a long event 
   ok(r.n >= 1 && !r.bad.length && !r.badRows.length && !r.badLab.length, `TP3-1: long event names end at a whole word (${r.n} cut names, ${r.rows} on Test Run's rows, ${r.labs} in their labels; mid-word: ${[...r.bad, ...r.badRows, ...r.badLab].slice(0, 4).join(' | ') || 'none'})`);
   await c.close(); };
 if (process.env.ONLY === 'TP3') { await TP3(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+const MD = async () => { /* MD-1, MD-2 (Job U, Nov 26): the page draws numbers once every daily document has answered, or after 8 s (shell.js
+  V2.dataReady). meta/singles and meta/status have no producer (no out/ file, no refresh line), so if the host ever stayed silent for them every
+  visit sat on "Getting today's numbers" for 8 s (measured: data ready 8,460 ms at 390 vs 384 ms). MD-1: with those two silent, the numbers are
+  in well before 8 s. MD-2 (control): with a document that does have a producer silent (meta/teams), the page still waits. Failed on day-batch2 5d2d0c72. */
+  const at = async silent => { const c = await b.newContext({viewport: {width: 1440, height: 900}}), q = await c.newPage();
+    await q.addInitScript(sil => { window.__PL_TEST = 1; let w; Object.defineProperty(window, '__NP_CLAUDE', {configurable: true, get: () => w, set: v => {
+      w = v && v.use ? {use: async n => { const r = await v.use(n); if (n !== 'db' || !r) return r;
+        return {doc: x => { const d = r.doc(x); return Object.assign({}, d, {onSnapshot: (cb, er) => sil.includes(x) ? () => {} : d.onSnapshot(cb, er)}); }}; }} : v; }}); }, silent);
+    await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(3000);
+    const r = await q.evaluate(() => ({ok: !!(window.V2 && V2._dataOk), t: Math.round(performance.now()), wait: /Getting today/.test(document.body.innerText)})); await c.close(); return r; };
+  const a = await at(['meta/singles', 'meta/status']), z = await at(['meta/teams']);
+  ok(a.ok && !a.wait, `MD-1: with meta/singles and meta/status silent (no producer), Home has today's numbers within 3 s, not after the 8 s wait (ready ${a.ok}, loading panel ${a.wait}, at ${a.t} ms)`);
+  ok(!z.ok && z.wait, `MD-2 (control): with meta/teams silent, the page still waits for it (ready ${z.ok}, loading panel ${z.wait}, at ${z.t} ms)`); };
+if (process.env.ONLY === 'MD') { await MD(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // TF-1, TF-2 (HH's Job G, Nov 26; rule 15: tools and lists at most 3 screens at 1440x900). Both failed on design6 b96f3a5e:
 //   TF-1 Test Run: 3.23 screens at 1440x900 (light and dark), and 4.93 at 1180x820 (rows beside the open team gave the event name 160px).
 //   TF-2 Track Record: 3.08 screens at 1440x900 (128px of space under its last link).
@@ -312,7 +422,7 @@ const TF = async () => {
   const t1 = await hgt('gauntlet', 1440, 900), t1d = await hgt('gauntlet', 1440, 900, true), t2 = await hgt('gauntlet', 1180, 820);
   ok(t1.scr <= 3 && t1d.scr <= 3 && t2.scr <= 4.5 && t1.rows === 20 && t2.rows === 20 && !t1.sw && !t2.sw, `TF-1: Test Run is at most 3 screens at 1440x900 (light ${t1.scr}, dark ${t1d.scr}) and well under 5 at 1180x820 (${t2.scr}, at most 4.5), all ${t1.rows} rows kept, no sideways scroll`);
   const k = await hgt('track', 1440, 900);
-  ok(k.scr <= 3 && !k.sw, `TF-2: Track Record is at most 3 screens at 1440x900 (${k.scr}, ${k.H}px), no sideways scroll`); };
+  ok(k.scr <= 3.05 && !k.sw, `TF-2: Track Record is at most 3.05 screens at 1440x900 (${k.scr}, ${k.H}px; Nov 26, Sim: +0.05 for the footer's copyright line), no sideways scroll`); };
 if (process.env.ONLY === 'TF') { await TF(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- AS end
 // ---- MQ end ----
@@ -320,8 +430,11 @@ if (process.env.ONLY === 'TF') { await TF(); await b.close(); console.log(`v2-mi
 // ---- HQ begin: Home answers (Sim, Nov 18 morning questions, docs/rebuild/morning-questions-nov18.md: "recommend for all is good").
 //   One check per answer applied; each failed on the build before its change. ONLY=HQ runs these alone.
 const HQ = async () => {
-  const hq = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700 && !o.desk, hasTouch: w < 700 && !o.desk, /* desk: a desktop window (classic scrollbar) */ reducedMotion: o.rm || 'no-preference'}); const q = await ctx.newPage();
-    await q.addInitScript(o => { window.__PL_TEST = 1; try { if (sessionStorage.getItem('hq')) return; sessionStorage.setItem('hq', '1'); /* once: a reload keeps what the page saved */ if (o.fresh) localStorage.clear(); for (const [k, v] of Object.entries(o.ls || {})) localStorage.setItem(k, v); } catch (x) {} }, {fresh: !!o.fresh, ls: o.ls || {}});
+  /* Job DD (Nov 26): Home's first screen is Final 3's hero on this build too (pubhome-f3.js V2.F3_CLAUDE). A check that reads the Stampede's
+     own hero (its function mentions sdh) opens Home with that hero (window.__NP_SDHERO), so these answers keep guarding it until Sim's yes;
+     every other Home answer runs on today's Home */
+  const hq = async (w, h, o = {}) => { if (o.sdh == null) o = {...o, sdh: /sdh/.test(String(o.fn || ''))}; const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700 && !o.desk, hasTouch: w < 700 && !o.desk, /* desk: a desktop window (classic scrollbar) */ reducedMotion: o.rm || 'no-preference'}); const q = await ctx.newPage();
+    await q.addInitScript(o => { window.__PL_TEST = 1; if (o.sdh) window.__NP_SDHERO = 1; try { if (sessionStorage.getItem('hq')) return; sessionStorage.setItem('hq', '1'); /* once: a reload keeps what the page saved */ if (o.fresh) localStorage.clear(); for (const [k, v] of Object.entries(o.ls || {})) localStorage.setItem(k, v); } catch (x) {} }, {fresh: !!o.fresh, ls: o.ls || {}, sdh: !!o.sdh});
     await q.goto('file://' + PAGE + (o.hash || '#home')); await q.waitForTimeout(o.wait || 2500); if (o.night) { await q.evaluate(() => V2.setTheme('night')); await q.waitForTimeout(300); }
     const r = o.fn ? await q.evaluate(o.fn) : null; if (o.keep) return {q, ctx, r}; await ctx.close(); return r; };
   // Q6 A: the hero's motion is on by default (no flag): the surge on arrival, the moving ticker with its pause button; reduced motion: none of it
@@ -335,7 +448,7 @@ const HQ = async () => {
   { const cv = []; const cmp = await b.newPage();
     /* Sim, Nov 23 (iPhone 16 in the Claude app, about 393x660): a short phone window let Rillaboom cover 'rate'; short windows are checked too */
     for (const wh of [320, 360, 390, 412, '393x660', '375x600', '430x700', 600, 820, 1100, 1280, 1440, 1920, 2560]) { const [w, wh2] = String(wh).split('x').map(Number), h = wh2 || (w < 700 ? 844 : w >= 1900 ? 1080 : 900);
-      const {q, ctx} = await hq(w, h, {rm: 'reduce', keep: true}); await q.waitForFunction(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].every(i => i.complete), null, {timeout: 15000}).catch(() => {}); await q.waitForTimeout(400);
+      const {q, ctx} = await hq(w, h, {rm: 'reduce', keep: true, sdh: true}); await q.waitForFunction(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].every(i => i.complete), null, {timeout: 15000}).catch(() => {}); await q.waitForTimeout(400);
       /* the pictures must have loaded: a broken image draws an icon and a frame, which this test would count as covering */
       const broken = await q.evaluate(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].filter(i => !i.naturalWidth).length); if (broken) cv.push(`${w}: ${broken} hero pictures didn't load`);
       const r = await q.evaluate(() => { const x = document.querySelector('#main .sdh-h').getBoundingClientRect(); return {x: Math.max(0, x.left), y: Math.max(0, x.top - 20), width: Math.min(innerWidth, x.right) - Math.max(0, x.left), height: x.height + 60}; });
@@ -410,7 +523,7 @@ const HQ = async () => {
     ok(!rm.length, `HQ Q4b (Sim: B): This Week shows its rating moves ("Our ratings moved too.", kit, Nov 22) under the movers: every rating mover as a button (name, rating, arrow + points; up/down spoken), nothing spills 320-1440${rm.length ? ': ' + rm.join(' | ') : ''}`); }
   // Q7a B: the hero crowd comes from 4 sprite sheets at 128px, except the 35 nearest (highest rated), which keep their own 384px file; every
   // Pokémon is still drawn, and Home asks for far fewer picture files (before: 345-359 at 1440, after: about 60)
-  { const sh = []; for (const [w, h] of [[1440, 900], [390, 844]]) { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  { const sh = []; for (const [w, h] of [[1440, 900], [390, 844]]) { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; /* the Stampede hero's own crowd (Job DD) */ });
       const seen = new Set(); q.on('request', r => { if (/\.webp/.test(r.url())) seen.add(r.url()); }); await q.goto('file://' + PAGE + '#home');
       await q.waitForFunction(() => document.querySelectorAll('#main .sdh-c').length > 0, null, {timeout: 20000}).catch(() => {}); await q.waitForTimeout(1500);
       const r = await q.evaluate(async () => { const C = [...document.querySelectorAll('#main .sdh-c')], cs = C.filter(e => e.classList.contains('sdh-cs')), im = C.filter(e => e.tagName === 'IMG');
@@ -430,10 +543,10 @@ const HQ = async () => {
     ok(!pb.length, `HQ polish 1: the hero's Score My Team / Build Me a Team keep one line each in a desktop window with a classic scrollbar, 360-520${pb.length ? ': ' + pb.join(' | ') : ''}`); }
   // Shorter phone Home, Post X (Sim, Nov 18): under 700 the post band shows one parcel (the soonest-ending gift) and the Dispatch with its
   // masthead, lead story and Next event; no stamps, no second slip, no more stories. 700 and wider keep everything
-  { const px = []; for (const [w, phone] of [[360, 1], [390, 1], [430, 1], [699, 1], [700, 0], [1440, 1] /* Home B (Sim, Nov 23): Post X from 1100 too */]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => { const s = document.querySelector('#main .sdp'), vis = q => [...s.querySelectorAll(q)].filter(e => e.getClientRects().length).length;
+  { const px = []; for (const [w, phone] of [[360, 1], [390, 1], [430, 1], [699, 1], [700, 1], [820, 1], [1024, 1], [1440, 1] /* Home B (Sim, Nov 23): Post X from 1100 too; Nov 26 (Sim: tablet Home yes): iPads too */]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => { const s = document.querySelector('#main .sdp'), vis = q => [...s.querySelectorAll(q)].filter(e => e.getClientRects().length).length;
       return {parcel: vis('.pr-parcel'), stamps: vis('.sdp-stamps'), other: vis('.sdp-other'), more: vis('.dp-more'), name: vis('.dp-name, .dp-mast'), bar: vis('.dp-nbar'), all: [...s.querySelectorAll('.sdp-all')].filter(e => e.getClientRects().length).length, h: Math.round(s.getBoundingClientRect().height), hs: document.documentElement.scrollWidth - innerWidth}; }});
       const okp = phone ? r.parcel === 1 && !r.stamps && !r.other && !r.more : r.parcel >= 1 && (r.stamps || r.other || r.more); if (!okp || r.all !== 2 || r.hs > 0) px.push(`${w}: ${JSON.stringify(r)}`); }
-    ok(!px.length, `HQ Post X (Sim, Nov 18): phone Home's post band is one parcel and the front page (no stamps, second slip or more stories) under 700; 700+ unchanged; both "All ›" links stay${px.length ? ': ' + px.join(' | ') : ''}`); }
+    ok(!px.length, `HQ Post X (Sim, Nov 18): phone Home's post band is one parcel and the front page (no stamps, second slip or more stories) at every width (phones, iPads 700-1099 since Nov 26, desktop); both "All ›" links stay${px.length ? ': ' + px.join(' | ') : ''}`); }
   // Sim (Nov 18): Team Preview Practice takes Test Run's small plate (700-2560): its picture is a team preview of live Pokémon (six, two rows
   // of three, 44px+) with "Pick 4"; the small plates' rows stay even (same top and height, full rows); Test Run is in More tools
   { const pr = []; for (const w of [1100, 1440, 1920, 2560]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => JSON.parse(window.__ev(`(() => { const s = document.querySelector('#main .sdt');
@@ -456,15 +569,13 @@ const HQ = async () => {
       for (const c of chips) { const B = c.getBoundingClientRect(), t = c.querySelector('b:last-child'), rg = document.createRange(); rg.selectNodeContents(t); for (const x of rg.getClientRects()) if (x.right > B.right - 4 || x.left < B.left) bad.push(t.textContent + ' out'); if (B.height < 44) bad.push(t.textContent + ' ' + Math.round(B.height) + 'px'); }
       const reach = new Set([...s.querySelectorAll('a[href^="#"]')].filter(vis).map(a => a.getAttribute('href')));
       return {plates: plates.join('|'), chips: chips.map(c => c.textContent.trim().replace(/^[\d,]+\s*/, '')).join('|'), bad, reach: (V2.HOME_TOOLS || []).filter(([, , to]) => !reach.has('#' + to)).map(x => x[0]), hs: document.documentElement.scrollWidth - innerWidth}; }});
-      const want = phone === 2 ? r.plates === 'Speed Tiers|Ratings|Damage Calculator|Battle|Team Preview Practice|Winning Teams|Type Chart|Winning Cores|Archetypes|Popular Sets' && !r.chips
-        : phone ? r.plates === 'Speed Tiers|Ratings|Damage Calculator|Battle|Team Preview Practice|Winning Teams' && r.chips === 'Type Chart|Winning Cores|Archetypes|Popular Sets|Events|How We Calculate'
-        : r.plates === 'Damage Calculator|Ratings|Battle|Archetypes|Team Preview Practice' && r.chips === 'Speed Tiers|Winning Teams|Type Chart|Winning Cores|Popular Sets|Events|How We Calculate'; /* Home tools A (Sim, Nov 23): the calc band, four big cards, seven chips at 1100+ */ if (!want || r.bad.length || r.reach.length || r.hs > 0) tb.push(`${w}: ${JSON.stringify(r)}`); }
+      const want = r.plates === 'Damage Calculator|Ratings|Battle|Archetypes|Team Preview Practice' && r.chips === 'Speed Tiers|Winning Teams|Type Chart|Winning Cores|Popular Sets|Events|How We Calculate'; /* Home tools A (Sim, Nov 23): the calc band, four big cards, seven chips at 1100+; Nov 26 (Sim: 'looks good'): at every width, phones and iPads too */ if (!want || r.bad.length || r.reach.length || r.hs > 0) tb.push(`${w}: ${JSON.stringify(r)}`); }
     const h = await hq(390, 844, {rm: 'reduce', ls: {'cc2.welcomed': '"1"'}, fn: () => { const n = document.querySelector('#main .sdp-nw'); if (n) n.remove(); return document.documentElement.scrollHeight; }}); const scr = +(h / 844).toFixed(2); /* a returning visitor who has seen What's New (the first-visit welcome and the What's New slip add their own height) */
     // iPad (Sim, Nov 18): the phone's six plates plus the Type Chart strip and three picture plates ('too plain' with chips): 7,141px at 820, against 8,180 with twelve plates
     { const hi = await hq(820, 1180, {rm: 'reduce', ls: {'cc2.welcomed': '"1"'}, fn: () => { const n = document.querySelector('#main .sdp-nw'); if (n) n.remove(); return document.documentElement.scrollHeight; }}); if (hi > 7300) tb.push(`iPad Home at 820 is ${hi}px (7,300 at most)`); }
     /* Nov 19: Sim's Q23 A adds a plain line under two Home headlines (phone Home 7.04 -> 7.24 screens, measured); Home is exempt from the
        short-pages rule (Sim, Nov 19), so the limit follows the approved copy */
-    ok(!tb.length && scr <= 7.8, `HQ Tools B (Sim, Nov 18): phone Home shows six big plates (Speed Tiers, Ratings, Damage Calculator, Battle, Team Preview Practice, Winning Teams) and six picture chips, every tool on screen; iPads (700-1099, Sim Nov 18) the same six, then Type Chart as a strip and Cores | Archetypes | Sets as plates, no chips; 1100+ keeps twelve plates; phone Home at 390 is ${scr} screens (7.8 at most: Sim OK Nov 22, 2:50 PM, Top 10 strip +422 px)${tb.length ? ': ' + tb.join(' | ').slice(0, 700) : ''}`); }
+    ok(!tb.length && scr <= 7.95, `HQ Tools B (Nov 26, Sim: one rack everywhere): at every width 320-1440 the tools are the Damage Calculator band, four cards (Ratings, Battle, Archetypes, Team Preview Practice) and seven picture chips, every tool on screen (was: phone plates; iPad strip), no chips; 1100+ keeps twelve plates; phone Home at 390 is ${scr} screens (7.95 at most: Sim OK Nov 22, 2:50 PM, Top 10 strip +422 px; Nov 26, Sim: +0.05 for the footer's copyright line; Nov 26, Sim: 7.95, the Preview-only data note over Final 3's hero)${tb.length ? ': ' + tb.join(' | ').slice(0, 700) : ''}`); }
   // Polish 2: the Practice plate's team preview is no taller than it needs to be, so its row neighbours keep no big empty band between
   // their picture and their words (110px at most, 700-2560; the Practice plate as first built left 154-172px at 820 and 1920)
   { const gp = []; for (const w of [700, 820, 1024, 1100, 1440, 1920, 2560]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => [...document.querySelectorAll('#main .sdt-grid > .sdt-sm')].map(p => [p.querySelector('.sdt-go').textContent, Math.round(p.querySelector('.sdt-tx').getBoundingClientRect().top - p.lastElementChild.getBoundingClientRect().bottom)])});
@@ -747,7 +858,8 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { const lin = [];
   /* Home's ranks and most used moved for Sim's Nov 18 redesign (the Stampede): the hero's plates, tags and ticker (ratings) and the six's ring
      names stand in for .hm-rk / .hm-used; on Home every such button is read, not only the first */
-  for (const [route, sel] of [['meta', '.gs-mon'], ['speed', '.sp2-m'], ['home', '.sdh-plate'], ['home', '.sdh-tick li:not([hidden]) button'], ['home', '.sds-rings .sds-nm[data-v2mon]'], ['usage', '.us-fig']]) {
+  const p0 = p, ph = await (await b.newContext({viewport: {width: 1280, height: 900}})).newPage(); await ph.addInitScript(() => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; }); /* Job DD: the hero's plates and ticker are the Stampede hero's own */
+  for (const [route, sel] of [['meta', '.gs-mon'], ['speed', '.sp2-m'], ['home', '.sdh-plate'], ['home', '.sdh-tick li:not([hidden]) button'], ['home', '.sds-rings .sds-nm[data-v2mon]'], ['home', '.f3-bar'], ['usage', '.us-fig']]) { const p = /sdh/.test(sel) ? ph : p0; /* .f3-bar: Final 3's receipt bars (Job DD, HH: "94, Mega Charizard Y's Rating") */
     await p.goto('file://' + PAGE + '#' + route); await p.waitForTimeout(2000);
     lin.push(await p.evaluate(([sel, all]) => { const norm = x => x.toLowerCase().replace(/[^a-z0-9%.# ]+/g, ' ').replace(/\s+/g, ' ').trim(); const es = [...document.querySelectorAll('#main ' + sel)].filter(x => x.getClientRects().length && x.getAttribute('aria-label')); if (!es.length) { const tk = /sdh-tick/.test(sel) && document.querySelector('#main .sdh-tick'); if (tk && !tk.getClientRects().length) return ''; /* Home B (Sim, Nov 23): at 1100+ the ticker steps aside for the top 10 on the flag */ return sel + ' none'; }
       return (all ? es : es.slice(0, 1)).map(e => { const vis = norm((e.querySelector('.us-tx') || e).innerText).split(' ').slice(0, 2).join(' ') /* a Usage figure's podium number is decoration; its label text is .us-tx */, raw = e.getAttribute('aria-label'), al = norm(raw);
@@ -1193,11 +1305,11 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
           o.full = Math.abs(T.left - G.left) < 2 && Math.abs(T.right - G.right) < 2; o.flags = F.length; o.cols = new Set(F.map(r => Math.round(r.left))).size; o.rows = new Set(F.map(r => Math.round(r.top))).size;
           o.inside = F.every(r => r.left >= T.left - 1 && r.right <= T.right + 1 && r.top >= T.top - 1 && r.bottom <= T.bottom + 1); }
         if (cv) o.href = ch.getAttribute('href'); return o; });
-      const want = w >= 700 && w < 1100 ? 'plate' : 'chip', got = r.pl && !r.chip ? 'plate' : r.chip && !r.pl ? 'chip' : r.pl ? 'both' : 'neither';
+      const want = 'chip' /* Nov 26 (Sim: one tools rack at every width): the Type Chart is a chip everywhere; the plate never shows */, got = r.pl && !r.chip ? 'plate' : r.chip && !r.pl ? 'chip' : r.pl ? 'both' : 'neither';
       if (got !== want) tyl.push(`${w}: ${got} shows (want the ${want})`);
       else if (got === 'plate' && !(r.full && r.flags === 18 && r.cols === 6 && r.rows === 3 && r.inside)) tyl.push(`${w}: plate ${JSON.stringify(r)}`);
       else if (got === 'chip' && r.href !== '#types') tyl.push(`${w}: chip goes to ${r.href}`); }
-    ok(!tyl.length, `Stampede tools: the Type Chart shows at every width: on iPads (820, 1024) its plate is a full-width strip of 18 flags, 6 across in 3 rows, all inside; on phones (390) and desktop (1100, 1440) the plate hides and the Type Chart chip (to #types) shows instead${tyl.length ? ': ' + tyl.join(' | ') : ''}`);
+    ok(!tyl.length, `Stampede tools: the Type Chart shows at every width, as the rack's Type Chart chip (to #types) at 390, 820, 1024, 1100 and 1440, never both, never neither (Nov 26: one rack everywhere; was a flag strip on iPads)${tyl.length ? ': ' + tyl.join(' | ') : ''}`);
     await q.setViewportSize({width: 1440, height: 900}); await q.waitForTimeout(300); }
   ok(m.tieOk && m.nums, `Stampede tools: the podium's steps follow the Ratings rank and #1 stands tallest (Sim, Nov 25); Events and How We Calculate show the Events page's count and RES.teams (${JSON.stringify(m.pod)}, ${JSON.stringify(m.big)})`);
   const lay = []; for (const [w, th] of [[320, 'day'], [390, 'night'], [820, 'day'], [1100, 'night'], [1440, 'day']]) { await q.evaluate(t => { try { localStorage.setItem('np2.theme', t); } catch (e) {} }, th); await q.setViewportSize({width: w, height: 900}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(1800);
@@ -1233,12 +1345,23 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
          show inside the band, the number whole (its text inside its own box and the band, nothing cut off), the two sprites (64px or more)
          inside the band, clear of the words. Under 1100 (phones and iPads, Tools B) the calc is a half tile with its picture on top and no
          number, by design: the check is 1100-2560 only, and says so. (Code review, Nov 23: the old spare-height check skipped every width.) */
-      if (innerWidth >= 1100) { const p = document.querySelector('#main .sdt-grid>.sdt-dc'), vis = e => e && e.getClientRects().length && R(e).width > 0;
+      if (innerWidth >= 320 /* Nov 26 (Sim: one rack everywhere): phones and iPads have the calc band too, so it is checked at every width */) { const p = document.querySelector('#main .sdt-grid>.sdt-dc'), vis = e => e && e.getClientRects().length && R(e).width > 0;
         const out = (r, B, s = 1) => r.left < B.left - s || r.right > B.right + s || r.top < B.top - s || r.bottom > B.bottom + s;
         if (!vis(p)) o.dc = 'no calc band'; else { const P = R(p), pc = p.querySelector('.sdt-pct'), of = p.querySelector('.sdt-of'), hw = p.querySelector('.sdt-hpw'), bad = [];
           if (!vis(pc)) bad.push('no number'); else { const N = R(pc), rg = document.createRange(); rg.selectNodeContents(pc); const L = [...rg.getClientRects()].filter(r => r.width);
             if (!/^\d[\d.]*[–-]\d[\d.]*%$/.test(pc.textContent.trim())) bad.push(`number "${pc.textContent}"`);
-            if (out(N, P) || !L.length || L.some(r => r.left < N.left - 1.5 || r.right > N.right + 1.5 /* across only: at line-height 1 the glyph box is taller than the line by design */ || out(r, P)) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`number cut off (${Math.round(N.left - P.left)}-${Math.round(P.right - N.right)}px in, ${pc.scrollWidth}/${pc.clientWidth} wide)`); }
+            if (out(N, P) || !L.length || L.some(r => r.left < N.left - 1.5 || r.right > N.right + 1.5 /* across only: at line-height 1 the glyph box is taller than the line by design */ || out(r, P)) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`number cut off (${Math.round(N.left - P.left)}-${Math.round(P.right - N.right)}px in, ${pc.scrollWidth}/${pc.clientWidth} wide)`);
+            /* Nov 26 (WebKit run: "94–100%" lost its "%" at 390 and 1100-1279): the widest number the calc can show, a 3-digit range, is put in
+               the same way the page draws it (class sdt-pct3) and must fit whole too; then the real number goes back */
+            /* Kip's review (Nov 26): every shape of number the calc can show is put in the way the page draws it (V2.sdtPctTxt/sdtPctCls:
+               a sure KO "100%", wide 2-digit "88–99%", 3-digit "94–100%", decimals "8.5–9.9%", short "5–9%") and must fit whole, on one line,
+               left of the band's slanted right edge at the BOTTOM of the line (the slant leans in toward the bottom); then the real number goes back */
+            if (!bad.length) { const t0 = pc.textContent, c0 = pc.className, bc = getComputedStyle(p, '::before'), ins = +((bc.clipPath.match(/calc\(100% - ([\d.]+)px\) 100%/) || [])[1] || 0);
+              if (!(ins > 0)) bad.push(`the band's slant was not read (clip-path "${bc.clipPath}")`);
+              else for (const [lo, hi] of [['100', '100'], ['88', '99'], ['94', '100'], ['8.5', '9.9'], ['5', '9']]) { const t = V2.sdtPctTxt(lo, hi); pc.textContent = t; pc.className = 'sdt-pct' + V2.sdtPctCls(t);
+                const N3 = R(pc), r3 = document.createRange(); r3.selectNodeContents(pc); const L3 = [...r3.getClientRects()].filter(r => r.width), room = L3.map(r => Math.round(P.right - ins * (r.bottom - P.top) / P.height - r.right));
+                if (L3.length !== 1 || L3.some(r => r.left < N3.left - 1.5 || r.right > N3.right + 1.5 || out(r, P)) || room.some(v => v < 0) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`"${t}" cut off or wrapped (${L3.length} line(s), ${room.join('/')}px from the slanted edge)`); }
+              pc.textContent = t0; pc.className = c0; } }
           if (!vis(of)) bad.push('no "of X\'s HP" line'); else { if (!/^of .+['’]s HP$/.test(of.textContent.trim())) bad.push(`line "${of.textContent}"`); if (out(R(of), P)) bad.push('the HP line is out of the band'); }
           const S = [...p.querySelectorAll('.sdt-duel .np-mon .st')].filter(vis).map(R), W = vis(hw) ? R(hw) : null;
           if (S.length !== 2) bad.push(S.length + ' sprites'); for (const r of S) { if (out(r, P)) bad.push(`sprite ${Math.round(r.left)}-${Math.round(r.right)} x ${Math.round(r.top)}-${Math.round(r.bottom)} out of the band ${Math.round(P.left)}-${Math.round(P.right)} x ${Math.round(P.top)}-${Math.round(P.bottom)}`);
@@ -1254,7 +1377,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     for (const [k, a] of [['bt', bt], ['tr', tr], ['dc', dc], ['bars', bars], ['tags', tags]]) if (m[k]) a.push(w + ': ' + m[k]); }
   ok(!bt.length, `Stampede tiles 2 (Nov 18 night): Battle, at 320-2560 every sprite stays inside its side, clear of the VS, and is 56px or more; no name under a sprite${bt.length ? ': ' + bt.slice(0, 4).join(' | ') : ''}`);
   ok(!tr.length, `Stampede tiles 3: Test Run, at 320-2560 the sprites fill the plate (32px or less left empty between its top and its words) and none is under 44px${tr.length ? ': ' + tr.slice(0, 4).join(' | ') : ''}`);
-  ok(!dc.length, `Stampede tiles 4: Damage Calc band, at 1100-2560 (under 1100 Tools B has no number, not checked here) the damage number and "of X's HP" line show inside the band, the number not cut off, both sprites (64px+) inside the band and clear of the words${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
+  ok(!dc.length, `Stampede tiles 4: Damage Calc band, at 320-2560 (Nov 26: phones and iPads have the band too) the damage number and "of X's HP" line show inside the band, the number not cut off (every shape: "100%", "88–99%", "94–100%", "8.5–9.9%", "5–9%"), both sprites (64px+) inside the band and clear of the words${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
   ok(!bars.length, `Stampede tiles 5: the receipt's five band bars are one width at 320-2560${bars.length ? ': ' + bars.slice(0, 4).join(' | ') : ''}`);
   ok(!tags.length, `Stampede tags (qcheck triage Nov 18, defect 2): every plan-board name tag ("Mega Charizard Y") fits whole inside the board, clear of its folded corner, at 13px or more, 320-2560${tags.length ? ': ' + tags.slice(0, 4).join(' | ') : ''}`);
   await q.close(); }
@@ -1353,9 +1476,121 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(seen.length === 12 && !bad.length, `Audit Nov 19 #4 (the Arena since Nov 19: one bar, not two wings): the KO Board bar's counts are exactly the board's tiles, on one line (3 teams x 1100/1280 x both directions; ${bad.join(' | ') || 'e.g. "' + seen.slice(0, 2).join('" / "') + '"'})`); }
 } // main1 end
 if (part('main2')) {
+// ---------- Pre-switch sweep finds (Job FF, Nov 26): "Reg M-D." never splits; the Search placeholder fits on phones ----------
+{ const ctx = await b.newContext({viewport: {width: 320, height: 568}, isMobile: true, hasTouch: true}); const q = await ctx.newPage();
+  await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+  // PS-1: at every phone width 300-430 the regulation words in Home's h1 ("Reg M-D." / "Reg M-C.") stay on one line
+  const split = [];
+  for (let w = 300; w <= 430; w++) { await q.setViewportSize({width: w, height: 568}); await q.waitForTimeout(30);
+    const r = await q.evaluate(() => { const h = document.querySelector('#main .f3-h1s'); if (!h) return 'no line'; const t = [...(function walk(n, a) { for (const c of n.childNodes) c.nodeType === 3 ? a.push(c) : walk(c, a); return a; })(h, [])];
+      const node = t.find(x => /Reg\s?M-[A-Z]\./.test(x.textContent)) || t.find(x => /M-[A-Z]\./.test(x.textContent)); if (!node) return 'no reg words';
+      const full = h.textContent, k = full.search(/Reg\s?M-[A-Z]\./); if (k < 0) return 'no reg words';
+      // walk the text nodes to the offsets of "Reg" and the final "."
+      let a = k, z = k + full.slice(k).search(/\./) + 1, rg = document.createRange(), seen = 0, sN = null, sO = 0, eN = null, eO = 0;
+      for (const n of t) { const L = n.textContent.length; if (!sN && a < seen + L) { sN = n; sO = a - seen; } if (!eN && z <= seen + L) { eN = n; eO = z - seen; } seen += L; }
+      rg.setStart(sN, sO); rg.setEnd(eN, eO); const tops = new Set([...rg.getClientRects()].filter(x => x.width > 1).map(x => Math.round(x.top))); return tops.size; });
+    if (r !== 1) split.push(`${w}: ${r}`); }
+  ok(!split.length, `PS-1 (Job FF): Home's "Reg M-D." stays on one line at every phone width 300-430 (${split.slice(0, 6).join(', ') || 'all one line'}${split.length > 6 ? ' … ' + split.length + ' widths' : ''})`);
+  // PS-2: the Search box's placeholder fits inside the box at every phone width 320-429; from 430 the long one ("…item, team style or page") stays
+  const cut = [], keep = [];
+  for (const w of [320, 340, 360, 375, 390, 414, 429, 430, 768, 1440]) { await q.setViewportSize({width: w, height: w < 700 ? 844 : 900}); await q.waitForTimeout(60);
+    const r = await q.evaluate(() => { if (!document.querySelector('[data-v2q]')) V2.openSearch(); const i = document.querySelector('[data-v2q]'); const s = getComputedStyle(i), c = document.createElement('canvas').getContext('2d');
+      c.font = `${s.fontStyle} ${s.fontWeight} ${s.fontSize} ${s.fontFamily}`; const room = i.clientWidth - parseFloat(s.paddingLeft) - parseFloat(s.paddingRight);
+      const r = {ph: i.placeholder, need: Math.ceil(c.measureText(i.placeholder).width), room: Math.floor(room)}; document.querySelector('.np-sheet [data-v2close], .np-sheet .np-x, .np-sheet button[aria-label="Close"]') ? document.querySelector('.np-sheet [data-v2close], .np-sheet .np-x, .np-sheet button[aria-label="Close"]').click() : V2.closeSheet && V2.closeSheet(); return r; });
+    await q.waitForTimeout(200);
+    if (w < 430 && r.need > r.room) cut.push(`${w}: "${r.ph}" ${r.need}px in ${r.room}px`);
+    if (w >= 430 && !/team style or page/.test(r.ph)) keep.push(`${w}: "${r.ph}"`); }
+  ok(!cut.length && !keep.length, `PS-2 (Job FF): the Search placeholder fits its box at 320-429 and the long one stays from 430 (${[...cut, ...keep].join(' | ') || 'all good'})`);
+  await ctx.close(); }
+// ---------- Home's first screen: Final 3 on this build too (Job DD, Nov 26; pubhome-f3.js V2.f3Home, V2.F3_CLAUDE) ----------
+/* Sim picked Final 3 as Home's FIRST SCREEN (nothing else removed): F3's hero replaces only the Stampede's hero; the Top 10, your six, the
+   tools rack and the post band stay below in today's order. Each check failed on design6 52fa60e6 (the Stampede's hero: no .f3-hero). */
+{ const f3 = async (w, h, fn, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: 'reduce'}); const q = await ctx.newPage(), errs = [];
+    q.on('pageerror', e => errs.push(e.message)); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+    if (o.night) { await q.evaluate(() => V2.setTheme('night')); await q.waitForTimeout(300); }
+    const r = await q.evaluate(fn); await ctx.close(); return {...r, errs: errs.length}; };
+  // F3-1: the order and the one h1; every bar a link labelled with its Pokémon and Rating
+  { const r = await f3(1440, 900, () => { const at = s => { const e = document.querySelector('#main ' + s); return e ? [...document.querySelectorAll('#main *')].indexOf(e) : -1; };
+      const bars = [...document.querySelectorAll('#main .f3-bar')];
+      return {seq: ['.f3-hero', '.sd-top', '.sd-six', '.sd-tools', '.sd-post'].map(at), old: at('.sdh'), h1: [...document.querySelectorAll('#main h1')].map(h => h.textContent.trim()),
+        bars: bars.length, barsOk: bars.every(a => a.tagName === 'A' && (/^(\d+), .+'s Rating$/.test(a.getAttribute('aria-label') || '') && (a.getAttribute('aria-label') || '').startsWith(a.textContent.trim()) || /, not rated$/.test(a.getAttribute('aria-label') || '')))}; });
+    ok(r.seq.every((x, i) => x >= 0 && (!i || x > r.seq[i - 1])) && r.old < 0 && r.h1.length === 1 && /^Sharply raise your win rate\. Rate your Pokémon Champions team (before|for) Reg M-D\.$/.test(r.h1[0].replace(/\s+/g, ' ')) && r.bars === 6 && r.barsOk && !r.errs,
+      `F3-1 (Job DD): Home is Final 3's hero, then Top 10, your six, tools rack, post band; no Stampede hero; one h1, the slogan then the Reg M-D line (Sim, option A); 6 receipt bars, each a link whose spoken name starts with its number: "<n>, <name>'s Rating" (${JSON.stringify(r)})`); }
+  // F3-2: the first screen. At 1440x900 the hero ends at the window's bottom even under the Preview's data note, and Home stays within its
+  // 4 screens; Score My Team is on the first screen (above the phone tab bar) at the sizes Sim checks
+  { const bad = []; for (const [w, h] of [[390, 844], [1280, 800], [1366, 768], [1440, 900], [1920, 1080]]) {
+      const r = await f3(w, h, () => { const g = document.querySelector('#main .f3-acts .k-go'), H = document.querySelector('#main .f3-hero'), bar = document.querySelector('.np-bar');
+        const fold = innerHeight - (bar && getComputedStyle(bar).position === 'fixed' ? bar.offsetHeight : 0);
+        return {go: g ? Math.round(g.getBoundingClientRect().bottom) : null, fold, heroEnd: H ? Math.round(H.getBoundingClientRect().bottom + scrollY) : null, scr: +(document.documentElement.scrollHeight / innerHeight).toFixed(3), note: !!document.querySelector('.np-dnote')}; });
+      if (r.go == null || r.go > r.fold) bad.push(`${w}x${h}: Score My Team ends ${r.go} under the first screen ${r.fold}`);
+      if (w === 1440 && (Math.abs(r.heroEnd - h) > 1 || r.scr > 4)) bad.push(`1440x900: hero ends ${r.heroEnd} (want ${h}; data note ${r.note}), ${r.scr} screens (4 at most)`); }
+    ok(!bad.length, `F3-2 (Job DD): Score My Team on the first screen at 390x844, 1280x800, 1366x768, 1440x900, 1920x1080; at 1440x900 the hero ends at the window's bottom under the data note and Home is at most 4 screens (${bad.join(' | ') || 'all good'})`); }
+  // F3-3: every width, day and night: no sideways scroll, no name, item, type or receipt line cut, no page error
+  { const bad = []; for (const w of [320, 360, 390, 414, 600, 768, 900, 1024, 1180, 1280, 1366, 1440, 1600, 1920, 2560]) for (const night of [false, true]) {
+      const r = await f3(w, 900, () => ({hero: !!document.querySelector('#main .f3-hero'), sw: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        cut: [...document.querySelectorAll('#main .f3-n b, #main .f3-n small, #main .f3-t, #main .f3-meta, #main .f3-h1')].filter(e => e.scrollWidth > e.clientWidth + 1).map(e => e.textContent.slice(0, 16))}), {night});
+      if (!r.hero || r.sw > 0 || r.cut.length || r.errs) bad.push(`${w}${night ? ' night' : ''}: ${JSON.stringify(r)}`); }
+    ok(!bad.length, `F3-3 (Job DD): Final 3's hero at 320-2560, day and night: no sideways scroll, nothing cut, no page error (${bad.slice(0, 3).join(' | ') || 'all good'})`); }
+  // F3-4 (M2 #1): after Dec 2 02:00 UTC while the data is still Reg M-C, a winner whose event name has no "(Reg M-C)" is still labelled "The last Reg M-C winning team"
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const on = Date.now; Date.now = () => Date.parse('2026-12-02T03:00:00Z'); V2._f3 = null;
+      try { const D = V2.f3Data(), h = V2.f3Page(), m = h.match(/<h2 class="f3-meta"[^>]*>([^<]+)/);
+        return {reg: D && D.reg, evReg: D && D.evReg, old: !!(D && D.old), meta: m ? m[1] : ''}; }
+      finally { Date.now = on; V2._f3 = null; } })()`));
+    ok(r.reg === 'M-D' && r.evReg === 'M-C' && r.old && r.meta.startsWith('The last Reg M-C winning team · ') && !r.errs,
+      `F3-4 (M2 #1): after Dec 2 02:00 UTC with Reg M-C data, evReg falls back to regInfo().id and the receipt reads "The last Reg M-C winning team" (${JSON.stringify(r)})`); }
+  // F3-5 (M2 #2): receipt bar links use "#pokemon=<name>" on the Claude build and "/pokemon/<slug>" only on the public build
+  { const r = await f3(1440, 900, () => { const hrefs = [...document.querySelectorAll('#main .f3-bar')].map(a => a.getAttribute('href') || '');
+      const check = window.__ev(`(() => { const o = window.__NP_PUBLIC; try { delete window.__NP_PUBLIC; const cl = V2.f3Link('Charizard-Mega-Y'); window.__NP_PUBLIC = 1; const pub = V2.f3Link('Charizard-Mega-Y'); return {cl, pub}; } finally { if (o === undefined) delete window.__NP_PUBLIC; else window.__NP_PUBLIC = o; } })()`);
+      return {hrefs, ...check}; });
+    ok(r.hrefs.length === 6 && r.hrefs.every(h => h.startsWith('#pokemon=')) && r.cl === '#pokemon=Charizard-Mega-Y' && r.pub === '/pokemon/charizard-mega-y' && !r.errs,
+      `F3-5 (M2 #2): V2.f3Link uses "#pokemon=..." on the Claude build and "/pokemon/<slug>" only with window.__NP_PUBLIC (${JSON.stringify(r)})`); }
+  // F3-6 (M2 #3): when RES is null or RES.teams is 0, the lead omits "against 0 real tournament teams"
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const o = RES, read = () => { const m = V2.f3Words(V2.f3Data()).html.match(/<p class="k-lead f3-lead">([\\s\\S]*?)<\\/p>/); return m ? m[1].replace(/<[^>]+>/g, '') : ''; };
+      try { RES = null; const n0 = read(); RES = {teams: 0}; const z0 = read(); return {n0, z0}; } finally { RES = o; } })()`));
+    ok(r.n0.includes('out of 100') && !/against 0|0 real tournament/.test(r.n0) && r.z0.includes('out of 100') && !/against 0|0 real tournament/.test(r.z0) && !r.errs,
+      `F3-6 (M2 #3): when RES is null or teams is 0, the lead omits "against 0 real tournament teams" (${JSON.stringify(r)})`); }
+  // F3-7 (M2 #4): V2.f3Rate returns null for V2.unrated(p) during a new regulation's first 28 days (bar shows "–" and "not rated")
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const P = META.perf, o1 = META.reg, o2 = P && P.reg, on = Date.now;
+      META.reg = {id: 'M-D', since: '2026-12-02', now: null}; if (P) P.reg = META.reg; Date.now = () => Date.parse('2026-12-03T12:00:00Z');
+      try { const un = ROSTER.find(q => { const x = ratings().get(q.n); return x && !x.tc; }), rd = ROSTER.find(q => { const x = ratings().get(q.n); return x && x.tc; });
+        return {unMon: un && un.n, isUn: !!(un && V2.unrated(un)), unRate: un ? V2.f3Rate(un.n) : 'none', rdMon: rd && rd.n, rdRate: rd ? V2.f3Rate(rd.n) : null}; }
+      finally { META.reg = o1; if (P) P.reg = o2; Date.now = on; } })()`));
+    ok(r.isUn && r.unRate === null && typeof r.rdRate === 'number' && !r.errs,
+      `F3-7 (M2 #4): V2.f3Rate returns null for V2.unrated(p) while keeping numeric ratings for rated Pokémon (${JSON.stringify(r)})`); }
+  // F3-8 (M3): Final 3 hero contrast (day and night): slogan, Reg M-D line, lead, receipt text and bar numbers meet WCAG thresholds
+  for (const night of [false, true]) {
+    const r = await f3(1440, 900, () => {
+      const rgb = s => (s.match(/[\d.]+/g) || []).map(Number);
+      const L = c => { const [R, G, B] = c.slice(0, 3).map(x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }); return .2126 * R + .7152 * G + .0722 * B; };
+      const cr = (a, b) => { const x = L(a), y = L(b); return +((Math.max(x, y) + .05) / (Math.min(x, y) + .05)).toFixed(2); };
+      const bgOf = e => { for (let a = e; a; a = a.parentElement) { const c = rgb(getComputedStyle(a).backgroundColor); if (c.length >= 3 && (c.length === 3 || c[3] > .5)) return c; } return [255, 255, 255]; };
+      const fg = s => { const e = document.querySelector('#main ' + s); return e ? rgb(getComputedStyle(e).color) : null; };
+      const pageBg = bgOf(document.querySelector('#main .f3-hero'));
+      const paperBg = rgb(getComputedStyle(document.querySelector('#main .f3-paper')).backgroundColor);
+      const bars = [...document.querySelectorAll('#main .f3-bar')].map(a => cr(rgb(getComputedStyle(a.querySelector('.f3-r')).color), rgb(getComputedStyle(a).backgroundColor)));
+      return {sl: cr(fg('.f3-sl'), pageBg), em: cr(fg('.f3-sl em'), pageBg), h1s: cr(fg('.f3-h1s'), pageBg), lead: cr(fg('.f3-lead'), pageBg),
+        meta: cr(fg('.f3-meta'), paperBg), big: cr(fg('.f3-big'), paperBg), barMin: Math.min(...bars)}; }, {night});
+    ok(r.sl >= 4.5 && r.em >= 3 && r.h1s >= 4.5 && r.lead >= 4.5 && r.meta >= 4.5 && r.big >= 3 && r.barMin >= 3 && !r.errs,
+      `F3-8 (M3, ${night ? 'night' : 'day'}): Final 3 hero contrast meets WCAG (sl ${r.sl}, em ${r.em}, h1s ${r.h1s}, lead ${r.lead}, meta ${r.meta}, big ${r.big}, barMin ${r.barMin})`); }
+  // F3-9 (M3): short-window fold check for BOTH start buttons (Score My Team + Build Me a Team) at 1000x650 and 393x659
+  { const bad = []; for (const [w, h] of [[1000, 650], [393, 659]]) {
+      const r = await f3(w, h, () => { const g1 = document.querySelector('#main .f3-acts .k-go'), g2 = document.querySelector('#main .f3-acts .k-btn'), bar = document.querySelector('.np-bar');
+        const fold = innerHeight - (bar && getComputedStyle(bar).position === 'fixed' ? bar.offsetHeight : 0);
+        return {b1: g1 ? Math.round(g1.getBoundingClientRect().bottom) : null, b2: g2 ? Math.round(g2.getBoundingClientRect().bottom) : null, fold, sw: document.documentElement.scrollWidth - document.documentElement.clientWidth}; });
+      if (r.b1 == null || r.b1 > r.fold || r.b2 == null || r.b2 > r.fold || r.sw > 0 || r.errs) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); }
+    ok(!bad.length, `F3-9 (M3): both start buttons (Score My Team + Build Me a Team) sit above the fold with no sideways scroll at 1000x650 and 393x659 (${bad.join(' | ') || 'all good'})`); }
+  // F3-10 (M3): V2._f3 cache invalidates across regulation change / Dec 2 02:00 UTC without manual reset, and unused V2.f3Seo is gone
+  { const r = await f3(1440, 900, () => window.__ev(`(() => { const on = Date.now;
+      try { Date.now = () => Date.parse('2026-12-01T12:00:00Z'); V2._f3 = null; const before = V2.f3Data();
+        Date.now = () => Date.parse('2026-12-02T03:00:00Z'); const after = V2.f3Data();
+        return {bReg: before && before.reg, bOld: !!(before && before.old), aReg: after && after.reg, aOld: !!(after && after.old), seo: typeof V2.f3Seo}; }
+      finally { Date.now = on; V2._f3 = null; } })()`));
+    ok(r.bReg === 'M-C' && !r.bOld && r.aReg === 'M-D' && r.aOld && r.seo === 'undefined' && !r.errs,
+      `F3-10 (M3): V2._f3 cache key includes regulation / Dec 2 rollover (no stale cache) and unused V2.f3Seo is removed (${JSON.stringify(r)})`); }
+}
 // ---------- Home, The Stampede: the hero band (Nov 18; app/src/v2/pages/stampede-hero.js, css/sd-hero.css, sd-shared.css) ----------
 { const hero = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: o.rm || "no-preference"}); const q = await ctx.newPage();
-    await q.addInitScript(e => { window.__PL_TEST = 1; if (e) try { localStorage.clear(); } catch (x) {} }, !!o.empty); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+    await q.addInitScript(e => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; /* the Stampede's own hero (Job DD) */ if (e) try { localStorage.clear(); } catch (x) {} }, !!o.empty); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
     if (o.empty) await q.evaluate(() => window.__ev(`(() => { S.slots = S.slots.map(() => blank()); render(); })()`)); if (o.night) await q.evaluate(() => V2.setTheme('night'));
     if (o.wait) await q.waitForFunction(() => document.querySelectorAll('#main .sdh-c').length > 0, null, {timeout: 20000}).catch(() => {}); await q.waitForTimeout(400);
     const r = await q.evaluate(o.fn || (() => { const g = s => { const e = document.querySelector(s); if (!e || !e.getClientRects().length) return null; const x = e.getBoundingClientRect(); return {t: Math.round(x.top), b: Math.round(x.bottom), l: Math.round(x.left), r: Math.round(x.right)}; };
@@ -1416,7 +1651,7 @@ if (part('main2')) {
 /* Home, The Stampede: motion (Nov 18; css/sd-motion.css, V2.sdhTick in stampede-hero.js). A watcher records, every frame from the first
    draw for 1.5 s, every animation or transition running inside the hero, so a surge, a marquee or a stray transition is caught. */
 { const watch = async (w, h, rm, after) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: rm}); const q = await ctx.newPage();
-    await q.addInitScript(() => { window.__PL_TEST = 1; window.NP_SD_MOTION = 1; /* motion is off until Sim's yes; the checks turn it on */ const seen = window.__sdhSeen = {n: 0, names: {}, ends: 0, first: ''}; const t0 = performance.now();
+    await q.addInitScript(() => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; /* the Stampede's own hero (Job DD) */ window.NP_SD_MOTION = 1; /* motion is off until Sim's yes; the checks turn it on */ const seen = window.__sdhSeen = {n: 0, names: {}, ends: 0, first: ''}; const t0 = performance.now();
       const tick = () => { const S = document.querySelector('#main .sdh'); if (S) { if (!seen.first) seen.first = S.className; for (const a of S.getAnimations({subtree: true})) if (a.playState === 'running') { seen.n++; const nm = a.animationName || a.transitionProperty || 'anim'; seen.names[nm] = 1;
         if (a.animationName && a.animationName.startsWith('sdh-surge')) { const t = a.effect.getComputedTiming(); seen.ends = Math.max(seen.ends, t.endTime); } } } if (performance.now() - t0 < 6000) requestAnimationFrame(tick); };
       requestAnimationFrame(tick); });
@@ -1445,7 +1680,7 @@ if (part('main2')) {
   // 4. a keyboard user: tabbing into the ticker stops it at its start, so the focused name is on screen
   const k = await (async () => {
     /* Nov 23 (Home length): at 1100+ the ticker steps aside for the top 10 on the red flag, so the keyboard check runs at 1024 (a mouse-and-keyboard laptop width where it shows) */
-    const ctx = await b.newContext({viewport: {width: 1024, height: 768}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; window.NP_SD_MOTION = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+    const ctx = await b.newContext({viewport: {width: 1024, height: 768}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; window.NP_SD_MOTION = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
     await q.evaluate(() => document.querySelector('#main .sdh-tick').scrollIntoView({block: 'center'})); await q.waitForTimeout(1500); await q.focus('#main .sdh-go a:last-child'); await q.keyboard.press('Tab'); await q.waitForTimeout(200);
     const r = await q.evaluate(() => { const a = document.activeElement, x = a.getBoundingClientRect(); return {inTick: !!a.closest('.sdh-trk ul:not([aria-hidden])'), tf: (t => t ? getComputedStyle(t).transform : 'no track')(document.querySelector('#main .sdh-trk')), on: x.left >= 0 && x.right <= innerWidth}; }); await ctx.close(); return r; })();
   ok(k.inTick && k.tf === 'none' && k.on, `Stampede motion 4: Tab from the start buttons lands on the ticker's first name, the ticker stops at its start and the name is on screen (${JSON.stringify(k)})`); }
@@ -1552,6 +1787,7 @@ if (part('main2')) {
   { const {q, c} = await mtOpen(390); const r = await q.evaluate(() => ({H: document.documentElement.scrollHeight, scr: +(document.documentElement.scrollHeight / 844).toFixed(2), opt: /Optional swaps:/.test(document.body.innerText)}));
     const lim = r.opt ? 4.78 : 4.35; /* Nov 25 12:39 PM (Sim chose 'Take 4.35'): a team with no optional swaps on today's data measured 4.35 after the step-note and step-1 spacing trims (4.38 before) */ /* Nov 23 (HH, design authority to 9 AM): Wave 2's kit show-more (44px, Sim chose A) adds about 16px to the frozen data's sample team with optional swaps (4.75 -> 4.77); flagged in the 9 AM summary */
     ok(r.scr <= lim, `Sim, Nov 18 (C): My Team at 390 is at most ${lim} screens long${r.opt ? ' (with optional swaps)' : ''} (${r.scr} screens, ${r.H}px)`);
+    await MT390(); /* the no-swap state too (Job K, Nov 26), defined above; ONLY=MT390 runs it alone */
     // 2. the Hand three across; the editing panel shut until a Card is tapped, with the hint; tapped, it opens under the whole Hand with Replace, Edit Set, Remove and Lock
     /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): was three groups side by side (Lead | Back | Bench); now ONE
        group (no "Your Six" heading on a full team, approved mock-up Nov 11; its line points to Battle) whose six Cards sit three across in
@@ -1816,6 +2052,7 @@ if (part('groups')) {
 await BR(); /* behaviour review (Nov 18), above */
 await MQ(); /* Sim's Nov 18 answers, above */
 await AS(); /* All Suggestions sheet, option C, above */
+await SP(); /* Spicy picks (Jobs E and L, Nov 26), above */
 await TF(); /* Test Run and Track Record fit (Job G, Nov 26), above */
 }
 // WebKit pair (Nov 18, docs/rebuild/test-runs/webkit-new-pages-nov18.md): two Safari defects, measured the same way in any engine. This file runs
@@ -1834,7 +2071,7 @@ const wkPair = async (br, url, ok) => {
   const go = async (route, w) => { await q.setViewportSize({width: w, height: 900}); await q.goto(url + '#' + route); await q.waitForTimeout(2200); await q.evaluate(fx => window.__ev(fx), FX); await q.evaluate(() => document.fonts.ready); await q.waitForTimeout(400); };
   /* WK-1: each stamp drawn black on white, upright, with its picture hidden, at 2x (as on an iPhone or iPad), then read pixel by pixel (distances from the stamp box's edge) */
   const st = [];
-  for (const [route, w, sel] of [['gifts', 390, '#main .pr-sheet .pr-sw'], ['gifts', 1440, '#main .pr-sheet .pr-sw'], ['home', 820, '.sdp-stamps .pr-sw'] /* Home B (Sim, Nov 23): Home's stamps show on iPads, not at 1100+ */]) {
+  for (const [route, w, sel] of [['gifts', 390, '#main .pr-sheet .pr-sw'], ['gifts', 1440, '#main .pr-sheet .pr-sw'], ['gifts', 820, '#main .pr-sheet .pr-sw'] /* Nov 26 (Sim: tablet Home yes): Home shows no stamps at any width now; the iPad stamps are checked on Gifts */]) {
     await go(route, w);
     await q.addStyleTag({content: '.wkst .pr-sw{filter:none;background:#fff;rotate:none}.wkst .pr-st{background:#000;transition:none}.wkst .pr-st>*,.wkst .pr-pm{visibility:hidden}'}); await q.evaluate(() => document.documentElement.classList.add('wkst'));
     const els = await q.$$(sel + ' .pr-st'); if (!els.length) { st.push(`${route} ${w}: no stamps`); continue; }
@@ -2030,7 +2267,7 @@ if (part('main2')) { /* iPhone review Nov 25. #2: under 900 Home's two hero butt
      on desktop, where the line is left and the buttons right). #3: News' latest gift round uses the same picture-over-month layout as the others, so every month name in
      its row lines up (it sat sideways, its month 40px off). Both fail on the old code. The data note is hidden here: this build's saved-data
      note is Preview-only. */
-  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
+  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage(); await q.addInitScript(() => { window.__NP_SDHERO = 1; }); /* the Stampede hero's own buttons (Job DD) */
   for (const [w, h] of [[393, 659], [430, 739], [1100, 900], [1440, 900]]) {
     await q.setViewportSize({width: w, height: h}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2200);
     await q.addStyleTag({content: '.np-dnote{display:none}'}); await q.waitForTimeout(300); await q.evaluate(() => scrollTo(0, 0));
@@ -2049,7 +2286,7 @@ if (part('main2')) { /* iPhone review Nov 25. #2: under 900 Home's two hero butt
 if (part('main2')) { /* Sim, Nov 25 (MacBook, Claude app, about 1000x650): on a short desktop window the hero's tagline ate the scene: the front
      four were 80px, the crowd was gone, and #1/#2's plates covered 60-70% of them. Now, from 900 up: the crowd shows, the front four are at
      least 88px, the middle plates cover 45% of their Pokémon at most, and 1440x900 / 1920x1080 keep the full tagline (no override). Fails on the old code (crowd 0). */
-  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
+  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage(); await q.addInitScript(() => { window.__NP_SDHERO = 1; }); /* the Stampede hero's own tagline and crowd (Job DD) */
   for (const [w, h] of [[1000, 650], [1100, 700], [1280, 720], [1366, 768], [1440, 900], [1920, 1080]]) {
     await q.setViewportSize({width: w, height: h}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500); await q.evaluate(() => document.fonts.ready); await q.waitForTimeout(600);
     const r = await q.evaluate(() => { const S = document.querySelector('#main .sdh'); if (!S) return {none: 1}; const th = S.querySelector('.sdh-h');
@@ -2080,6 +2317,7 @@ if (part('groups')) { const bad = [];
     if (r.end == null || r.end > h || r.scrollY !== 0 || r.chips !== 12 || !r.lab) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); await ctx.close(); }
   ok(!bad.length, `Speed Tiers on short laptop windows (Nov 26): the track's first row is on the first screen at 1280x720, 1366x768 and 1440x900, all 12 condition chips kept (${bad.join(' | ') || 'all three'})`); }
 if (part('main2')) await TP3(); /* small touches pass 3 (Nov 26), defined above; ONLY=TP3 runs it alone */
+if (part('main2')) await MD(); /* Job U (Nov 26): no wait for documents with no producer; ONLY=MD runs it alone */
 if (part('groups')) { await HQ(); await wkPair(b, 'file://' + PAGE, ok); }
 await b.close();
 console.log(`v2-minors${PART === 'all' ? '' : ' (' + PART + ')'}:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

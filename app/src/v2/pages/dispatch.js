@@ -221,4 +221,4 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   const open = V2.dpUi.brief = !V2.dpUi.brief; l.classList.toggle('on', open); b.setAttribute('aria-expanded', open); b.textContent = open ? 'Show Fewer' : `${homeNum(l.children.length - 2)} more in brief ›`; });
 document.addEventListener('click', async e => { const b = e.target.closest && e.target.closest('[data-dpmore],[data-dpcal]'); if (!b) return; const d = b.dataset;
   if (d.dpmore != null) { V2.dpUi.more = !V2.dpUi.more; V2.redraw(); return; }
-  if (d.dpcal != null) { V2.evUi.open = null; V2.evUi.cal = true; location.hash = '#events'; V2.evScrollTo('.ev-plate'); } });
+  if (d.dpcal != null) V2.needRoute('events', () => { V2.evUi.open = null; V2.evUi.cal = true; location.hash = '#events'; V2.evScrollTo('.ev-plate'); }); });

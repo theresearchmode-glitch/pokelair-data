@@ -30,10 +30,11 @@ async function homePage() { let r = HOMEP ? await HOMEP : null; HOMEP = warmHome
 const noErrs = r => ok(!r.errs.length, 'page errors: ' + r.errs.join(' | '));
 
 // ================= 1. Home =================
-t('HOME-01', 'Home leads with the tagline "Sharply raise your win rate."', async () => {
+t('HOME-01', 'Home leads with the slogan "Sharply raise your win rate." and, in the same h1, the Pokémon Champions / Reg M-D line', async () => {
+  /* Job DD (Nov 26, Sim, option A): Final 3's one h1 holds the slogan (the brand lockup) and the line Google reads for the regulation */
   const {ui} = await view('home', {team: TEAM});
   const h = await ui.homeHeadline();
-  ok(h === 'Sharply raise your win rate.', `first heading reads "${h}"`); });
+  ok(h.startsWith('Sharply raise your win rate.') && h.includes('Pokémon Champions'), `first heading reads "${h}"`); });
 
 t('HOME-02', 'Most used #1 card opens that Pokémon\'s info sheet', async () => {
   if (NEW) { /* new build (Home piece 1, decisions.md Nov 12, from the approved mock-up; Preview v74, Sim "love it"): "Most used right
@@ -78,12 +79,13 @@ t('HOME-05b', 'This week chip\'s rating matches the info sheet it opens', async 
   ok(NEW ? pr === rating : s.startsWith('✕ ' + rating + ' ') || new RegExp('^\\D*' + rating + ' ').test(s), `chip says rating ${rating}, ${NEW ? 'the page says ' + pr : 'info sheet hero says ' + s.slice(0, 12)}`); await r.close(); },
   {known: NEW ? '' : 'chip label "Whimsicott, rating 78" but its info sheet shows 88 (This week reads the weekly track data, the sheet the live rating)'});
 
-t('HOME-06', 'Start buttons: "Score my team" first with a team, "Build me a team" first with none', async () => {
+t('HOME-06', 'Start buttons: "Score My Team" first and "Build Me a Team" second, with or without a team; each opens its page', async () => {
+  /* Job DD (Nov 26, HH, option b): Final 3 keeps Score My Team as the big first button for everyone (it was Build Me a Team first with no team) */
   // new build: Title Case on buttons (decisions.md Nov 11, "Title Case on buttons and headings"); same buttons, same order
   const r = await homePage(); let b = await r.ui.homeStartButtons();
   ok(b.join('|') === (NEW ? 'Score My Team|Build Me a Team|Battle' /* Sim, Nov 14 naming */ : 'Score my team|Build a team|Plan a match'), 'with a team buttons are ' + b.join('|'));
   await r.ui.tapText('Score my team'); ok(await r.ui.current() === 'report', 'Score my team did not open My Team'); await r.close();
-  const e = await aopen({team: []}); b = await e.ui.homeStartButtons(); ok(NEW ? b[0] === 'Build Me a Team' && b.includes('Score My Team') && b.includes('Battle') : b[0] === (NEW ? 'Build Me a Team' : 'Build me a team') && b.includes('Score my team') && b.includes('Plan a match'), 'empty team buttons are ' + b.join('|'));
+  const e = await aopen({team: []}); b = await e.ui.homeStartButtons(); ok(NEW ? b.join('|') === 'Score My Team|Build Me a Team|Battle' : b[0] === (NEW ? 'Build Me a Team' : 'Build me a team') && b.includes('Score my team') && b.includes('Plan a match'), 'empty team buttons are ' + b.join('|'));
   await e.ui.tapText((NEW ? 'Build Me a Team' : 'Build me a team')); ok(await e.ui.current() === 'auto', (NEW ? 'Build Me a Team did not open Build' : 'Build me a team did not open Build')); await e.close(); });
 
 t('HOME-07', '"Import from Showdown" opens My Team with the Import box ready', async () => {
@@ -108,29 +110,39 @@ t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
   noErrs(r); await r.close(); });
 
 t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy for Showdown copies', async () => {
-  /* Sim, Nov 23: on desktop (1100+) Home's Winning Teams is a chip and Load Team / Copy for Showdown live on the Winning Teams page; phones
-     and iPads keep the Winning Teams plate with both, so this runs at 820 */
+  /* Sim, Nov 23: on desktop (1100+) Home's Winning Teams is a chip and Load Team / Copy for Showdown live on the Winning Teams page.
+     Nov 26 (Sim approved the tools rack at every width, phones and iPads too): Home's Winning Teams is that chip at 820 as well, so the
+     champion's six, its Load Team (asks first, Undo) and Copy for Showdown are checked where they now live, on Winning Teams. Today's
+     page keeps its Home plate. */
   const r = await aopen({team: TEAM, width: 820}); await r.ui.grantClipboard(); const tx = await r.ui.text();
-  // new build (Home piece 2, the mock-up's duel; Preview v74, Sim "love it"; decisions.md Nov 12): the same line with "·" between parts
-  // the Stampede (Sim, Nov 18): the champion's six sits on the tools band's Winning Teams plate, "This six won <event> on <date>: N players, W-L.",
-  // and the Events plate carries the count ("113 events", opening Events) where today's Home had "All N Events ›"
-  ok((NEW ? /The Champion's (?:six|corner) · latest winner .+ Champion · \d+-\d+ · [A-Z][a-z]{2} \d+ · \d+ players|This six won .+ on [A-Z][a-z]{2} \d+: [\d,]+ players, \d+-\d+(?:-\d+)?\./i : /The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/).test(tx), 'no champion line with record, date, players');
-  /* the Events count is read from the tools band itself, not anywhere on Home (code review, Nov 23: a bare 'N Events' matched any line):
-     under 1100 the Events number row (.sdt-ends .ev, '113 events Events'), at 1100+ the Events chip ('113 Events', Home B, Sim Nov 23) */
   const evTool = () => r.pg.evaluate(() => { const v = [...document.querySelectorAll('#main .sdt-chips [data-sdtool="Events"], #main .sdt-ends .ev')].filter(e => e.getClientRects().length);
     return v.map(e => (e.matches('.ev') ? 'row: ' : 'chip: ') + e.innerText.replace(/\s+/g, ' ').trim()).join(' | ') || 'none shown'; });
   const evRe = /^(?:row: [1-9][\d,]* events Events\b.*|chip: [1-9][\d,]* Events)$/i;
-  if (NEW) { const e8 = await evTool(); ok(evRe.test(e8), `at 820 the tools band's Events row has no count (${e8})`); }
-  else ok(/All \d+ events ›/.test(tx), 'no "All N events ›" link'); /* Sim, Nov 14: Title Case links */
-  await r.ui.tapText(NEW ? 'Load Team' : 'Load this team'); /* Sim, Nov 14 (Q3 A): one name, Load Team */ ok(await r.ui.sees(NEW ? 'Replace your current team?' : 'Tap again to replace your team'), 'first tap did not ask to tap again'); /* Sim Q10c (Nov 15): Replace / Cancel everywhere */
+  if (NEW) {
+    const wt = await r.pg.evaluate(() => { const vis = s => [...document.querySelectorAll(s)].filter(e => e.getClientRects().length).length; return {plate: vis('#main .sdt-wt'), chip: vis('#main .sdt-chips [data-sdtool="Winning Teams"]')}; });
+    ok(wt.chip === 1 && wt.plate === 0, `at 820 Home's Winning Teams is the rack's chip (chip ${wt.chip}, plate ${wt.plate})`);
+    const e8 = await evTool(); ok(evRe.test(e8), `at 820 the tools band's Events has no count (${e8})`);
+    await r.ui.tapTool('Winning Teams'); await r.pg.waitForTimeout(600); ok(await r.ui.current() === 'top', 'the Winning Teams chip opened ' + await r.ui.current());
+    // the champion's six heads Winning Teams: "1 The champion. <event> · N players"
+    ok(/\b1 The champion\. .+ · [\d,]+ players\b/.test(await r.ui.text()), 'no champion line with event and players on Winning Teams');
+    await r.ui.tapText(/^Use this team\.?$/i); ok(await r.ui.sees('Replace your current team?'), 'first tap did not ask to tap again');
+    ok((await r.ui.team()).join() === TEAM.join(), 'first tap already replaced the team');
+    await r.ui.tapText('Replace', 1200); const now = await r.ui.team(); ok(now.join() !== TEAM.join() && now.length === 6, 'second tap did not load the champion six');
+    ok(await r.ui.waitToast(/./) && await r.ui.has('#toastUndo'), 'no Undo toast after loading');
+    await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === TEAM.join(), 'Undo did not restore my team');
+    await r.ui.go('Winning Teams'); await r.ui.clearToasts(); await r.ui.tapText('Copy for Showdown'); ok(await r.ui.waitToast(/^Team copied for Showdown/), 'no "Team copied for Showdown" toast');
+    const c = await r.ui.copied(); ok(c && /@ .+\nAbility: /.test(c), 'clipboard holds no Showdown team');
+    await r.ui.go('Home'); await r.pg.setViewportSize({width: 1440, height: 900}); await r.pg.waitForTimeout(600); const e14 = await evTool(); ok(/^chip: [1-9][\d,]* Events$/.test(e14), `at 1440 the Events chip has no count (${e14})`);
+    await r.close(); return; }
+  ok(/The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/.test(tx), 'no champion line with record, date, players');
+  ok(/All \d+ events ›/.test(tx), 'no "All N events ›" link'); /* Sim, Nov 14: Title Case links */
+  await r.ui.tapText('Load this team'); ok(await r.ui.sees('Tap again to replace your team'), 'first tap did not ask to tap again');
   ok((await r.ui.team()).join() === TEAM.join(), 'first tap already replaced the team');
-  await r.ui.tapText(NEW ? 'Replace' : 'Tap again to replace your team', 1200); const now = await r.ui.team(); ok(now.join() !== TEAM.join() && now.length === 6, 'second tap did not load the champion six');
+  await r.ui.tapText('Tap again to replace your team', 1200); const now = await r.ui.team(); ok(now.join() !== TEAM.join() && now.length === 6, 'second tap did not load the champion six');
   ok(await r.ui.waitToast(/./) && await r.ui.has('#toastUndo'), 'no Undo toast after loading');
   await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === TEAM.join(), 'Undo did not restore my team');
-  // new build: the copy toast reads "Team copied for Showdown" (as IO-03's new-build branch, Sim Nov 11)
-  await r.ui.go('Home'); await r.ui.clearToasts(); await r.ui.tapText('Copy for Showdown'); ok(await r.ui.waitToast(NEW ? /^Team copied for Showdown/ : /Copied.*paste into Showdown/), 'no "Copied — paste into Showdown" toast');
+  await r.ui.go('Home'); await r.ui.clearToasts(); await r.ui.tapText('Copy for Showdown'); ok(await r.ui.waitToast(/Copied.*paste into Showdown/), 'no "Copied — paste into Showdown" toast');
   const c = await r.ui.copied(); ok(c && /@ .+\nAbility: /.test(c), 'clipboard holds no Showdown team');
-  if (NEW) { await r.pg.setViewportSize({width: 1440, height: 900}); await r.pg.waitForTimeout(600); const e14 = await evTool(); ok(/^chip: [1-9][\d,]* Events$/.test(e14), `at 1440 the Events chip has no count (${e14})`); }
   await r.close(); });
 
 t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion sets Battle', async () => {
