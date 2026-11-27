@@ -1,2 +1,2 @@
-1247
-watching main test run 45983690416 (dispatched; batch9 608a97d9), then promote + republish
+1265
+main run 45983690416: wait, rerun only the BR-C1 groups job if it is the sole failure, then promote
