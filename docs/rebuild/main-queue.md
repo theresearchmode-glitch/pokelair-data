@@ -1,7 +1,7 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 8:08 PM (8:08:52)  date: Thu Nov 26, 2026
-NOW: (8:08 PM) gate.sh alt/f3-claude ba95fd61 (Final 3 + slogan), waits for GitHub green, pid in .main-running; helper Job EE: pre-switch sweep of the live build (report by 9:30 PM).
-NEXT: after the gate: alt/preflight-skip into design6 (tiny batch), Kip 64c fixes review.
+Updated: time: 8:25 PM (8:25:36)  date: Thu Nov 26, 2026
+NOW: (8:26 PM) tests on alt/calc-tile-phone 9ffffd6a (pid in .main-running); f3-claude run has an infra flake in an alert-only job: f3-follow.sh reruns it and restarts the gate; helper Job EE pre-switch sweep (report ~9:30 PM).
+NEXT: batch8 = alt/calc-tile-phone + alt/preflight-skip (merge-tree clean), real GitHub run, gate after Final 3 is in design6.
 NEXT: Preview republish after the merge (Final 3 for Sim's iPhone check); send Sim before/after pictures.
 NEXT: tell Sim when Final 3 is in design6 so Kip re-merges design6 into 64c before his final push.
 NEXT: Fri 7:30 AM switch prep (trig_01HzJ1ckLPN7LMVpiJ4eUh83), preflight from alt/preflight-skip 575ba798.
