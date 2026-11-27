@@ -45,7 +45,10 @@ V2.plotRead = () => { const E = V2.esc, lk = ui.abLock && byName.get(ui.abLock),
     <div class="pl-stage"${V2.plotKc(n)}><div class="pl-hn"><small>${lk ? 'Built around' : "Today's underdog"}</small><b class="u">${d}</b><p>${lk ? 'Goes in first. Hatch it fills the other five.' : "Waiting to see what you hatch. Somebody's favourite."}</p></div>
       <button type="button" class="pl-hero" data-v2mon="${E(n)}" aria-label="${d}: open its info">${art}</button></div></div>`; };
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('.plc [data-bdfind]'); if (!i || innerWidth >= 700 || !i.value) return;
-  requestAnimationFrame(() => { const f = i.closest('.pl-find'); if (f && f.getBoundingClientRect().top > 120) f.scrollIntoView({block: 'start'}); }); });
+  requestAnimationFrame(() => { const f = i.closest('.pl-find'); if (!f) return;
+    /* Nov 27 (HH, v2-minors X-05): scrollIntoView put the plate under the sticky top bar, so its × could not be tapped; stop just below the bar */
+    const hd = document.querySelector('.np-head'), top = (hd ? Math.max(0, hd.getBoundingClientRect().bottom) : 0) + 16, y = f.getBoundingClientRect().top;
+    if (y > top + 40) scrollTo({top: scrollY + y - top}); }); });
 V2.plotPage0 = () => { V2.bdSrcDefault(); /* a new visitor's untouched sample box starts on Whole Roster (S17), as buildHead did */ const busy = !!(ui.ab && ui.ab.busy), none = !busy && ui.ab ? V2.buildAnswer0() : '', lk = ui.abLock && byName.get(ui.abLock);
   return `<div class="bd2 pl2${busy ? ' bd-rebuild' : ''}"><h1 class="vh">Build</h1><div class="bd-result" aria-live="polite"${busy ? ' aria-busy="true"' : ''}>${busy ? '<p class="bd-busy" role="status">Building from real winning teams…</p>' : ''}${none}
     <section class="pl pl0 plc"><div class="pl-step pl-s1"><span class="pl-node" aria-hidden="true">1</span><div class="pl-desk">
