@@ -463,9 +463,9 @@ V2.preScreen = (route, mon) => {
     const rootEl = box.firstElementChild; if (!rootEl) return '';
     rootEl.setAttribute('data-np-pre', route);
     { const pf = typeof activePerf === 'function' ? activePerf() : null; const d = (typeof RESULTS === 'object' && RESULTS && RESULTS.updated) || (pf && pf.updated) || ''; if (d) rootEl.setAttribute('data-np-asof', String(d).slice(0, 10)); }
+    rootEl.style.minHeight = '100svh';
     if (route === 'home') {
       const f3h = box.querySelector('.f3-anim'); if (f3h) f3h.classList.remove('f3-anim');
-      rootEl.style.minHeight = '100svh';
     } else {
       if (rootEl.children.length > 4) while (rootEl.children.length > 4) rootEl.lastElementChild.remove();
       for (const list of box.querySelectorAll('ul, ol, tbody')) { const cap = list.classList.contains('rs-st') ? 3 : 8; while (list.children.length > cap) list.lastElementChild.remove(); }
