@@ -90,8 +90,10 @@ const acc = (s, n) => { const m = s.match(new RegExp(`"${n}":(\\d+)[,}]`)); retu
 
 // Text edits: [file, label, old, new, done(text) -> true when the new state is already there in another form (regenerated)]
 const TEXT = [
-  ['app/src/data/data.js', 'ABIL Flash Fire', `"Flash Fire":"${FF_OLD}"`, `"Flash Fire":"${FF_NEW}"`],
-  ['app/src/data/data.js', 'ABIL Stalwart', `"Stalwart":"${ST_OLD}"`, `"Stalwart":"${ST_NEW}"`],
+  ['app/src/data/data.js', 'ABIL Flash Fire', `"Flash Fire":"${FF_OLD}"`, `"Flash Fire":"${FF_NEW}"`,
+    s => { const m = s.match(/"Flash Fire":"([^"]*)"/); return !!(m && /Fire Boost/.test(m[1]) && /Mega Evol/.test(m[1])); }],
+  ['app/src/data/data.js', 'ABIL Stalwart', `"Stalwart":"${ST_OLD}"`, `"Stalwart":"${ST_NEW}"`,
+    s => /"Stalwart":"[^"]*substitute/i.test(s)],
   ['app/src/data/info-text.js', 'INFO_TEXT ab Flash Fire', `"Flash Fire":"${FF_OLD.replace('Pokemon', 'Pokémon')}"`, `"Flash Fire":"${FF_NEW.replace('Pokemon', 'Pokémon')}"`,
     s => /"Flash Fire":"[^"]*Mega Evol/.test(s)],
   ['app/src/data/info-text.js', 'INFO_TEXT ab Stalwart', `"Stalwart":"${ST_OLD.replace('Pokemon', 'Pokémon')}"`, `"Stalwart":"${ST_NEW.replace('Pokemon', 'Pokémon')}"`,

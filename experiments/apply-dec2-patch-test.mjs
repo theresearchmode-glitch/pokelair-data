@@ -148,6 +148,20 @@ vm.runInContext = function (code, ctx, ...rest) { orig.call(vm, 'Date.now = () =
   const c = rf(PATCHED, '2026-12-03T12:00:00Z');
   ok(c.status === 0 && /PASS {2}5\. data\.js ABIL/.test(c.stdout), `7. patched data, clock Dec 3: rules-fixes-test passes (exit ${c.status}; ${(c.stdout.match(/\d+\/\d+ passed[^\n]*/) || [''])[0]})`);
 }
+// 8. regenerated data.js with Showdown's own post-Dec-2 Ability wording (different from FF_NEW/ST_NEW, still has Fire Boost + Mega Evol / substitutes):
+//    done-predicates on data.js ABIL accept it as already done instead of stopping step 8 of md-roster-step
+{
+  const d = scratch('sd-abil'), f = path.join(d, 'app/src/data/data.js');
+  const altFF = 'Gains Fire Boost if hit by a Fire move; persists when it Mega Evolves.';
+  const altST = "Moves ignore redirection and targets' substitutes.";
+  let s = fs.readFileSync(f, 'utf8');
+  s = s.replace(/"Flash Fire":"[^"]*"/, `"Flash Fire":"${altFF}"`).replace(/"Stalwart":"[^"]*"/, `"Stalwart":"${altST}"`);
+  fs.writeFileSync(f, s);
+  const r = run(d, '--write', '--force'), A = load(d);
+  ok(r.status === 0 && /ABIL Flash Fire: already done/.test(r.stdout) && /ABIL Stalwart: already done/.test(r.stdout) &&
+    A.ABIL['Flash Fire'] === altFF && A.ABIL.Stalwart === altST,
+    `8. post-patch Showdown wording in data.js ABIL is accepted as already done (exit ${r.status}${r.status ? ': ' + r.stderr.trim().split('\n').slice(-2).join(' | ') : ''})`);
+}
 
 fs.rmSync(TMP, {recursive: true, force: true});
 console.log(fails ? `apply-dec2-patch-test: ${fails} FAILED (${passes} passed)` : `apply-dec2-patch-test: ALL ${passes} PASSED`);
