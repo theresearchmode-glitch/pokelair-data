@@ -13,9 +13,13 @@ V2.f3Rate = n => { try { const p = typeof byName !== 'undefined' && byName.get(n
 V2.f3Date = d => { const t = Date.parse(String(d || '').slice(0, 10) + 'T12:00:00Z'); return isFinite(t) ? new Date(t).toLocaleDateString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'}) : ''; };
 // the team on the receipt: the latest event's winner (homeChamp); if there is none yet (a new regulation's first day), the top Winning
 // Teams entry; the label says which, and says when it is the previous regulation's team. Cached per data version: grading is the costly part.
-V2.f3Data = () => { const key = typeof metaVersion !== 'undefined' ? metaVersion : 0; if (V2._f3 && V2._f3.key === key) return V2._f3.v;
+V2.f3Data = () => {
+  let reg = ''; try { const r = typeof regInfo === 'function' ? regInfo() : null; reg = r && r.id ? r.id : ''; } catch (e) {}
+  /* the regulation the site is in: the data's, or Reg M-D from Dec 2 even while the data still says M-C (its first day has no winner yet) */
+  const mdAt = Date.parse(V2.REG_START_MD || ''), cur = isFinite(mdAt) && Date.now() >= mdAt && (!reg || reg === 'M-C') ? 'M-D' : reg;
+  const key = (typeof metaVersion !== 'undefined' ? metaVersion : 0) + '|' + reg + '|' + cur;
+  if (V2._f3 && V2._f3.key === key) return V2._f3.v;
   let v = null; try {
-    let reg = ''; try { const r = typeof regInfo === 'function' ? regInfo() : null; reg = r && r.id ? r.id : ''; } catch (e) {}
     let six = null, ev = null; const C = typeof homeChamp === 'function' ? homeChamp() : null;
     if (C) { six = C.six.map(m => ({p: m.p, it: m.it, ab: m.ab})); ev = {name: C.ev.name, date: C.ev.date, players: C.ev.players}; }
     else { const T = (META.teams && Array.isArray(META.teams.teams) ? META.teams.teams : []).find(t => t && Array.isArray(t.mons) && t.mons.length === 6 && t.mons.every(n => byName.get(n)));
@@ -23,8 +27,6 @@ V2.f3Data = () => { const key = typeof metaVersion !== 'undefined' ? metaVersion
     if (six) { let ms = six.map((m, i) => memberOf({n: m.p.n, a: m.ab || null, it: m.it ? {[S.format]: m.it} : null}, i)).filter(Boolean);
       let G = null; try { const RD = prepOf(ms); G = RD ? CH.gradeOf(RD, proChecks(ms, true), ms) : null; } catch (e) { G = null; }
       const evReg = (String(ev.name).match(/\(Reg ([A-Z]-[A-Z])\)/) || [])[1] || reg;
-      /* the regulation the site is in: the data's, or Reg M-D from Dec 2 even while the data still says M-C (its first day has no winner yet) */
-      const mdAt = Date.parse(V2.REG_START_MD || ''), cur = isFinite(mdAt) && Date.now() >= mdAt && (!reg || reg === 'M-C') ? 'M-D' : reg;
       v = {reg: cur, ev, old: !!(evReg && cur && evReg !== cur), evReg, G, rows: ms.map(m => ({p: m.p, n: m.p.n, d: V2.disp(m.p.n), item: m.heldItem || m.item || '', t: V2.f3Ty(m.p.t[0]), r: V2.f3Rate(m.p.n)}))}; }
   } catch (e) { v = null; }
   V2._f3 = {key, v}; return v; };
@@ -75,5 +77,3 @@ V2.f3After = () => { const S = document.querySelector('#main .f3-hero'); if (!S)
 V2.f3Watch = () => { const w = document.querySelector('#main .f3-words'); if (!w || !window.ResizeObserver || V2._f3w === w) return; if (V2._f3ro) V2._f3ro.disconnect();
   V2._f3w = w; V2._f3ro = new ResizeObserver(() => requestAnimationFrame(V2.f3After)); V2._f3ro.observe(w); };
 addEventListener('resize', () => { if (V2.f3After) requestAnimationFrame(V2.f3After); });
-// the static words (Job W, alt/prerender-home): this Home's h1 and line, when that build step is there
-V2.f3Seo = () => { const D = V2.f3Data(), W = V2.f3Words(D); return {h1: `Sharply raise your win rate. Rate your Pokémon Champions team ${W.before ? 'before' : 'for'} Reg M-D.`, intro: (document.querySelector('#main .f3-lead') || {}).textContent || ''}; };
