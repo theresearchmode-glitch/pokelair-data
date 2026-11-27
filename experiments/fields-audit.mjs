@@ -3,7 +3,7 @@
 // answer users see. Usage: node experiments/fields-audit.mjs   (needs @pkmn/dex + @smogon/calc in node_modules; CI installs
 // them with --no-save; locally it also looks in C:/Users/<you>/code/pl-verify/node_modules)
 import fs from 'node:fs'; import {createRequire} from 'node:module'; import {fileURLToPath} from 'node:url';
-const ROOT = fileURLToPath(new URL('../', import.meta.url)), SRC = ROOT + 'app/src/', OUT = ROOT + 'out/';
+const ROOT = fileURLToPath(new URL('../', import.meta.url)), SRC = ROOT + 'app/src/', OUT = (process.env.FIELDS_OUT || (ROOT + 'out/')).replace(/\/?$/, '/');
 let require = createRequire(ROOT + 'package.json'); try { require.resolve('@pkmn/dex'); } catch (e) { require = createRequire('C:/Users/<you>/code/pl-verify/package.json'); }
 const {Dex} = require('@pkmn/dex'); const {Generations, toID} = require('@smogon/calc'); const G0 = Generations.get(0);
 let PSR = createRequire(ROOT + 'package.json'); try { PSR.resolve('pokemon-showdown'); } catch (e) { PSR = createRequire('C:/Users/<you>/code/pl-mech/sim/package.json'); }
@@ -61,12 +61,17 @@ const NO_CALC_EFFECT = new Set(['No Item', 'No Held Item', 'Pressure', 'Keen Eye
 const T = JSON.parse(rd(OUT + 'meta_tour.json')), rows = [...(T.top || []), ...(T.more || [])].sort((a, b) => b.u - a.u).slice(0, 100), ab = new Map(), it = new Map();
 for (const r of rows) { for (const [n, p] of r.ab || []) if (p >= 1) ab.set(n, Math.max(ab.get(n) || 0, p * r.u / 100)); for (const [n, p] of r.it || []) if (p >= 1) it.set(n, Math.max(it.get(n) || 0, p * r.u / 100)); }
 const ABIL = grab(/const ABIL=(\{[\s\S]*?\});/, data) || {};
+const REGMC_ITEMS = grab(/const REGMC_ITEMS=(\[[\s\S]*?\]);/, rd(SRC + 'data/items-list.js')) || [];
+const MEGA_STONE = grab(/const MEGA_STONE\s*=\s*(\{[^\n]*?\});/, rd(SRC + 'app/19-showdown-paste.js')) || {};
+const REAL_ITEMS = new Set([...REGMC_ITEMS, ...Object.values(MEGA_STONE)]);
 const lc = new Set([...ENGINE.matchAll(/'([A-Z][A-Za-z' -]+)'/g)].map(x => x[1].toLowerCase()));
 const known = n => lc.has(n.toLowerCase()) || ENGINE.includes(`'${n}'`) || ENGINE.includes(`"${n}"`) || (/ Aura$/.test(n) && /\+\s*' Aura'/.test(ENGINE)) || (/ Surge$/.test(n) && /' Surge'/.test(ENGINE)) || /ite( [XYZ])?$/.test(n);
 const missAb = [...ab].filter(([n]) => ABIL[n] && !known(n) && !NOT_MODELLED[n] && !NO_CALC_EFFECT.has(n)).map(([n, u]) => `${n} (${u.toFixed(2)}% of slots)`);
-const missIt = [...it].filter(([n]) => /^[A-Z]/.test(n) && !known(n) && !NOT_MODELLED[n] && !NO_CALC_EFFECT.has(n)).map(([n, u]) => `${n} (${u.toFixed(2)}% of slots)`);
+const missIt = [...it].filter(([n]) => REAL_ITEMS.has(n) && !known(n) && !NOT_MODELLED[n] && !NO_CALC_EFFECT.has(n)).map(([n, u]) => `${n} (${u.toFixed(2)}% of slots)`);
+const typoIt = [...it].filter(([n]) => /^[A-Z]/.test(n) && !REAL_ITEMS.has(n) && !NO_CALC_EFFECT.has(n)).map(([n, u]) => `${n} (${u.toFixed(2)}% of slots)`);
 if (missAb.length) fail('abilities players run that the engine never reads (and not listed as deliberately not modelled)', missAb);
 if (missIt.length) fail('items players run that the engine never reads (and not listed as deliberately not modelled)', missIt);
+if (typoIt.length) notes.push('names that are not items (player typos): ' + typoIt.join('; '));
 for (const [n, why] of Object.entries(NOT_MODELLED)) notes.push(`${n}: not modelled (${why})`);
 console.log(`moves checked: ${MOVES.length}; Pokémon weights: ${ROSTER.length - noW.length}/${ROSTER.length}; abilities on top-100 sets: ${ab.size}; items: ${it.size}`);
 for (const n of notes) console.log('  note: ' + n);
