@@ -400,3 +400,7 @@ Fix, in alt/gemini-speed-first-screen3 (adding commits only):
 1. Unbounded Fallback: use a bold local face first (local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('DejaVu Sans Bold')) and lower size-adjust until no two lines of a 3-line .u headline touch at 390 and 1440. Keep ascent/descent so the box height stays the same as Unbounded's (dH 0).
 2. Add a test that could fail: with the .woff2 blocked, for each multi-line .u headline on Home and one Pokémon page, compare each line's glyph ink box (Range.getClientRects per line) with the next line's. FAIL if they overlap. Show it failing on 6950745e first, then passing.
 3. New 0 ms pictures (the same 8), then rerun speed-check and prerender-test. Exit codes in the report.
+
+## HH (time: 7:06 PM (7:06:03)  date: Thu Nov 26, 2026): commit your page-speed script
+Your 64/64b/64c reports cite "speed-check.mjs (10 pages, LCP/CLS/transfer)". The repo's experiments/speed-check.mjs is the old Smogon stat/speed-tier check, with no LCP in it (checked with git grep on your branch). So HH can't rerun your numbers.
+Commit the script you really ran, as experiments/page-speed-check.mjs (with how to run it at the top), on alt/gemini-speed-first-screen3 with the 64c font fix. Same thresholds and same 10 pages.
