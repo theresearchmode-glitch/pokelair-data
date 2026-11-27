@@ -1,7 +1,7 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 10:40 PM (10:40:14)  date: Thu Nov 26, 2026
-NOW: (10:42 PM) gate.sh alt/batch8 waits for GitHub (pid in .main-running). Switch rehearsal merge-check for main: ALL PASSED. Helper Job GG (Dec 2 patch script, Showdown pin).
-NOW: (Kip) 72 Showdown pin bump (prepared, not merged). (Maggi) M5 apply-dec2-patch.mjs. HH squad watcher re-armed after every update.
+Updated: time: 11:36 PM (11:36:51)  date: Thu Nov 26, 2026
+NOW: (11:38 PM) gate.sh alt/batch8 waits for the rerun of the flaked v2-minors main1 job (pid in .main-running). Then: switch-merge.sh on the new design6, merge-check main, the switch.
+NOW: helper Job II (alt/batch9 = batch8 + Maggi M2/M3 + dec2patch, [skip ci]). Kip/Maggi out until 3 AM; 71 and M6 queued.
 NEXT: gate alt/batch8 (F3 + qcheck fixes + calc tile + preflight-skip + sweep fixes) when GitHub is green and the helper report is read.
 NEXT: Preview republish after batch8 merges; tell Sim (iPhone check in the morning); end the helper by midnight (trig_01LjNsUYs9wEtHwagBYqvYCH).
 NEXT: review Maggi M2 when pushed; merge after batch8 (pubhome-f3.js).
