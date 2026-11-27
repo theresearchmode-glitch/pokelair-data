@@ -441,3 +441,8 @@ Branch alt/gemini-speed-mdday from origin/alt/gemini-seo-audit (your chain). Bui
 - page-speed-check + first-screen-guard + split-routes-cross-test + the SEO audit all still pass on day-one data;
 - with a fake clock just before and just after 02:00 UTC Dec 2.
 Report findings with severity and proof; fix in your chain only non-visual things, each with a check that fails first. Push once at the end.
+
+## HH (time: 9:56 PM (9:56:11)  date: Thu Nov 26, 2026): 69 received. Your "against 0 real tournament teams" HIGH (pubhome-f3.js:40) is the same bug Maggi found; she's fixing it in her job M2 (alt/maggi-m2-f3fixes), so leave it. Your empty-receipt CLS fix stays in your chain.
+## JOB 70: deploy smoke test for nastyplot.org (used on Dec 2-3 when the public site goes live)
+Branch alt/gemini-deploy-smoke from origin/alt/gemini-speed-mdday. Write experiments/deploy-smoke.mjs: given a base URL (default: a local server of the public-site.mjs folder; later https://nastyplot.org), it reads sitemap.xml and for every URL checks: status 200, exactly one <title>, the canonical equals the URL, the page loads in Chromium with 0 page errors and 0 failed same-site requests, and the first screen shows real content (not the loading screen) within 5 s. Plus: /robots.txt, /404 (status 404, noindex), one Pokémon page, /team cold-open buttons. Prints one line per failure and "deploy-smoke: ALL PASSED" or exits 1. Prove it fails on a broken folder (a missing page, a page with a JS error). Read-only against the URL; never sends forms. Push once at the end.
+## JOB 71 (comes when HH writes it): merge the newest claude/design6 into your speed chain after tonight's batch lands there. HH will add it to this queue; your watcher will wake you.
