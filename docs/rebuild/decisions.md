@@ -2956,3 +2956,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:06 PM: Sim: Build page (before building) looks incomplete, not intuitive; put a helper on it, redesign OK. Helper Job OO started: critique + 3 coded directions (close / between / bold) on alt/build-dir-a/b/c with pictures at 1440, ~810, iPhone, light+dark; all functionality kept; Sim picks.
 - 3:11 PM: Sim (Build page): 'no site in mind, just make it feel like nastyplot af ... we do our own thing, ALWAYS'. Passed to helper Job OO: no outside references; each direction states what makes it only-NastyPlot.
 - 3:35 PM: Hourly 3:35: helper Job OO (Build page) running; main 1ba2a7a1 run 46060344273 in progress; Game Plan v120; disk 8 GB.
+- 3:43 PM: main 1ba2a7a1 (today's work) GitHub run 46060344273: success, all jobs. Main, live v162 and Preview v271 all carry it.
