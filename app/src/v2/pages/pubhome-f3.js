@@ -48,9 +48,10 @@ V2.f3Page = () => { const E = V2.esc, D = V2.f3Data(), W = V2.f3Words(D);
   let pr = ''; if (D && D.rows.length) { const s = D.G ? Math.round(D.G.s) : null, when = V2.f3Date(D.ev.date);
     const lab = D.old ? `The last Reg ${E(D.evReg)} winning team` : 'Winning team';
     const rows = D.rows.map((x, i) => { const r = x.r != null ? x.r : 40, len = Math.max(0, Math.min(100, (r - 40) / 60 * 100));
+      const sid = typeof SPRITE_ID === 'object' ? SPRITE_ID[x.n] : null, sm = V2.art(sid, false), bg = V2.art(sid, true);
       return `<li class="f3-pl" style="--c:var(--f3-${x.t});--num:var(--f3-num-${x.t});--on:var(--f3-on-${x.t});--r:${r};--len:${len.toFixed(1)};--d:${(i * .1).toFixed(1)}s">
         <div class="f3-lab"><span class="f3-sp" aria-hidden="true">${V2.mon(x.n, {bare: true, iw: 36})}</span><span class="f3-n"><b>${E(x.d)}</b>${x.item ? `<small>${V2.keepForm ? V2.keepForm(E(x.item)) : E(x.item)}</small>` : ''}</span><span class="f3-t">${E(x.t)}</span></div>
-        <a class="f3-bar" href="${E(V2.f3Link(x.n))}" data-v2mon="${E(x.n)}" aria-label="${x.r != null ? `${x.r}, ${E(x.d)}'s Rating` : `${E(x.d)}, not rated`}"><b class="u f3-r" aria-hidden="true">${x.r != null ? x.r : '–'}</b><img class="f3-art" src="${V2.art(typeof SPRITE_ID === 'object' ? SPRITE_ID[x.n] : null, true)}" alt="" decoding="async"></a></li>`; }).join('');
+        <a class="f3-bar" href="${E(V2.f3Link(x.n))}" data-v2mon="${E(x.n)}" aria-label="${x.r != null ? `${x.r}, ${E(x.d)}'s Rating` : `${E(x.d)}, not rated`}"><b class="u f3-r" aria-hidden="true">${x.r != null ? x.r : '–'}</b><img class="f3-art" src="${sm}"${sm !== bg ? ` srcset="${sm} 240w, ${bg} 384w" sizes="(min-width: 1280px) 100px, 64px"` : ''} alt="" loading="lazy" decoding="async"></a></li>`; }).join('');
     const stamp = W.before ? 'Reg M-D · Dec 2' : '';
     pr = `<figure class="f3-pr" aria-labelledby="f3-rc-h"><div class="f3-paper" aria-hidden="true"></div>
       <div class="f3-hd"><p class="f3-top"><span class="u">NastyPlot</span><span>Receipt</span></p><h2 class="f3-meta" id="f3-rc-h">${lab} · ${E(D.ev.name)}${when ? ` · ${E(when)}` : ''}${D.ev.players ? ` · ${E(Number(D.ev.players).toLocaleString('en-US'))} players` : ''}</h2></div>
