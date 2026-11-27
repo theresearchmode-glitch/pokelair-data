@@ -10,4 +10,3 @@ test changes that weaken a check. Run both builds and `PART=main1 PAGE=app/dist/
 Each finding: severity (blocker for the switch / fix after / minor), file:line, proof. Report on branch alt/maggi-m1-review ([skip ci]).
 
 ## JOB M2: then wait for HH (run the watcher)
-<!-- watcher test 1795743090 -->
