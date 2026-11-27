@@ -460,6 +460,7 @@ V2.preScreen = (route, mon) => {
     rootEl.setAttribute('data-np-pre', route);
     if (route === 'home') {
       const f3h = box.querySelector('.f3-anim'); if (f3h) f3h.classList.remove('f3-anim');
+      rootEl.style.minHeight = '100svh';
     } else {
       if (rootEl.children.length > 4) while (rootEl.children.length > 4) rootEl.lastElementChild.remove();
       for (const list of box.querySelectorAll('ul, ol, tbody')) { const cap = list.classList.contains('rs-st') ? 3 : 8; while (list.children.length > cap) list.lastElementChild.remove(); }
