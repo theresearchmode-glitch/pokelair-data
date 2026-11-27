@@ -2971,3 +2971,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:36 PM: Hourly 5:36: Game Plan v122; disk 10 GB; no helper (as needed); main-merge.sh waiting for GitHub on design6 54d6ac7e.
 - 6:14 PM: main 75da5b29 pushed (design6 54d6ac7e font fix; merge-check main ALL PASSED). Watching its run; live v163 after it (or together with the Build page if Sim says yes first).
 - 6:28 PM: Sim's final yes on Build page C2 ('lvove it. rec is good to go. lets do it').
+- 6:37 PM: Sim: aim to go live Dec 1 (a day before Reg M-D, to iron out kinks); Sim does the Cloudflare steps later tonight. Plan: practice deploy to a hidden address after his clicks, then DEPLOY_ENABLED on Dec 1.
