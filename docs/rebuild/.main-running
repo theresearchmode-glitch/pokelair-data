@@ -1,2 +1,2 @@
-
-Build page helper (Job OO) running; nothing else queued for the main thread until Sim picks
+14208
+prelaunch.sh: nastyplot.org folder from main 1ba2a7a1 + launch checks (public-site, deploy-smoke, seo, asof, speed, privacy, links); never deploys
