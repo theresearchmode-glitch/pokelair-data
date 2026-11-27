@@ -2923,3 +2923,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:07 AM: main 5c7839e2 GitHub run 46012888301 success (all jobs); Promote to live queued.
 - 10:14 AM: Published live artifact v161 (1795792461-8ff5): design6 0ccfa209 build (podium sprites over tile at every width + tappable; host-wrapper fix kept), today's main data; design6 GitHub 46012768551 green. v2.js unchanged (c2b2e40e).
 - 10:31 AM: Helper Job MM done: alt/speed-chain-merge cd798dff (Kip chain + 2 real fixes), GitHub 15/15; gating into design6. Open: no 'Data as of' date on Home if /data fails entirely under split-routes (minor); host-wrapper-test flaked 2/5 locally on cd798dff -> new helper Job NN to fix the test's waiting.
+- 10:36 AM: Hourly 10:36: disk 5->8 GB (removed helper's finished wt-speedmerge, old scratch folders); Game Plan v116; 1 helper (Job NN); main merge-check (podium) + speed-chain gate running.
