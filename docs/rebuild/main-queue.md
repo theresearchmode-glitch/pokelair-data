@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 6:27 AM (6:27:22)  date: Fri Nov 27, 2026
-NOW: (6:27 AM) dark-mode fix: alt/host-wrapper-fix (unlayered body rule in build.mjs); waiting for Sim: fix live (1 line) vs delete NastyPlot. main run 45983690416 BR-C1 rerun script.
+Updated: time: 6:47 AM (6:47:40)  date: Fri Nov 27, 2026
+NOW: (6:49 AM) gate.sh alt/host-wrapper-fix (3bc82b35: wrapper fix + podium sprites), GitHub run dispatched; helper Job LL pixel comparison; Maggi M8 wrapper test; Kip 71. Both stop before 10 AM.
 NOW: Kip 71 (speed-chain must-fixes), Maggi M6 (review of the Dec 2 patch script), both after 3 AM. Helper: none needed until Kip 71 lands.
 NEXT: push main, GitHub green, promote, rebuild + republish the live page (page + v2.js only).
 NEXT: 7:30 AM morning summary for Sim (trig_01HzJ1ckLPN7LMVpiJ4eUh83); Preview daily 7:41 AM.
