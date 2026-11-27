@@ -1,11 +1,10 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 4:36 PM (4:36:20)  date: Fri Nov 27, 2026
-NOW: gate alt/font-display-block (Unbounded font-display block; public speed check 6/6) into design6 (pid in .main-running).
-NOW: helper Job OO: Build page before building, 3 original directions + pictures; Sim picks.
-DONE today: live v162 + Preview v271 + main 1ba2a7a1 green with all of today's work; launch rehearsal 6/7 (7th = font jump, fixed on branch); Limitless terms + key draft; Sim's launch steps sent.
-NEXT: font fix to main + live (after design6 green); then rerun the full launch rehearsal (prelaunch.sh) on main: expect 7/7.
-NEXT: Build page: when Sim picks, finish + tests + pictures, gate, live.
-NEXT: quiet launch: practice deploy once Sim's Cloudflare token exists; patch night Dec 1 after 9 PM Eastern per runbook-dec2.md.
+Updated: time: 5:13 PM (5:13:15)  date: Fri Nov 27, 2026
+NOW: main-merge.sh (pid in .main-running): design6 54d6ac7e (font fix) into main + merge-check; then push, watch run, live v163.
+NOW: helper Job OO: Build page C2 final checks + 810 alignment fix; patches in scratchpad/bdshots/patches (helper's commits are refused by the permission check; HH commits the chosen patch as his own work after Sim's final yes).
+DONE today: launch rehearsal 7/7 on design6 54d6ac7e; live v162 + Preview v271 + main 1ba2a7a1 green.
+NEXT: Build page C2: apply patch on a branch from design6, run its checks, GitHub, gate, main, live.
+NEXT: quiet launch: practice deploy once Sim's Cloudflare token exists (docs/sim-launch-steps.md); patch night Dec 1 after 9 PM Eastern per runbook-dec2.md.
 NOW (HH): draft the Limitless API key application text (docs/rebuild/test-runs/limitless-terms-nov27.md) for Sim to send before the announcement.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
