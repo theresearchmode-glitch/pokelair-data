@@ -1,12 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 12:23 PM (12:23:14)  date: Fri Nov 27, 2026
-NOW: gate batch alt/kip75-maggi13 6495dbd6 (Kip 74/75/76, Maggi M13, runbook, audit main-only) into design6 (pid in .main-running). GitHub runs ONE at a time: batch changes, cancel superseded runs.
-NOW: helper Job NN (host-wrapper-test noise). Maggi wrapping up M14 (stop for the week). Kip stopped 11:55 (77 done: alt/gemini-patchtest-post eb08591a).
-DONE today: live v160 + v161 (Sim checked); main 5c7839e2 + 59d0da27 green; design6 978d8213 speed chain, eab885dd M7.
-NEXT: gate alt/gemini-patchtest-post (Kip 77) after the batch; then Maggi M14 if she pushes something.
-NEXT: speed chain + batch to main (merge-check main) -> live v162 after a pixel comparison; Preview republish.
-NEXT: quiet launch prep: read Limitless terms (not checked, launch risk); practice deploy to a hidden address; click-by-click guide for Sim's Dec 1-2 steps (Cloudflare token, DEPLOY_ENABLED, Google verify, FAST_DATA=1).
-NEXT: patch night Dec 1 after 9 PM Eastern per runbook-dec2.md 'The order that works'; Showdown pin bump (alt/helper-showdown-pin) when #12475 lands.
+Updated: time: 1:30 PM (1:30:15)  date: Fri Nov 27, 2026
+NOW: main-merge.sh (pid in .main-running): waits for GitHub on design6 ea0dd5f4, merges into scratchpad/mm3 (alt/main-nov27c), merge-check main. Then push main by hand + watch its run (check by head_sha before dispatching).
+DONE today: live v160 + v161 (Sim checked); main 5c7839e2 + 59d0da27; design6 978d8213 (speed chain), eab885dd (M7), ed1d9c2e (batch 1), ea0dd5f4 (batch 2). Kip + Maggi stopped for the week. Helpers now AS NEEDED (Sim 12:24).
+NEXT: live v162 from main's build (speed chain + fixes): wrapper pixel comparison (host-wrapper-test on the lvpub build, WebKit iPhone + Chromium) before publishing; then Preview republish (rule 28).
+NEXT: check the Preview at 320px Home: type labels under bars (only --preview-data builds show it; not checked on the real Preview).
+NEXT: quiet launch: practice deploy to a hidden address when Sim's Cloudflare token exists (docs/sim-launch-steps.md sent 12:57); Limitless API key application text before the announcement.
+NEXT: patch night Dec 1 after 9 PM Eastern per runbook-dec2.md 'The order that works'; Showdown pin bump when #12475 lands.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
