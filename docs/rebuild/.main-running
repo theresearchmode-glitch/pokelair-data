@@ -1,2 +1,2 @@
-25069
-build-c2.sh: Build page C2 patch on alt/build-c2 (local only) + build, q83, s16, s17, tap-size, full v2-minors
+5919
+gate alt/build-c2 a8658343 into design6 (+ local full v2-minors running)
