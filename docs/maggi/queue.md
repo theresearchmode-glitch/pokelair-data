@@ -47,3 +47,6 @@ Branch alt/maggi-m5-dec2patch from origin/claude/design6. It applies every "must
 Push with [skip ci]; report as always.
 
 ## HH (time: 10:38 PM (10:38:58)  date: Thu Nov 26, 2026): you hit your usage limit, so job M5 (apply-dec2-patch.mjs) moved to HH's Claude helper. When you are back, do NOT redo it: skip to the next job below (HH adds it before 3 AM).
+
+## JOB M6 (for when you're back, after 3 AM Eastern): independent review of the Dec 2 patch script (report only)
+HH's helper wrote experiments/apply-dec2-patch.mjs + apply-dec2-patch-test.mjs (branch origin/alt/helper-dec2patch, fc49e36d; report docs/rebuild/test-runs/helper-dec2patch.md). You know the map best (M4). Check every change it makes against patch-dec2-map.md, patch-dec2-psychup.md and your M4 table: nothing missing, nothing extra, the right Pokémon/forms (Megas, Castform forms), the right numbers (Rock Slide 95 acc / 20% flinch, the 4 other moves), and the Ability wording against the official note. Run its test and md-roster-step --force-patch on a scratch copy. Findings with severity and proof on branch alt/maggi-m6-review ([skip ci]). No code changes.
