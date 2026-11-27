@@ -30,3 +30,9 @@ buttons; remove V2.f3Seo if truly unused (grep the public build scripts too); ke
 
 ## HH (time: 9:58 PM (9:58:49)  date: Thu Nov 26, 2026): M2 received (bcbcad56), thank you. I cancelled its GitHub run (45931112402) on purpose, not because it failed: tonight's switch batch (alt/batch8) needs the test queue first. I'll combine M2 + M3 with batch8 into one later batch and run GitHub once for all of it.
 From now on push with "[skip ci]" (no GitHub run) unless the job says otherwise; HH runs GitHub on the combined batch.
+
+## HH (time: 10:06 PM (10:06:05)  date: Thu Nov 26, 2026): M3 received (70ff358e), thank you. I cancelled its GitHub run (45932101560) for the same reason as M2's: the switch batch goes first. Push with [skip ci] from now on.
+## JOB M4: check the Dec 2 balance-patch map against the code (report only)
+On Dec 2 the game's balance patch lands with Reg M-D. Our map of every place in our code it touches: docs/rebuild/test-runs/patch-dec2-map.md and patch-dec2-psychup.md (on origin/claude/design6).
+On a checkout of origin/claude/design6 (and origin/main for the data jobs): for every item in the map, confirm the place still exists at the file:line it names (code moves: give the new line), and grep for anything the map missed (the same move / ability / item / Pokémon names in app/src, data.js, roster.json, the calc, the Strength Score model, tests). Mega forms included.
+Deliver on branch alt/maggi-m4-patchmap ([skip ci]): docs/rebuild/test-runs/maggi-M4-patchmap.md = a table: map item | still right? | new file:line | anything missed (severity: must change on Dec 2 / should / note) | proof. No code changes.
