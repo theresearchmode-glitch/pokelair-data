@@ -461,3 +461,85 @@ button.pl-mv{width:100%;border:0;color:inherit;cursor:pointer}button.pl-mv .pl-t
 /* Partners in crime with no tournament teams yet (a new regulation's day one, Nov 25): the underdog aside sits in the dark cores band,
    so its words take the band's own text colours (the plot's ink was dark on dark), picture first and words to its right */
 .bd-cores .pl-dog{flex-direction:row-reverse;justify-content:flex-end;max-width:none}.bd-cores .pl-dog p{text-align:left;color:inherit}.bd-cores .pl-dog b{color:inherit}
+/* ---------- Build direction C, "the order slip" (Nov 27, Sim: the page before a build "looks incomplete"): the plot filled in on receipt
+   paper (--rc-*, white in both themes, as Track Record and About), one numbered line per choice with its note under it, HATCH IT stamped
+   at the total, a plot-bar barcode and a torn foot; beside it the plot read back as a sentence over the card it's built around ---------- */
+.pl-desk{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:var(--s10);align-items:stretch}
+.pl-slip{position:relative;z-index:2;padding:var(--s5) var(--s6) var(--s8);background:var(--rc-paper);color:var(--rc-ink);box-shadow:0 8px 22px var(--rc-shadow);transform:rotate(-.6deg);
+  -webkit-mask:linear-gradient(var(--rc-ink) 0 0) top/100% calc(100% - 12px) no-repeat,conic-gradient(from -45deg at bottom,transparent,var(--rc-ink) 1deg 89deg,transparent 90deg) bottom/16px 12px repeat-x;
+  mask:linear-gradient(var(--rc-ink) 0 0) top/100% calc(100% - 12px) no-repeat,conic-gradient(from -45deg at bottom,transparent,var(--rc-ink) 1deg 89deg,transparent 90deg) bottom/16px 12px repeat-x}
+.pl-shd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s1) var(--s4);padding-bottom:var(--s2);border-bottom:3px solid var(--rc-ink)}
+.pl-sh{margin:0;font-size:var(--t34);line-height:1.1;color:var(--rc-ink)}
+.plc .pl-shd .np-eyebrow{margin:0;color:var(--rc-ink2)}
+.pl-sk{margin:0;font:600 var(--t15)/1.5 var(--b);color:var(--rc-ink2)}
+.plc .pl-lines{display:grid;grid-template-columns:minmax(0,1fr);gap:0;margin:var(--s2) 0 0}
+.pl-sl{display:grid;grid-template-columns:var(--s10) minmax(0,1fr);gap:var(--s3);padding:var(--s3) 0;border:0;border-bottom:2px dashed var(--rc-rule)}
+.pl-sn{font-size:var(--t22);line-height:1.2;color:var(--rc-good)}
+.pl-sb{display:grid;gap:var(--s2);min-width:0}
+.pl-slb{font:800 var(--t13)/1.5 var(--b);letter-spacing:.1em;text-transform:uppercase;color:var(--rc-ink)}.pl-slb span{font-weight:500;letter-spacing:0;text-transform:none;color:var(--rc-ink2)}
+.plc .pl-sl b.pl-slb{display:block;padding:0;font:800 var(--t13)/1.5 var(--b);color:var(--rc-ink)}.plc .pl-sl.pl-hc{padding-top:var(--s3);border-top:0}
+.plc .pl-sb p{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--rc-ink2)}
+.pl-sc{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font:900 var(--t20)/1.1 var(--u);font-style:italic}
+.plc .pl-pl{border-width:2px;color:var(--rc-good);border-color:var(--rc-good);padding:0 var(--s3)}
+.plc .pl-pl[aria-pressed="true"]{background:var(--rc-good);border-color:var(--rc-good);color:var(--rc-paper)}
+.plc .pl-pl:not([aria-pressed="true"]):hover{background:var(--rc-tape)}
+.plc .pl-grp[data-v2slide="sgmega"] .pl-pl{min-width:56px}
+.plc .pl-or{font:900 var(--t17)/1 var(--u);font-style:italic;color:var(--rc-ink)}
+.plc .pl-ar{flex:1 1 auto;display:flex}.plc .pl-find{flex:1 1 auto;max-width:420px}.plc .pl-find input{width:100%;color:var(--rc-good)}.plc .pl-find input::placeholder{color:var(--rc-good)}
+.plc .pl-find svg,.plc .pl-find .np-ic{width:20px;height:20px}.plc .pl-x span{transform:none}
+.plc .pl-pl:focus-visible,.plc .pl-chip:focus-visible,.plc .pl-go:focus-visible{outline-color:var(--rc-ink)}
+.plc .pl-hits{position:static;max-width:none;border:2px solid var(--rc-good);box-shadow:none}.plc .pl-hits:empty{display:none} /* the name list opens inside the slip (the slip's torn-edge mask would cut a floating list) */
+.plc .pl-chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s2);margin:0}@media (max-width:1279.98px){.plc .pl-chips{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.plc .pl-chip{border-color:var(--rc-good);color:var(--rc-good);padding:0 var(--s2);transform:skewX(-8deg)}.plc .pl-chip > *{transform:skewX(8deg)}
+.plc .pl-chip:hover{background:var(--rc-tape)}
+.pl-tot{display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:var(--s4) var(--s6);padding-top:var(--s4)}
+.pl-tot p{display:grid;margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--rc-ink2)}.pl-tot b{font:800 var(--t17)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--rc-ink)}
+.plc .pl-tot .np-link{padding:var(--s3) 0;margin:calc(-1 * var(--s3)) 0;color:var(--rc-good)}
+.plc .pl-tot .pl-go{flex:none;font:900 var(--t34)/1.05 var(--u);font-style:italic;padding:var(--s2) var(--s6);background:var(--plot-seal);color:var(--on-plot-seal);transform:skewX(-8deg) rotate(-3deg);box-shadow:0 6px 14px var(--rc-shadow)}
+.pl-bars{display:block;height:var(--s6);margin-top:var(--s4);background:repeating-linear-gradient(90deg,var(--rc-ink) 0 2px,transparent 2px 4px,var(--rc-ink) 4px 5px,transparent 5px 8px,var(--rc-ink) 8px 11px,transparent 11px 13px)}
+.pl-rk{margin:var(--s5) 0 var(--s2);font:800 var(--t13)/1.5 var(--b);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.pl-rs{margin:0;font-size:var(--t28);line-height:1.15;color:var(--ink);text-wrap:balance}.pl-rs em{font-style:inherit;color:var(--plot-text)}
+@media (max-width:699.98px){
+  .pl-tot{flex-wrap:wrap;gap:var(--s3);padding-top:var(--s3)}.pl-tot p b{font-size:var(--t15)}.pl-tot p{font-size:var(--t13)}.pl-bars{margin-top:var(--s3)}
+  .pl-slip{padding:var(--s4) var(--s4) var(--s8);transform:none}.pl-sh{font-size:var(--t26)}.pl-sk{font-size:var(--t13)}
+  .pl-sl{position:relative;display:block;padding:var(--s3) 0}.pl-sn{position:absolute;top:var(--s3);left:0;font-size:var(--t15);line-height:1.5}.pl-slb{padding-left:var(--s8)}
+  .pl-sl:first-child .pl-sb p{display:none}
+  .pl-sc{font-size:var(--t15)}.plc .pl-grp[data-v2slide="bdsrc"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;width:100%}.plc .pl-or{display:none}.plc .pl-grp[data-v2slide="bdsrc"] .pl-pl[aria-pressed="true"] > span::before{display:none}
+  .plc .pl-sl b.pl-slb{padding-left:var(--s8)}.plc .pl-grp[data-v2slide="bdsrc"]{gap:var(--s2);font-size:var(--t15);grid-template-columns:auto minmax(0,1fr)} /* Nov 27 (v2-unbounded): Unbounded never under 15px; My Box takes its own width, Whole Roster the rest */.plc .pl-sb p{font-size:var(--t13)}.pl-sl{padding:var(--s2) 0}.pl-sn{top:var(--s2)}
+  .plc .pl-grp[data-v2slide="bdsrc"] .pl-pl{justify-content:center;min-width:0;padding:0 var(--s2)}
+  .plc .pl-tot .pl-go{width:100%;justify-content:center;font-size:var(--t26);transform:skewX(-8deg)}
+}
+.plc .pl-find{scroll-margin-top:var(--s20)}
+/* ==COLOUR-V2== pink is the plot, Pokémon are the colour: the slip's own ink (step numbers, title rule, barcode) is Nasty pink until
+   you pick who it's built around, then it takes that Pokémon's type colour, darkened toward the paper's ink so the big numbers pass 3:1
+   on white for every type (Bug, the lightest, 3.9:1); each quick pick is washed in its own type; the TOTAL line stays pink and HATCH IT the one solid pink plate */
+.plc .pl-slip{--pl-acc:var(--plot-seal)}.plc .pl-slip[style]{--pl-acc:var(--kc)}.plc .pl-slip[style] .pl-sn{color:color-mix(in srgb,var(--kc) 55%,var(--rc-ink))}
+.plc .pl-sn{color:var(--pl-acc)}
+.plc .pl-shd{border-bottom-color:var(--pl-acc)}
+.plc .pl-tot{border-top:3px double var(--plot-seal);margin-top:var(--s2)}
+.plc .pl-bars{background:repeating-linear-gradient(90deg,var(--pl-acc) 0 2px,transparent 2px 4px,var(--pl-acc) 4px 5px,transparent 5px 8px,var(--pl-acc) 8px 11px,transparent 11px 13px)}
+.plc .pl-chip{background:color-mix(in srgb,var(--kc,transparent) 16%,var(--rc-paper))}
+.plc .pl-chip:hover{box-shadow:inset 0 0 0 2px var(--rc-good)}
+/* ==END-V2== */
+/* the read-back (Nov 27, Sim on C2: no tape, no boxed sprite, no empty strips): one block the slip's height; the sentence on top, then the
+   stage, which takes the rest: a slanted plot bar in the Pokémon's own type colour along its foot, the art standing on it, free (no
+   frame), breaking out over the bar toward the slip, the name and one line set on the bar */
+.pl-read{display:flex;flex-direction:column;min-width:0}
+.plc .pl-rs{font-size:var(--d-ksec);line-height:1.3}
+.pl-stage{position:relative;flex:1 1 auto;display:flex;flex-direction:column;min-height:360px;margin-top:var(--s4)}
+.pl-stage::before{content:"";position:absolute;left:calc(var(--s6) * -1);right:0;bottom:0;height:40%;background:color-mix(in srgb,var(--kc,var(--plot-seal)) 30%,var(--bg));clip-path:polygon(var(--s10) 0,100% 0,calc(100% - var(--s10)) 100%,0 100%)}
+.pl-hn{position:relative;z-index:2;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s3)}
+.pl-hn small{flex-basis:100%;font:800 var(--t13)/1.5 var(--b);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.pl-hn b{font-size:var(--t28);line-height:1.15;color:var(--ink)}
+.pl-hn p{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-hero{position:relative;z-index:1;flex:1 1 0;min-height:200px;margin:var(--s2) 0 var(--s5);padding:0;border:0;background:none;cursor:pointer}
+.pl-hero img,.pl-hero .np-mon{position:absolute;left:0;right:0;bottom:0;margin:0 auto;display:block;max-width:100%;max-height:100%;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 12px 10px var(--rc-shadow));transition:transform var(--dur-2) var(--ease-snap)}
+.pl-hero img{width:100%;height:100%}
+.pl-hero:hover img{transform:translateY(-4px)}.pl-hero:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+@media (max-width:1099.98px){.pl-desk{grid-template-columns:minmax(0,1fr);gap:var(--s6)}.plc .pl-chips{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pl-read{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 var(--s6);align-items:stretch}.pl-rt{align-self:start}.pl-rt .pl-rk{margin-top:0}.plc .pl-rs{font-size:var(--t26)}
+  .pl-stage{grid-column:2;grid-row:1;min-height:256px;margin:0}.pl-stage::before{left:0}.pl-hn b{font-size:var(--t22)}.pl-hn p{font-size:var(--t13)}}
+@media (max-width:699.98px){.pl-read{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 var(--s3)}.plc .pl-rs{font-size:var(--t17)}.pl-rk{margin-top:0}
+  .pl-stage{min-height:232px}.pl-stage::before{height:40%;clip-path:polygon(var(--s4) 0,100% 0,calc(100% - var(--s4)) 100%,0 100%)}
+  .pl-hn b{font-size:var(--t17)}.pl-hn small{letter-spacing:.04em}.pl-hero{min-height:112px;margin-bottom:var(--s2)}}
+@media (max-width:379.98px){.plc .pl-chips{grid-template-columns:minmax(0,1fr)}.plc .pl-grp[data-v2slide="bdsrc"]{grid-template-columns:minmax(0,1fr)}} /* after the 2-across rule under 1100, so it wins at 320 */
