@@ -3062,3 +3062,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:51 AM: Main merge rehearsal (design6 efe864fa into main 580b7fbd with today's data, local copy mm3, not pushed): no conflicts; merge-check ALL PASSED for main (0 FAIL). The real main merge waits for tools D.
 - 9:19 AM: D final local checks (frozen data): v2-minors main1/main2/groups all passed, v2-q72, v2-q23, v2-unbounded passed, guard clean. Pushed alt/helper-tools-d c8732bc2. Chain started: gate into design6, then main merge-check.
 - 9:36 AM: Hourly check 9:36 AM: disk 8.1 GB, Game Plan v140, no helper running, main job chain-d.sh (gate D waiting for GitHub green).
+- 10:36 AM: Tools D merged into claude/design6 (3702633e) via gate: GitHub green on c8732bc2, merge-check ALL PASSED. Main merge (chain) waiting for GitHub on 3702633e. Preview rebuild with D started. Hourly 10:36 AM: disk 8.1 GB, Game Plan v141.
