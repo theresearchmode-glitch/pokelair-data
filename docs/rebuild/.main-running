@@ -1,2 +1,2 @@
-30654
-c2-recheck.sh: Build C2 fixes (kicker, 15px plates, order + wording tests): unbounded/q83/tap-size/s16/s17 on preview-data build, B-build on art build
+2411
+gate alt/build-c2 631f989d (Build C2 + CI fixes + practice deploy) into design6
