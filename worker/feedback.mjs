@@ -22,7 +22,7 @@ export default {
 };
 async function api(request, env, url) {
     if (url.pathname === '/api/feedback') {
-      if (request.method !== 'POST') return new Response('Method Not Allowed', {status: 405});
+      if (request.method !== 'POST') return new Response('Method Not Allowed', {status: 405, headers: {Allow: 'POST'}}); // Kip job 78 L1: same as /api/count
       if (!originAllowed(request, env)) return Response.json({error: 'Forbidden origin'}, {status: 403});
       const raw = await readCapped(request);
       if (raw.tooBig) return Response.json({error: 'Body too large'}, {status: 413});

@@ -113,14 +113,16 @@ t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy fo
   /* Sim, Nov 23: on desktop (1100+) Home's Winning Teams is a chip and Load Team / Copy for Showdown live on the Winning Teams page.
      Nov 26 (Sim approved the tools rack at every width, phones and iPads too): Home's Winning Teams is that chip at 820 as well, so the
      champion's six, its Load Team (asks first, Undo) and Copy for Showdown are checked where they now live, on Winning Teams. Today's
-     page keeps its Home plate. */
+     page keeps its Home plate. Sim, Nov 28 (option D): Winning Teams is one slip (its link, with the latest winner's six and players count)
+     and Events a slip with its count ("N events tracked"); still no Load Team / Copy for Showdown on Home. */
   const r = await aopen({team: TEAM, width: 820}); await r.ui.grantClipboard(); const tx = await r.ui.text();
-  const evTool = () => r.pg.evaluate(() => { const v = [...document.querySelectorAll('#main .sdt-chips [data-sdtool="Events"], #main .sdt-ends .ev')].filter(e => e.getClientRects().length);
-    return v.map(e => (e.matches('.ev') ? 'row: ' : 'chip: ') + e.innerText.replace(/\s+/g, ' ').trim()).join(' | ') || 'none shown'; });
-  const evRe = /^(?:row: [1-9][\d,]* events Events\b.*|chip: [1-9][\d,]* Events)$/i;
+  const evTool = () => r.pg.evaluate(() => { const v = [...document.querySelectorAll('#main .sdt .sdt-events')].filter(e => e.getClientRects().length);
+    return v.map(e => 'slip: ' + ((e.querySelector('.sdt-fig') || {}).innerText || '').replace(/\s+/g, ' ').trim()).join(' | ') || 'none shown'; });
+  const evRe = /^slip: [1-9][\d,]* events tracked$/i;
   if (NEW) {
-    const wt = await r.pg.evaluate(() => { const vis = s => [...document.querySelectorAll(s)].filter(e => e.getClientRects().length).length; return {plate: vis('#main .sdt-wt'), chip: vis('#main .sdt-chips [data-sdtool="Winning Teams"]')}; });
-    ok(wt.chip === 1 && wt.plate === 0, `at 820 Home's Winning Teams is the rack's chip (chip ${wt.chip}, plate ${wt.plate})`);
+    const wt = await r.pg.evaluate(() => { const vis = s => [...document.querySelectorAll(s)].filter(e => e.getClientRects().length).length, w = document.querySelector('#main .sdt .sdt-wins');
+      return {slip: vis('#main .sdt .sdt-wins'), link: vis('#main .sdt .sdt-wins a.sdt-go[data-sdtool="Winning Teams"][href="#tournaments"]'), acts: document.querySelectorAll('#main .sdt [data-hmload], #main .sdt [data-hmcopy]').length, fig: w ? ((w.querySelector('.sdt-fig') || {}).innerText || '').replace(/\s+/g, ' ').trim() : ''}; });
+    ok(wt.slip === 1 && wt.link === 1 && wt.acts === 0 && /^[1-9][\d,]* players at the latest win$/.test(wt.fig), `at 820 Home's Winning Teams is one slip linking to Winning Teams, with the latest win's players, no Load / Copy on Home (Sim, Nov 28: option D) (${JSON.stringify(wt)})`);
     const e8 = await evTool(); ok(evRe.test(e8), `at 820 the tools band's Events has no count (${e8})`);
     await r.ui.tapTool('Winning Teams'); await r.pg.waitForTimeout(600); ok(await r.ui.current() === 'top', 'the Winning Teams chip opened ' + await r.ui.current());
     // the champion's six heads Winning Teams: "1 The champion. <event> · N players"
@@ -132,7 +134,7 @@ t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy fo
     await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === TEAM.join(), 'Undo did not restore my team');
     await r.ui.go('Winning Teams'); await r.ui.clearToasts(); await r.ui.tapText('Copy for Showdown'); ok(await r.ui.waitToast(/^Team copied for Showdown/), 'no "Team copied for Showdown" toast');
     const c = await r.ui.copied(); ok(c && /@ .+\nAbility: /.test(c), 'clipboard holds no Showdown team');
-    await r.ui.go('Home'); await r.pg.setViewportSize({width: 1440, height: 900}); await r.pg.waitForTimeout(600); const e14 = await evTool(); ok(/^chip: [1-9][\d,]* Events$/.test(e14), `at 1440 the Events chip has no count (${e14})`);
+    await r.ui.go('Home'); await r.pg.setViewportSize({width: 1440, height: 900}); await r.pg.waitForTimeout(600); const e14 = await evTool(); ok(evRe.test(e14), `at 1440 the Events slip has no count (${e14})`);
     await r.close(); return; }
   ok(/The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/.test(tx), 'no champion line with record, date, players');
   ok(/All \d+ events ›/.test(tx), 'no "All N events ›" link'); /* Sim, Nov 14: Title Case links */

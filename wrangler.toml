@@ -10,6 +10,11 @@ preview_urls = false
 # has Workers Routes + DNS on nastyplot.org). The practice workflow strips this line so a practice copy never takes the address.
 routes = [{ pattern = "nastyplot.org", custom_domain = true }]
 
+# Kip job 78 M1 (Nov 28): refuse API requests that carry no Origin at all. Browsers send Origin on every POST (fetch and
+# sendBeacon both), so only bare scripts are turned away; the rate limits stay the main guard (an Origin header can be faked).
+[vars]
+REQUIRE_ORIGIN = "1"
+
 [assets]
 directory = "./app/dist"
 binding = "ASSETS"
