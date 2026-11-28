@@ -1,7 +1,7 @@
 // Tests for the anonymous feedback Worker, D1 schema, wrangler.toml, and public feedback POST (Node 22, no network).
 // Usage: node experiments/feedback-worker-test.mjs
 import fs from 'node:fs';
-import worker from '../worker/feedback.mjs'; import {validateFeedback, verifyTurnstile} from '../worker/feedback-lib.mjs';
+import worker from '../worker/feedback.mjs'; import {validateFeedback, verifyTurnstile, originAllowed} from '../worker/feedback-lib.mjs';
 
 let failed = 0;
 const check = (id, ok, detail = '') => {
@@ -134,5 +134,11 @@ check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page:
   check('W23-cleanup-runs-daily', /\[triggers\]\s*\ncrons = \["17 7 \* \* \*"\]/.test(wt));
 }
 
+// Kip job 78 (Nov 28): the live config refuses requests with no Origin, GET /api/feedback names its method, the purge has its index
+{ const toml = fs.readFileSync(new URL('../wrangler.toml', import.meta.url), 'utf8'), sql = fs.readFileSync(new URL('../worker/schema.sql', import.meta.url), 'utf8');
+  check('K78-require-origin-in-wrangler', /\n\[vars\][^\[]*\nREQUIRE_ORIGIN = "1"/.test(toml), 'wrangler.toml [vars] REQUIRE_ORIGIN = "1"');
+  check('K78-no-origin-refused-when-required', originAllowed(new Request('https://nastyplot.org/api/count', {method: 'POST'}), {REQUIRE_ORIGIN: '1'}) === false);
+  check('K78-same-origin-still-allowed', originAllowed(new Request('https://nastyplot.org/api/count', {method: 'POST', headers: {Origin: 'https://nastyplot.org', 'Sec-Fetch-Site': 'same-origin'}}), {REQUIRE_ORIGIN: '1'}) === true);
+  check('K78-purge-index', /CREATE INDEX IF NOT EXISTS idx_feedback_at ON feedback\(at\)/.test(sql)); }
 console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
 if (failed) process.exit(1);
