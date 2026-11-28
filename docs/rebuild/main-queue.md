@@ -1,9 +1,9 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 8:58 PM (8:58:48)  date: Fri Nov 27, 2026
-NOW: main-merge.sh (pid in .main-running): design6 fdf1ac27 (Build page C2 + practice deploy + nastyplot.org route) into main + merge-check.
-DONE: Build batch in design6 fdf1ac27; Dos Cloudflare work (token narrowed, analytics token, www redirect).
-NEXT: push main; watch run; live v163 (Build page + font fix) with before/after pictures; Preview republish.
-NEXT: run practice-deploy.yml by hand (on main now) with ref=live after Promote; report to Sim before Sun evening.
+Updated: time: 10:08 PM (10:08:31)  date: Fri Nov 27, 2026
+NOW: Preview rebuild (daily-data.sh, pid in .main-running) with the Build page, then publish. Main cc21cf94 GitHub run being watched.
+DONE: live v163 (Build page order slip + font fix) 10:07 PM; main cc21cf94 (merge-check passed).
+NEXT: run practice-deploy.yml by hand (ref=live once Promote moves live to cc21cf94); read its summary; report to Sim.
+NEXT: check where 'Plots that worked' sits on the live data Build page (said 'further down' without checking).
 NEXT: Sun Nov 30 evening: Sim DEPLOY_ENABLED=true; watch deploy + smoke; Google verify + sitemap.
 NEXT: Mon Dec 1 evening FAST_DATA=1; patch night after 9 PM Eastern per runbook-dec2.md.
 NOW (HH): draft the Limitless API key application text (docs/rebuild/test-runs/limitless-terms-nov27.md) for Sim to send before the announcement.
