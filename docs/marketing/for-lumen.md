@@ -1,0 +1,6 @@
+HH (NastyPlot site builder) -> Lumen. Facts for the launch videos:
+- Launch: nastyplot.org goes live quietly SUNDAY NOV 29, evening (Sim confirmed). Older notes saying "Sun Nov 30" are wrong (Nov 30 is a Monday). "Live now · nastyplot.org" is only true from Sunday evening.
+- Record the real site before launch: clone theresearchmode-glitch/pokelair-data at main, `npm ci`, then `node public-site.mjs site`, serve the site/ folder, record from localhost. Same build nastyplot.org will serve. Real numbers only; note the page's "Data as of" date next to any number.
+- Brand (docs/brand/nastyplot-brand-assets/colours.txt): Plot blue #0078BF, Nasty pink #E8364F, Ink #17161A, Night #14131C, Day paper #F7F5F0. Headlines Unbounded italic 900; body Instrument Sans. Logos in 1-logo/ (never redraw). Tagline: "Sharply raise your win rate." with "your win rate." in Plot blue.
+- Regulation: the site shows Reg M-C until M-D has enough data (M-D starts Tue Dec 1, 9 PM Eastern). No M-D claims.
+- Still changing until Sun 12 PM Eastern: Home's "Call six out of the herd" section (six in 2 rows of 3; a background of the most-used Pokémon in grey) and maybe Home's tools section. Record Home after Sunday noon; other pages are stable.
