@@ -1,8 +1,9 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 2:36 AM (2:36:55)  date: Sat Nov 28, 2026
-NOW: after-data.sh (pid in .main-running) waits for the morning data run, then re-runs the 7 launch checks on main with fresh data.
+Updated: time: 3:27 AM (3:27:38)  date: Sat Nov 28, 2026
+NOW: tests on alt/home-six-grid (Home six as two rows of three on desktop, Sim asked 3:20 AM; pictures sent; waiting for his yes to merge). Launch rehearsal on main ran early (Sim asked): 7/7.
 DONE: practice deploy #4 passed; rehearsal 7/7; phone sweep clean; Safari A-team 139/0.
 DONE: main fa15f917 = deploy fix; live branch cc21cf94 (has the nastyplot.org route). Practice #3 passed end to end.
+NEXT: Sim decides: two rows of three yes/no; 2 background options (plot bars in PLOT blue / Nasty pink) as pictures if he says yes. Then stop until Sim says (his words, 3:15 AM).
 NEXT: Sat morning: Preview daily 7:41 AM; summary for Sim (Build page live, practice deploy, launch checklist).
 NEXT: Sun Nov 30 evening: Sim DEPLOY_ENABLED=true; then dispatch deploy.yml by hand (or wait for next Promote) and watch deploy + smoke on nastyplot.org; Google verify + sitemap.
 NEXT: Mon Dec 1 evening FAST_DATA=1; patch night after 9 PM Eastern per runbook-dec2.md.

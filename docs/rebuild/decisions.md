@@ -3009,3 +3009,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:35 AM: Hourly 1:35 AM: Game Plan v131; disk ok; after-data.sh waiting for the morning data run.
 - 2:37 AM: Hourly check 2:36 AM: disk 7 GB; overnight job after-data.sh alive (pid 23806, .main-running restored, it was missing); main-queue NOW refreshed; design-authority summary draft confirmed current through Fri 8:09 PM; Game Plan stamp 2:40 AM published.
 - 3:13 AM: Sim: take a break, we're on schedule, stop for a little. HH pauses active work. Overnight after-data.sh left running (idle wait, no tests until the data run). Asked Sim how long and whether hourly checks pause too.
+- 3:26 AM: HH design authority: Home six band shows two rows of three at every width (was one overlapping row of six on desktop, up to 52% sprite overlap at 1440; now 0%). Sim asked (Nov 28 ~3:30 AM). Branch alt/home-six-grid, not merged; pictures sent. Launch rehearsal on main fa15f917: 7/7 exit 0.
