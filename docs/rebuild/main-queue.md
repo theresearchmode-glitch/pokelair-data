@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 7:06 AM (7:06:12)  date: Sat Nov 28, 2026
+Updated: time: 7:32 AM (7:32:06)  date: Sat Nov 28, 2026
 NOW: Safari-engine My Team tests on design6 efe864fa. HELPER: rewriting old tools tests for option D (Sim said yes). DONE: design6 launch checks 7/7; Kip 78 fixes merged; Preview v273.
 NEXT: Kip job 78 fixes (alt/kip78-fixes e465a57a) through the gate (queued, chain-k78.sh).
 NEXT: Sim picks the tools section (A receipts / B plot board / C two colours two jobs; pictures sent). If C: fix empty tile tops, rewrite the old-markup tests, gate.
@@ -8,7 +8,7 @@ DONE: practice deploy #4 passed; rehearsal 7/7; phone sweep clean; Safari A-team
 DONE: main fa15f917 = deploy fix; live branch cc21cf94 (has the nastyplot.org route). Practice #3 passed end to end.
 NEXT: Sim reviews the site until the design cutoff Sun Nov 29 12 PM Eastern; fix what he flags (pictures first).
 NEXT: Sat morning: Preview daily 7:41 AM; summary for Sim (Build page live, practice deploy, launch checklist).
-NEXT: Sun Nov 29 evening (Sim, 3:42 AM Sat): Sim DEPLOY_ENABLED=true; then dispatch deploy.yml by hand (or wait for next Promote) and watch deploy + smoke on nastyplot.org; Google verify + sitemap.
+NEXT: LAUNCH TONIGHT Sat Nov 28 7 PM Eastern (Sim 7:31 AM), open to Google. Afternoon: merge design6 (herd, Kip 78, tools D if green) into main; main green + Promote moves live by ~6 PM; 7 PM Sim sets DEPLOY_ENABLED=true; HH dispatches deploy.yml, watches deploy + smoke, checks pages live; then Search Console verify + sitemap with Sim.
 NEXT: Mon Dec 1 evening FAST_DATA=1; patch night after 9 PM Eastern per runbook-dec2.md.
 DONE (2:40 AM): design-authority summary draft checked: has every design-authority entry through 8:09 PM Fri (grep of decisions.md).
 NEXT: Sun 10 PM: design-authority summary for Sim (every visual decision since Nov 24, from decisions.md).

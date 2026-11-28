@@ -3048,3 +3048,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:25 AM: Safari engine (WebKit) My Team tests on design6 efe864fa: 139 pass, 0 FAIL, exit 0.
 - 7:26 AM: Preview rebuild from design6 efe864fa: same data as v273 (2026-11-27 19:19 UTC; no new data run yet today), herd present, no-names 0. Kip's fixes are Worker/config only, not part of the Preview page, so nothing visible changed: not republished.
 - 7:27 AM: Data freshness: today's daily data run (cron 9:07 UTC) had not started by 12:30 UTC (GitHub delays: yesterday's ran at 18:49 UTC; the 08:52 and 09:38 runs were skipped 4-hourly slots, FAST_DATA off). Latest data 2026-11-27 19:19 UTC. Dispatched update.yml on main by hand (workflow_dispatch) so the site gets today's data; standing OK to keep data fresh (Nov 24).
+- 7:30 AM: Sim asks: shadow-launch tonight (Sat Nov 28) to have a couple of days online for bug fixes before Reg M-D.
+- 7:32 AM: Sim: launch tonight Sat Nov 28 7 PM Eastern, open to Google from tonight (both recommended options). CLAUDE.md, Game Plan v137, queue updated. Plan: merge design6 into main this afternoon; 7 PM DEPLOY_ENABLED + deploy + smoke; Search Console + sitemap.
