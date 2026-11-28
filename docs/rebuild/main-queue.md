@@ -1,7 +1,9 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 4:31 AM (4:31:46)  date: Sat Nov 28, 2026
-NOW: v2-minors main2 re-run on alt/home-herd (herd background + 2x3 six; tests updated for Sim's Home 4.3 cap and per-row names). Then push, GitHub green, gate into design6, Preview update, tell Sim.
-HELPER: tools section redesign, 3 directions as pictures (Sim asked 4:00 AM).
+Updated: time: 5:26 AM (5:26:02)  date: Sat Nov 28, 2026
+NOW: Preview rebuild (daily-data.sh) with the herd + 2x3 six (design6 2fea4f2f), then publish the Preview and tell Sim.
+NEXT: Kip job 78 fixes (alt/kip78-fixes e465a57a) through the gate (queued, chain-k78.sh).
+NEXT: Sim picks the tools section (A receipts / B plot board / C two colours two jobs; pictures sent). If C: fix empty tile tops, rewrite the old-markup tests, gate.
+HELPER: tools redesign done (3 branches alt/helper-tools-a/b/c); none running.
 DONE: practice deploy #4 passed; rehearsal 7/7; phone sweep clean; Safari A-team 139/0.
 DONE: main fa15f917 = deploy fix; live branch cc21cf94 (has the nastyplot.org route). Practice #3 passed end to end.
 NEXT: Sim reviews the site until the design cutoff Sun Nov 29 12 PM Eastern; fix what he flags (pictures first).
