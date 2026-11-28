@@ -5,7 +5,7 @@ DONE: practice deploy #4 passed; rehearsal 7/7; phone sweep clean; Safari A-team
 DONE: main fa15f917 = deploy fix; live branch cc21cf94 (has the nastyplot.org route). Practice #3 passed end to end.
 NEXT: Sim decides: two rows of three yes/no; 2 background options (plot bars in PLOT blue / Nasty pink) as pictures if he says yes. Then stop until Sim says (his words, 3:15 AM).
 NEXT: Sat morning: Preview daily 7:41 AM; summary for Sim (Build page live, practice deploy, launch checklist).
-NEXT: Sun Nov 30 evening: Sim DEPLOY_ENABLED=true; then dispatch deploy.yml by hand (or wait for next Promote) and watch deploy + smoke on nastyplot.org; Google verify + sitemap.
+NEXT: Sun Nov 29 evening (Sim, 3:42 AM Sat): Sim DEPLOY_ENABLED=true; then dispatch deploy.yml by hand (or wait for next Promote) and watch deploy + smoke on nastyplot.org; Google verify + sitemap.
 NEXT: Mon Dec 1 evening FAST_DATA=1; patch night after 9 PM Eastern per runbook-dec2.md.
 DONE (2:40 AM): design-authority summary draft checked: has every design-authority entry through 8:09 PM Fri (grep of decisions.md).
 NEXT: Sun 10 PM: design-authority summary for Sim (every visual decision since Nov 24, from decisions.md).

@@ -3014,3 +3014,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:35 AM: Sim: 'Love it' (two rows of three) + asked to see the background. Sent pictures: now / A plot bars (blue behind the six, pink behind the plan; horizontal on phones; recommended) / B blue-pink speed streaks at the edges. Nothing merged yet.
 - 3:36 AM: Hourly check 3:35 AM: disk was 3 GB, removed finished worktrees bc2, km, pl, livedata -> 12 GB. Game Plan v133. Main job: six-tests.sh running.
 - 3:41 AM: Sim: plot bars concept yes, colours dull. Sent take 2: C (receipt on a solid PLOT blue bar + Nasty pink stripe, kept clear of text at 1440/1100/390; recommended) and D (solid racing stripes on both edges). Recommended launch day: Sun Nov 29 evening.
+- 3:42 AM: Sim: launch day SUNDAY Nov 29 (yes). Sim on plot bars take 2: pink line must sit right of the receipt, not cross it; keep the band's speed lines (removing them made it worse); quality not there yet.
