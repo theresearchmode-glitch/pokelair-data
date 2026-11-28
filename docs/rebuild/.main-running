@@ -1,2 +1,2 @@
-
-overnight: nothing running; next: Preview daily 7:41 AM, morning summary for Sim
+23805
+after-data.sh: wait for the morning data run, then re-run the launch rehearsal on the new data (up to 2 h; re-armed if needed)
