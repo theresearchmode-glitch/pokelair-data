@@ -38,6 +38,8 @@ jobs:
         run: |
           npm ci && npx playwright install --with-deps chromium
           node public-site.mjs site
+        env:
+          CF_ANALYTICS_TOKEN: ${{ vars.CF_ANALYTICS_TOKEN }}
       - name: Practice config (separate Worker on workers.dev; no routes; noindex on every answer)
         run: |
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::variable CLOUDFLARE_ACCOUNT_ID is missing"; exit 1; }
@@ -62,6 +64,7 @@ jobs:
           chk /pokemon/garchomp 200 'Garchomp in Pokémon Champions'
           chk /data/model.json 200 '{'
           chk /this-page-does-not-exist 404 'noindex'
+          if [ -n "${{ vars.CF_ANALYTICS_TOKEN }}" ]; then curl -s "$PRACTICE/" | grep -q 'cloudflareinsights.com/beacon.min.js' && echo 'ok analytics snippet' || { echo '::error::analytics snippet missing'; bad=1; }; fi
           code=$(curl -s -o /dev/null -w '%{http_code}' "$PRACTICE/v2.js.map"); [ "$code" = 404 ] && echo "ok no source map" || { echo "::error::source map is public ($code)"; bad=1; }
           curl -sI "$PRACTICE/" | grep -i 'x-robots-tag' || { echo "::error::practice copy answers without noindex"; bad=1; }
           for p in /meta /team /build /pokemon /sitemap.xml /robots.txt; do code=$(curl -s -o /dev/null -w '%{http_code}' "$PRACTICE$p"); echo "$p $code"; [ "$code" = 200 ] || bad=1; done
