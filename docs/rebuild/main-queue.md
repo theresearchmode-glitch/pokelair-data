@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 10:55 PM (10:55:32)  date: Fri Nov 27, 2026
-NOW: practice deploy #2 (workflow from alt/deploy-flag-fix f255956d, ref live) being watched (pid in .main-running).
-DONE: live v163 + Preview v272 (Build page + font fix); main cc21cf94 green; live branch = cc21cf94. Practice #1 found 'wrangler deploy --message' unknown (deploy.yml too) -> fixed on alt/deploy-flag-fix.
-NEXT: if practice #2 passes: gate alt/deploy-flag-fix -> design6 -> main (the real deploy.yml must carry the fix before Sunday).
-NEXT: report to Sim; Sun Nov 30 evening: DEPLOY_ENABLED=true; watch deploy + smoke; Google verify + sitemap.
+Updated: time: 11:52 PM (11:52:29)  date: Fri Nov 27, 2026
+NOW: main-merge.sh (pid in .main-running): design6 d35d475c (deploy --message fix + practice cleanup) into main + merge-check; push main after.
+DONE: practice deploy passes end to end (run 46105442876); deploy fix in design6 d35d475c.
+NEXT: push main; watch its run + Promote (live branch must carry the fix: deploy.yml checks out 'live').
+NEXT: Sat: optional second practice deploy from main (workflow on main, ref live) to prove the merged files; Preview daily 7:41 AM.
+NEXT: Sun Nov 30 evening: Sim DEPLOY_ENABLED=true; watch deploy + smoke on nastyplot.org; Google verify + sitemap.
 NEXT: Mon Dec 1 evening FAST_DATA=1; patch night after 9 PM Eastern per runbook-dec2.md.
-NEXT: night: nothing risky; keep checks, Game Plan hourly.
 NOW (HH): draft the Limitless API key application text (docs/rebuild/test-runs/limitless-terms-nov27.md) for Sim to send before the announcement.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
