@@ -3063,3 +3063,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:19 AM: D final local checks (frozen data): v2-minors main1/main2/groups all passed, v2-q72, v2-q23, v2-unbounded passed, guard clean. Pushed alt/helper-tools-d c8732bc2. Chain started: gate into design6, then main merge-check.
 - 9:36 AM: Hourly check 9:36 AM: disk 8.1 GB, Game Plan v140, no helper running, main job chain-d.sh (gate D waiting for GitHub green).
 - 10:36 AM: Tools D merged into claude/design6 (3702633e) via gate: GitHub green on c8732bc2, merge-check ALL PASSED. Main merge (chain) waiting for GitHub on 3702633e. Preview rebuild with D started. Hourly 10:36 AM: disk 8.1 GB, Game Plan v141.
+- 10:36 AM: Preview v275 published: design6 3702633e (tools D + herd), today's data (2026-11-28 12:55 UTC), no-names 0, COPY-OK, sdt-fams present in v2.js.
