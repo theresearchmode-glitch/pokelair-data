@@ -3055,3 +3055,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:36 AM: Hourly check 7:35 AM: disk 6.0 GB -> removed livedata worktree + old build/shot copies -> 8.2 GB (hd6 left: the D-tests helper's design6 copy). Game Plan fresh (v138). Main job: after-data2.sh waits for today's data run.
 - 7:42 AM: Preview daily (7:42 AM trigger): not published. Rebuilt 7:27 AM from design6 efe864fa: DATA-DATE 2026-11-27 (not today) because today's data run hasn't finished yet (GitHub delayed the 4 AM schedule; HH dispatched it 7:27 AM, run 46144725934 in progress), not a failed test. Preview will be rebuilt when today's data reaches live.
 - 8:26 AM: Today's data (main 580b7fbd, Limitless data 2026-11-28): 7 launch checks 7/7 exit 0. GitHub test run on that commit in progress; Preview waits for it to reach live.
+- 8:27 AM: Preview v274 published: today's data (DATA-DATE 2026-11-28 12:55 UTC, live 580b7fbd), design6 efe864fa (herd), no-names 0, COPY-OK.
