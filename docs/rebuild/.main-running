@@ -1,2 +1,2 @@
-25199
-herd-minors.sh: v2-minors (CI way) on alt/home-herd; GitHub run 46127717965 also testing it
+3132
+v2-minors main2 re-run on alt/home-herd with updated tests (Home 4.3, per-row names)
