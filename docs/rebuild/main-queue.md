@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 7:32 AM (7:32:06)  date: Sat Nov 28, 2026
-NOW: Safari-engine My Team tests on design6 efe864fa. HELPER: rewriting old tools tests for option D (Sim said yes). DONE: design6 launch checks 7/7; Kip 78 fixes merged; Preview v273.
+Updated: time: 8:27 AM (8:27:27)  date: Sat Nov 28, 2026
+NOW: live-watch.sh (today's data 580b7fbd -> live -> Preview rebuild from design6). HELPER: rewriting old tools tests for option D. DONE today: launch checks 7/7 on today's data; Safari 139/0 on design6; Kip 78 merged; herd in Preview v273.
 NEXT: Kip job 78 fixes (alt/kip78-fixes e465a57a) through the gate (queued, chain-k78.sh).
 NEXT: Sim picks the tools section (A receipts / B plot board / C two colours two jobs; pictures sent). If C: fix empty tile tops, rewrite the old-markup tests, gate.
 HELPER: tools redesign done (3 branches alt/helper-tools-a/b/c); none running.
