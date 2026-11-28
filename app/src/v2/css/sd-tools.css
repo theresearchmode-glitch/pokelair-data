@@ -6,6 +6,9 @@
 :root[data-theme="night"] .sdt-h{color:var(--ink)}
 .sdt-h span{color:var(--plot-text)}
 .sdt-desc{max-width:72ch;margin:0 0 var(--s8);font:500 var(--t17)/1.5 var(--b);color:var(--sd-card-ink)}
+/* Q72 C (Sim, Nov 20): 700-1279 the headline breaks after "herd." ("Twelve tools." whole on line 2, as phones), never "Same herd.
+   Twelve / tools."; one line from 1280 (kept from the earlier tools band: v2-q72.mjs checks it) */
+@media (min-width:700px) and (max-width:1279.98px){.sdt-h span{display:block}}
 :root[data-theme="night"] .sdt-desc{color:var(--ink)}
 /* a tile: its title is the link, stretched over the whole tile; a named Pokémon is its own button above it */
 .sdt-tile{position:relative;isolation:isolate;min-width:0;display:flex;flex-direction:column}
@@ -151,7 +154,10 @@
   .sdt-D .sdt-six>.sdt-tile:nth-child(-n+2){grid-row:2}.sdt-D .sdt-six>.sdt-tile:nth-child(n+3):nth-child(-n+4){grid-row:3}.sdt-D .sdt-six>.sdt-tile:nth-child(n+5){grid-row:4}
   .sdt-D .sdt-fam[data-fam="nasty"] .sdt-tile:nth-child(odd){grid-column:1}.sdt-D .sdt-fam[data-fam="nasty"] .sdt-tile:nth-child(even){grid-column:2}
   .sdt-D .sdt-fam[data-fam="plot"] .sdt-tile:nth-child(odd){grid-column:4}.sdt-D .sdt-fam[data-fam="plot"] .sdt-tile:nth-child(even){grid-column:5}
-  .sdt-D .sdt-t{min-height:calc(2.2em + var(--s2));white-space:normal}}
+  .sdt-D .sdt-t{min-height:calc(2.2em + var(--s2));white-space:normal}
+  /* the calc number's longer shapes step down so the number stays whole in its column (Nov 28, test fix: "81–96%" ran 3-7px past it at
+     1100-1279; the classes are V2.sdtPctCls's: 6 characters sdt-pct2, 7 or more sdt-pct3) */
+  .sdt-D .sdt-calc .sdt-fig b.sdt-pct2{font-size:var(--t20)}.sdt-D .sdt-calc .sdt-fig b.sdt-pct3{font-size:var(--t17)}}
 @media (min-width:700px) and (max-width:1099.98px){.sdt-D .sdt-fams{grid-template-columns:minmax(0,1fr) var(--s2) minmax(0,1fr);grid-template-rows:auto;grid-auto-rows:1fr;gap:var(--s4) var(--s4)}
   .sdt-D .sdt-fam[data-fam="nasty"] .sdt-fh{grid-area:1/1}.sdt-D .sdt-fam[data-fam="plot"] .sdt-fh{grid-area:1/3}.sdt-D .sdt-fh{margin-bottom:var(--s1)}
   .sdt-D .sdt-fam[data-fam="nasty"] .sdt-tile{grid-column:1}.sdt-D .sdt-fam[data-fam="plot"] .sdt-tile{grid-column:3}
@@ -159,12 +165,14 @@
   .sdt-D .sdt-fig{display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between;gap:var(--s2)}.sdt-D .sdt-fig small{min-width:0}.sdt-D .sdt-calc .sdt-fig,.sdt-D .sdt-method .sdt-fig{flex-direction:column;align-items:flex-start;gap:0}
   .sdt-D .sdt-t{margin-bottom:var(--s1)}.sdt-D .sdt-pic{height:48px}.sdt-D .sdt-tile{padding-bottom:calc(var(--s1) + var(--tear))}
   .sdt-D .sdt-pic .np-mon,.sdt-D .sdt-pic>.sdt-m .np-mon,.sdt-D .sdt-calc .sdt-pic>.sdt-m .np-mon,.sdt-D .sdt-cores .sdt-pic>.sdt-m .np-mon,.sdt-D .sdt-six6 .np-mon,.sdt-D .sdt-six6.sm .np-mon,.sdt-D .sdt-side .np-mon,.sdt-D .sdt-wxi .np-mon,.sdt-D .sdt-pod.s1 .np-mon{--iw:46px}
-  .sdt-D .sdt-ml{gap:var(--s3)}}
+  /* More tools (Nov 28, test fix): six tickets in full, even rows (3 + 3; 2 + 2 + 2 under 760), never 4 + 2: one row of six only fits from 1100 */
+  .sdt-D .sdt-ml{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.sdt-D .sdt-ml a{padding:0 var(--s3);white-space:nowrap}}
+@media (min-width:700px) and (max-width:759.98px){.sdt-D .sdt-ml{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* phones: each family is one long receipt (its stamp printed across the top, a dashed line between tools, the torn edge at the
    bottom); a tool is one line: picture, name and what the number counts, the number, the family's chevron */
 @media (max-width:699.98px){
-  .sdt-D .sdt-fams{grid-template-columns:minmax(0,1fr);gap:var(--s8)}
-  .sdt-D .sdt-fh{margin:0;padding:var(--s3) var(--s4);background:var(--f);color:var(--sd-rd-on)}
+  .sdt-D .sdt-fams{grid-template-columns:minmax(0,1fr);gap:var(--s6)}
+  .sdt-D .sdt-fh{margin:0;padding:var(--s2) var(--s4);background:var(--f);color:var(--sd-rd-on)}
   .sdt-D .sdt-fh span{padding:0;background:none;font-size:var(--t24);outline:0;rotate:none}.sdt-D .sdt-fh small,:root[data-theme="night"] .sdt-D .sdt-fh small{color:var(--sd-rd-on);font-size:var(--t15)}
   .sdt-D .sdt-fam{position:relative;isolation:isolate;padding-bottom:var(--s2)}
   .sdt-D .sdt-fam::before,.sdt-D .sdt-fam::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--sd-rd-paper);
@@ -181,5 +189,6 @@
   .sdt-D .sdt-d{grid-column:2/4;grid-row:2;align-self:start}
   .sdt-D .sdt-open{position:static;grid-column:4;grid-row:1/3;align-self:center;padding:0;background:none;box-shadow:none;transform:none;color:var(--f-tx)}.sdt-D .sdt-open b{display:none}.sdt-D .sdt-open i{width:10px;height:10px}
   .sdt-D .sdt-calc .sdt-fig b,.sdt-D .sdt-method .sdt-fig b{grid-column:2;grid-row:2;justify-self:start;padding-top:var(--s1)}.sdt-D .sdt-calc .sdt-fig small,.sdt-D .sdt-method .sdt-fig small{grid-row:3}.sdt-D .sdt-calc .sdt-pic,.sdt-D .sdt-calc .sdt-open,.sdt-D .sdt-method .sdt-pic,.sdt-D .sdt-method .sdt-open{grid-row:1/4}
-  .sdt-D .sdt-more{margin-top:var(--s8)}.sdt-D .sdt-ml{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
-  .sdt-D .sdt-ml a{justify-content:space-between;padding:0 var(--s3);font-size:var(--t13);white-space:nowrap}}
+  .sdt-D .sdt-more{margin-top:var(--s6)}.sdt-D .sdt-ml{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s3);width:100%}
+  /* 13px tickets are Instrument Sans (type rule, Sim Nov 11: Unbounded only at 15px and up; v2-unbounded.mjs) */
+  .sdt-D .sdt-ml a{justify-content:space-between;padding:0 var(--s3);font:700 var(--t13)/1.2 var(--b);white-space:nowrap}}

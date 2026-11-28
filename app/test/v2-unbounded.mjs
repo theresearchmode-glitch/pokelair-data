@@ -17,13 +17,17 @@ const ALLOW = new Set(['.gr2-box .gr2-st' /* Nov 22: Mystery Gifts on the kit, t
   '.pr-stats .ev-pk' /* the Post Room's "Live right now" stamp on its plate (Sim, Nov 18, morning questions 1i: added to this list) */,
   /* Home's plan board (Nov 18): each lead's name is a short tag on its slanted colour plate, the same kind as exception (a) (a long name
      already drops to Instrument Sans: .sds-tg.nar); and the Practice plate's "Pick 4" tag on its slanted plate under 700 */
-  '.sds-tk .sds-tg.u', '.sdt-pp .u.sdt-pick',
+  '.sds-tk .sds-tg.u',
   /* Nov 23 (Sim's iPhone 16 pictures, approved 6:20 AM / hI sweep 7:40 AM): under 440 the Ratings filter chips, the Grandstand / List
      switch and Speed Tiers' word buttons drop to 13px so their slanted words fit their chips */
   '.k-chip span', '.gs-vx', '.k-w span',
   /* Nov 18 evening (Sim: recommended, keep as built): on phones Home's two start buttons drop to 13px to stay on one line, and the
      Ratings podium's score and the Events / How We Calculate chip numbers are 13px badges inside small tiles */
-  '.sdh-go .sdh-b1', '.sdh-b2 span', '.sdt-blk .u', '.sdt-cpic .u',
+  '.sdh-go .sdh-b1', '.sdh-b2 span',
+  /* Sim, Nov 28 (option D): the old podium score (.sdt-blk .u), chip numbers (.sdt-cpic .u) and Practice's "Pick 4" (.sdt-pp .u.sdt-pick)
+     are gone; under 1380 the Events slip's date is a 13px stamp on its small slanted plate (the stub, "Nov 28–29"), the same kind as
+     the Events chip number it replaces */
+  '.sdt-stub .u',
   /* Nov 19: the small '%' after a big share number on Usage (as designed since the Usage rebuild; a sign, not words). The share number itself
      is 15px on phones (it was caught at 13px by the name rule '.us-tx b' once Usage opened on Online tournaments, Q13 A) */
   '.u .us-pct',

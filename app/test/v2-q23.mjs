@@ -33,12 +33,12 @@ for (const night of [false, true]) for (const W of [320, 390, 768, 1280, 1920]) 
       const tl = name === 'post' && innerWidth >= 1100 ? 4 : 0.5;
       o.inside = E.left >= L - tl && E.right <= R + tl && E.top >= B.top && E.bottom <= B.bottom;
       const rg = document.createRange(); rg.selectNodeContents(el); o.spill = [...rg.getClientRects()].some(x => x.width && (x.left < E.left - 0.5 || x.right > E.right + 0.5)) || el.scrollWidth > el.clientWidth + 1;
-      if (below) { const g = band.querySelector(below); if (g && g.getClientRects().length) o.overlap = E.bottom > g.getBoundingClientRect().top + 0.5; }
+      if (below) { const g = band.querySelector(below); if (g && g.getClientRects().length) o.overlap = E.bottom > g.getBoundingClientRect().top + 0.5; else o.overlap = 'no ' + below; /* Nov 28: a missing block fails, never a silent pass */ }
       o.seen = E.width > 0 && E.height > 0 && cs.visibility === 'visible' && +cs.opacity > 0.5;
       o.font = cs.fontFamily; o.size = parseFloat(cs.fontSize); o.ital = cs.fontStyle; o.cr = Math.round(cr(rgb(cs.color), rgb(bgOf(band))) * 100) / 100; return o; };
     return {side: document.documentElement.scrollWidth > innerWidth, lines: [
       one('six', '#main #sds-h', SIX, '#main .sds-line', () => getComputedStyle(document.querySelector('#main .sd-six')).backgroundColor, null),
-      one('tools', '#main #sdt-h', TOOLS, '#main .sdt', s => getComputedStyle(s).backgroundColor, '.sdt-grid'),
+      one('tools', '#main #sdt-h', TOOLS, '#main .sdt', s => getComputedStyle(s).backgroundColor, '.sdt-fams' /* Sim, Nov 28: option D's two families of slips (was the plate grid) */),
       /* Home B (Sim chose it, Nov 23): at 1100+ the post is the tools band's last row, Mystery Gifts and Champions News under their own
          headings; Nov 26 (Sim approved the rack at every width): iPads (700-1099) take that same post too, so the red post band's
          heading row and its plain line are on phones only (at 768 the band shows Mystery Gifts and Champions News, as at 1440) */
@@ -47,7 +47,7 @@ for (const night of [false, true]) for (const W of [320, 390, 768, 1280, 1920]) 
   for (const o of r.lines) { const t = `${tag} ${o.name}`;
     if (o.missing) { miss.push(`${t} (shown: ${JSON.stringify(o.texts)})`); continue; }
     if (!o.under) text.push(`${t}: not right under its heading`); if (!o.seen) vis.push(t);
-    if (!o.inside || o.spill || o.overlap) box.push(`${t}: inside ${o.inside}, spills ${o.spill}, over the plates ${!!o.overlap}`);
+    if (!o.inside || o.spill || o.overlap) box.push(`${t}: inside ${o.inside}, spills ${o.spill}, over the plates ${o.overlap}`);
     if (!/Instrument Sans/.test(o.font) || ![15, 17].includes(o.size) || o.ital !== 'normal') style.push(`${t}: ${o.size}px ${o.ital} ${o.font}`);
     if (!(o.cr >= 4.5)) low.push(`${t}: ${o.cr}`); }
   await p.close(); }
