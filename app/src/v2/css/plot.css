@@ -505,7 +505,7 @@ button.pl-mv{width:100%;border:0;color:inherit;cursor:pointer}button.pl-mv .pl-t
   .pl-sl{position:relative;display:block;padding:var(--s3) 0}.pl-sn{position:absolute;top:var(--s3);left:0;font-size:var(--t15);line-height:1.5}.pl-slb{padding-left:var(--s8)}
   .pl-sl:first-child .pl-sb p{display:none}
   .pl-sc{font-size:var(--t15)}.plc .pl-grp[data-v2slide="bdsrc"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:center;width:100%}.plc .pl-or{display:none}.plc .pl-grp[data-v2slide="bdsrc"] .pl-pl[aria-pressed="true"] > span::before{display:none}
-  .plc .pl-sl b.pl-slb{padding-left:var(--s8)}.plc .pl-grp[data-v2slide="bdsrc"]{gap:var(--s2);font-size:var(--t13)}.plc .pl-sb p{font-size:var(--t13)}.pl-sl{padding:var(--s2) 0}.pl-sn{top:var(--s2)}
+  .plc .pl-sl b.pl-slb{padding-left:var(--s8)}.plc .pl-grp[data-v2slide="bdsrc"]{gap:var(--s2);font-size:var(--t15);grid-template-columns:auto minmax(0,1fr)} /* Nov 27 (v2-unbounded): Unbounded never under 15px; My Box takes its own width, Whole Roster the rest */.plc .pl-sb p{font-size:var(--t13)}.pl-sl{padding:var(--s2) 0}.pl-sn{top:var(--s2)}
   .plc .pl-grp[data-v2slide="bdsrc"] .pl-pl{justify-content:center;min-width:0;padding:0 var(--s2)}
   .plc .pl-tot .pl-go{width:100%;justify-content:center;font-size:var(--t26);transform:skewX(-8deg)}
 }
@@ -542,4 +542,4 @@ button.pl-mv{width:100%;border:0;color:inherit;cursor:pointer}button.pl-mv .pl-t
 @media (max-width:699.98px){.pl-read{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 var(--s3)}.plc .pl-rs{font-size:var(--t17)}.pl-rk{margin-top:0}
   .pl-stage{min-height:232px}.pl-stage::before{height:40%;clip-path:polygon(var(--s4) 0,100% 0,calc(100% - var(--s4)) 100%,0 100%)}
   .pl-hn b{font-size:var(--t17)}.pl-hn small{letter-spacing:.04em}.pl-hero{min-height:112px;margin-bottom:var(--s2)}}
-@media (max-width:379.98px){.plc .pl-chips{grid-template-columns:minmax(0,1fr)}} /* after the 2-across rule under 1100, so it wins at 320 */
+@media (max-width:379.98px){.plc .pl-chips{grid-template-columns:minmax(0,1fr)}.plc .pl-grp[data-v2slide="bdsrc"]{grid-template-columns:minmax(0,1fr)}} /* after the 2-across rule under 1100, so it wins at 320 */

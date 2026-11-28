@@ -52,7 +52,7 @@ document.addEventListener('input', e => { const i = e.target.closest && e.target
 V2.plotPage0 = () => { V2.bdSrcDefault(); /* a new visitor's untouched sample box starts on Whole Roster (S17), as buildHead did */ const busy = !!(ui.ab && ui.ab.busy), none = !busy && ui.ab ? V2.buildAnswer0() : '', lk = ui.abLock && byName.get(ui.abLock);
   return `<div class="bd2 pl2${busy ? ' bd-rebuild' : ''}"><h1 class="vh">Build</h1><div class="bd-result" aria-live="polite"${busy ? ' aria-busy="true"' : ''}>${busy ? '<p class="bd-busy" role="status">Building from real winning teams…</p>' : ''}${none}
     <section class="pl pl0 plc"><div class="pl-step pl-s1"><span class="pl-node" aria-hidden="true">1</span><div class="pl-desk">
-      <div class="pl-slip" role="group" aria-label="Your plot"${lk ? V2.plotKc(lk.n) : ''}><div class="pl-shd"><h2 class="u pl-sh">The plot</h2><p class="pl-sk">${V2.esc(regName())} doubles · blue plates are buttons</p></div>
+      <div class="pl-slip" role="group" aria-label="Your plot"${lk ? V2.plotKc(lk.n) : ''}><div class="pl-shd"><h2 class="u pl-sh">The plot</h2><p class="pl-sk">Build · ${V2.esc(regName())} doubles · blue plates are buttons</p></div>
         ${V2.plotHelp()}
         <div class="pl-tot"><p><b>Total: six Pokémon</b><span>Picked from real winning teams, in an instant. <button type="button" class="np-link" data-bdhow>How It Works ›</button></span></p>
           <button type="button" class="pl-go u" data-bdgo${busy ? ' aria-busy="true" disabled' : ''}><span>Hatch it.</span><span class="vh"> ${lk ? `Build Around ${V2.esc(V2.disp(lk.n))}` : 'Build Me a Team'}</span></button></div>
