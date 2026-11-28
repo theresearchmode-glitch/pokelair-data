@@ -3007,3 +3007,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:23 AM: Final launch rehearsal on main fa15f917: 7/7 pass (public-site, deploy-smoke 369 URLs, seo, asof, speed, privacy, links).
 - 1:26 AM: Overnight phone sweep on main fa15f917 (every page, 375/390/430, light+dark): PHONE SWEEP CLEAN, 0 findings, exit 0.
 - 1:35 AM: Hourly 1:35 AM: Game Plan v131; disk ok; after-data.sh waiting for the morning data run.
+- 2:37 AM: Hourly check 2:36 AM: disk 7 GB; overnight job after-data.sh alive (pid 23806, .main-running restored, it was missing); main-queue NOW refreshed; design-authority summary draft confirmed current through Fri 8:09 PM; Game Plan stamp 2:40 AM published.
