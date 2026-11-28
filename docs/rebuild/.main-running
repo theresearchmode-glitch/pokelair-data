@@ -1,2 +1,2 @@
-22366
-v2-overlap on alt/home-herd (the herd behind text); GitHub run on d3d72d47
+30199
+hh-sec.sh: HH's quick security sweep on main (npm audit, secrets grep, worker tests); GitHub run 46131139900 on alt/home-herd

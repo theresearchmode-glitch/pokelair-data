@@ -3029,3 +3029,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:36 AM: Hourly check 4:36 AM: disk was 5 GB; removed finished worktrees base and six -> see df. Helper on tools redesign active. Main job: herd overlap check.
 - 4:37 AM: Sim: security + code reviews before launch, by Kip if he has usage (Sim thinks he does; CLAUDE.md had Kip out until about Dec 4). Wrote docs/rebuild/kip-job78-security-review.md (Worker, deploy workflows, public headers, XSS paths, public-repo secrets, npm audit, last-3-days diffs, herd branch). HH also reviews after the herd merge.
 - 4:38 AM: Sim sent Kip job 78 (pre-launch security + code review).
+- 4:48 AM: Herd overlap check: v2-overlap 0 findings (27 pages x 4 widths x 2 themes), exit 0. Earlier herd GitHub run: every job green except v2-minors main2 (fixed by test update d3d72d47; new run 46131139900 in progress). Started HH's own security sweep on main.
