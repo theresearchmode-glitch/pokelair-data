@@ -2990,3 +2990,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:09 PM: HH design authority: Build slip phone plates 15px (My Box own width + Whole Roster rest at 390+; stacked under 380). Picture sent to Sim (iPhone 15 + SE).
 - 8:36 PM: Hourly 8:36 PM: Game Plan v126; disk 8 GB; no helper (as needed); Build batch run 46091631179 in progress, gate waiting.
 - 8:58 PM: Build batch merged into design6 fdf1ac27 (GitHub green on 631f989d; merge-check ALL PASSED): Build page C2 + CI fixes, practice-deploy.yml, wrangler routes nastyplot.org. main-merge.sh started.
+- 9:36 PM: Hourly 9:35 PM: Game Plan v127; disk 8 GB; no helper (as needed); main-merge.sh waiting for GitHub on design6 fdf1ac27.
