@@ -97,7 +97,7 @@ t('X-12', 'Settings and team are saved: Megas on team 1 survives a reload (accou
 // =====================================================================================================
 t('AUTO-01', 'Build page head and the How It Works fold', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); const tx = await ui.text();
-  has(tx, NEW ? /Build\W{1,3}Reg M-\w+ doubles/i : /Build\W{1,3}real winning teams/i, 'kicker'); has(tx, 'Build Me a Team'); if (NEW) has(tx, 'Blue words are buttons.'); else has(tx, 'Winning tournament teams you can field from your box.'); /* Nov 22 (Sim chose Build top A, 6:58 AM): one short label, then the sentence; the intro line was cut */ /* new: the approved Build mock-up's line (docs/rebuild/mocks/build.tpl.html line 176) */
+  has(tx, NEW ? /Build\W{1,3}Reg M-\w+ doubles/i : /Build\W{1,3}real winning teams/i, 'kicker'); has(tx, 'Build Me a Team'); if (NEW) has(tx, /blue plates are buttons/i); /* Nov 27: Sim's order slip says it in its top line ('Blue words are buttons.' before) */ else has(tx, 'Winning tournament teams you can field from your box.'); /* Nov 22 (Sim chose Build top A, 6:58 AM): one short label, then the sentence; the intro line was cut */ /* new: the approved Build mock-up's line (docs/rebuild/mocks/build.tpl.html line 176) */
   expect(await ui.isUnfolded(/^How It Works/) === false, 'How it works should start closed');
   const f = await ui.unfold(/^How It Works/); for (const p of ['Six that work together', 'The why', NEW ? 'Matchups' : 'Ready for the top threats']) has(f, /* new: the word list's 'Matchups' replaces 'ready for the top threats' (CLAUDE.md word list, Sim approved Nov 9) */ new RegExp(p, 'i'), 'How it works');
   await close(); });
@@ -254,7 +254,9 @@ t('AUTO-16', 'Build page order: Build me a team, How it works, Build around a co
      (Sim, decisions.md Nov 12 6:51 PM item 7 'tabs in page order'; Build Q1 B 'tabs on every size', Nov 13 8:47 AM) */
     /* Nov 20 (The Plot piece 5, Q98; Sim: no buried tabs): no tab bar; the two sections show in page order under their approved headings,
        "Plots that worked" (the winners) before "Partners in crime" (the cores), before and after a build */
-    const tx = await ui.text(), p = [tx.search(/Build me a team/i), tx.indexOf('How It Works'), tx.indexOf('Plots that worked'), tx.indexOf('Partners in crime', tx.indexOf('Plots that worked'))];
+    /* Nov 27 (Sim's pick, the order slip): Build me a team (the HATCH IT stamp) and How It Works share the slip's TOTAL row, the link
+       before the stamp in reading order; both must still come before Plots that worked, before Partners in crime */
+    const tx = await ui.text(), head = Math.max(tx.search(/Build me a team/i), tx.indexOf('How It Works')), p = [Math.min(tx.search(/Build me a team/i), tx.indexOf('How It Works')), head, tx.indexOf('Plots that worked'), tx.indexOf('Partners in crime', tx.indexOf('Plots that worked'))];
     expect(p.every(i => i >= 0) && p.every((v, i) => !i || v > p[i - 1]), 'order wrong: ' + p);
     has(await ui.unfold(/^Start from a Recent Winner/i), 'Plots that worked', 'Recent Winners section'); has(await ui.coresText(), 'Partners in crime', 'Cores section');
     await ui.buildMeATeam(); has(await ui.coresText(), 'Partners in crime', 'cores after a build'); await close(); return; }
