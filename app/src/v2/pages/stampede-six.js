@@ -102,7 +102,14 @@ V2.sdSix = () => { const E = V2.esc, ms = members(), has = ms.length > 0, C = ho
   const bt = C ? `<button type="button" class="np-btn sds-bt" data-hmprep="${E(C.ev.id + '#' + C.ev.top.indexOf(C.t))}" data-sdgo aria-label="Battle: Set as Opponent, the latest winner's six">Battle</button>` : `<a class="np-btn sds-bt" href="#battle" data-sdgo>Battle</a>`;
   const plan = `<div class="sds-part sds-pl"><h3 class="u sds-ph">Walk in with <span>a turn 1 plan.</span></h3>${board}${champ}${gp}${has ? '' : '<p class="sds-pt">Scout their six, see who moves first, run the damage.</p>'}${bt}</div>`;
   const chev = `<i class="sds-chev" aria-hidden="true"><svg viewBox="0 0 32 40"><path d="M4 4l12 16-12 16M16 4l12 16-12 16"/></svg></i>`;
-  return `<section class="sd-band sd-six sds" aria-labelledby="sds-h"><div class="sds-in">${line}${chev}${rc}${chev}${plan}</div></section>`; };
+  return `<section class="sd-band sd-six sds" aria-labelledby="sds-h">${V2.sdsHerd(ms.map(m => m.p.n))}<div class="sds-in">${line}${chev}${rc}${chev}${plan}</div></section>`; };
+// the herd (Sim, Nov 28: "NOW THIS IS AMAZING"): behind the band, the most-used Pokémon by tournament share (the Ratings and Usage
+// pages' own numbers, V2.raNums), drawn in grey and fading out where the six, the receipt and the plan stand; your six are the ones
+// called out of it in colour, so they are left out of the herd. Small sprites (iw 80: the 240w file), lazy, aria-hidden, no taps.
+V2.sdsHerd = mine => { const skip = new Set(mine || []); let rows = [];
+  try { rows = V2.ratedRows().map(x => ({n: x.p.n, u: V2.raNums(x.p).u})).filter(x => x.u != null && !skip.has(x.n)).sort((a, b) => b.u - a.u).slice(0, 48); } catch (e) { rows = []; }
+  if (rows.length < 12) return ''; const list = []; while (list.length < 96) list.push(...rows);
+  return `<div class="sds-herd" aria-hidden="true">${list.slice(0, 96).map(x => `<i>${V2.mon(x.n, {bare: true, iw: 80})}</i>`).join('')}</div>`; };
 // after drawing: the board's arrows from each of your leads to its turn 1 target(s), measured from the drawn rings (any width);
 // names that don't fit their spot step down the type scale (as Home's fitUsed did)
 V2.sdsArrows = () => { document.querySelectorAll('.sds-board').forEach(b => { const svg = b.querySelector('.sds-arw'); if (!svg) return; const R = b.getBoundingClientRect(); if (!R.width) return;
