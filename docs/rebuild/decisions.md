@@ -3000,3 +3000,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:03 PM: Practice deploy #3 (46105442876) SUCCESS end to end: deployed, 6 checks ok, cleanup via Workers API 'delete: HTTP 200'; practice root answers 404 from here. alt/deploy-flag-fix: test.yml dispatched (paths don't cover deploy files), gate started.
 - 11:36 PM: Hourly 11:36 PM: Game Plan v129; disk 7 GB; deploy-fix GitHub run in progress, gate waiting.
 - 11:52 PM: Deploy fix merged into design6 d35d475c (GitHub green on aa5d141a; merge-check ALL PASSED). main-merge.sh started (design6 run must pass first).
+- 12:07 AM: main-merge stopped: no GitHub run on design6 d35d475c (only deploy workflow files changed; test.yml paths don't include them). Dispatched test.yml on design6; main-merge.sh rerun.
