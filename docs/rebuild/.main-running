@@ -1,2 +1,2 @@
-10775
-Preview rebuild from a design6 worktree (d6) so it carries the herd; then publish
+4031
+chain-k78.sh -> gate.sh alt/kip78-fixes (waits for GitHub green, merge-check, push to design6)

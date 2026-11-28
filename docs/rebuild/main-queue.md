@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 5:26 AM (5:26:02)  date: Sat Nov 28, 2026
-NOW: Preview rebuild (daily-data.sh) with the herd + 2x3 six (design6 2fea4f2f), then publish the Preview and tell Sim.
+Updated: time: 5:27 AM (5:27:54)  date: Sat Nov 28, 2026
+NOW: Kip job 78 fixes through the gate (chain-k78.sh). DONE: Preview v273 with the herd (built from a design6 worktree; daily-data.sh uses the main checkout, which is t3).
 NEXT: Kip job 78 fixes (alt/kip78-fixes e465a57a) through the gate (queued, chain-k78.sh).
 NEXT: Sim picks the tools section (A receipts / B plot board / C two colours two jobs; pictures sent). If C: fix empty tile tops, rewrite the old-markup tests, gate.
 HELPER: tools redesign done (3 branches alt/helper-tools-a/b/c); none running.
