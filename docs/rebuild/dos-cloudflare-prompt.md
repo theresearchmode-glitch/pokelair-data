@@ -19,3 +19,11 @@ where you tell me; you only report NAMES and done/not done.
 4. Optional, only if easy: Cloudflare → Web Analytics → add nastyplot.org → copy the site token → GitHub variable CF_ANALYTICS_TOKEN.
 5. When done, give me a short report for HH: which names exist now (secret + variables), and anything that looked different from
    these steps (menu names move). No values.
+
+## Prompt 2 (HH, time: 7:07 PM (7:07:49)  date: Fri Nov 27, 2026): analytics snippet + narrow the token
+---
+Hi Dos, it's Sim again. Two small Cloudflare follow-ups for HH. Same rules: no token or key values in chat or files; I paste them myself; report names and done/not done only.
+
+1. Web Analytics (Observability > Analytics > Web analytics > nastyplot.org): switch from "Automatic setup" to "Enable with JS Snippet installation" (our site's security rules block the auto-injected script; our build adds the snippet itself, correctly). Copy ONLY the token value from the snippet (the text after "token": in data-cf-beacon), then GitHub → repo theresearchmode-glitch/pokelair-data → Settings → Secrets and variables → Actions → Variables → New repository variable → name CF_ANALYTICS_TOKEN → I paste → Add variable. (This token is public by design: it ends up in the page; a variable is fine.)
+2. API token "nastyplot-deploy": My Profile → API Tokens → nastyplot-deploy → Edit → Account Resources: change "All accounts" to Include → just my account → Save. Don't roll or regenerate it (that would change the secret); only narrow the scope. If Cloudflare forces a new value, stop and tell me; then I update the GitHub secret CLOUDFLARE_API_TOKEN myself.
+3. Report for HH: done/not done for each, and anything that looked different. No values.

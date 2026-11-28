@@ -2978,3 +2978,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:59 PM: main 75da5b29 (font fix) GitHub run 46081376288 success. Live update waits to ship together with the Build page (Sim's yes) once it's through GitHub.
 - 7:05 PM: Sim asked for the Dos prompt; sent (docs/rebuild/dos-cloudflare-prompt.md). Squad task: Dos Cloudflare setup, SENT.
 - 7:06 PM: Dos report (Sim pasted, 7:06 PM): CLOUDFLARE_API_TOKEN secret + CLOUDFLARE_ACCOUNT_ID variable already exist (since Nov 25); DEPLOY_ENABLED, FAST_DATA, CF_ANALYTICS_TOKEN absent. Token 'nastyplot-deploy' account scope = All accounts (could narrow). Web Analytics auto-inject is on. HH: practice-deploy workflow + wrangler routes on alt/practice-deploy 78cb55e3 (workflow_dispatch needs it on main first).
+- 7:07 PM: Sim OK: switch Web Analytics to the snippet (CF_ANALYTICS_TOKEN variable) + narrow the deploy token to one account. Dos prompt 2 written (docs/rebuild/dos-cloudflare-prompt.md).
