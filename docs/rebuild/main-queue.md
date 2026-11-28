@@ -8,7 +8,7 @@ DONE: practice deploy #4 passed; rehearsal 7/7; phone sweep clean; Safari A-team
 DONE: main fa15f917 = deploy fix; live branch cc21cf94 (has the nastyplot.org route). Practice #3 passed end to end.
 NEXT: Sim reviews the site until the design cutoff Sun Nov 29 12 PM Eastern; fix what he flags (pictures first).
 NEXT: Sat morning: Preview daily 7:41 AM; summary for Sim (Build page live, practice deploy, launch checklist).
-NEXT: launch Sun Nov 29 evening (Sim 7:33 AM Sat: "live is still tomorrow"; today he tests and audits). Today: finish tools D (tests, gate, Preview), merge design6 into main ready for Sunday; tell Sim when everything is finished. Dos launch-switch prompt written (docs/rebuild/dos-github-launch-prompt.md): ON HOLD until Sunday.
+NEXT: launch Sun Nov 29 evening (Sim 7:33 AM Sat: "live is still tomorrow"; today he tests and audits). Today: finish tools D (tests, gate, Preview), merge design6 into main, then update the live NastyPlot artifact (5VBfLTR5sM4JU5NswJYyGk) to exactly what goes live; tell Sim 'all done' so he can run his full independent audit (Sim 7:35 AM). Dos launch-switch prompt written (docs/rebuild/dos-github-launch-prompt.md): ON HOLD until Sunday.
 NEXT: Mon Dec 1 evening FAST_DATA=1; patch night after 9 PM Eastern per runbook-dec2.md.
 DONE (2:40 AM): design-authority summary draft checked: has every design-authority entry through 8:09 PM Fri (grep of decisions.md).
 NEXT: Sun 10 PM: design-authority summary for Sim (every visual decision since Nov 24, from decisions.md).
