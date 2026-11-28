@@ -3043,3 +3043,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:30 AM: Kip job 78 fixes merged into claude/design6 (efe864fa) via gate: GitHub green on e465a57a, merge-check ALL PASSED. Reaches main/live with the next design6 -> main merge.
 - 6:35 AM: Sim: tools option D, 'love it. lets do it.' Next: rewrite the old tools tests for D, GitHub green, gate into design6, Preview update. Event-name wrap at 1440 to check.
 - 6:36 AM: Hourly check 6:36 AM: disk 9.8 GB, Game Plan v136. Main job: d-tests.sh (old tests vs option D); GitHub run 46137213540 on alt/helper-tools-d also running.
+- 7:01 AM: Started helper: rewrite the old tools tests for option D on alt/helper-tools-d (6 files use old sdt- classes; checks must stay able to fail). Main thread: 7 launch checks on design6 efe864fa.
