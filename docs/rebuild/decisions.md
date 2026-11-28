@@ -3005,3 +3005,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:14 AM: main fa15f917 pushed (deploy fix; merge-check ALL PASSED; design6 run 46110662337 green). Workflow-only change: no test run on main, live stays cc21cf94 (already has the nastyplot.org route). Sunday's deploy = deploy.yml from main (fixed) + site from live. Practice deploy #4 dispatched from main to prove the merged workflow.
 - 1:18 AM: Practice deploy #4 from main fa15f917 (46115686914): SUCCESS: deployed, 12 checks ok (incl. analytics, 404, no source map, sitemap, robots), cleanup HTTP 200. The merged deploy path is proven end to end before Sunday.
 - 1:23 AM: Final launch rehearsal on main fa15f917: 7/7 pass (public-site, deploy-smoke 369 URLs, seo, asof, speed, privacy, links).
+- 1:26 AM: Overnight phone sweep on main fa15f917 (every page, 375/390/430, light+dark): PHONE SWEEP CLEAN, 0 findings, exit 0.
