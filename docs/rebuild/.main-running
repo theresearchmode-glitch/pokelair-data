@@ -1,2 +1,2 @@
-1878
-gate.sh alt/home-herd: waits for GitHub green (run 46131139900), merges into claude/design6 through merge-check
+9157
+Preview rebuild (daily-data.sh) with the herd + 2x3 six (design6 2fea4f2f), then publish; Kip78 fixes gate queued
