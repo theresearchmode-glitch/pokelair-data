@@ -1,2 +1,2 @@
-26869
-B-build behaviour on alt/build-c2 working tree (kicker + plate size + order test fixes), then preview-data rebuild + q83/unbounded/tap-size
+30654
+c2-recheck.sh: Build C2 fixes (kicker, 15px plates, order + wording tests): unbounded/q83/tap-size/s16/s17 on preview-data build, B-build on art build
