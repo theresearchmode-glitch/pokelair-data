@@ -2994,3 +2994,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:07 PM: main cc21cf94 pushed (design6 fdf1ac27: Build page C2, practice deploy, nastyplot.org route; merge-check ALL PASSED). Live v163 (1795835262-7825) published: host-wrapper 8/8 (0 px), WebKit iPhone light/dark + iPad dark clean, 0 errors; v2.js read back 3,828,885 B. Before/after Build picture sent. Main's own run being watched.
 - 10:09 PM: Preview republished with the new Build page + font fix (data 2026-11-27T19:19Z; no-names 0; COPY-OK; exit 0).
 - 10:35 PM: Hourly 10:35 PM: Game Plan v128; disk 8 GB; main cc21cf94 run 46101216542 in progress.
+- 10:50 PM: main cc21cf94 GitHub run 46101216542 success; Promote moved live to cc21cf94. Dispatched practice-deploy.yml (ref live, keep false).
