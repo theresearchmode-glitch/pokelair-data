@@ -1,4 +1,5 @@
 # Dos prompt: switch the nastyplot.org deploy on (Sim, Sat Nov 28: launch tonight 7 PM Eastern)
+**ON HOLD until Sun Nov 29 (Sim, Sat 7:33 AM: "live is still tomorrow"). Do not flip DEPLOY_ENABLED before then.**
 Paste the box into Dos. Written by HH.
 
 ```
