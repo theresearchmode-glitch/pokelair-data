@@ -54,7 +54,7 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
     corners 4/6/10/18/round; line height 1.5.
 13. Use space well at every size; no empty strips, lone tiles, half-filled rows, or boxes in boxes; light and dark both clean.
 14. Keep the WOW: when a fix could go plainer or stay bold, stay bold.
-15. Short pages: main thing on the first screen at 1440x900; caps 3 screens (tools/lists), 4 (Home, Pokémon page, This Week, Meta; Home 4.3 at 1440 desktop, Sim Nov 28, for the six in two rows of three);
+15. Short pages: main thing on the first screen at 1440x900; caps 3 screens (tools/lists), 4 (Home, Pokémon page, This Week, Meta; Home 4.5 at 1440 desktop, Sim Nov 28: 4.3 for the six in two rows of three, 4.5 with tools option D);
     phones short with natural scrolling, no hiding content in folds. Every window size must look right, odd widths too.
 16. Type symbols only with a label. Search reaches everything (no feature is done until Search finds it). Outside designs are input;
     our rules win.
