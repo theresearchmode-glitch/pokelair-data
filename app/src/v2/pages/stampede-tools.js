@@ -57,69 +57,66 @@ V2.sdtArt = (n, cls) => `<span class="sdt-art${cls ? ' ' + cls : ''}" aria-hidde
 V2.sdtPlate = (name, cls, long, short, body, more) => { const E = V2.esc;
   return `<article class="sdt-p ${cls}"><div class="sdt-tx"><h3 class="u sdt-t"><a class="sdt-go" href="#${V2.SDT_GO[name]}" data-sdtool="${E(name)}"${name === 'Winning Cores' ? ' data-hmcores' : ''}>${E(name)}</a></h3>
     <p class="sdt-d"><span class="sdt-l">${long}</span><span class="sdt-s">${short}</span></p>${more || ''}</div>${body}</article>`; };
-V2.sdTools = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => homeNum(n), nm = n => V2.keepForm(E(V2.disp(n)));
-  // Speed Tiers: the race, slowest to fastest; data-k is the rating rank, so narrower screens keep the top 7 or 4 (CSS)
-  const race = `<div class="sdt-race">${X.race.map(x => `<button type="button" class="sdt-m sdt-run" data-k="${x.k}" data-v2mon="${E(x.n)}" aria-label="${E(V2.disp(x.n))}, base Speed ${x.spe}: open its info">${V2.mon(x.n, {bare: true})}<b class="u sdt-spe">${x.spe}</b><b class="sdt-mn">${nm(x.n)}</b></button>`).join('')}</div>`;
-  const speed = V2.sdtPlate('Speed Tiers', 'sdt-speed', 'See who moves first: the highest rated, slowest to fastest by base Speed.', 'See who moves first.', race);
-  // Type Chart: the 18 flags in their type colours, three across, on a plate as small as Ratings (Sim, Nov 18: A; the Pokémon under
-  // each flag made it the biggest plate on Home). Phones and iPads show it as a chip instead
-  const tc = `<ul class="sdt-types">${X.types.map(({t}) => `<li style="--ty:var(--ty-${t})"><span class="sdt-flag"><span>${t}</span></span></li>`).join('')}</ul>`;
-  const types = V2.sdtPlate('Type Chart', 'sdt-tc', 'What your six resists, and what hits it.', 'What your six resists.', tc);
-  // Ratings: the podium (#2, #1, #3)
-  const pod = R.length >= 3 ? `<div class="sdt-pod">${[[R[1], V2.sdtRank(R, 1)], [R[0], 1], [R[2], V2.sdtRank(R, 2)]].map(([x, k]) => `<button type="button" class="sdt-m sdt-step s${k}" data-v2mon="${E(x.n)}" aria-label="${E(V2.disp(x.n))}, rated ${x.r}, number ${k}: open its info">${V2.mon(x.n, {bare: true})}<span class="sdt-blk"><b class="u">${x.r}</b><span>${nm(x.n)}</span></span></button>`).join('')}</div>` : '';
-  /* Not rated yet, day one (Nov 25): with no Pokémon rated, the plate says when ratings start instead of 'All 0 Pokémon' */
+// Home tools redesign (helper proposal, Nov 28; Sim: the tools section "is very rough", "our button designs are terrible").
+// One model for the twelve tools (V2.sdtModel), drawn by one look (V2.SDT_LOOK). Every tile is one link (its title, stretched over the
+// tile); a named Pokémon is its own button on top (data-v2mon). Every number is live data and carries its own plain label.
+V2.sdtModel = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => homeNum(n), nm = n => V2.keepForm(E(V2.disp(n))), C = X.D.champ, T = {};
+  const mon = (n, say, iw) => V2.sdtMon(n, {name: false, say, iw}), art = n => V2.sdtArt(n);
+  // Damage Calculator: the site's calc of the #1 rated's best hit on the #2 rated (as before)
+  const H = X.hit; if (H) { const t = V2.sdtPctTxt(dmgP(H.lo), dmgP(H.hi));
+    T.calc = {name: 'Damage Calculator', fam: 'nasty', line: 'Run the damage first.', art: `${mon(H.a.n, 'attacking')}<i class="sdt-arrow" aria-hidden="true"></i>${mon(H.d.n, 'taking the hit')}`,
+      num: t, numCls: V2.sdtPctCls(t), unit: `of ${nm(H.d.n)}'s HP`, key: `${nm(H.a.n)}'s ${E(H.mv)}`, bar: {lo: H.lo, hi: H.hi}, say: `${E(V2.disp(H.a.n))}'s ${E(H.mv)} takes ${dmgP(H.lo)} to ${dmgP(H.hi)}% of ${E(V2.disp(H.d.n))}'s HP`}; }
+  else T.calc = {name: 'Damage Calculator', fam: 'nasty', line: 'Run the damage first.', art: ''};
+  // Ratings: the top three (#2, #1, #3 as a podium), the rated count as the Ratings page says it
   const r0 = !X.all && V2.noRatings && V2.noRatings();
-  const ratings = V2.sdtPlate('Ratings', 'sdt-ra sdt-ink', r0 ? 'Ratings start with the first tournament results.' : `All ${num(X.all)} Pokémon, rated out of 100.`, r0 ? 'From the first results.' : `All ${num(X.all)}, out of 100.`, pod);
-  // Winning Teams: the latest winner's six, with today's Load Team (asks first when you have a team) and Copy for Showdown
-  const C = X.D.champ; let wins = '';
-  if (C) { const ev = C.ev, t = C.t, key = ev.id + '#' + ev.top.indexOf(t), wl = (String(t.record || '').match(/\b(\d+-\d+(?:-\d+)?)\b/) || [])[1] || '', title = V2.evTitle(ev.name), sure = V2.hmUi && V2.hmUi.sure === key;
-    const say = `This six won ${E(title)} on ${E(evDate(ev.date))}${ev.players ? `: ${num(ev.players)} players` : ''}${wl ? `, ${E(wl)}` : ''}.`;
-    const six = `<div class="sdt-six">${C.six.map(x => V2.sdtMon(x.p.n, {iw: 80, say: x.it ? 'holds ' + x.it : ''})).join('')}</div><p class="sdt-cap">Won ${E(title)}${wl ? ', ' + E(wl) : ''}</p>`;
-    const acts = sure ? V2.hmSure(key) : `<p class="sdt-acts"><button type="button" class="np-link" data-hmload="${E(key)}">Load Team ›</button><button type="button" class="np-link" data-hmcopy="${E(key)}">Copy for Showdown</button></p>`;
-    wins = V2.sdtPlate('Winning Teams', 'sdt-wt', `Every top-cut team, ready to load. ${say}`, 'Every top-cut team, ready to load.', `<div class="sdt-pic">${six}</div>`, acts); }
-  else wins = V2.sdtPlate('Winning Teams', 'sdt-wt', 'Every top-cut team, ready to load.', 'Every top-cut team, ready to load.', '');
-  // Battle: an illustration (your first two, or the top two rated, across a VS from the latest winner's first two)
-  const ms = typeof members === 'function' ? members() : [], mine = (ms.length >= 2 ? ms.slice(0, 2).map(m => m.p.n) : R.slice(0, 2).map(x => x.n)), theirs = C ? C.six.slice(0, 2).map(x => x.p.n) : R.slice(2, 4).map(x => x.n);
-  const vs = `<div class="sdt-vs"><div class="sdt-side you">${mine.map(n => V2.sdtMon(n, {say: ms.length >= 2 ? 'on your team' : ''})).join('')}</div><b class="u sdt-vsw" aria-hidden="true">VS</b><div class="sdt-side them">${theirs.map(n => V2.sdtMon(n, {say: C ? "on the latest winner's team" : ''})).join('')}</div></div>`;
-  const battle = V2.sdtPlate('Battle', 'sdt-bt sdt-ink', 'Scout their six and get a turn 1 plan.', 'Scout their six, get a turn 1 plan.', vs);
-  // Damage Calc: the site's own calc of the #1 rated's best hit on the #2 rated, as a health bar (HP left / could be lost / lost)
-  // the calc number (Kip's review, Nov 26): a sure KO reads "100%", not "100–100%"; its size step comes from its length, so every shape
-  // fits the slanted band: 7+ characters ("94–100%", "8.5–9.9%") the tight size, 6 ("88–99%") the middle size, shorter the full size
-  const H = X.hit, hp = H ? `<div class="sdt-hit"><p class="sdt-hp" role="img" aria-label="${E(H.mv)} takes ${dmgP(H.lo)} to ${dmgP(H.hi)}% of ${E(V2.disp(H.d.n))}'s HP"><i class="left" style="width:${(100 - H.hi).toFixed(1)}%"></i><i class="roll" style="width:${(H.hi - H.lo).toFixed(1)}%"></i></p>
-    <p class="sdt-hpw" aria-hidden="true"><b>${E(H.mv)}</b> <span class="sdt-pct${V2.sdtPctCls(V2.sdtPctTxt(dmgP(H.lo), dmgP(H.hi)))}">${V2.sdtPctTxt(dmgP(H.lo), dmgP(H.hi))}</span><span class="sdt-of">of ${E(V2.disp(H.d.n))}'s HP</span></p><div class="sdt-duel">${V2.sdtMon(H.a.n, {cls: 'atk'})}<i class="sdt-strike" aria-hidden="true"></i>${V2.sdtMon(H.d.n, {cls: 'def'})}</div><p class="sdt-cc" aria-hidden="true">${nm(H.a.n)} into ${nm(H.d.n)}</p></div>` : '';
-  const calc = V2.sdtPlate('Damage Calculator', 'sdt-dc', 'Run the damage first.', 'Run the damage first.', hp);
-  // the four small plates, each picture breaking out of the top
-  const K = X.core, core = K ? `<div class="sdt-pic"><div class="sdt-core">${V2.sdtMon(K.ns[0], {})}<b class="u sdt-plus" aria-hidden="true">+</b>${V2.sdtMon(K.ns[1], {})}</div><p class="sdt-cc" aria-hidden="true">${nm(K.ns[0])} + ${nm(K.ns[1])}</p></div>` : '';
-  const cores = V2.sdtPlate('Winning Cores', 'sdt-sm', 'Pairs that keep winning together.', 'Pairs that win.', core);
-  const A = X.arch, arch = V2.sdtPlate('Archetypes', 'sdt-sm sdt-ar', A.length >= 2 ? `${E(A[0].name)}, ${E(A[1].name)} and the other ways teams win.` : 'The ways teams win right now.', A.length >= 2 ? `${E(A[0].name)}, ${E(A[1].name)} and more.` : 'How teams win.',
-    A.length ? `<div class="sdt-wx">${A.map(a => `<span class="sdt-wxi">${a.mon ? V2.sdtArt(a.mon.n) : ''}<span class="sdt-chip" style="--ty:var(--ty-${a.ty})">${E(a.name)}</span></span>`).join('')}</div>` : '');
-  // Team Preview Practice: a team preview, two rows of three (the latest winner's six, live; the top six rated without one), "Pick 4"
+  T.ratings = {name: 'Ratings', fam: 'plot', line: r0 ? 'Ratings start with the first tournament results.' : `Top today: ${nm(R[0].n)}, ${R[0].r}.`, num: r0 ? '' : num(X.all), unit: 'Pokémon rated out of 100',
+    art: R.length >= 3 ? [[R[1], V2.sdtRank(R, 1)], [R[0], 1], [R[2], V2.sdtRank(R, 2)]].map(([x, k]) => `<span class="sdt-pod s${k}">${mon(x.n, `rated ${x.r}, number ${k}`)}<b class="u" aria-hidden="true">${x.r}</b></span>`).join('') : ''};
+  // Battle: your first two (or the top two rated) across a VS from the latest winner's first two: a picture only
+  const ms = typeof members === 'function' ? members() : [], mine = ms.length >= 2 ? ms.slice(0, 2).map(m => m.p.n) : R.slice(0, 2).map(x => x.n), theirs = C ? C.six.slice(0, 2).map(x => x.p.n) : R.slice(2, 4).map(x => x.n);
+  T.battle = {name: 'Battle', fam: 'nasty', line: 'Scout their six, get a turn 1 plan.', art: `<span class="sdt-side you">${mine.map(art).join('')}</span><b class="u sdt-vs" aria-hidden="true">VS</b><span class="sdt-side them">${theirs.map(art).join('')}</span>`};
+  // Team Preview Practice: the latest winner's six as a team preview
   const pv = (C ? C.six.map(x => x.p.n) : R.slice(0, 6).map(x => x.n)).slice(0, 6);
-  const pp = pv.length === 6 ? `<div class="sdt-pp" aria-hidden="true"><span class="sdt-pp6">${pv.map(n => V2.sdtArt(n)).join('')}</span><span class="u sdt-pick">Pick 4</span></div>` : '';
-  const prac = V2.sdtPlate('Team Preview Practice', 'sdt-sm sdt-ink sdt-pr', 'Practice picking your four at team preview.', 'Practice picking your four.', pp);
-  const S2 = X.set, set = S2 ? `<div class="sdt-set">${V2.sdtMon(S2.x.n, {name: false, say: 'most held item ' + S2.item, sub: `<span class="sdt-si"><b class="sdt-mn">${nm(S2.x.n)}</b><span class="sdt-item">${E(S2.item)}</span></span>`})}</div>` : '';
-  const sets = V2.sdtPlate('Popular Sets', 'sdt-sm', 'The items and moves top players run.', 'Items and moves.', set);
-  // Events and How We Calculate: two mirrored blocks with the big numbers at the outer edges
-  const evN = X.D.events, nx = X.next, nxt = nx ? `Next: ${E(nx.short)}${nx.place ? ', ' + E(nx.place) : ''}, ${E(nx.when)}.` : '';
-  const tail = (name, cls, n, unit, long, short) => `<article class="sdt-p sdt-end ${cls}">${n ? `<p class="sdt-big"><b class="u">${num(n)}</b><small>${unit}</small></p>` : ''}<div class="sdt-tx"><h3 class="u sdt-t"><a class="sdt-go" href="#${V2.SDT_GO[name]}" data-sdtool="${E(name)}">${E(name)}</a></h3><p class="sdt-d"><span class="sdt-l">${long}</span><span class="sdt-s">${short}</span></p></div></article>`;
-  const ends = `<div class="sdt-ends">${tail('Events', 'ev', evN, 'events', `Recent tournaments and who won them.${nxt ? ' ' + nxt : ''}`, nx ? `Next: ${E(nx.short)}, ${E(nx.when)}.` : 'Recent tournaments.')}${tail('How We Calculate', 'hw', X.D.teams, 'tournament teams', 'Every number on NastyPlot is built from them. See how each one is worked out.', 'Where every number comes from.')}</div>`;
-  // Shorter phone Home, Tools B (Sim, Nov 18; docs/rebuild/short-home-options.md): under 700 six big plates stay (Speed Tiers, Ratings,
-  // Damage Calc, Battle, Team Preview Practice, Winning Teams) and the other six become picture chips, two by three, each a link to its
-  // page with its name and a small live picture (CSS shows these only on phones; the plates they stand for are hidden there)
-  const art = n => n ? `<span class="sdt-cpic" aria-hidden="true">${V2.mon(n, {bare: true, iw: 40})}</span>` : '';
-  const flags = `<span class="sdt-cpic sdt-cty" aria-hidden="true">${['Fire', 'Water', 'Grass', 'Electric', 'Dragon', 'Fairy'].map(t => `<i style="--ty:var(--ty-${t})"></i>`).join('')}</span>`;
-  const chip = (name, pic, cls) => `<li${cls ? ` class="${cls}"` : ''}><a class="sdt-chp" href="#${V2.SDT_GO[name]}" data-sdtool="${E(name)}">${pic}<b>${E(name)}</b></a></li>`;
-  const bigN = n => n ? `<span class="sdt-cpic" aria-hidden="true"><b class="u">${num(n)}</b></span>` : '';
-  /* Home tools, Nov 23 (Sim chose A): on desktop (1100+) the Damage Calculator is the band and Speed Tiers and Winning Teams become chips
-     (sdt-chs, sdt-chw, desktop only); Archetypes and Practice are big cards there, so their chips (sdt-cha, sdt-chd) hide */
-  const fast = X.race.length ? X.race[X.race.length - 1].spe : null;
-  const chips = `<nav class="sdt-chips" aria-label="More of the twelve tools"><ul>${chip('Speed Tiers', fast != null ? `<span class="sdt-cpic" aria-hidden="true"><b class="u">${fast}</b></span>` : '', 'sdt-chs')}${chip('Winning Teams', C ? art(C.six[0].p.n) : '', 'sdt-chw')}${chip('Type Chart', flags)}${chip('Winning Cores', K ? art(K.ns[0]) : '')}${chip('Archetypes', A.length && A[0].mon ? art(A[0].mon.n) : '', 'sdt-cha')}${chip('Team Preview Practice', pv.length ? art(pv[0]) : '', 'sdt-chd')}${chip('Popular Sets', S2 ? art(S2.x.n) : '')}${chip('Events', bigN(evN))}${chip('How We Calculate', bigN(X.D.teams))}</ul></nav>`;
-  // More tools (lead, Nov 18): today's Home links 18 tools; the six without a plate stay one tap away as quiet text links
-  const more = (V2.HOME_TOOLS || []).filter(([n]) => !V2.SDT_GO[n]), moreH = more.length ? `<nav class="sdt-more" aria-label="More tools"><h3 class="sdt-mh">More tools</h3><ul>${more.map(([n, d, to]) => `<li><a class="np-link" href="#${to}" data-sdtool="${E(n)}" title="${E(d)}">${E(n).replace(/ (\S+)$/, '\u00a0$1')}\u00a0<span aria-hidden="true">›</span></a></li>`).join('')}</ul></nav>` : '';
-  // one plain line under the playful heading (Sim's Q23 A, Nov 19); its count is the Ratings plate's own (X.all: today's lairRows)
-  return `<section class="sd-band sd-tools sdt" aria-labelledby="sdt-h"><h2 class="u sdt-h" id="sdt-h">Same herd. <span>Twelve tools.</span></h2>
+  T.prac = {name: 'Team Preview Practice', fam: 'nasty', line: 'Practice picking your four.', art: pv.length === 6 ? `<span class="sdt-six6">${pv.map(art).join('')}</span>` : '', tag: 'Pick 4'};
+  // Speed Tiers: the fastest of the top nine rated, by base Speed
+  const f = X.race.length ? X.race[X.race.length - 1] : null;
+  T.speed = {name: 'Speed Tiers', fam: 'nasty', line: f ? 'The fastest of the top 9 rated.' : 'See who moves first.', num: f ? String(f.spe) : '', unit: f ? `base Speed: ${nm(f.n)}` : '', art: f ? mon(f.n, 'base Speed ' + f.spe) : ''};
+  // Type Chart: 18 types; three labelled type tags (a type colour always carries its name)
+  T.types = {name: 'Type Chart', fam: 'nasty', line: 'What your six resists, and what hits it.', num: String(V2.SDT_TYPES.length), unit: 'types', art: `<span class="sdt-tys" aria-hidden="true">${['Fire', 'Water', 'Grass'].map(t => `<i style="--ty:var(--ty-${t})">${t}</i>`).join('')}</span>`};
+  // Winning Teams: the latest winner's six, its event, players and record (Load Team / Copy for Showdown live on Winning Teams)
+  if (C) { const ev = C.ev, t = C.t, wl = (String(t.record || '').match(/\b(\d+-\d+(?:-\d+)?)\b/) || [])[1] || '';
+    T.wins = {name: 'Winning Teams', fam: 'nasty', line: `Latest: won ${E(V2.evTitle(ev.name))}${wl ? ', ' + E(wl) : ''}.`, num: ev.players ? num(ev.players) : '', unit: 'players at the latest win', art: `<span class="sdt-six6 sm">${C.six.map(x => art(x.p.n)).join('')}</span>`}; }
+  else T.wins = {name: 'Winning Teams', fam: 'nasty', line: 'Every top-cut team, ready to load.', art: ''};
+  // Winning Cores: the first pair on Winning Cores as it opens (Top rated); its number is the one that list shows ("% wins")
+  const K = X.core; T.cores = {name: 'Winning Cores', fam: 'plot', line: K ? `${nm(K.ns[0])} + ${nm(K.ns[1])}` : 'Pairs that keep winning together.', num: K && typeof winFmt === 'function' ? winFmt(100 * K.score) : '', unit: 'wins as a pair',
+    art: K ? `${mon(K.ns[0], 'in the top pair')}<b class="u sdt-plus" aria-hidden="true">+</b>${mon(K.ns[1], 'in the top pair')}` : ''};
+  // Archetypes: the two biggest styles, each with its first key Pokémon
+  const A = X.arch; T.arch = {name: 'Archetypes', fam: 'plot', line: A.length >= 2 ? `${E(A[0].name)}, ${E(A[1].name)} and more.` : 'The ways teams win right now.',
+    art: A.map(a => `<span class="sdt-wxi">${a.mon ? art(a.mon.n) : ''}<span class="sdt-chip" style="--ty:var(--ty-${a.ty})">${E(a.name)}</span></span>`).join('')};
+  // Popular Sets: the top rated without a Mega stone and its most held item
+  const S2 = X.set; T.sets = {name: 'Popular Sets', fam: 'plot', line: S2 ? `${nm(S2.x.n)}'s most held item: ${E(S2.item)}.` : 'The items and moves top players run.', art: S2 ? mon(S2.x.n, 'most held item ' + S2.item) : ''};
+  // Events and How We Calculate: their counts, as those pages say them
+  const nx = X.next; T.events = {name: 'Events', fam: 'plot', line: nx ? `Next: ${E(nx.short)}, ${E(nx.when)}.` : 'Recent tournaments and who won them.', num: X.D.events ? num(X.D.events) : '', unit: 'events tracked'};
+  T.method = {name: 'How We Calculate', fam: 'plot', line: 'Every number here is built from them.', num: X.D.teams ? num(X.D.teams) : '', unit: 'tournament teams'};
+  const more = (V2.HOME_TOOLS || []).filter(([n]) => !V2.SDT_GO[n]);
+  return {T, X, more}; };
+// one tile: the title is the link over the whole tile; "Open" is its visible button (the same link, drawn as the kit's go shape)
+V2.sdtTile = (t, cls = '', o = {}) => { const E = V2.esc;
+  const fig = t.num ? `<p class="sdt-fig"><b class="u${t.numCls || ''}">${t.num}</b><small>${t.unit}</small></p>` : '';
+  const bar = t.bar ? `<p class="sdt-bar" role="img" aria-label="${t.say}"><i class="left" style="width:${(100 - t.bar.hi).toFixed(1)}%"></i><i class="roll" style="width:${(t.bar.hi - t.bar.lo).toFixed(1)}%"></i></p>` : '';
+  return `<article class="sdt-tile ${cls}" data-fam="${t.fam}">${t.art ? `<div class="sdt-pic">${t.art}${t.tag ? `<span class="u sdt-tag" aria-hidden="true">${t.tag}</span>` : ''}</div>` : ''}
+    <div class="sdt-tx"><h${o.h || 3} class="u sdt-t"><a class="sdt-go" href="#${V2.SDT_GO[t.name]}" data-sdtool="${E(t.name)}"${t.name === 'Winning Cores' ? ' data-hmcores' : ''}>${E(t.name)}</a></h${o.h || 3}>
+    ${t.key ? `<p class="sdt-key">${t.key}</p>` : ''}${fig}${bar}<p class="sdt-d">${t.line}</p>${o.open === false ? '' : `<span class="sdt-open" aria-hidden="true"><b>Open</b><i></i></span>`}</div></article>`; };
+V2.sdtMoreList = (more, cls) => { const E = V2.esc; return `<ul class="${cls}">${more.map(([n, d, to]) => `<li><a href="#${to}" data-sdtool="${E(n)}" title="${E(d)}"><span>${E(n)}</span><i aria-hidden="true"></i></a></li>`).join('')}</ul>`; };
+// Option C, "Two colours, two jobs": the logo's two colours sort the tools. Nasty pink = tools you play with (calc, battle, practice,
+// speed, types, winning teams); Plot blue = the meta you read (ratings, archetypes, cores, sets, events, how we calculate). Six and six,
+// so every row is full at three, two or one across; every tile is the same white slip with its colour's slanted stage and Open button
+V2.SDT_LOOK = 'C';
+V2.sdTools = () => { const {T, X, more} = V2.sdtModel(), num = n => homeNum(n);
+  const fam = (id, h, sub, keys) => `<div class="sdt-fam" data-fam="${id}"><h3 class="u sdt-fh"><span>${h}</span><small>${sub}</small></h3><div class="sdt-six">${keys.map(k => V2.sdtTile(T[k], 'sdt-' + k, {h: 4})).join('')}</div></div>`;
+  return `<section class="sd-band sd-tools sdt sdt-C" aria-labelledby="sdt-h"><h2 class="u sdt-h" id="sdt-h">Same herd. <span>Twelve tools.</span></h2>
     <p class="sdt-desc">Every tool uses the same ${X.all ? num(X.all) + ' ' : ''}rated Pokémon: speed, types, damage, top teams and more.</p>
-    <div class="sdt-grid">${speed}${types}${ratings}${calc}${wins}${battle}${cores}${arch}${prac}${sets}</div>${ends}${chips}${moreH}</section>`; };
+    <div class="sdt-fams">${fam('nasty', 'Play', 'Plan your games', ['calc', 'battle', 'prac', 'speed', 'types', 'wins'])}${fam('plot', 'Read', 'Know the meta', ['ratings', 'arch', 'cores', 'sets', 'events', 'method'])}</div>
+    <nav class="sdt-more" aria-label="More tools"><h3 class="sdt-mh">More tools</h3>${V2.sdtMoreList(more, 'sdt-ml')}</nav></section>`; };
 // names in tight spots (Type Chart, the six, Battle, the race): a name's longest word never spills out of its spot or breaks
 // mid-word; it steps to the approved narrower letters (88%, then 75%, as Home's most-used names do), then breaks with a hyphen
 V2.sdtFit = () => { document.querySelectorAll('.sdt .sdt-mn').forEach(b => { b.style.fontStretch = ''; b.style.hyphens = ''; if (!b.getClientRects().length) return;
