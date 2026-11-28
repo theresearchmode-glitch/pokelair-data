@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 9:19 AM (9:19:23)  date: Sat Nov 28, 2026
-NOW: chain-d.sh: gate tools D (c8732bc2) into design6 after GitHub green, then main-merge into mm3 (no push). NEXT: push main by hand; when Promote moves live, build + publish the NastyPlot artifact from main (wrapper + WebKit check); tell Sim "ready for your audit". HELPER: none.
+Updated: time: 10:36 AM (10:36:17)  date: Sat Nov 28, 2026
+NOW: Preview rebuild with tools D (design6 3702633e), publish; chain-d.sh main-merge waits for GitHub on 3702633e. DONE: tools D merged into design6 (gate ALL PASSED). NEXT: push main by hand; Promote moves live; build + publish NastyPlot from main (wrapper + WebKit check); tell Sim "ready for your audit".
 NEXT: Kip job 78 fixes (alt/kip78-fixes e465a57a) through the gate (queued, chain-k78.sh).
 NEXT: Sim picks the tools section (A receipts / B plot board / C two colours two jobs; pictures sent). If C: fix empty tile tops, rewrite the old-markup tests, gate.
 HELPER: tools redesign done (3 branches alt/helper-tools-a/b/c); none running.
