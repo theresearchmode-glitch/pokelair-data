@@ -3044,3 +3044,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:35 AM: Sim: tools option D, 'love it. lets do it.' Next: rewrite the old tools tests for D, GitHub green, gate into design6, Preview update. Event-name wrap at 1440 to check.
 - 6:36 AM: Hourly check 6:36 AM: disk 9.8 GB, Game Plan v136. Main job: d-tests.sh (old tests vs option D); GitHub run 46137213540 on alt/helper-tools-d also running.
 - 7:01 AM: Started helper: rewrite the old tools tests for option D on alt/helper-tools-d (6 files use old sdt- classes; checks must stay able to fail). Main thread: 7 launch checks on design6 efe864fa.
+- 7:05 AM: Launch checks on design6 efe864fa (herd + Kip 78 fixes) with main's data: 7/7 exit 0 (public-site, deploy-smoke 369 URLs, seo, as-of, speed, privacy, links).
