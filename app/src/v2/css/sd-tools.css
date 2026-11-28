@@ -51,83 +51,135 @@
 .sdt-ml a i{width:7px;height:7px;flex:none;border:solid currentColor;border-width:2.5px 2.5px 0 0;rotate:45deg;margin-right:4px}
 @media (hover:hover){.sdt-ml a:hover span{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}}
 @media (max-width:699.98px){.sdt-desc{margin-bottom:var(--s6);font-size:var(--t15)}.sdt-d{font-size:var(--t13)}}
-/* Option C, two colours, two jobs: the logo's colours sort the tools. Nasty pink = tools you play with, Plot blue = the meta you read.
-   Each family is six white slanted slips (dark at night) with the same coloured stage under its Pokémon, its number in the family
-   colour with a plain label, and the family's slanted Open button. Six and six: every row is full at three, two or one across. */
-.sdt-C [data-fam="nasty"]{--f:var(--sd-fn);--f-on:var(--sd-fn-on);--f-tx:var(--sd-fn-tx);--f-stage:var(--sd-fn-stage)}
-.sdt-C [data-fam="plot"]{--f:var(--sd-fp);--f-on:var(--sd-fp-on);--f-tx:var(--sd-fp-tx);--f-stage:var(--sd-fp-stage)}
-.sdt-fams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s10)}
-.sdt-fh{display:flex;align-items:baseline;gap:var(--s3);margin:0 0 var(--s4)}
-.sdt-fh span{display:inline-block;padding:var(--s1) var(--s4);background:var(--f);color:var(--f-on);font-size:var(--t28);line-height:1.1;transform:skewX(-8deg)}
-.sdt-fh small{font:600 var(--t16)/1.3 var(--b);font-style:normal;color:var(--sd-card-ink)}
-:root[data-theme="night"] .sdt-fh small{color:var(--ink)}
-.sdt-six{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:var(--s5) var(--s4)}
-.sdt-C .sdt-tile{--k:10px;padding:var(--s4) calc(var(--s4) + var(--k)) var(--s4);color:var(--sd-card-ink)}
-.sdt-C .sdt-tile::before,.sdt-C .sdt-tile::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--sd-card);clip-path:polygon(var(--k) 0,100% 0,calc(100% - var(--k)) 100%,0 100%)}
-.sdt-C .sdt-tile::after{z-index:-2;background:var(--sd-card-shade);translate:6px 6px}
-@media (hover:hover){.sdt-C .sdt-tile:hover::after{background:var(--f)}}
-.sdt-C .sdt-pic{order:-1;height:88px;margin:0 0 var(--s3)}
-.sdt-C .sdt-pic::before{content:"";position:absolute;left:0;right:0;bottom:0;height:28px;z-index:-1;background:var(--f-stage);transform:skewX(-14deg)}
-.sdt-C .sdt-t{font-size:var(--t17)}
-.sdt-C .sdt-fig b{color:var(--f-tx);font-size:var(--t26)}.sdt-C .sdt-fig small{color:var(--sd-card-ink2)}
-.sdt-C .sdt-d{color:var(--sd-card-ink2);font-size:var(--t13)}
-.sdt-C .sdt-tile:has(.sdt-fig) .sdt-d{display:none}
-.sdt-C .sdt-open{margin-top:var(--s3);padding:var(--s2) var(--s3);background:var(--f);color:var(--f-on);font-size:var(--t13);transform:skewX(-8deg);box-shadow:3px 3px 0 var(--k-go-shadow)}
-.sdt-C .sdt-tx{justify-content:flex-start}.sdt-C .sdt-tx>.sdt-open{margin-top:auto}.sdt-C .sdt-tx>:nth-last-child(2){margin-bottom:var(--s3)}
-.sdt-C .sdt-tag{background:var(--f);color:var(--f-on);font-size:var(--t13)}
-.sdt-C .sdt-vs,.sdt-C .sdt-plus,.sdt-C .sdt-arrow{color:var(--f-tx)}
-.sdt-C .sdt-pod>b{color:var(--f-tx);font-size:var(--t15)}
-.sdt-C .sdt-pic>.sdt-m .np-mon{--iw:76px}.sdt-C .sdt-pod .np-mon{--iw:44px}.sdt-C .sdt-pod.s1 .np-mon{--iw:56px}
-.sdt-C .sdt-side .np-mon{--iw:56px}.sdt-C .sdt-side .sdt-art+.sdt-art{display:none}.sdt-C .sdt-vs{font-size:var(--t17)}
-.sdt-C .sdt-six6 .np-mon,.sdt-C .sdt-six6.sm .np-mon{--iw:34px}.sdt-C .sdt-six6.sm{grid-template-columns:repeat(3,auto)}
-.sdt-C .sdt-wxi .np-mon{--iw:52px}.sdt-C .sdt-pic .sdt-tag{display:none}
-.sdt-C .sdt-calc .sdt-pic>.sdt-m .np-mon{--iw:64px}.sdt-C .sdt-calc .sdt-pic{gap:var(--s1)}.sdt-C .sdt-arrow{width:20px;height:20px}
-.sdt-C .sdt-calc .sdt-key{display:none}
-.sdt-C .sdt-bar{height:10px;background:var(--f)}.sdt-C .sdt-bar .left{background:var(--sd-hp-lost)}.sdt-C .sdt-bar .roll{background:var(--f-stage)}
-/* the no-picture slips: the number is the picture */
-.sdt-C .sdt-events .sdt-fig,.sdt-C .sdt-method .sdt-fig{order:-1;justify-content:flex-end;min-height:88px;margin:0 0 var(--s3)}
-.sdt-C .sdt-events .sdt-fig b,.sdt-C .sdt-method .sdt-fig b{font-size:var(--t34)}
-.sdt-C .sdt-events .sdt-t,.sdt-C .sdt-method .sdt-t{order:-2;margin-bottom:var(--s1)}
-/* More tools: the kit's outlined slanted chips, one row */
-.sdt-C .sdt-more{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);margin-top:var(--s10)}
-.sdt-C .sdt-mh{margin:0;font:700 var(--t15)/1.3 var(--b);color:var(--sd-card-ink)}:root[data-theme="night"] .sdt-C .sdt-mh{color:var(--ink)}
-.sdt-C .sdt-ml{display:flex;flex-wrap:wrap;gap:var(--s3)}
-.sdt-C .sdt-ml a{padding:0 var(--s4);border:3px solid var(--plot);color:var(--plot-text);font-family:var(--u);font-style:italic;font-weight:800;transform:skewX(-8deg)}
-:root[data-theme="night"] .sdt-C .sdt-ml a{color:var(--sd-fp-tx);border-color:var(--sd-fp-tx)}
-.sdt-C .sdt-ml a i{margin-right:0}
+/* Option D, receipts that play and read: C's two jobs printed as A's receipts. Every tool is a paper slip (torn bottom edge, hard
+   offset shade) with its name printed across the top in its family's solid colour (Nasty pink = play, Plot blue = read), the picture
+   on a family-tinted stage, a dashed rule, the big slanted number in the family colour with its plain label, and the family's slanted
+   Open tab hanging off the tear. Each family's label is a rubber stamp. Six and six: every row is full at three, two or one across. */
+.sdt-D [data-fam="nasty"]{--f:var(--sd-rd-nasty);--f-tx:var(--sd-rd-nasty-tx);--f-stage:var(--sd-rd-nasty-stage)}
+.sdt-D [data-fam="plot"]{--f:var(--sd-rd-plot);--f-tx:var(--sd-rd-plot-tx);--f-stage:var(--sd-rd-plot-stage)}
+.sdt-D .sdt-fams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s10)}
+/* the family label: a rubber stamp (solid family colour, an inked inner border, set down a little crooked) */
+.sdt-D .sdt-fh{display:flex;align-items:center;gap:var(--s4);margin:0 0 var(--s5)}
+.sdt-D .sdt-fh span{display:inline-block;padding:var(--s2) var(--s5);background:var(--f);color:var(--sd-rd-on);font-size:var(--t28);line-height:1.1;outline:2px dashed var(--sd-rd-on);outline-offset:-6px;rotate:-3deg;border-radius:var(--r-s)}
+.sdt-D .sdt-fh small{font:600 var(--t16)/1.3 var(--b);font-style:normal;color:var(--sd-card-ink)}
+:root[data-theme="night"] .sdt-D .sdt-fh small{color:var(--ink)}
+/* one slip */
+.sdt-D .sdt-tile{--tear:8px;padding:0 0 calc(var(--s8) + var(--tear));color:var(--sd-rd-ink)}
+.sdt-D .sdt-tile::before,.sdt-D .sdt-tile::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--sd-rd-paper);
+  -webkit-mask:linear-gradient(var(--sd-mask) 0 0) top/100% calc(100% - var(--tear)) no-repeat,conic-gradient(from 135deg at 50% 0,var(--sd-mask) 90deg,transparent 0) bottom/calc(var(--tear) * 2) var(--tear) repeat-x;
+  mask:linear-gradient(var(--sd-mask) 0 0) top/100% calc(100% - var(--tear)) no-repeat,conic-gradient(from 135deg at 50% 0,var(--sd-mask) 90deg,transparent 0) bottom/calc(var(--tear) * 2) var(--tear) repeat-x}
+.sdt-D .sdt-tile::after{z-index:-2;background:var(--sd-rd-shade);translate:6px 6px}
+@media (hover:hover){.sdt-D .sdt-tile:hover::after{background:var(--f)}.sdt-D .sdt-tile:hover .sdt-go{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:var(--s1)}}
+/* the name, printed across the top in the family colour (two lines' room, so the pictures in a row line up) */
+.sdt-D .sdt-t{display:flex;align-items:flex-end;min-height:calc(2.2em + var(--s5));padding:var(--s2) var(--s3) var(--s3);background:var(--f);color:var(--sd-rd-on);font-size:var(--t17);line-height:1.1}
+.sdt-D .sdt-pic{height:100px;margin:var(--s3) var(--s3) 0;gap:var(--s1)}
+.sdt-D .sdt-pic::before{content:"";position:absolute;left:var(--s2);right:var(--s2);bottom:0;height:28px;z-index:-1;background:var(--f-stage);transform:skewX(-14deg)}
+.sdt-D .sdt-tx{margin:var(--s3) var(--s3) 0;padding-top:var(--s2);border-top:2px dashed var(--sd-rd-rule)}
+.sdt-D .sdt-fig{margin:0}
+.sdt-D .sdt-fig b{color:var(--f-tx);font-size:var(--t28)}.sdt-D .sdt-fig small{color:var(--sd-rd-ink2)}
+.sdt-D .sdt-d{margin:0;color:var(--sd-rd-ink2);font-size:var(--t13)}
+.sdt-D .sdt-tile:has(.sdt-fig) .sdt-d{display:none}
+.sdt-D .sdt-open{position:absolute;right:var(--s3);bottom:calc(var(--s3) * -1);z-index:0;margin:0;padding:var(--s2) var(--s3);background:var(--f);color:var(--sd-rd-on);font-size:var(--t15);transform:skewX(-8deg);box-shadow:4px 4px 0 var(--sd-rd-tab-shadow)}
+/* the pictures */
+.sdt-D .sdt-vs,.sdt-D .sdt-plus,.sdt-D .sdt-arrow{color:var(--f-tx)}
+.sdt-D .sdt-pod>b{color:var(--f-tx);font-size:var(--t15)}
+.sdt-D .sdt-pic>.sdt-m .np-mon{--iw:92px}.sdt-D .sdt-pod .np-mon{--iw:48px}.sdt-D .sdt-pod.s1 .np-mon{--iw:60px}.sdt-D .sdt-pod{margin:0 -2px}
+.sdt-D .sdt-calc .sdt-pic>.sdt-m .np-mon,.sdt-D .sdt-cores .sdt-pic>.sdt-m .np-mon{--iw:64px}.sdt-D .sdt-arrow{width:20px;height:20px}
+.sdt-D .sdt-side .np-mon{--iw:60px}.sdt-D .sdt-side .sdt-art+.sdt-art{display:none}.sdt-D .sdt-vs{font-size:var(--t17)}
+.sdt-D .sdt-six6 .np-mon,.sdt-D .sdt-six6.sm .np-mon{--iw:46px}.sdt-D .sdt-six6.sm{grid-template-columns:repeat(3,auto)}.sdt-D .sdt-six6{gap:0}
+.sdt-D .sdt-wxi .np-mon{--iw:72px}.sdt-D .sdt-wxi .sdt-chip{display:none}.sdt-D .sdt-pic .sdt-tag{display:none}
+.sdt-D .sdt-tys{gap:var(--s2)}.sdt-D .sdt-tys i{font-size:var(--t15);padding:var(--s1) var(--s3)}
+.sdt-D .sdt-calc .sdt-key{display:none}
+.sdt-D .sdt-bar{height:10px;margin-top:var(--s1);background:var(--f)}.sdt-D .sdt-bar .left{background:var(--sd-rd-track)}.sdt-D .sdt-bar .roll{background:var(--f-stage)}
+/* receipt lines (Events: the next two; How We Calculate: what it counts), where the others have Pokémon */
+.sdt-D .sdt-pic:has(.sdt-rl),.sdt-D .sdt-pic:has(.sdt-nx){align-items:stretch}.sdt-D .sdt-pic:has(.sdt-rl)::before,.sdt-D .sdt-pic:has(.sdt-nx)::before{display:none}
+.sdt-D .sdt-rl{display:flex;flex-direction:column;justify-content:flex-end;width:100%;margin:0;padding:0;list-style:none}
+.sdt-D .sdt-rl li{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2);padding:var(--s1) 0;border-bottom:1px dashed var(--sd-rd-rule);font:500 var(--t13)/1.3 var(--b);color:var(--sd-rd-ink2)}
+.sdt-D .sdt-rl li:last-child{border-bottom:0}
+.sdt-D .sdt-rl span{min-width:0}.sdt-D .sdt-rl b{flex:none;color:var(--f-tx);font-weight:800;white-space:nowrap}
+.sdt-D .sdt-method .sdt-rl b{font:800 italic var(--t15)/1.3 var(--u)}
+.sdt-D .sdt-stub{display:none}
+/* Events: its next event, printed like a ticket stub (what, when, where) */
+.sdt-D .sdt-nx{display:flex;flex-direction:column;justify-content:flex-end;width:100%;margin:0;padding:0 0 0 var(--s3);border-left:4px solid var(--f)}
+.sdt-D .sdt-nx small{font:600 var(--t13)/1.3 var(--b);color:var(--sd-rd-ink2)}
+.sdt-D .sdt-nx b{font-size:var(--t22);line-height:1.2;color:var(--f-tx);white-space:nowrap}
+.sdt-D .sdt-nx span{font:700 var(--t15)/1.3 var(--b);color:var(--sd-rd-ink)}
+/* More tools: six paper tickets, one row */
+.sdt-D .sdt-more{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);margin-top:var(--s10)}
+.sdt-D .sdt-mh{margin:0;font:700 var(--t15)/1.3 var(--b);color:var(--sd-card-ink)}:root[data-theme="night"] .sdt-D .sdt-mh{color:var(--ink)}
+.sdt-D .sdt-ml{display:flex;flex-wrap:wrap;gap:var(--s3)}
+.sdt-D .sdt-ml a{padding:0 var(--s4);background:var(--sd-rd-paper);color:var(--sd-rd-ink);font-family:var(--u);font-style:italic;font-weight:800;transform:skewX(-8deg);box-shadow:4px 4px 0 var(--sd-rd-shade)}
+.sdt-D .sdt-ml a i{margin-right:0;color:var(--sd-rd-nasty-tx)}
 
-/* phones: each family is a column of six slanted slips, one line each (picture, name and what the number counts, the number, the
-   family's Open chevron), so the whole band stays short */
+/* desktop (1380+): one grid of seven columns (three, a gutter, three) so both families' rows line up exactly */
+@media (min-width:1380px){.sdt-D .sdt-fams{grid-template-columns:repeat(3,minmax(0,1fr)) var(--s2) repeat(3,minmax(0,1fr));grid-template-rows:auto;grid-auto-rows:1fr;gap:var(--s8) var(--s4)}
+  .sdt-D .sdt-fam,.sdt-D .sdt-six{display:contents}
+  .sdt-D .sdt-fam[data-fam="nasty"] .sdt-fh{grid-area:1/1/2/4}.sdt-D .sdt-fam[data-fam="plot"] .sdt-fh{grid-area:1/5/2/8}.sdt-D .sdt-fh{margin:0}
+  .sdt-D .sdt-six>.sdt-tile:nth-child(-n+3){grid-row:2}.sdt-D .sdt-six>.sdt-tile:nth-child(n+4){grid-row:3}
+  .sdt-D .sdt-fam[data-fam="nasty"] .sdt-tile:nth-child(3n+1){grid-column:1}.sdt-D .sdt-fam[data-fam="nasty"] .sdt-tile:nth-child(3n+2){grid-column:2}.sdt-D .sdt-fam[data-fam="nasty"] .sdt-tile:nth-child(3n){grid-column:3}
+  .sdt-D .sdt-fam[data-fam="plot"] .sdt-tile:nth-child(3n+1){grid-column:5}.sdt-D .sdt-fam[data-fam="plot"] .sdt-tile:nth-child(3n+2){grid-column:6}.sdt-D .sdt-fam[data-fam="plot"] .sdt-tile:nth-child(3n){grid-column:7}}
+/* under 1380 the slips are short: one picture, the stub (Events' dates, a little receipt for How We Calculate) where lines were */
 @media (max-width:1379.98px){
-  .sdt-six{grid-template-columns:minmax(0,1fr);grid-auto-rows:auto;gap:var(--s2)}
-  .sdt-fh span{font-size:var(--t22)}.sdt-fh small{font-size:var(--t15)}.sdt-fams{gap:var(--s6)}
-  .sdt-C .sdt-tile{--k:8px;display:grid;grid-template-columns:56px minmax(0,1fr) auto 28px;align-items:center;column-gap:var(--s3);min-height:60px;padding:var(--s1) calc(var(--s2) + var(--k)) var(--s1) calc(var(--s3) + var(--k))}
-  .sdt-C .sdt-tile::after{translate:4px 4px}
-  .sdt-C .sdt-tx{display:contents}
-  .sdt-C .sdt-pic{grid-column:1;grid-row:1/3;height:52px;margin:0;gap:0}.sdt-C .sdt-pic::before{height:16px}
-  .sdt-C .sdt-pic>:not(:first-child),.sdt-C .sdt-pic .sdt-vs{display:none}.sdt-C .sdt-pic .sdt-side.them{display:none}
-  .sdt-C .sdt-pic .sdt-six6,.sdt-C .sdt-pic .sdt-side{display:flex}.sdt-C .sdt-six6 .sdt-art:not(:first-child){display:none}
-  .sdt-C .sdt-pic .np-mon,.sdt-C .sdt-pic>.sdt-m .np-mon,.sdt-C .sdt-calc .sdt-pic>.sdt-m .np-mon,.sdt-C .sdt-six6 .np-mon,.sdt-C .sdt-six6.sm .np-mon,.sdt-C .sdt-side .np-mon,.sdt-C .sdt-wxi .np-mon,.sdt-C .sdt-pod.s1 .np-mon{--iw:48px}
-  .sdt-C .sdt-ratings .sdt-pic .sdt-pod{display:none}.sdt-C .sdt-ratings .sdt-pic .sdt-pod.s1{display:flex}.sdt-C .sdt-pod>b,.sdt-C .sdt-wxi .sdt-chip{display:none}
-  .sdt-C .sdt-tys{flex-direction:column}.sdt-C .sdt-tys i:not(:first-child){display:none}
-  .sdt-C .sdt-t{grid-column:2;grid-row:1;align-self:end;font-size:var(--t15)}
-  .sdt-C .sdt-fig{display:contents}.sdt-C .sdt-fig small{grid-column:2;grid-row:2;align-self:start}.sdt-C .sdt-fig b{grid-column:3;grid-row:1/3;font-size:var(--t22);padding:0}
-  .sdt-C .sdt-d{grid-column:2/4;grid-row:2;align-self:start;margin:0}.sdt-C .sdt-bar{display:none}
-  .sdt-C .sdt-events .sdt-fig,.sdt-C .sdt-method .sdt-fig{display:contents}.sdt-C .sdt-events .sdt-fig b,.sdt-C .sdt-method .sdt-fig b{font-size:var(--t22)}
-  .sdt-C .sdt-open{grid-column:4;grid-row:1/3;align-self:center;display:grid;place-items:center;width:28px;height:28px;margin:0;padding:0}.sdt-C .sdt-open b{display:none}.sdt-C .sdt-open i{margin:0 4px 0 0}
-  .sdt-C .sdt-tx>.sdt-open{margin:0}.sdt-C .sdt-types .sdt-pic{display:none}.sdt-C .sdt-calc .sdt-fig b,.sdt-C .sdt-method .sdt-fig b{grid-column:2;grid-row:2;justify-self:start}.sdt-C .sdt-calc .sdt-fig small,.sdt-C .sdt-method .sdt-fig small{grid-row:3}.sdt-C .sdt-calc .sdt-pic,.sdt-C .sdt-calc .sdt-open,.sdt-C .sdt-method .sdt-open{grid-row:1/4}.sdt-C .sdt-calc{padding-top:var(--s2);padding-bottom:var(--s2)}
-  .sdt-C .sdt-more{margin-top:var(--s8)}.sdt-C .sdt-ml{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
-  .sdt-C .sdt-ml a{justify-content:space-between;padding:0 var(--s3);font-size:var(--t13);white-space:nowrap}}
-/* desktop: one grid of six columns, so the two families' rows line up exactly (same height, same top) */
-@media (min-width:1380px){.sdt-fams{grid-template-columns:repeat(3,minmax(0,1fr)) var(--s4) repeat(3,minmax(0,1fr));grid-template-rows:auto;grid-auto-rows:1fr;gap:var(--s5) var(--s4);column-gap:var(--s4)}
-  .sdt-fam,.sdt-six{display:contents}
-  .sdt-fam[data-fam="nasty"] .sdt-fh{grid-area:1/1/2/4}.sdt-fam[data-fam="plot"] .sdt-fh{grid-area:1/5/2/8}
-  .sdt-six>.sdt-tile:nth-child(-n+3){grid-row:2}.sdt-six>.sdt-tile:nth-child(n+4){grid-row:3}
-  .sdt-fam[data-fam="nasty"] .sdt-tile:nth-child(3n+1){grid-column:1}.sdt-fam[data-fam="nasty"] .sdt-tile:nth-child(3n+2){grid-column:2}.sdt-fam[data-fam="nasty"] .sdt-tile:nth-child(3n){grid-column:3}
-  .sdt-fam[data-fam="plot"] .sdt-tile:nth-child(3n+1){grid-column:5}.sdt-fam[data-fam="plot"] .sdt-tile:nth-child(3n+2){grid-column:6}.sdt-fam[data-fam="plot"] .sdt-tile:nth-child(3n){grid-column:7}}
-@media (max-width:699.98px){.sdt-fams{grid-template-columns:minmax(0,1fr)}}
-@media (min-width:700px) and (max-width:1379.98px){.sdt-fams{grid-template-columns:minmax(0,1fr) var(--s2) minmax(0,1fr);gap:var(--s2) var(--s4)}.sdt-C .sdt-ml{display:flex;width:auto}
-  .sdt-fam,.sdt-six{display:contents}.sdt-fam[data-fam="nasty"] .sdt-fh{grid-area:1/1}.sdt-fam[data-fam="plot"] .sdt-fh{grid-area:1/3}
-  .sdt-fam[data-fam="nasty"] .sdt-tile{grid-column:1}.sdt-fam[data-fam="plot"] .sdt-tile{grid-column:3}.sdt-six>.sdt-tile:nth-child(1){grid-row:2}.sdt-six>.sdt-tile:nth-child(2){grid-row:3}.sdt-six>.sdt-tile:nth-child(3){grid-row:4}.sdt-six>.sdt-tile:nth-child(4){grid-row:5}.sdt-six>.sdt-tile:nth-child(5){grid-row:6}.sdt-six>.sdt-tile:nth-child(6){grid-row:7}
-  .sdt-C .sdt-fig b,.sdt-C .sdt-events .sdt-fig b,.sdt-C .sdt-method .sdt-fig b{font-size:var(--t20)}}
-.sdt-C .sdt-wxi .sdt-chip{display:none}.sdt-C .sdt-wxi .np-mon{--iw:64px}
+  .sdt-D .sdt-pic>:not(:first-child),.sdt-D .sdt-pic .sdt-vs{display:none}.sdt-D .sdt-pic .sdt-side.them{display:none}
+  .sdt-D .sdt-pic .sdt-six6,.sdt-D .sdt-pic .sdt-side{display:flex}.sdt-D .sdt-six6 .sdt-art:not(:first-child){display:none}
+  .sdt-D .sdt-pic .np-mon,.sdt-D .sdt-pic>.sdt-m .np-mon,.sdt-D .sdt-calc .sdt-pic>.sdt-m .np-mon,.sdt-D .sdt-cores .sdt-pic>.sdt-m .np-mon,.sdt-D .sdt-six6 .np-mon,.sdt-D .sdt-six6.sm .np-mon,.sdt-D .sdt-side .np-mon,.sdt-D .sdt-wxi .np-mon,.sdt-D .sdt-pod.s1 .np-mon{--iw:50px}
+  .sdt-D .sdt-ratings .sdt-pic .sdt-pod{display:none}.sdt-D .sdt-ratings .sdt-pic .sdt-pod.s1{display:flex}.sdt-D .sdt-pod>b{display:none}
+  .sdt-D .sdt-tys{flex-direction:column}.sdt-D .sdt-tys i:not(:first-child){display:none}.sdt-D .sdt-tys i{font-size:var(--t13);padding:var(--s1) var(--s2)}
+  .sdt-D .sdt-pic>.sdt-rl,.sdt-D .sdt-pic>.sdt-nx{display:none}.sdt-D .sdt-pic>.sdt-stub{display:grid}
+  .sdt-D .sdt-stub{place-items:center;width:100%;height:100%}
+  .sdt-D .sdt-events .sdt-stub b{padding:var(--s1);background:var(--f);color:var(--sd-rd-on);font-size:var(--t13);line-height:1.1;text-align:center;white-space:nowrap;transform:skewX(-8deg)}
+  .sdt-D .sdt-method .sdt-stub{position:relative;isolation:isolate;align-content:start;gap:var(--s1);width:32px;height:40px;margin:auto;padding:var(--s2) var(--s1) 0;justify-items:start}
+  .sdt-D .sdt-method .sdt-stub::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--f);
+    -webkit-mask:linear-gradient(var(--sd-mask) 0 0) top/100% calc(100% - 4px) no-repeat,conic-gradient(from 135deg at 50% 0,var(--sd-mask) 90deg,transparent 0) bottom/8px 4px repeat-x;
+    mask:linear-gradient(var(--sd-mask) 0 0) top/100% calc(100% - 4px) no-repeat,conic-gradient(from 135deg at 50% 0,var(--sd-mask) 90deg,transparent 0) bottom/8px 4px repeat-x}
+  .sdt-D .sdt-method .sdt-stub i{display:block;width:20px;height:2px;background:var(--sd-rd-on)}.sdt-D .sdt-method .sdt-stub i:nth-child(2){width:12px}
+  .sdt-D .sdt-bar{display:none}.sdt-D .sdt-tile:has(.sdt-fig) .sdt-d{display:none}}
+/* 700-1379: every tool is a short slip: its name printed across the top in the family colour, then one line on paper (the picture,
+   the number with its plain label, the family's chevron), the torn edge under it. 1100-1379: two slips across, three down, per
+   family; 700-1099: one column of six per family. The two families stand side by side, rows lined up across the gutter */
+@media (min-width:700px) and (max-width:1379.98px){
+  .sdt-D .sdt-fam,.sdt-D .sdt-six{display:contents}.sdt-D .sdt-fh{margin:0}.sdt-D .sdt-fh span{font-size:var(--t24)}.sdt-D .sdt-fh small{font-size:var(--t15)}
+  .sdt-D .sdt-tile{--tear:6px;display:grid;grid-template-columns:56px minmax(0,1fr) 16px;grid-template-rows:auto 1fr;align-items:center;column-gap:var(--s3);padding:0 var(--s3) calc(var(--s2) + var(--tear))}
+  .sdt-D .sdt-tile::after{translate:4px 4px}
+  .sdt-D .sdt-t{grid-column:1/-1;grid-row:1;min-height:0;margin:0 calc(var(--s3) * -1) var(--s2);padding:var(--s1) var(--s3);font-size:var(--t15);white-space:nowrap}
+  .sdt-D .sdt-pic{grid-column:1;grid-row:2;height:52px;margin:0;gap:0}.sdt-D .sdt-pic::before{left:0;right:0;height:16px}
+  .sdt-D .sdt-tx{grid-column:2;grid-row:2;margin:0;padding:0;border:0}
+  .sdt-D .sdt-fig b{font-size:var(--t22);padding:0}.sdt-D .sdt-fig small{line-height:1.3}
+  .sdt-D .sdt-open{position:static;grid-column:3;grid-row:2;align-self:center;padding:0;background:none;box-shadow:none;transform:none;color:var(--f-tx)}.sdt-D .sdt-open b{display:none}.sdt-D .sdt-open i{width:10px;height:10px}}
+@media (min-width:1100px) and (max-width:1379.98px){.sdt-D .sdt-fams{grid-template-columns:repeat(2,minmax(0,1fr)) var(--s2) repeat(2,minmax(0,1fr));grid-template-rows:auto;grid-auto-rows:1fr;gap:var(--s5) var(--s4)}
+  .sdt-D .sdt-fam[data-fam="nasty"] .sdt-fh{grid-area:1/1/2/3}.sdt-D .sdt-fam[data-fam="plot"] .sdt-fh{grid-area:1/4/2/6}
+  .sdt-D .sdt-six>.sdt-tile:nth-child(-n+2){grid-row:2}.sdt-D .sdt-six>.sdt-tile:nth-child(n+3):nth-child(-n+4){grid-row:3}.sdt-D .sdt-six>.sdt-tile:nth-child(n+5){grid-row:4}
+  .sdt-D .sdt-fam[data-fam="nasty"] .sdt-tile:nth-child(odd){grid-column:1}.sdt-D .sdt-fam[data-fam="nasty"] .sdt-tile:nth-child(even){grid-column:2}
+  .sdt-D .sdt-fam[data-fam="plot"] .sdt-tile:nth-child(odd){grid-column:4}.sdt-D .sdt-fam[data-fam="plot"] .sdt-tile:nth-child(even){grid-column:5}
+  .sdt-D .sdt-t{min-height:calc(2.2em + var(--s2));white-space:normal}}
+@media (min-width:700px) and (max-width:1099.98px){.sdt-D .sdt-fams{grid-template-columns:minmax(0,1fr) var(--s2) minmax(0,1fr);grid-template-rows:auto;grid-auto-rows:1fr;gap:var(--s4) var(--s4)}
+  .sdt-D .sdt-fam[data-fam="nasty"] .sdt-fh{grid-area:1/1}.sdt-D .sdt-fam[data-fam="plot"] .sdt-fh{grid-area:1/3}.sdt-D .sdt-fh{margin-bottom:var(--s1)}
+  .sdt-D .sdt-fam[data-fam="nasty"] .sdt-tile{grid-column:1}.sdt-D .sdt-fam[data-fam="plot"] .sdt-tile{grid-column:3}
+  .sdt-D .sdt-six>.sdt-tile:nth-child(1){grid-row:2}.sdt-D .sdt-six>.sdt-tile:nth-child(2){grid-row:3}.sdt-D .sdt-six>.sdt-tile:nth-child(3){grid-row:4}.sdt-D .sdt-six>.sdt-tile:nth-child(4){grid-row:5}.sdt-D .sdt-six>.sdt-tile:nth-child(5){grid-row:6}.sdt-D .sdt-six>.sdt-tile:nth-child(6){grid-row:7}
+  .sdt-D .sdt-fig{display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between;gap:var(--s2)}.sdt-D .sdt-fig small{min-width:0}.sdt-D .sdt-calc .sdt-fig,.sdt-D .sdt-method .sdt-fig{flex-direction:column;align-items:flex-start;gap:0}
+  .sdt-D .sdt-t{margin-bottom:var(--s1)}.sdt-D .sdt-pic{height:48px}.sdt-D .sdt-tile{padding-bottom:calc(var(--s1) + var(--tear))}
+  .sdt-D .sdt-pic .np-mon,.sdt-D .sdt-pic>.sdt-m .np-mon,.sdt-D .sdt-calc .sdt-pic>.sdt-m .np-mon,.sdt-D .sdt-cores .sdt-pic>.sdt-m .np-mon,.sdt-D .sdt-six6 .np-mon,.sdt-D .sdt-six6.sm .np-mon,.sdt-D .sdt-side .np-mon,.sdt-D .sdt-wxi .np-mon,.sdt-D .sdt-pod.s1 .np-mon{--iw:46px}
+  .sdt-D .sdt-ml{gap:var(--s3)}}
+/* phones: each family is one long receipt (its stamp printed across the top, a dashed line between tools, the torn edge at the
+   bottom); a tool is one line: picture, name and what the number counts, the number, the family's chevron */
+@media (max-width:699.98px){
+  .sdt-D .sdt-fams{grid-template-columns:minmax(0,1fr);gap:var(--s8)}
+  .sdt-D .sdt-fh{margin:0;padding:var(--s3) var(--s4);background:var(--f);color:var(--sd-rd-on)}
+  .sdt-D .sdt-fh span{padding:0;background:none;font-size:var(--t24);outline:0;rotate:none}.sdt-D .sdt-fh small,:root[data-theme="night"] .sdt-D .sdt-fh small{color:var(--sd-rd-on);font-size:var(--t15)}
+  .sdt-D .sdt-fam{position:relative;isolation:isolate;padding-bottom:var(--s2)}
+  .sdt-D .sdt-fam::before,.sdt-D .sdt-fam::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--sd-rd-paper);
+    -webkit-mask:linear-gradient(var(--sd-mask) 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from 135deg at 50% 0,var(--sd-mask) 90deg,transparent 0) bottom/16px 8px repeat-x;
+    mask:linear-gradient(var(--sd-mask) 0 0) top/100% calc(100% - 8px) no-repeat,conic-gradient(from 135deg at 50% 0,var(--sd-mask) 90deg,transparent 0) bottom/16px 8px repeat-x}
+  .sdt-D .sdt-fam::after{z-index:-2;background:var(--sd-rd-shade);translate:4px 4px}
+  .sdt-D .sdt-tile{display:grid;grid-template-columns:56px minmax(0,1fr) auto 16px;align-items:center;column-gap:var(--s3);min-height:64px;padding:var(--s2) var(--s4);border-top:1px dashed var(--sd-rd-rule)}
+  .sdt-D .sdt-tile:first-child{border-top:0}
+  .sdt-D .sdt-tile::before,.sdt-D .sdt-tile::after{display:none}
+  .sdt-D .sdt-tx{display:contents}
+  .sdt-D .sdt-t{grid-column:2;grid-row:1;align-self:end;min-height:0;padding:0;background:none;color:var(--sd-rd-ink);font-size:var(--t15)}
+  .sdt-D .sdt-pic{grid-column:1;grid-row:1/3;height:52px;margin:0;gap:0}.sdt-D .sdt-pic::before{left:0;right:0;height:16px}
+  .sdt-D .sdt-fig{display:contents}.sdt-D .sdt-fig small{grid-column:2;grid-row:2;align-self:start}.sdt-D .sdt-fig b{grid-column:3;grid-row:1/3;font-size:var(--t22);padding:0}
+  .sdt-D .sdt-d{grid-column:2/4;grid-row:2;align-self:start}
+  .sdt-D .sdt-open{position:static;grid-column:4;grid-row:1/3;align-self:center;padding:0;background:none;box-shadow:none;transform:none;color:var(--f-tx)}.sdt-D .sdt-open b{display:none}.sdt-D .sdt-open i{width:10px;height:10px}
+  .sdt-D .sdt-calc .sdt-fig b,.sdt-D .sdt-method .sdt-fig b{grid-column:2;grid-row:2;justify-self:start;padding-top:var(--s1)}.sdt-D .sdt-calc .sdt-fig small,.sdt-D .sdt-method .sdt-fig small{grid-row:3}.sdt-D .sdt-calc .sdt-pic,.sdt-D .sdt-calc .sdt-open,.sdt-D .sdt-method .sdt-pic,.sdt-D .sdt-method .sdt-open{grid-row:1/4}
+  .sdt-D .sdt-more{margin-top:var(--s8)}.sdt-D .sdt-ml{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .sdt-D .sdt-ml a{justify-content:space-between;padding:0 var(--s3);font-size:var(--t13);white-space:nowrap}}

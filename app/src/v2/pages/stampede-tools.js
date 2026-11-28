@@ -95,8 +95,10 @@ V2.sdtModel = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n =>
   // Popular Sets: the top rated without a Mega stone and its most held item
   const S2 = X.set; T.sets = {name: 'Popular Sets', fam: 'plot', line: S2 ? `${nm(S2.x.n)}'s most held item: ${E(S2.item)}.` : 'The items and moves top players run.', art: S2 ? mon(S2.x.n, 'most held item ' + S2.item) : ''};
   // Events and How We Calculate: their counts, as those pages say them
-  const nx = X.next; T.events = {name: 'Events', fam: 'plot', line: nx ? `Next: ${E(nx.short)}, ${E(nx.when)}.` : 'Recent tournaments and who won them.', num: X.D.events ? num(X.D.events) : '', unit: 'events tracked'};
+  const nx = X.next; T.events = {name: 'Events', fam: 'plot', line: nx ? `Next: ${E(nx.short)}, ${E(nx.when)}.` : 'Recent tournaments and who won them.', num: X.D.events ? num(X.D.events) : '', unit: 'events tracked', next: nx ? {short: E(nx.short), when: E(nx.when)} : null};
   T.method = {name: 'How We Calculate', fam: 'plot', line: 'Every number here is built from them.', num: X.D.teams ? num(X.D.teams) : '', unit: 'tournament teams'};
+  // option D: How We Calculate prints the counts it builds on as receipt lines (live, as their pages say them); Events prints its next event
+  T.method.rows = [X.all ? ['Pokémon rated', num(X.all)] : null, X.D.events ? ['events tracked', num(X.D.events)] : null].filter(Boolean);
   const more = (V2.HOME_TOOLS || []).filter(([n]) => !V2.SDT_GO[n]);
   return {T, X, more}; };
 // one tile: the title is the link over the whole tile; "Open" is its visible button (the same link, drawn as the kit's go shape)
@@ -107,13 +109,22 @@ V2.sdtTile = (t, cls = '', o = {}) => { const E = V2.esc;
     <div class="sdt-tx"><h${o.h || 3} class="u sdt-t"><a class="sdt-go" href="#${V2.SDT_GO[t.name]}" data-sdtool="${E(t.name)}"${t.name === 'Winning Cores' ? ' data-hmcores' : ''}>${E(t.name)}</a></h${o.h || 3}>
     ${t.key ? `<p class="sdt-key">${t.key}</p>` : ''}${fig}${bar}<p class="sdt-d">${t.line}</p>${o.open === false ? '' : `<span class="sdt-open" aria-hidden="true"><b>Open</b><i></i></span>`}</div></article>`; };
 V2.sdtMoreList = (more, cls) => { const E = V2.esc; return `<ul class="${cls}">${more.map(([n, d, to]) => `<li><a href="#${to}" data-sdtool="${E(n)}" title="${E(d)}"><span>${E(n)}</span><i aria-hidden="true"></i></a></li>`).join('')}</ul>`; };
-// Option C, "Two colours, two jobs": the logo's two colours sort the tools. Nasty pink = tools you play with (calc, battle, practice,
-// speed, types, winning teams); Plot blue = the meta you read (ratings, archetypes, cores, sets, events, how we calculate). Six and six,
-// so every row is full at three, two or one across; every tile is the same white slip with its colour's slanted stage and Open button
-V2.SDT_LOOK = 'C';
+// Option D, "Receipts that play and read": C's two jobs (Nasty pink = tools you play with, Plot blue = the meta you read; six and six)
+// printed as A's receipts. Each tool is a paper slip with its name printed in the family's solid colour across the top, the picture,
+// a dashed rule, the big slanted number in the family colour with its plain label, a torn bottom edge and the family's Open tab.
+// Events prints its next event and How We Calculate its counts as receipt lines, where the others have Pokémon.
+V2.SDT_LOOK = 'D';
+V2.sdtSlip = (t, cls) => { const E = V2.esc;
+  const rl = t.rows && t.rows.length ? `<ul class="sdt-rl">${t.rows.map(([a, b]) => `<li><span>${a}</span><b class="u">${b}</b></li>`).join('')}</ul><span class="sdt-stub" aria-hidden="true"><i></i><i></i><i></i></span>` : '';
+  const nx = t.next ? `<p class="sdt-nx"><small>Next event</small><b class="u">${t.next.when}</b><span>${t.next.short}</span></p><span class="sdt-stub" aria-hidden="true"><b class="u">${t.next.when.replace(' ', '<br>')}</b></span>` : '';
+  const pic = t.art || rl || nx ? `<div class="sdt-pic">${t.art || rl || nx}</div>` : '';
+  const fig = t.num ? `<p class="sdt-fig"><b class="u${t.numCls || ''}">${t.num}</b><small>${t.unit}</small></p>` : '';
+  const bar = t.bar ? `<p class="sdt-bar" role="img" aria-label="${t.say}"><i class="left" style="width:${(100 - t.bar.hi).toFixed(1)}%"></i><i class="roll" style="width:${(t.bar.hi - t.bar.lo).toFixed(1)}%"></i></p>` : '';
+  return `<article class="sdt-tile ${cls}" data-fam="${t.fam}"><h4 class="u sdt-t"><a class="sdt-go" href="#${V2.SDT_GO[t.name]}" data-sdtool="${E(t.name)}"${t.name === 'Winning Cores' ? ' data-hmcores' : ''}>${E(t.name)}</a></h4>
+    ${pic}<div class="sdt-tx">${fig}${bar}<p class="sdt-d">${t.line}</p></div><span class="sdt-open" aria-hidden="true"><b>Open</b><i></i></span></article>`; };
 V2.sdTools = () => { const {T, X, more} = V2.sdtModel(), num = n => homeNum(n);
-  const fam = (id, h, sub, keys) => `<div class="sdt-fam" data-fam="${id}"><h3 class="u sdt-fh"><span>${h}</span><small>${sub}</small></h3><div class="sdt-six">${keys.map(k => V2.sdtTile(T[k], 'sdt-' + k, {h: 4})).join('')}</div></div>`;
-  return `<section class="sd-band sd-tools sdt sdt-C" aria-labelledby="sdt-h"><h2 class="u sdt-h" id="sdt-h">Same herd. <span>Twelve tools.</span></h2>
+  const fam = (id, h, sub, keys) => `<div class="sdt-fam" data-fam="${id}"><h3 class="u sdt-fh"><span>${h}</span><small>${sub}</small></h3><div class="sdt-six">${keys.map(k => V2.sdtSlip(T[k], 'sdt-' + k)).join('')}</div></div>`;
+  return `<section class="sd-band sd-tools sdt sdt-D" aria-labelledby="sdt-h"><h2 class="u sdt-h" id="sdt-h">Same herd. <span>Twelve tools.</span></h2>
     <p class="sdt-desc">Every tool uses the same ${X.all ? num(X.all) + ' ' : ''}rated Pokémon: speed, types, damage, top teams and more.</p>
     <div class="sdt-fams">${fam('nasty', 'Play', 'Plan your games', ['calc', 'battle', 'prac', 'speed', 'types', 'wins'])}${fam('plot', 'Read', 'Know the meta', ['ratings', 'arch', 'cores', 'sets', 'events', 'method'])}</div>
     <nav class="sdt-more" aria-label="More tools"><h3 class="sdt-mh">More tools</h3>${V2.sdtMoreList(more, 'sdt-ml')}</nav></section>`; };
