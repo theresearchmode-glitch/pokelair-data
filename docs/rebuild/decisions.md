@@ -2995,3 +2995,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:09 PM: Preview republished with the new Build page + font fix (data 2026-11-27T19:19Z; no-names 0; COPY-OK; exit 0).
 - 10:35 PM: Hourly 10:35 PM: Game Plan v128; disk 8 GB; main cc21cf94 run 46101216542 in progress.
 - 10:50 PM: main cc21cf94 GitHub run 46101216542 success; Promote moved live to cc21cf94. Dispatched practice-deploy.yml (ref live, keep false).
+- 10:55 PM: Practice deploy #1 FAILED usefully: 'wrangler deploy --message' unknown in wrangler 4.45 (deploy.yml had the same flag -> Sunday's real deploy would have failed). Fix alt/deploy-flag-fix f255956d (both workflows); local wrangler 4.45 checks: rollback -m ok, d1/delete flags ok, dry-run of real config ok. Practice #2 dispatched from the branch.
