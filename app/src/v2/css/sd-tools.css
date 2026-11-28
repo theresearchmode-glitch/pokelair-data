@@ -24,7 +24,7 @@
 .sdt-key{margin:var(--s2) 0 0;font:700 var(--t15)/1.3 var(--b)}
 .sdt-fig{display:flex;flex-direction:column;margin:var(--s2) 0 0}
 .sdt-fig b{font-size:var(--t28);line-height:1.1;letter-spacing:-.01em;white-space:nowrap}
-.sdt-fig small{font:600 var(--t13)/1.4 var(--b)}
+.sdt-fig small{font:600 var(--t13)/1.4 var(--b)}.sdt-fig b{padding-bottom:var(--s1)}
 .sdt-open b{font:inherit}.sdt-open{display:inline-flex;align-items:center;gap:var(--s1);align-self:flex-start;margin-top:auto;font:800 italic var(--t15)/1 var(--u)}
 .sdt-open i{width:8px;height:8px;border:solid currentColor;border-width:3px 3px 0 0;rotate:45deg;margin-left:2px}
 /* the pictures inside a tile */
