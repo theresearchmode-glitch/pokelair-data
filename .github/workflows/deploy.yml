@@ -64,7 +64,7 @@ jobs:
           sed -e 's#^directory = .*#directory = "./site"#' wrangler.toml > wrangler.deploy.toml
           # the feedback and counts tables (CREATE TABLE IF NOT EXISTS: a no-op once they exist)
           "$WR" d1 execute nastyplot-feedback --remote --file worker/schema.sql -c wrangler.deploy.toml -y
-          "$WR" deploy -c wrangler.deploy.toml --message "live $(git rev-parse --short HEAD)"
+          "$WR" deploy -c wrangler.deploy.toml   # no --message: wrangler 4.45 deploy rejects it ("Unknown argument: message"; practice run, Nov 27)
       - name: Smoke test (rolls back by itself if the site answers wrong)
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
         env:
