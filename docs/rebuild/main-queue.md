@@ -1,9 +1,10 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 3:27 AM (3:27:38)  date: Sat Nov 28, 2026
-NOW: tests on alt/home-six-grid (Home six as two rows of three on desktop, Sim asked 3:20 AM; pictures sent; waiting for his yes to merge). Launch rehearsal on main ran early (Sim asked): 7/7.
+Updated: time: 4:31 AM (4:31:46)  date: Sat Nov 28, 2026
+NOW: v2-minors main2 re-run on alt/home-herd (herd background + 2x3 six; tests updated for Sim's Home 4.3 cap and per-row names). Then push, GitHub green, gate into design6, Preview update, tell Sim.
+HELPER: tools section redesign, 3 directions as pictures (Sim asked 4:00 AM).
 DONE: practice deploy #4 passed; rehearsal 7/7; phone sweep clean; Safari A-team 139/0.
 DONE: main fa15f917 = deploy fix; live branch cc21cf94 (has the nastyplot.org route). Practice #3 passed end to end.
-NEXT: Sim decides: two rows of three yes/no; 2 background options (plot bars in PLOT blue / Nasty pink) as pictures if he says yes. Then stop until Sim says (his words, 3:15 AM).
+NEXT: Sim reviews the site until the design cutoff Sun Nov 29 12 PM Eastern; fix what he flags (pictures first).
 NEXT: Sat morning: Preview daily 7:41 AM; summary for Sim (Build page live, practice deploy, launch checklist).
 NEXT: Sun Nov 29 evening (Sim, 3:42 AM Sat): Sim DEPLOY_ENABLED=true; then dispatch deploy.yml by hand (or wait for next Promote) and watch deploy + smoke on nastyplot.org; Google verify + sitemap.
 NEXT: Mon Dec 1 evening FAST_DATA=1; patch night after 9 PM Eastern per runbook-dec2.md.
