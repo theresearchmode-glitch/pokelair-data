@@ -2976,3 +2976,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:38 PM: Sim: quiet launch Sun Nov 30 (evening), a full day before Reg M-D (9 PM Eastern Dec 1). CLAUDE.md + Game Plan updated.
 - 6:55 PM: Build C2 local full v2-minors found X-05 fail (phone: typing scrolled the search plate under the sticky top bar; × untappable). Fixed a8658343 (stop below the bar), X-05 now 'ok 45x45' all ten boxes; out/ not committed. Old run cancelled by the new push; gate restarted on a8658343; full v2-minors re-running locally.
 - 6:59 PM: main 75da5b29 (font fix) GitHub run 46081376288 success. Live update waits to ship together with the Build page (Sim's yes) once it's through GitHub.
+- 7:05 PM: Sim asked for the Dos prompt; sent (docs/rebuild/dos-cloudflare-prompt.md). Squad task: Dos Cloudflare setup, SENT.

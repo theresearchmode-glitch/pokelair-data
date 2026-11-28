@@ -1,10 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 6:15 PM (6:15:23)  date: Fri Nov 27, 2026
-NOW: build-c2.sh (pid in .main-running): Build page C2 on alt/build-c2 (local, not pushed until Sim's yes) + local checks incl. full v2-minors. Main 75da5b29 (font fix) GitHub run being watched.
-NEXT: on Sim's final yes: push alt/build-c2, GitHub, gate, main; live v163 (font fix + Build page) with before/after pictures; Preview republish.
-NEXT: if Sim waits: live v163 with the font fix alone once main is green.
-NEXT: quiet launch: practice deploy once Sim's Cloudflare token exists (docs/sim-launch-steps.md).
-NEXT: patch night Dec 1 after 9 PM Eastern per runbook-dec2.md; Showdown pin bump when #12475 lands.
+Updated: time: 7:05 PM (7:05:12)  date: Fri Nov 27, 2026
+NOW: gate alt/build-c2 a8658343 (Build page C2 + X-05 fix) into design6 (pid in .main-running); local full v2-minors running alongside.
+NOW: Sim + Dos doing the Cloudflare/GitHub setup (prompt sent); wait for Dos's names-only report.
+DONE: main 75da5b29 (font fix) GitHub green.
+NEXT: Build page to main (main-merge.sh) -> live v163 (font fix + Build page) with before/after pictures; Preview republish.
+NEXT: after Dos's report: practice deploy to a hidden address (deploy.yml by hand? read it first: needs DEPLOY_ENABLED; find a dry/preview path without enabling live) + launch checks against it.
+NEXT: Sun Nov 30 evening: Sim sets DEPLOY_ENABLED=true; Google verify + sitemap. Mon Dec 1 night: FAST_DATA=1; after 9 PM Eastern patch night per runbook-dec2.md.
 NOW (HH): draft the Limitless API key application text (docs/rebuild/test-runs/limitless-terms-nov27.md) for Sim to send before the announcement.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
