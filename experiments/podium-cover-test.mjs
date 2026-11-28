@@ -1,5 +1,9 @@
 // Checks whether any Home tools-rack sprite in .sdt-ra .sdt-pod or .sdt-bt .sdt-vs
 // is covered along its top edge by another element (e.g. the Damage Calculator tile .sdt-dc above it).
+// Sim, Nov 28 (option D): every tool is a slip (.sdt-tile); every sprite in every slip's picture is checked: nothing from another slip or
+// tile, and nothing in its own slip but a neighbour sprite or the VS mark, covers its top edge. A sprite that is its own button (a named
+// Pokémon, data-v2mon) must be on top of its slip's link too (tappable); a picture-only sprite (aria-hidden) sits under the slip's own link
+// on purpose (a tap there opens the tool), so that link alone is not a cover for it.
 // Usage:
 //   node experiments/podium-cover-test.mjs
 //   PAGE=app/dist/v2.html BROWSERS=webkit,chromium node experiments/podium-cover-test.mjs
@@ -60,25 +64,26 @@ const inspectSprites = () => {
     const cls = typeof el.className === 'string' && el.className.trim()
       ? '.' + el.className.trim().split(/\s+/).join('.')
       : '';
-    const card = el.closest && el.closest('.sdt-p');
+    const card = el.closest && el.closest('.sdt-tile');
     const cardCls = card ? ' [in .' + [...card.classList].filter(c => c.startsWith('sdt-')).join('.') + ']' : '';
     return tag + id + cls + cardCls;
   };
 
   const results = [];
-  const imgs = [...document.querySelectorAll('.sdt-ra .sdt-pod img, .sdt-bt .sdt-vs img')];
+  const imgs = [...document.querySelectorAll('.sdt-tile .sdt-pic .np-mon img')];
   for (let idx = 0; idx < imgs.length; idx++) {
     const img = imgs[idx];
     const mon = img.closest('.np-mon');
-    const card = img.closest('.sdt-p');
+    const card = img.closest('.sdt-tile');
     if (!card) continue;
+    const own = img.closest('[data-v2mon]'), link = card.querySelector('.sdt-go');
     // Scroll the card to the middle of the viewport so fixed header/footer bars don't interfere.
     const cr0 = card.getBoundingClientRect();
     window.scrollBy(0, cr0.top - Math.max(180, Math.floor(window.innerHeight * 0.35)));
     const r = img.getBoundingClientRect();
     if (r.width === 0 || r.height === 0) continue;
 
-    const cardLabel = card.classList.contains('sdt-ra') ? 'Ratings(.sdt-ra)' : 'Battle(.sdt-bt)';
+    const cardLabel = ([...card.classList].find(c => c !== 'sdt-tile' && c.startsWith('sdt-')) || 'slip') + (own ? ' button' : ' picture');
     const alt = img.getAttribute('alt') || img.getAttribute('src') || ('img#' + idx);
     const box = {
       left: +r.left.toFixed(1),
@@ -104,22 +109,22 @@ const inspectSprites = () => {
         if (x < 0 || x >= window.innerWidth) continue;
         const stack = document.elementsFromPoint(x, y);
         // Any element in the stack outside this sprite's .np-mon (and outside html/body/main/section/grid)
-        const others = stack.filter(el => el !== img && (!mon || !mon.contains(el)) && el.closest && el.closest('.sdt-p'));
+        const others = stack.filter(el => el !== img && (!mon || !mon.contains(el)) && el.closest && el.closest('.sdt-tile'));
         const outsideCard = stack.filter(el => {
-          const c = el.closest && el.closest('.sdt-p');
+          const c = el.closest && el.closest('.sdt-tile');
           return c && c !== card;
         });
         if (others.length > 0) overlapCount++;
         if (outsideCard.length > 0) outsideOverlapCount++;
         if (others.length > 0) {
           const top = document.elementFromPoint(x, y);
-          const isSelf = top === img || (mon && mon.contains(top));
+          const isSelf = top === img || (mon && mon.contains(top)) || (own && own.contains(top)) || (!own && top === link);
           if (!isSelf) {
             // Check if covered by a sibling sprite in the same stage vs another tile/element
-            const topCard = top && top.closest && top.closest('.sdt-p');
+            const topCard = top && top.closest && top.closest('.sdt-tile');
             // HH: inside the same card, a neighbour sprite, the "VS" mark (.sdt-vsw) and the names (.sdt-mn) sit above the sprites on purpose
             // (sd-tools.css: names and VS are z 3), so they are not a cover; any other element, or another tile, is
-            const sameStageOtherMon = !!(topCard === card && top && top.closest && ((top.closest('.np-mon') && top.closest('.np-mon') !== mon) || top.closest('.sdt-vsw,.sdt-mn')));
+            const sameStageOtherMon = !!(topCard === card && top && top.closest && ((top.closest('.np-mon') && top.closest('.np-mon') !== mon) || top.closest('.sdt-vs,.sdt-mn')));
             covered.push({
               x: +x.toFixed(1),
               y: +y.toFixed(1),

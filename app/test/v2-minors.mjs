@@ -547,40 +547,47 @@ const HQ = async () => {
       return {parcel: vis('.pr-parcel'), stamps: vis('.sdp-stamps'), other: vis('.sdp-other'), more: vis('.dp-more'), name: vis('.dp-name, .dp-mast'), bar: vis('.dp-nbar'), all: [...s.querySelectorAll('.sdp-all')].filter(e => e.getClientRects().length).length, h: Math.round(s.getBoundingClientRect().height), hs: document.documentElement.scrollWidth - innerWidth}; }});
       const okp = phone ? r.parcel === 1 && !r.stamps && !r.other && !r.more : r.parcel >= 1 && (r.stamps || r.other || r.more); if (!okp || r.all !== 2 || r.hs > 0) px.push(`${w}: ${JSON.stringify(r)}`); }
     ok(!px.length, `HQ Post X (Sim, Nov 18): phone Home's post band is one parcel and the front page (no stamps, second slip or more stories) at every width (phones, iPads 700-1099 since Nov 26, desktop); both "All ›" links stay${px.length ? ': ' + px.join(' | ') : ''}`); }
-  // Sim (Nov 18): Team Preview Practice takes Test Run's small plate (700-2560): its picture is a team preview of live Pokémon (six, two rows
-  // of three, 44px+) with "Pick 4"; the small plates' rows stay even (same top and height, full rows); Test Run is in More tools
-  { const pr = []; for (const w of [1100, 1440, 1920, 2560]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => JSON.parse(window.__ev(`(() => { const s = document.querySelector('#main .sdt');
-      const sm = [...s.querySelectorAll('.sdt-grid > .sdt-sm')].filter(e => e.getClientRects().length), names = sm.map(e => e.querySelector('.sdt-go').textContent);
-      const rows = {}; for (const e of sm) { const b = e.getBoundingClientRect(); (rows[Math.round(b.top / 4)] = rows[Math.round(b.top / 4)] || []).push(Math.round(b.height)); }
-      const pp = s.querySelector('.sdt-pr .sdt-pp'), st = pp ? [...pp.querySelectorAll('.np-mon .st')].map(e => Math.round(e.getBoundingClientRect().width)) : [];
-      const want = (META.events ? homeChamp() : null), six = want ? want.six.map(x => x.p.n).join() : '';
-      return JSON.stringify({names: names.join('|'), rows: Object.values(rows), sprites: st.length, small: st.length ? Math.min(...st) : 0, pick: pp ? (pp.querySelector('.sdt-pick') || {}).textContent : '',
-        live: !six || !!pp && [...pp.querySelectorAll('.np-mon')].length === 6, test: [...s.querySelectorAll('.sdt-more a')].some(a => a.getAttribute('href') === '#gauntlet' && a.getClientRects().length),
+  // Sim (Nov 18): Team Preview Practice takes Test Run's small plate: its picture is a team preview of live Pokémon. Sim, Nov 28 (option D):
+  // Practice is the Play family's third slip; at 1380+ its picture is the latest winner's six (the same picture files as the Winning Teams
+  // page's six, so it is live), every sprite 44px+; at 1100-1379 the short slip shows one of them (44px+); every row of slips is even (same
+  // top, same height, same count); Test Run is in More tools and Practice is not (D shows no "Pick 4" tag: Sim, Nov 28, option D)
+  { const pr = []; for (const w of [1100, 1440, 1920, 2560]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => JSON.parse(window.__ev(`(() => { const s = document.querySelector('#main .sdt'), vis = e => e.getClientRects().length && e.getBoundingClientRect().width > 0;
+      const play = [...s.querySelectorAll('.sdt-fam[data-fam="nasty"] .sdt-tile')].map(e => e.querySelector('.sdt-go').textContent), pt = s.querySelector('.sdt-prac');
+      const rows = {}; for (const e of [...s.querySelectorAll('.sdt-tile')].filter(vis)) { const b = e.getBoundingClientRect(); (rows[Math.round(b.top / 4)] = rows[Math.round(b.top / 4)] || []).push(Math.round(b.height)); }
+      const st = pt ? [...pt.querySelectorAll('.sdt-pic .np-mon .st')].filter(vis) : [], src = e => { const i = e.querySelector('img'); return i ? i.getAttribute('src') : ''; };
+      const want = (META.events ? homeChamp() : null), six = want ? want.six.map(x => (V2.mon(x.p.n, {bare: true}).match(/src="([^"]+)"/) || [])[1] || '?') : [];
+      return JSON.stringify({third: play[2] || '', rows: Object.values(rows), sprites: st.length, small: st.length ? Math.min(...st.map(e => Math.round(e.getBoundingClientRect().width))) : 0,
+        live: !want || (innerWidth >= 1380 ? st.map(src).join() === six.join() : st.length === 1 && six.includes(src(st[0]))), test: [...s.querySelectorAll('.sdt-more a')].some(a => a.getAttribute('href') === '#gauntlet' && a.getClientRects().length),
         prMore: [...s.querySelectorAll('.sdt-more a')].some(a => a.getAttribute('href') === '#practice')}); })()`))});
-      const even = r.rows.every(h => h.length === r.rows[0].length && Math.max(...h) - Math.min(...h) <= 2);
-      if (r.names !== 'Archetypes|Team Preview Practice' /* Home tools A (Sim, Nov 23): Archetypes and Practice are big cards at 1100+; Cores and Sets are chips */ || !even || r.sprites !== 6 || r.small < 44 || r.pick !== 'Pick 4' || !r.test || r.prMore) pr.push(`${w}: ${JSON.stringify(r)}`); }
-    ok(!pr.length, `HQ Practice plate (Sim, Nov 18): Team Preview Practice takes Test Run's small plate at 1100-2560 (team preview of six live Pokémon, 44px+, "Pick 4"), the small plates' rows stay even, Test Run is in More tools${pr.length ? ': ' + pr.join(' | ').slice(0, 700) : ''}`); }
-  // Shorter phone Home, Tools B with Practice (Sim, Nov 18): under 700 six big plates in order (Speed Tiers, Ratings, Damage Calc, Battle,
-  // Team Preview Practice, Winning Teams) and six picture chips (Type Chart, Winning Cores, Archetypes, Popular Sets, Events, How We
-  // Calculate), names whole inside, 44px+; all 18 of Home's tools reachable on screen; 700+ keeps its twelve plates and no chips
-  { const tb = []; for (const [w, phone] of [[320, 1], [360, 1], [390, 1], [430, 1], [699, 1], [700, 2], [820, 2], [1099, 2], [1100, 0], [1440, 0]]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => { const s = document.querySelector('#main .sdt'), vis = e => !!e.getClientRects().length;
-      const plates = [...s.querySelectorAll('.sdt-grid > .sdt-p')].filter(vis).sort((a, b) => (a.getBoundingClientRect().top - b.getBoundingClientRect().top) || (a.getBoundingClientRect().left - b.getBoundingClientRect().left)).map(e => e.querySelector('.sdt-go').textContent);
-      const chips = [...s.querySelectorAll('.sdt-chp')].filter(vis), bad = [];
-      for (const c of chips) { const B = c.getBoundingClientRect(), t = c.querySelector('b:last-child'), rg = document.createRange(); rg.selectNodeContents(t); for (const x of rg.getClientRects()) if (x.right > B.right - 4 || x.left < B.left) bad.push(t.textContent + ' out'); if (B.height < 44) bad.push(t.textContent + ' ' + Math.round(B.height) + 'px'); }
+      const even = r.rows.length > 0 && r.rows.every(h => h.length === r.rows[0].length && Math.max(...h) - Math.min(...h) <= 2);
+      if (r.third !== 'Team Preview Practice' || !even || r.sprites !== (w >= 1380 ? 6 : 1) || r.small < 44 || !r.live || !r.test || r.prMore) pr.push(`${w}: ${JSON.stringify(r)}`); }
+    ok(!pr.length, `HQ Practice slip (Sim, Nov 18; Sim, Nov 28: option D): Team Preview Practice is the Play family's third slip at 1100-2560, its picture the latest winner's six at 1380+ (one of them at 1100-1379), every sprite 44px+, the rows of slips even, Test Run in More tools${pr.length ? ': ' + pr.join(' | ').slice(0, 700) : ''}`); }
+  // Shorter phone Home (Sim, Nov 18) and one tools rack everywhere (Sim, Nov 26). Sim, Nov 28 (option D): at every width 320-1440 the
+  // twelve tools are two families of six slips, Play (Damage Calculator, Battle, Team Preview Practice, Speed Tiers, Type Chart, Winning
+  // Teams) and Read (Ratings, Archetypes, Winning Cores, Popular Sets, Events, How We Calculate), every slip on screen, 44px+ tall, its name
+  // whole inside it; all 18 of Home's tools reachable on screen; no sideways scroll; the phone and iPad Home heights below
+  { const tb = []; for (const w of [320, 360, 390, 430, 699, 700, 820, 1099, 1100, 1440]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => { const s = document.querySelector('#main .sdt'), vis = e => !!e.getClientRects().length && e.getBoundingClientRect().width > 0;
+      const fam = f => [...s.querySelectorAll(`.sdt-fam[data-fam="${f}"] .sdt-tile`)].filter(vis).map(e => e.querySelector('.sdt-go').textContent).join('|'), bad = [];
+      for (const c of [...s.querySelectorAll('.sdt-tile')].filter(vis)) { const B = c.getBoundingClientRect(), t = c.querySelector('.sdt-go'), rg = document.createRange(); rg.selectNodeContents(t);
+        for (const x of rg.getClientRects()) if (x.width && (x.right > B.right - 4 || x.left < B.left)) bad.push(t.textContent + ' out'); if (B.height < 44) bad.push(t.textContent + ' ' + Math.round(B.height) + 'px'); }
       const reach = new Set([...s.querySelectorAll('a[href^="#"]')].filter(vis).map(a => a.getAttribute('href')));
-      return {plates: plates.join('|'), chips: chips.map(c => c.textContent.trim().replace(/^[\d,]+\s*/, '')).join('|'), bad, reach: (V2.HOME_TOOLS || []).filter(([, , to]) => !reach.has('#' + to)).map(x => x[0]), hs: document.documentElement.scrollWidth - innerWidth}; }});
-      const want = r.plates === 'Damage Calculator|Ratings|Battle|Archetypes|Team Preview Practice' && r.chips === 'Speed Tiers|Winning Teams|Type Chart|Winning Cores|Popular Sets|Events|How We Calculate'; /* Home tools A (Sim, Nov 23): the calc band, four big cards, seven chips at 1100+; Nov 26 (Sim: 'looks good'): at every width, phones and iPads too */ if (!want || r.bad.length || r.reach.length || r.hs > 0) tb.push(`${w}: ${JSON.stringify(r)}`); }
+      return {play: fam('nasty'), read: fam('plot'), bad, reach: (V2.HOME_TOOLS || []).filter(([, , to]) => !reach.has('#' + to)).map(x => x[0]), hs: document.documentElement.scrollWidth - innerWidth}; }});
+      const want = r.play === 'Damage Calculator|Battle|Team Preview Practice|Speed Tiers|Type Chart|Winning Teams' && r.read === 'Ratings|Archetypes|Winning Cores|Popular Sets|Events|How We Calculate';
+      if (!want || r.bad.length || r.reach.length || r.hs > 0) tb.push(`${w}: ${JSON.stringify(r)}`); }
     const h = await hq(390, 844, {rm: 'reduce', ls: {'cc2.welcomed': '"1"'}, fn: () => { const n = document.querySelector('#main .sdp-nw'); if (n) n.remove(); return document.documentElement.scrollHeight; }}); const scr = +(h / 844).toFixed(2); /* a returning visitor who has seen What's New (the first-visit welcome and the What's New slip add their own height) */
     // iPad (Sim, Nov 18): the phone's six plates plus the Type Chart strip and three picture plates ('too plain' with chips): 7,141px at 820, against 8,180 with twelve plates
     { const hi = await hq(820, 1180, {rm: 'reduce', ls: {'cc2.welcomed': '"1"'}, fn: () => { const n = document.querySelector('#main .sdp-nw'); if (n) n.remove(); return document.documentElement.scrollHeight; }}); if (hi > 7300) tb.push(`iPad Home at 820 is ${hi}px (7,300 at most)`); }
     /* Nov 19: Sim's Q23 A adds a plain line under two Home headlines (phone Home 7.04 -> 7.24 screens, measured); Home is exempt from the
        short-pages rule (Sim, Nov 19), so the limit follows the approved copy */
-    ok(!tb.length && scr <= 7.95, `HQ Tools B (Nov 26, Sim: one rack everywhere): at every width 320-1440 the tools are the Damage Calculator band, four cards (Ratings, Battle, Archetypes, Team Preview Practice) and seven picture chips, every tool on screen (was: phone plates; iPad strip), no chips; 1100+ keeps twelve plates; phone Home at 390 is ${scr} screens (7.95 at most: Sim OK Nov 22, 2:50 PM, Top 10 strip +422 px; Nov 26, Sim: +0.05 for the footer's copyright line; Nov 26, Sim: 7.95, the Preview-only data note over Final 3's hero)${tb.length ? ': ' + tb.join(' | ').slice(0, 700) : ''}`); }
-  // Polish 2: the Practice plate's team preview is no taller than it needs to be, so its row neighbours keep no big empty band between
-  // their picture and their words (110px at most, 700-2560; the Practice plate as first built left 154-172px at 820 and 1920)
-  { const gp = []; for (const w of [700, 820, 1024, 1100, 1440, 1920, 2560]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => [...document.querySelectorAll('#main .sdt-grid > .sdt-sm')].map(p => [p.querySelector('.sdt-go').textContent, Math.round(p.querySelector('.sdt-tx').getBoundingClientRect().top - p.lastElementChild.getBoundingClientRect().bottom)])});
-      for (const [n, g] of r) if (g > 110) gp.push(`${w} ${n}: ${g}px`); }
-    ok(!gp.length, `HQ polish 2: no small tools plate has an empty band over 110px between its picture and its words, 700-2560 (iPads show Cores, Archetypes and Sets as plates again, Sim Nov 18)${gp.length ? ': ' + gp.join(' | ') : ''}`); }
+    ok(!tb.length && scr <= 7.95, `HQ Tools (Sim, Nov 28: option D; one rack everywhere since Nov 26): at every width 320-1440 the tools are two families of six slips, Play (Damage Calculator, Battle, Team Preview Practice, Speed Tiers, Type Chart, Winning Teams) and Read (Ratings, Archetypes, Winning Cores, Popular Sets, Events, How We Calculate), each 44px+ with its name inside, every tool on screen; phone Home at 390 is ${scr} screens (7.95 at most: Sim OK Nov 22, 2:50 PM, Top 10 strip +422 px; Nov 26, Sim: +0.05 for the footer's copyright line; Nov 26, Sim: 7.95, the Preview-only data note over Final 3's hero)${tb.length ? ': ' + tb.join(' | ').slice(0, 700) : ''}`); }
+  // Polish 2: no tile keeps a big empty band (the Practice plate as first built left 154-172px at 820 and 1920). Sim, Nov 28 (option D):
+  // inside every slip, no empty band over 110px between its parts (name, picture, number and words, Open tab), 700-2560
+  { const gp = []; for (const w of [700, 820, 1024, 1100, 1440, 1920, 2560]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => [...document.querySelectorAll('#main .sdt-tile')].filter(t => t.getClientRects().length).map(t => {
+        const parts = [t.querySelector('.sdt-t'), t.querySelector('.sdt-pic'), ...t.querySelectorAll('.sdt-tx > *'), t.querySelector('.sdt-open')].filter(e => e && e.getClientRects().length && e.getBoundingClientRect().height > 0).map(e => e.getBoundingClientRect()).sort((a, b) => a.top - b.top);
+        let low = parts.length ? parts[0].bottom : 0, gap = 0; for (const p of parts.slice(1)) { gap = Math.max(gap, p.top - low); low = Math.max(low, p.bottom); }
+        return [t.querySelector('.sdt-go').textContent, Math.round(gap), parts.length]; })});
+      if (r.length !== 12) gp.push(`${w}: ${r.length} slips`); for (const [n, g, k] of r) if (g > 110 || k < 3) gp.push(`${w} ${n}: ${g}px${k < 3 ? `, ${k} parts` : ''}`); }
+    ok(!gp.length, `HQ polish 2 (Sim, Nov 28: option D): no tools slip has an empty band over 110px between its parts (name, picture, words, Open), 700-2560${gp.length ? ': ' + gp.join(' | ') : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 const IMG = async () => { /* The REAL item pictures (Sim, Nov 23, 9:3x PM): the item sheet's evidence bag shows the item's real picture when the build has one
@@ -1278,94 +1285,109 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(/Nothing at the counter right now\.\s*The next gift will wait here\./.test(em.shelf) && em.stamps === 1 && /nothing live right now/i.test(em.plate), `Post Room empty state: no live gift shows the empty shelf and its line, and the stamp sheet still shows (${JSON.stringify(em)})`);
   await q.close(); }
 // Stampede tools band (Nov 18; docs/rebuild/stampede/BRIEF.md section 3): live data, every tool reachable, every row full, nothing spills
+/* Sim, Nov 28: option D ("receipts that play and read", stampede-tools.js V2.sdTools): twelve slips in two families (Play / Read), six
+   each, each slip one link with its live number and that number's plain label. The checks below read D's slips (.sdt-tile, one class per
+   tool: .sdt-speed, .sdt-types, .sdt-ratings, .sdt-events, .sdt-method ...); what each checks is said in its message. */
 { const q = await b.newPage({viewport: {width: 1440, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
   const d = await q.evaluate(() => window.__ev(`(() => { const s = document.querySelector('#main .sdt'); if (!s) return JSON.stringify({none: true});
     const go = [...s.querySelectorAll('.sdt-go')].map(a => [a.dataset.sdtool, a.getAttribute('href')]), more = [...s.querySelectorAll('.sdt-more a')].map(a => [a.dataset.sdtool, a.getAttribute('href')]);
     const want = V2.HOME_TOOLS.map(([n, , to]) => n + '>#' + to).sort().join('|'), got = go.concat(more).map(([n, h]) => n + '>' + h).sort().join('|');
-    const R = lairRows().filter(x => x.r.tc), top9 = R.slice(0, 9).map(x => ({n: x.p.n, s: x.p.st[5]})).sort((a, b) => a.s - b.s).map(x => x.n);
-    const race = [...s.querySelectorAll('.sdt-run')].map(e => e.dataset.v2mon);
-    const TY = [...s.querySelectorAll('.sdt-types li')].map(li => [li.querySelector('.sdt-flag').textContent.trim(), (li.querySelector('[data-v2mon]') || {}).dataset ? li.querySelector('[data-v2mon]').dataset.v2mon : '']);
-    const tyOk = TY.length === 18 && TY.every(([t, n]) => !n) && !/Under each flag/.test(s.querySelector('.sdt-tc').textContent);
-    /* Sim, Nov 25: the podium's steps follow the Ratings rank (one rank each, ties broken by the full rating), and #1 stands tallest
-       (before, the 80px base step made #2/#3 taller than #1 on desktop). Would fail on the Nov 17 shared steps (97/97 both s1). */
-    const pod = [...s.querySelectorAll('.sdt-step')].map(e => [e.className.match(/s(\\d)/)[1], String((lairRank(byName.get(e.dataset.v2mon)) || {}).rank), e.querySelector('.sdt-blk b').textContent, Math.round(e.querySelector('.sdt-blk').getBoundingClientRect().height)]);
-    const tieOk = pod.length === 3 && pod.every(a => a[0] === a[1]) && pod[1][0] === '1' && (pod[0][0] === '1' || pod[1][3] > pod[0][3]) && (pod[2][0] === '1' || pod[1][3] > pod[2][3]);
-    const big = [...s.querySelectorAll('.sdt-big b')].map(e => e.textContent.replace(/,/g, ''));
-    return JSON.stringify({plates: go.length, toolsOk: want === got, raceOk: race.length === 9 && race.join() === top9.join(), tyOk, tieOk, pod, nums: big.join('/') === META.events.events.length + '/' + RES.teams, big}); })()`));
+    const txt = e => e ? e.textContent.replace(/\\u00a0/g, ' ').replace(/\\u2060/g, '').trim() : '';
+    /* Speed Tiers (D): the fastest of the nine highest rated by base Speed, its base Speed as the number, "base Speed: <its name>" as the label */
+    const R = lairRows().filter(x => x.r.tc), top9 = R.slice(0, 9).map(x => ({n: x.p.n, s: x.p.st[5]})), fast = Math.max(...top9.map(x => x.s));
+    const sp = s.querySelector('.sdt-speed'), spm = sp && sp.querySelector('[data-v2mon]'), spn = spm ? spm.dataset.v2mon : '';
+    const race = {num: txt(sp && sp.querySelector('.sdt-fig b')), label: txt(sp && sp.querySelector('.sdt-fig small')), mon: spn, fast};
+    const raceOk = race.num === String(fast) && top9.some(x => x.n === spn && x.s === fast) && race.label === 'base Speed: ' + V2.disp(spn);
+    /* Type Chart (D): no Pokémon on it; its number is the 18 types, labelled "types"; each type colour shown carries its type's name as text */
+    const tc = s.querySelector('.sdt-types'), tys = tc ? [...tc.querySelectorAll('.sdt-tys i')] : [];
+    const TY = {num: txt(tc && tc.querySelector('.sdt-fig b')), label: txt(tc && tc.querySelector('.sdt-fig small')), tags: tys.map(i => [txt(i), (i.getAttribute('style') || '').replace(/\\s/g, '')]), mons: tc ? tc.querySelectorAll('[data-v2mon], .np-mon').length : -1};
+    const tyOk = !!tc && TY.num === '18' && TY.num === String(V2.SDT_TYPES.length) && TY.label === 'types' && TY.tags.length >= 1 && TY.tags.every(([t, st]) => V2.SDT_TYPES.includes(t) && st.includes('--ty:var(--ty-' + t + ')')) && TY.mons === 0;
+    /* Sim, Nov 25: the podium's steps follow the Ratings rank (one rank each, ties broken by the full rating), and #1 stands tallest.
+       D: the podium is the Ratings slip's picture (#2, #1, #3); each shows its Ratings-page rating, and #1's sprite is the biggest */
+    const pod = [...s.querySelectorAll('.sdt-ratings .sdt-pod')].map(e => { const m = e.querySelector('[data-v2mon]'), p = m && byName.get(m.dataset.v2mon), st = e.querySelector('.np-mon .st');
+      return [(e.className.match(/\\bs(\\d)\\b/) || [])[1], String((p && lairRank(p) || {}).rank), txt(e.querySelector(':scope>b')), p ? String(monRating(p).n) : '', st ? Math.round(st.getBoundingClientRect().width) : 0]; });
+    const tieOk = pod.length === 3 && pod.every(a => a[0] === a[1] && a[2] === a[3]) && pod[1][0] === '1' && (pod[0][0] === '1' || pod[1][4] > pod[0][4]) && (pod[2][0] === '1' || pod[1][4] > pod[2][4]);
+    /* Events and How We Calculate (D): their numbers are the Events page's count and RES.teams; Events prints the next event from the calendar
+       (V2.dpNext, the Events page's upcoming list) with its dates; How We Calculate's receipt lines are the rated count and the events count */
+    const ev = s.querySelector('.sdt-events'), hw = s.querySelector('.sdt-method'), nx = V2.dpNext()[0];
+    const big = [txt(ev && ev.querySelector('.sdt-fig b')), txt(hw && hw.querySelector('.sdt-fig b'))].map(t => t.replace(/,/g, ''));
+    const nxt = {shown: txt(ev && ev.querySelector('.sdt-nx span')), when: txt(ev && ev.querySelector('.sdt-nx b')), want: nx ? V2.evShort(nx) : '', wantWhen: nx ? CAL.range(nx) : ''};
+    const rl = hw ? [...hw.querySelectorAll('.sdt-rl li')].map(li => txt(li.querySelector('span')) + '=' + txt(li.querySelector('b')).replace(/,/g, '')) : [];
+    const nums = big.join('/') === META.events.events.length + '/' + RES.teams && (nx ? nxt.shown === nxt.want && nxt.when === nxt.wantWhen : !ev.querySelector('.sdt-nx'))
+      && rl.join('|') === 'Pokémon rated=' + V2.ratedRows().length + '|events tracked=' + META.events.events.length;
+    return JSON.stringify({plates: go.length, toolsOk: want === got, raceOk, race, tyOk, TY, tieOk, pod, nums, big, nxt, rl}); })()`));
   const m = JSON.parse(d);
   ok(m.plates === 12 && m.toolsOk, `Stampede tools (Nov 18): twelve plates and a More tools row reach all ${''}18 of today's Home tools, same pages (${m.plates} plates, match ${m.toolsOk})`);
-  ok(m.raceOk && m.tyOk, `Stampede tools: Speed Tiers is the nine highest rated by base Speed; Type Chart is 18 flags only, no Pokémon (Sim, Nov 18: A) (race ${m.raceOk}, types ${m.tyOk})`);
-  { /* Type Chart, where it shows (code review, Nov 23: at 1440 the plate is hidden, so the old "same row as Ratings" check passed on 'hidden'):
-       iPads (700-1099, Tools B) show the plate as a full-width strip, its 18 flags 6 across in 3 rows, each flag inside the plate; phones (under
-       700) and desktop (1100+, Home B, Sim Nov 23) hide the plate and show the Type Chart chip instead, linking to #types. Exactly one of the two shows. */
+  ok(m.raceOk && m.tyOk, `Stampede tools (Sim, Nov 28: option D): Speed Tiers shows the fastest of the nine highest rated, its real base Speed as the number and "base Speed: <name>" as its label; Type Chart shows the 18 types ("18 types"), each type colour with its name as text, and no Pokémon (race ${m.raceOk} ${JSON.stringify(m.race)}, types ${m.tyOk} ${JSON.stringify(m.TY)})`);
+  { /* Type Chart, at every width (code review, Nov 23: a check must look where the tool shows). Sim, Nov 28 (option D): the Type Chart is its
+       own slip at every width, one link to #types, with at least one type colour showing its type's name, every shown tag inside the slip
+       (three tags at 1380+, one under) and no Pokémon on it */
     const tyl = []; for (const w of [390, 820, 1024, 1100, 1440]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(400);
-      const r = await q.evaluate(() => { const R = e => e.getBoundingClientRect(), s = document.querySelector('#main .sdt'), tc = s.querySelector('.sdt-tc'), g = s.querySelector('.sdt-grid'), ch = s.querySelector('.sdt-chips [data-sdtool="Type Chart"]');
-        const pl = !!tc.getClientRects().length, cv = !!(ch && ch.getClientRects().length), o = {pl, chip: cv};
-        if (pl) { const T = R(tc), G = R(g), F = [...tc.querySelectorAll('.sdt-types li')].filter(l => l.getClientRects().length).map(R);
-          o.full = Math.abs(T.left - G.left) < 2 && Math.abs(T.right - G.right) < 2; o.flags = F.length; o.cols = new Set(F.map(r => Math.round(r.left))).size; o.rows = new Set(F.map(r => Math.round(r.top))).size;
-          o.inside = F.every(r => r.left >= T.left - 1 && r.right <= T.right + 1 && r.top >= T.top - 1 && r.bottom <= T.bottom + 1); }
-        if (cv) o.href = ch.getAttribute('href'); return o; });
-      const want = 'chip' /* Nov 26 (Sim: one tools rack at every width): the Type Chart is a chip everywhere; the plate never shows */, got = r.pl && !r.chip ? 'plate' : r.chip && !r.pl ? 'chip' : r.pl ? 'both' : 'neither';
-      if (got !== want) tyl.push(`${w}: ${got} shows (want the ${want})`);
-      else if (got === 'plate' && !(r.full && r.flags === 18 && r.cols === 6 && r.rows === 3 && r.inside)) tyl.push(`${w}: plate ${JSON.stringify(r)}`);
-      else if (got === 'chip' && r.href !== '#types') tyl.push(`${w}: chip goes to ${r.href}`); }
-    ok(!tyl.length, `Stampede tools: the Type Chart shows at every width, as the rack's Type Chart chip (to #types) at 390, 820, 1024, 1100 and 1440, never both, never neither (Nov 26: one rack everywhere; was a flag strip on iPads)${tyl.length ? ': ' + tyl.join(' | ') : ''}`);
+      const r = await q.evaluate(() => { const R = e => e.getBoundingClientRect(), tc = document.querySelector('#main .sdt .sdt-types'); if (!tc || !tc.getClientRects().length || !R(tc).height) return {shown: false};
+        const T = R(tc), a = tc.querySelector('.sdt-go'), tags = [...tc.querySelectorAll('.sdt-tys i')].filter(i => i.getClientRects().length && R(i).width);
+        return {shown: true, href: a && a.getAttribute('href'), links: tc.querySelectorAll('a').length, tags: tags.map(i => i.textContent.trim()), named: tags.every(i => i.textContent.trim().length > 2 && parseFloat(getComputedStyle(i).fontSize) >= 13),
+          inside: tags.every(i => { const r = R(i); return r.left >= T.left - 1 && r.right <= T.right + 1 && r.top >= T.top - 1 && r.bottom <= T.bottom + 1; }), mons: tc.querySelectorAll('.np-mon').length}; });
+      const want = w >= 1380 ? 3 : 1;
+      if (!r.shown) tyl.push(`${w}: no Type Chart slip shows`); else if (r.href !== '#types' || r.links !== 1) tyl.push(`${w}: links ${r.links}, to ${r.href}`);
+      else if (r.tags.length !== want || !r.named || !r.inside || r.mons) tyl.push(`${w}: ${JSON.stringify(r)} (want ${want} named tag(s) inside, no Pokémon)`); }
+    ok(!tyl.length, `Stampede tools (Sim, Nov 28: option D): the Type Chart shows at every width as its own slip, one link to #types, its type colours each named in text (3 at 1380+, 1 under), inside the slip, no Pokémon, at 390, 820, 1024, 1100 and 1440${tyl.length ? ': ' + tyl.join(' | ') : ''}`);
     await q.setViewportSize({width: 1440, height: 900}); await q.waitForTimeout(300); }
-  ok(m.tieOk && m.nums, `Stampede tools: the podium's steps follow the Ratings rank and #1 stands tallest (Sim, Nov 25); Events and How We Calculate show the Events page's count and RES.teams (${JSON.stringify(m.pod)}, ${JSON.stringify(m.big)})`);
+  ok(m.tieOk && m.nums, `Stampede tools: the podium's steps follow the Ratings rank and #1 stands tallest (Sim, Nov 25; D: #1's sprite the biggest, each step's number its Ratings-page rating); Events and How We Calculate show the Events page's count and RES.teams, Events prints the next event from the calendar and How We Calculate the rated and events counts (Sim, Nov 28: option D) (${JSON.stringify(m.pod)}, ${JSON.stringify(m.big)}, ${JSON.stringify(m.nxt)}, ${JSON.stringify(m.rl)})`);
   const lay = []; for (const [w, th] of [[320, 'day'], [390, 'night'], [820, 'day'], [1100, 'night'], [1440, 'day']]) { await q.evaluate(t => { try { localStorage.setItem('np2.theme', t); } catch (e) {} }, th); await q.setViewportSize({width: w, height: 900}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(1800);
     await q.evaluate(() => document.fonts.ready.then(() => 1)); await q.waitForTimeout(200); /* measure in the real fonts: a fallback font is wider (a name 'spilling' under load, Nov 18) */
     lay.push(w + ': ' + await q.evaluate(() => { const s = document.querySelector('#main .sdt'); if (!s) return 'no band'; const out = []; if (document.documentElement.scrollWidth > innerWidth) out.push('sideways');
-      for (const e of s.querySelectorAll('.sdt-mn,.sdt-t a,.sdt-d span,.sdt-blk b,.sdt-flag span,.sdt-item,.sdt-big b,.sdt-spe,.sdt-chip')) { if (!e.getClientRects().length) continue; if (parseFloat(getComputedStyle(e).fontSize) < 13) out.push('under 13px');
-        const box = (e.closest('.sdt-m') ? e.parentElement : e.closest('.sdt-p')).getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e);
+      /* D: every word in the band (slip names, numbers and their labels, lines, type tags, the next event, receipt lines, stubs, Open tabs,
+         family stamps, More tools tickets) is 13px or more and stays across inside its own slip (stamp, ticket) */
+      for (const e of s.querySelectorAll('.sdt-t a,.sdt-d,.sdt-fig b,.sdt-fig small,.sdt-tys i,.sdt-nx small,.sdt-nx b,.sdt-nx span,.sdt-rl span,.sdt-rl b,.sdt-stub b,.sdt-open b,.sdt-pod>b,.sdt-fh span,.sdt-fh small,.sdt-ml a span')) { if (!e.getClientRects().length) continue; if (parseFloat(getComputedStyle(e).fontSize) < 13) out.push('under 13px: ' + e.textContent.slice(0, 16));
+        const box = (e.closest('.sdt-tile') || e.closest('.sdt-ml a') || e.closest('.sdt-fh')).getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e);
         if ([...rg.getClientRects()].some(r => r.width && (r.left < box.left - 1 || r.right > box.right + 1))) out.push('spills: ' + e.textContent.slice(0, 16)); }
-      const g = s.querySelector('.sdt-grid'), gb = g.getBoundingClientRect(), rows = {}; for (const c of [...g.children].filter(c => c.getClientRects().length) /* phones hide six plates (Sim, Nov 18: Tools B) */) { const r = c.getBoundingClientRect(); (rows[Math.round(r.top / 4)] = rows[Math.round(r.top / 4)] || []).push(r); }
-      for (const rs of Object.values(rows)) if (Math.min(...rs.map(r => r.left)) - gb.left > 2 || gb.right - Math.max(...rs.map(r => r.right)) > 2) out.push('row not full');
+      /* every row of slips is full: it starts at the families' left edge and ends at their right edge, and every row holds as many slips */
+      const g = s.querySelector('.sdt-fams'), gb = g.getBoundingClientRect(), rows = {}, tiles = [...s.querySelectorAll('.sdt-tile')].filter(c => c.getClientRects().length);
+      if (tiles.length !== 12) out.push(tiles.length + ' slips');
+      for (const c of tiles) { const r = c.getBoundingClientRect(); (rows[Math.round(r.top / 4)] = rows[Math.round(r.top / 4)] || []).push(r); }
+      const rs = Object.values(rows); for (const x of rs) if (Math.min(...x.map(r => r.left)) - gb.left > 2 || gb.right - Math.max(...x.map(r => r.right)) > 2) out.push('row not full');
+      if (new Set(rs.map(x => x.length)).size > 1) out.push('rows of ' + rs.map(x => x.length).join('/'));
       return out.length ? out.join(', ') : 'ok'; })); }
-  ok(lay.every(x => / ok$/.test(x)), `Stampede tools: at 320 / 390 / 820 / 1100 / 1440 (day and night) no sideways scroll, no text under 13px or out of its spot, every row of plates full (${lay.join(' | ')})`);
+  ok(lay.every(x => / ok$/.test(x)), `Stampede tools: at 320 / 390 / 820 / 1100 / 1440 (day and night) no sideways scroll, no text under 13px or out of its spot, every row of slips full and even (Sim, Nov 28: option D) (${lay.join(' | ')})`);
   await q.evaluate(() => { try { localStorage.removeItem('np2.theme'); } catch (e) {} }); await q.close(); }
 /* Stampede tile fixes (polish sweep Nov 18 night, defects 2-5; docs/rebuild/audits/polish-sweep-nov18-night.md). Each failed on the build before. */
 { const q = await b.newPage({viewport: {width: 1440, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
   const bt = [], tr = [], dc = [], bars = [], tags = [];
   for (const w of [320, 390, 520, 700, 820, 880, 1024, 1100, 1180, 1280, 1366, 1440, 1500, 1920, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(350); await q.evaluate(() => document.fonts.ready.then(() => 1));
     const m = await q.evaluate(() => { const R = e => e.getBoundingClientRect(), o = {bt: '', tr: '', dc: '', bars: ''};
-      /* 2. Battle: every sprite inside its own side (you / them), none in the VS's box, none under 56px */
-      const vs = document.querySelector('#main .sdt-vsw'); if (!vs) o.bt = 'no VS'; else { const V = R(vs);
-        for (const s of document.querySelectorAll('#main .sdt-side')) { const S = R(s); for (const st of s.querySelectorAll('.np-mon .st')) { if (!st.getClientRects().length) continue; /* Nov 23: one per side on desktop, the second hidden */ const r = R(st);
-          if (r.left < S.left - 1 || r.right > S.right + 1) o.bt = `sprite ${Math.round(r.left)}-${Math.round(r.right)} out of its side ${Math.round(S.left)}-${Math.round(S.right)}`;
-          else if (r.right > V.left + 1 && r.left < V.right - 1) o.bt = 'sprite over the VS'; else if (r.width < 56) o.bt = `sprite ${Math.round(r.width)}px`; } }
-        /* and every name shown under a sprite is on top: the middle of each of its lines hits the name itself, not a neighbour's sprite */
-        vs.scrollIntoView({block: 'center'}); for (const mn of document.querySelectorAll('#main .sdt-side .sdt-mn')) { if (!mn.getClientRects().length) continue; const rg = document.createRange(); rg.selectNodeContents(mn);
-          for (const l of rg.getClientRects()) { if (!l.width) continue; const hit = document.elementFromPoint(l.left + l.width / 2, l.top + l.height / 2); if (!hit || !mn.contains(hit)) o.bt = `name "${mn.textContent}" covered`; } } }
-      /* 3. Test Run (Sim, Nov 18: Team Preview Practice took its plate, so the same rule is checked on Practice's picture): no empty middle
-         (the space the sprites leave between the plate's top and its words, 32px at most), no sprite under 44px */
-      const t = document.querySelector('#main .sdt-tr, #main .sdt-pp'); if (!t) o.tr = 'no picture'; else { const P = R(t.closest('.sdt-p')), X = R(t.closest('.sdt-p').querySelector('.sdt-tx')), S = [...t.querySelectorAll('.np-mon .st')].map(R);
-        const empty = Math.round(X.top - Math.max(...S.map(r => r.bottom), t.classList.contains('sdt-pp') ? R(t).bottom : 0 /* Practice's "Pick 4" is part of its picture */) - 12 + Math.max(0, Math.min(...S.map(r => r.top)) - P.top)), small = Math.round(Math.min(...S.map(r => r.width)));
-        if (empty > 32 || small < 44) o.tr = `empty ${empty}px, smallest sprite ${small}px`; }
-      /* 4. Damage Calc (Sim's Nov 23 Home tools, A): at 1100+ the calc is the band. Its big number (.sdt-pct) and "of X's HP" line (.sdt-of)
-         show inside the band, the number whole (its text inside its own box and the band, nothing cut off), the two sprites (64px or more)
-         inside the band, clear of the words. Under 1100 (phones and iPads, Tools B) the calc is a half tile with its picture on top and no
-         number, by design: the check is 1100-2560 only, and says so. (Code review, Nov 23: the old spare-height check skipped every width.) */
-      if (innerWidth >= 320 /* Nov 26 (Sim: one rack everywhere): phones and iPads have the calc band too, so it is checked at every width */) { const p = document.querySelector('#main .sdt-grid>.sdt-dc'), vis = e => e && e.getClientRects().length && R(e).width > 0;
-        const out = (r, B, s = 1) => r.left < B.left - s || r.right > B.right + s || r.top < B.top - s || r.bottom > B.bottom + s;
-        if (!vis(p)) o.dc = 'no calc band'; else { const P = R(p), pc = p.querySelector('.sdt-pct'), of = p.querySelector('.sdt-of'), hw = p.querySelector('.sdt-hpw'), bad = [];
-          if (!vis(pc)) bad.push('no number'); else { const N = R(pc), rg = document.createRange(); rg.selectNodeContents(pc); const L = [...rg.getClientRects()].filter(r => r.width);
-            if (!/^\d[\d.]*[–-]\d[\d.]*%$/.test(pc.textContent.trim())) bad.push(`number "${pc.textContent}"`);
-            if (out(N, P) || !L.length || L.some(r => r.left < N.left - 1.5 || r.right > N.right + 1.5 /* across only: at line-height 1 the glyph box is taller than the line by design */ || out(r, P)) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`number cut off (${Math.round(N.left - P.left)}-${Math.round(P.right - N.right)}px in, ${pc.scrollWidth}/${pc.clientWidth} wide)`);
-            /* Nov 26 (WebKit run: "94–100%" lost its "%" at 390 and 1100-1279): the widest number the calc can show, a 3-digit range, is put in
-               the same way the page draws it (class sdt-pct3) and must fit whole too; then the real number goes back */
-            /* Kip's review (Nov 26): every shape of number the calc can show is put in the way the page draws it (V2.sdtPctTxt/sdtPctCls:
-               a sure KO "100%", wide 2-digit "88–99%", 3-digit "94–100%", decimals "8.5–9.9%", short "5–9%") and must fit whole, on one line,
-               left of the band's slanted right edge at the BOTTOM of the line (the slant leans in toward the bottom); then the real number goes back */
-            if (!bad.length) { const t0 = pc.textContent, c0 = pc.className, bc = getComputedStyle(p, '::before'), ins = +((bc.clipPath.match(/calc\(100% - ([\d.]+)px\) 100%/) || [])[1] || 0);
-              if (!(ins > 0)) bad.push(`the band's slant was not read (clip-path "${bc.clipPath}")`);
-              else for (const [lo, hi] of [['100', '100'], ['88', '99'], ['94', '100'], ['8.5', '9.9'], ['5', '9']]) { const t = V2.sdtPctTxt(lo, hi); pc.textContent = t; pc.className = 'sdt-pct' + V2.sdtPctCls(t);
-                const N3 = R(pc), r3 = document.createRange(); r3.selectNodeContents(pc); const L3 = [...r3.getClientRects()].filter(r => r.width), room = L3.map(r => Math.round(P.right - ins * (r.bottom - P.top) / P.height - r.right));
-                if (L3.length !== 1 || L3.some(r => r.left < N3.left - 1.5 || r.right > N3.right + 1.5 || out(r, P)) || room.some(v => v < 0) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`"${t}" cut off or wrapped (${L3.length} line(s), ${room.join('/')}px from the slanted edge)`); }
+      const vis = e => e && e.getClientRects().length && R(e).width > 0, out = (r, B, s = 1) => r.left < B.left - s || r.right > B.right + s || r.top < B.top - s || r.bottom > B.bottom + s;
+      const sts = e => [...e.querySelectorAll('.np-mon .st')].filter(vis).map(R), big = innerWidth >= 1380 /* D: full slips at 1380+, short slips (one picture) under */;
+      /* 2. Battle (Sim, Nov 28: option D; its sprites are a picture now, the slip is the link): at 1380+ your side and theirs with the VS
+         between, every sprite inside its own side and the picture, clear of the VS, 56px or more; under 1380 one sprite (yours), 44px or more,
+         inside the picture */
+      const btp = document.querySelector('#main .sdt-battle .sdt-pic'); if (!vis(btp)) o.bt = 'no Battle picture'; else { const P = R(btp), vs = btp.querySelector('.sdt-vs'), V = vis(vs) ? R(vs) : null, sides = [...btp.querySelectorAll('.sdt-side')].filter(vis), S = sts(btp);
+        if (big ? sides.length !== 2 || !V || S.length !== 2 : S.length !== 1) o.bt = `${sides.length} sides, VS ${!!V}, ${S.length} sprites (want ${big ? '2 sides, the VS, 2 sprites' : '1 sprite'})`;
+        else for (const st of [...btp.querySelectorAll('.np-mon .st')].filter(vis)) { const r = R(st), sd = R(st.closest('.sdt-side'));
+          if (out(r, P)) o.bt = `sprite out of the picture`; else if (r.left < sd.left - 1 || r.right > sd.right + 1) o.bt = `sprite ${Math.round(r.left)}-${Math.round(r.right)} out of its side ${Math.round(sd.left)}-${Math.round(sd.right)}`;
+          else if (V && r.right > V.left + 1 && r.left < V.right - 1) o.bt = 'sprite over the VS'; else if (r.width < (big ? 56 : 44)) o.bt = `sprite ${Math.round(r.width)}px`; } }
+      /* 3. Team Preview Practice (Sim, Nov 18: it took Test Run's plate; D, Nov 28): its picture is filled (32px or less of it left empty by
+         the sprites) and no sprite is under 44px or outside the picture: at 1380+ the six, under 1380 one */
+      const prp = document.querySelector('#main .sdt-prac .sdt-pic'); if (!vis(prp)) o.tr = 'no picture'; else { const P = R(prp), S = sts(prp);
+        if (S.length !== (big ? 6 : 1)) o.tr = `${S.length} sprites (want ${big ? 6 : 1})`;
+        else { const empty = Math.round(P.height - (Math.max(...S.map(r => r.bottom)) - Math.min(...S.map(r => r.top)))), small = Math.round(Math.min(...S.map(r => r.width)));
+          if (empty > 32 || small < 44 || S.some(r => out(r, P))) o.tr = `empty ${empty}px, smallest sprite ${small}px${S.some(r => out(r, P)) ? ', a sprite out of the picture' : ''}`; } }
+      /* 4. Damage Calculator (Sim, Nov 28: option D, its own slip at every width): the damage number and its "of X's HP" label show inside
+         the slip, the number whole on one line (every shape the calc can show is put in the way the page draws it: V2.sdtPctTxt/sdtPctCls,
+         Kip's review Nov 26: "100%", "88–99%", "94–100%", "8.5–9.9%", "5–9%"; then the real number goes back); the sprites inside the slip's
+         picture, clear of the words: at 1380+ both (64px+), under 1380 one (44px+) */
+      { const p = document.querySelector('#main .sdt-calc');
+        if (!vis(p)) o.dc = 'no calc slip'; else { const P = R(p), pc = p.querySelector('.sdt-fig b'), of = p.querySelector('.sdt-fig small'), pic = p.querySelector('.sdt-pic'), bad = [];
+          const one = () => { const N = R(pc), rg = document.createRange(); rg.selectNodeContents(pc); const L = [...rg.getClientRects()].filter(r => r.width);
+            return L.length === 1 && !out(N, P) && !L.some(r => r.left < N.left - 1.5 || r.right > N.right + 1.5 || out(r, P)) && pc.scrollWidth <= pc.clientWidth + 1; };
+          if (!vis(pc)) bad.push('no number'); else { if (!/^\d[\d.]*(?:[–-]\d[\d.]*)?%$/.test(pc.textContent.trim())) bad.push(`number "${pc.textContent}"`);
+            if (!one()) bad.push(`number "${pc.textContent}" cut off or wrapped`);
+            if (!bad.length) { const t0 = pc.textContent, c0 = pc.className;
+              for (const [lo, hi] of [['100', '100'], ['88', '99'], ['94', '100'], ['8.5', '9.9'], ['5', '9']]) { const t = V2.sdtPctTxt(lo, hi); pc.textContent = t; pc.className = 'u' + V2.sdtPctCls(t); if (!one()) bad.push(`"${t}" cut off or wrapped`); }
               pc.textContent = t0; pc.className = c0; } }
-          if (!vis(of)) bad.push('no "of X\'s HP" line'); else { if (!/^of .+['’]s HP$/.test(of.textContent.trim())) bad.push(`line "${of.textContent}"`); if (out(R(of), P)) bad.push('the HP line is out of the band'); }
-          const S = [...p.querySelectorAll('.sdt-duel .np-mon .st')].filter(vis).map(R), W = vis(hw) ? R(hw) : null;
-          if (S.length !== 2) bad.push(S.length + ' sprites'); for (const r of S) { if (out(r, P)) bad.push(`sprite ${Math.round(r.left)}-${Math.round(r.right)} x ${Math.round(r.top)}-${Math.round(r.bottom)} out of the band ${Math.round(P.left)}-${Math.round(P.right)} x ${Math.round(P.top)}-${Math.round(P.bottom)}`);
-            else if (r.width < 64) bad.push(`sprite ${Math.round(r.width)}px`); else if (W && r.right > W.left + 1 && r.left < W.right - 1 && r.bottom > W.top + 1 && r.top < W.bottom - 1) bad.push('a sprite over the words'); }
+          if (!vis(of)) bad.push('no "of X\'s HP" label'); else { if (!/^of .+['’]s HP$/.test(of.textContent.trim())) bad.push(`label "${of.textContent}"`); if (out(R(of), P)) bad.push('the HP label is out of the slip'); }
+          const S = vis(pic) ? sts(pic) : [], W = [pc, of].filter(vis).map(R);
+          if (S.length !== (big ? 2 : 1)) bad.push(S.length + ' sprites'); for (const r of S) { if (out(r, R(pic))) bad.push(`sprite ${Math.round(r.left)}-${Math.round(r.right)} x ${Math.round(r.top)}-${Math.round(r.bottom)} out of the picture`);
+            else if (r.width < (big ? 64 : 44)) bad.push(`sprite ${Math.round(r.width)}px`); else if (W.some(w => r.right > w.left + 1 && r.left < w.right - 1 && r.bottom > w.top + 1 && r.top < w.bottom - 1)) bad.push('a sprite over the words'); }
           if (bad.length) o.dc = bad.join(', '); } }
       /* 5. the receipt's five band bars: one width (untransformed, within 1px) */
       const B = [...document.querySelectorAll('#main .sds-b i')].map(e => e.offsetWidth); if (B.length !== 5) o.bars = B.length + ' bars'; else if (Math.max(...B) - Math.min(...B) > 1) o.bars = B.join('/');
@@ -1375,9 +1397,9 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
         if (f < 13 || r.left < Bd.left + 3.5 || r.right > Bd.right - 3.5 - fold) { o.tags = `${t.textContent} ${Math.round(r.left - Bd.left)}px / ${Math.round(Bd.right - fold - r.right)}px from the edge, ${f}px`; break; } }
       return o; });
     for (const [k, a] of [['bt', bt], ['tr', tr], ['dc', dc], ['bars', bars], ['tags', tags]]) if (m[k]) a.push(w + ': ' + m[k]); }
-  ok(!bt.length, `Stampede tiles 2 (Nov 18 night): Battle, at 320-2560 every sprite stays inside its side, clear of the VS, and is 56px or more; no name under a sprite${bt.length ? ': ' + bt.slice(0, 4).join(' | ') : ''}`);
-  ok(!tr.length, `Stampede tiles 3: Test Run, at 320-2560 the sprites fill the plate (32px or less left empty between its top and its words) and none is under 44px${tr.length ? ': ' + tr.slice(0, 4).join(' | ') : ''}`);
-  ok(!dc.length, `Stampede tiles 4: Damage Calc band, at 320-2560 (Nov 26: phones and iPads have the band too) the damage number and "of X's HP" line show inside the band, the number not cut off (every shape: "100%", "88–99%", "94–100%", "8.5–9.9%", "5–9%"), both sprites (64px+) inside the band and clear of the words${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
+  ok(!bt.length, `Stampede tiles 2 (Nov 18 night; Sim, Nov 28: option D): Battle, at 320-2560 every sprite stays inside its side and the picture, clear of the VS (both sides, 56px or more, at 1380+; one sprite, 44px or more, under 1380)${bt.length ? ': ' + bt.slice(0, 4).join(' | ') : ''}`);
+  ok(!tr.length, `Stampede tiles 3: Team Preview Practice (took Test Run's plate, Sim Nov 18; D, Nov 28), at 320-2560 the sprites fill the picture (32px or less left empty) inside it and none is under 44px (six at 1380+, one under)${tr.length ? ': ' + tr.slice(0, 4).join(' | ') : ''}`);
+  ok(!dc.length, `Stampede tiles 4: Damage Calculator slip (Sim, Nov 28: option D), at 320-2560 the damage number and its "of X's HP" label show inside the slip, the number whole on one line (every shape: "100%", "88–99%", "94–100%", "8.5–9.9%", "5–9%"), the sprites inside the picture and clear of the words (both, 64px+, at 1380+; one, 44px+, under)${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
   ok(!bars.length, `Stampede tiles 5: the receipt's five band bars are one width at 320-2560${bars.length ? ': ' + bars.slice(0, 4).join(' | ') : ''}`);
   ok(!tags.length, `Stampede tags (qcheck triage Nov 18, defect 2): every plan-board name tag ("Mega Charizard Y") fits whole inside the board, clear of its folded corner, at 13px or more, 320-2560${tags.length ? ': ' + tags.slice(0, 4).join(' | ') : ''}`);
   await q.close(); }
@@ -1517,14 +1539,14 @@ if (part('main2')) {
     ok(r.seq.every((x, i) => x >= 0 && (!i || x > r.seq[i - 1])) && r.old < 0 && r.h1.length === 1 && /^Sharply raise your win rate\. Rate your Pokémon Champions team (before|for) Reg M-D\.$/.test(r.h1[0].replace(/\s+/g, ' ')) && r.bars === 6 && r.barsOk && !r.errs,
       `F3-1 (Job DD): Home is Final 3's hero, then Top 10, your six, tools rack, post band; no Stampede hero; one h1, the slogan then the Reg M-D line (Sim, option A); 6 receipt bars, each a link whose spoken name starts with its number: "<n>, <name>'s Rating" (${JSON.stringify(r)})`); }
   // F3-2: the first screen. At 1440x900 the hero ends at the window's bottom even under the Preview's data note, and Home stays within its
-  // 4.3 screens (Sim, Nov 28: was 4; the six now stand in two rows of three); Score My Team is on the first screen (above the phone tab bar) at the sizes Sim checks
+  // 4.5 screens (Sim, Nov 28: was 4; 4.3 for the six in two rows of three; 4.5 with tools option D); Score My Team is on the first screen (above the phone tab bar) at the sizes Sim checks
   { const bad = []; for (const [w, h] of [[390, 844], [1280, 800], [1366, 768], [1440, 900], [1920, 1080]]) {
       const r = await f3(w, h, () => { const g = document.querySelector('#main .f3-acts .k-go'), H = document.querySelector('#main .f3-hero'), bar = document.querySelector('.np-bar');
         const fold = innerHeight - (bar && getComputedStyle(bar).position === 'fixed' ? bar.offsetHeight : 0);
         return {go: g ? Math.round(g.getBoundingClientRect().bottom) : null, fold, heroEnd: H ? Math.round(H.getBoundingClientRect().bottom + scrollY) : null, scr: +(document.documentElement.scrollHeight / innerHeight).toFixed(3), note: !!document.querySelector('.np-dnote')}; });
       if (r.go == null || r.go > r.fold) bad.push(`${w}x${h}: Score My Team ends ${r.go} under the first screen ${r.fold}`);
-      if (w === 1440 && (Math.abs(r.heroEnd - h) > 1 || r.scr > 4.3)) bad.push(`1440x900: hero ends ${r.heroEnd} (want ${h}; data note ${r.note}), ${r.scr} screens (4.3 at most: Sim, Nov 28, for the six in two rows of three)`); }
-    ok(!bad.length, `F3-2 (Job DD): Score My Team on the first screen at 390x844, 1280x800, 1366x768, 1440x900, 1920x1080; at 1440x900 the hero ends at the window's bottom under the data note and Home is at most 4.3 screens (${bad.join(' | ') || 'all good'})`); }
+      if (w === 1440 && (Math.abs(r.heroEnd - h) > 1 || r.scr > 4.5)) bad.push(`1440x900: hero ends ${r.heroEnd} (want ${h}; data note ${r.note}), ${r.scr} screens (4.5 at most: Sim, Nov 28, the six in two rows of three + tools option D)`); }
+    ok(!bad.length, `F3-2 (Job DD): Score My Team on the first screen at 390x844, 1280x800, 1366x768, 1440x900, 1920x1080; at 1440x900 the hero ends at the window's bottom under the data note and Home is at most 4.5 screens (${bad.join(' | ') || 'all good'})`); }
   // F3-3: every width, day and night: no sideways scroll, no name, item, type or receipt line cut, no page error
   { const bad = []; for (const w of [320, 360, 390, 414, 600, 768, 900, 1024, 1180, 1280, 1366, 1440, 1600, 1920, 2560]) for (const night of [false, true]) {
       const r = await f3(w, 900, () => ({hero: !!document.querySelector('#main .f3-hero'), sw: document.documentElement.scrollWidth - document.documentElement.clientWidth,

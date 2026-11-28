@@ -1,6 +1,7 @@
 // Sim's Nov 20 picks from the outside audit (docs/rebuild/research/audit-nov20-options.md; Sim took every recommended option, 8:17 AM):
-//  C  (Q72) Home 700-1279: the six "More tools" links sit in one row (700+); (Nov 26: the rack replaced the 700-1099 end tiles, so the
-//     title-edge and full-width checks became: the 7 tool chips' words on 2 lines at most, inside the chip); the headline "Same herd. Twelve tools." breaks after "herd." with
+//  C  (Q72) Home 700-1279: the six "More tools" links sit in one row (700+; Sim, Nov 28, option D: tickets, one row from 1100, full even
+//     rows 3+3 / 2+2+2 at 700-1099); (Nov 26: the rack replaced the 700-1099 end tiles, so the title-edge and full-width checks became:
+//     the tool chips' words on 2 lines at most, inside the chip; option D: the 12 slips' names); the headline "Same herd. Twelve tools." breaks after "herd." with
 //     "Twelve tools." whole on line 2 (700-1279, and phones as before); one line from 1280 as before.
 //  D1 (Q73) Usage podium benches (since the kit reskin proposal, Nov 22: the top-ten rows, see the D1 block), 320-599: a Mega name puts "MEGA" on the tag line (.gs-mg, as "Usually alongside" does), so every
 //     bench row's numbers sit level (0px spread); 600+ keeps "Mega Charizard Y" on the name line and level rows.
@@ -29,30 +30,35 @@ for (const th of ['light', 'dark']) {
   for (const W of [390, 700, 720, 768, 800, 820, 1024, 1099, 1100, 1279, 1280, 1440]) { const tag = `home ${W} ${th}`, P = await open('home', W, th);
     const R = await P.p.evaluate(() => { const q = s => document.querySelector(s);
       const h = q('.sdt-h'), sp = h && h.querySelector('span');
-      const ev = q('.sdt-ends .sdt-end.ev .sdt-t'), hw = q('.sdt-ends .sdt-end.hw .sdt-t'), vis = e => e && e.getClientRects().length;
+      const vis = e => e && e.getClientRects().length;
       const more = q('.sdt-more'), li = more ? [...more.querySelectorAll('li a')].map(a => a.getBoundingClientRect()) : [];
       const mr = more && more.getBoundingClientRect(), cs = more && getComputedStyle(more);
       // the top of each word of the headline (a Range per word), so the break is read from where the words really sit
       const words = []; if (h) { const w = document.createTreeWalker(h, NodeFilter.SHOW_TEXT); let tn; while ((tn = w.nextNode())) { const re = /\S+/g; let m; while ((m = re.exec(tn.data))) {
         const rg = document.createRange(); rg.setStart(tn, m.index); rg.setEnd(tn, m.index + m[0].length); words.push([m[0], Math.round(rg.getBoundingClientRect().top)]); } } }
       return {span: sp ? {txt: sp.textContent, words} : null,
-        ev: vis(ev) ? ev.getBoundingClientRect().left : null, hw: vis(hw) ? hw.getBoundingClientRect().left : null,
-        n: li.length, tops: li.map(r => Math.round(r.top)), l0: li.length ? li[0].left - (mr.left + parseFloat(cs.paddingLeft)) : null,
-        rEnd: li.length ? (mr.right - parseFloat(cs.paddingRight)) - li[li.length - 1].right : null,
-        /* Nov 26: each tool chip's words, lines and overflow past the chip (the rack: chips at every width) */
-        chips: [...document.querySelectorAll('#main .sdt-chp')].filter(vis).map(c => { const C = c.getBoundingClientRect(), b = c.querySelector(':scope>b') || c, rg = document.createRange(); rg.selectNodeContents(b);
+        n: li.length, tops: li.map(r => Math.round(r.top)), lefts: li.map(r => Math.round(r.left)), rights: li.map(r => Math.round(r.right)),
+        /* each More tools ticket's words inside the ticket */
+        mOut: more ? [...more.querySelectorAll('li a')].filter(a => { const A = a.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(a.querySelector('span') || a); return [...rg.getClientRects()].some(r => r.width && (r.left < A.left - 0.5 || r.right > A.right + 0.5)); }).map(a => a.textContent.trim()) : [],
+        /* Sim, Nov 28 (option D): each tool slip's name (the title band across its top): its lines, and how far its words run past the slip */
+        chips: [...document.querySelectorAll('#main .sdt-tile')].filter(vis).map(c => { const C = c.getBoundingClientRect(), b = c.querySelector('.sdt-go') || c, rg = document.createRange(); rg.selectNodeContents(b);
           const L = [...rg.getClientRects()].filter(r => r.width), tops = new Set(L.map(r => Math.round(r.top))); return [b.textContent.trim(), tops.size, Math.round(Math.max(0, ...L.map(r => Math.max(r.right - C.right, C.left - r.left))))]; })}; });
     const S = R.span, top = k => { const x = S && S.words.find(([t]) => t === k); return x ? x[1] : null; }, rows = S ? S.words.map(([t, y]) => `${t}@${y}`).join(' ') : 'no headline';
     const [tS, tH, tW, tT] = ['Same', 'herd.', 'Twelve', 'tools.'].map(top), seen = [tS, tH, tW, tT].every(v => v != null);
     if (W < 1280) ok(S && S.txt === 'Twelve tools.' && seen && tS === tH && tW > tH && tW === tT, `${tag}: headline breaks after "herd.", "Twelve tools." whole on line 2 (${rows})`);
     else ok(seen && tS === tH && tH === tW && tW === tT, `${tag}: headline on one line as before (${rows})`);
-    /* Nov 26 (Sim approved one Home tools rack at every width): Events and How We Calculate are chips now, not the 700-1099 end tiles,
-       so their title check (Q72) is replaced by: every chip's words on at most 2 lines and inside the chip (at 1280 "How We Calculate"
-       took 3 lines and was cut). The More tools row keeps one row, laid out as at 1100+ (it no longer spreads to the full width at 700-1099). */
+    /* Nov 26 (Sim approved one Home tools rack at every width): Events and How We Calculate were chips, so their title check (Q72) became:
+       every chip's words on at most 2 lines and inside the chip (at 1280 "How We Calculate" took 3 lines and was cut). Sim, Nov 28 (option D):
+       the chips are gone; every tool is a slip with its name printed across its top, so the same rule is checked on the twelve slips' names. */
     if (W >= 700) { const badChip = R.chips.filter(([, n, o]) => n > 2 || o > 0.5);
-      ok(R.chips.length === 7 && !badChip.length, `${tag}: the 7 tool chips' words on 2 lines at most, inside the chip (${R.chips.length} chips${badChip.length ? '; ' + badChip.map(([t, n, o]) => `${t}: ${n} lines, ${o}px out`).join(', ') : ''})`); }
-    if (W >= 700) { const one = R.n === 6 && Math.max(...R.tops) - Math.min(...R.tops) <= 1;
-      ok(one, `${tag}: the six More tools links in one row (${R.n} links, tops ${[...new Set(R.tops)].join('/')})`); }
+      ok(R.chips.length === 12 && !badChip.length, `${tag}: the 12 tool slips' names on 2 lines at most, inside the slip (Sim, Nov 28: option D) (${R.chips.length} slips${badChip.length ? '; ' + badChip.map(([t, n, o]) => `${t}: ${n} lines, ${o}px out`).join(', ') : ''})`); }
+    /* Q72 C put the six More tools links in one row from 700. Sim, Nov 28 (option D): they are paper tickets now, and six tickets fit one row
+       only from 1100, so at 700-1099 they stand in full, even rows (3 + 3; 2 + 2 + 2 under 760), never a part-filled row (rule 13); one row
+       from 1100. Checked: every row holds as many tickets, every row starts and ends at the same edges, each ticket's words inside it. */
+    if (W >= 700) { const rows = {}; R.tops.forEach((t, i) => { const k = Math.round(t / 4); (rows[k] = rows[k] || []).push(i); }); const rs = Object.values(rows);
+      const even = R.n === 6 && new Set(rs.map(x => x.length)).size === 1 && new Set(rs.map(x => Math.min(...x.map(i => R.lefts[i])))).size === 1 && new Set(rs.map(x => Math.max(...x.map(i => R.rights[i])))).size === 1;
+      const want = W >= 1100 ? 1 : W >= 760 ? 2 : 3;
+      ok(even && rs.length === want && !R.mOut.length, `${tag}: the six More tools links in ${want === 1 ? 'one row' : want + ' full, even rows'} (Sim, Nov 28: option D) (${R.n} links, rows of ${rs.map(x => x.length).join('+')}${R.mOut.length ? ', words out: ' + R.mOut.join(', ') : ''})`); }
     await done(P, tag); }
 
   // D1 + E1: Usage
