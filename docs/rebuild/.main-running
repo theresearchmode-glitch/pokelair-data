@@ -1,2 +1,2 @@
-32593
-herd-webkit.mjs: the herd in Safari's engine (iPhone 15, iPad, Mac 1440); GitHub run 46131139900
+1878
+gate.sh alt/home-herd: waits for GitHub green (run 46131139900), merges into claude/design6 through merge-check
