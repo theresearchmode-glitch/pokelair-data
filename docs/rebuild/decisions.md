@@ -3046,3 +3046,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:01 AM: Started helper: rewrite the old tools tests for option D on alt/helper-tools-d (6 files use old sdt- classes; checks must stay able to fail). Main thread: 7 launch checks on design6 efe864fa.
 - 7:05 AM: Launch checks on design6 efe864fa (herd + Kip 78 fixes) with main's data: 7/7 exit 0 (public-site, deploy-smoke 369 URLs, seo, as-of, speed, privacy, links).
 - 7:25 AM: Safari engine (WebKit) My Team tests on design6 efe864fa: 139 pass, 0 FAIL, exit 0.
+- 7:26 AM: Preview rebuild from design6 efe864fa: same data as v273 (2026-11-27 19:19 UTC; no new data run yet today), herd present, no-names 0. Kip's fixes are Worker/config only, not part of the Preview page, so nothing visible changed: not republished.
