@@ -78,3 +78,4 @@
 77 | started | alt/gemini-patchtest-post 3e4fc7ec | adding automatic post-patch mode to experiments/apply-dec2-patch-test.mjs (with pre-patch git baseline + half-patched fail check) | Fri Nov 27, 11:48 AM
 77 | done | alt/gemini-patchtest-post eb08591a | added automatic post-patch mode (git show 978d8213 baseline + check 0) & half-patched fail guard to apply-dec2-patch-test.mjs; clean tree ALL 30 PASS, patched scratch ALL 31 PASS (was 12 FAIL), half-patched FAIL (exit 1); report docs/rebuild/test-runs/kip-job77-patchtest-post.md | Fri Nov 27, 11:50 AM
 - | idle | alt/gemini-patchtest-post eb08591a | stopped for the week (all jobs through 77 finished, pushed, and reported; clean tree) | Fri Nov 27, 11:55 AM
+78 | started | alt/gemini-launch-review fa15f917 | pre-launch security & code review of origin/main + alt/home-herd | Sat Nov 28, 4:39 AM
