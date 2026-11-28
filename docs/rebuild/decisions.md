@@ -3003,3 +3003,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:07 AM: main-merge stopped: no GitHub run on design6 d35d475c (only deploy workflow files changed; test.yml paths don't include them). Dispatched test.yml on design6; main-merge.sh rerun.
 - 12:36 AM: Hourly 12:36 AM: Game Plan v130 (no content change); disk 7 GB; main-merge.sh waiting for GitHub on design6 d35d475c.
 - 1:14 AM: main fa15f917 pushed (deploy fix; merge-check ALL PASSED; design6 run 46110662337 green). Workflow-only change: no test run on main, live stays cc21cf94 (already has the nastyplot.org route). Sunday's deploy = deploy.yml from main (fixed) + site from live. Practice deploy #4 dispatched from main to prove the merged workflow.
+- 1:18 AM: Practice deploy #4 from main fa15f917 (46115686914): SUCCESS: deployed, 12 checks ok (incl. analytics, 404, no source map, sitemap, robots), cleanup HTTP 200. The merged deploy path is proven end to end before Sunday.
