@@ -2,7 +2,18 @@
    the line-up (six rings), the receipt (Strength Score) and the plan board, joined by chevrons on desktop and ending on one baseline;
    on phones they stack (the receipt a short wide ticket, the board wide and short). Colours: --sd-* tokens (tokens.css), day and night. */
 .sds{overflow:hidden}
-.sds::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(-62deg,transparent 0 56px,var(--sd-lines) 56px 62px)} /* the band's faint speed lines (mock-up) */
+/* the herd (Sim, Nov 28): the most-used Pokémon in grey behind the band, tilted like the site's slanted boxes, fading out under the
+   six, the receipt and the plan (a mask, so nothing behind the words); every seventh keeps a little colour so it reads as Pokémon,
+   not wallpaper. Replaces the faint speed lines. */
+.sds-herd{position:absolute;inset:-14% -8%;z-index:0;pointer-events:none;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--s1) var(--s3);align-content:center;rotate:-8deg;
+  -webkit-mask-image:radial-gradient(ellipse 60% 68% at 40% 56%,transparent 0 40%,var(--sd-mask) 80%);mask-image:radial-gradient(ellipse 60% 68% at 40% 56%,transparent 0 40%,var(--sd-mask) 80%)}
+.sds-herd i{display:block;min-width:0;filter:grayscale(1) brightness(.55) contrast(1.1);opacity:.5}
+.sds-herd i:nth-child(7n+3){filter:none;opacity:.3}
+.sds-herd .np-mon,.sds-herd .np-mon .st{width:100%;--iw:100%}.sds-herd .pool{display:none}
+.sds-in{z-index:1}
+@media (max-width:1279.98px){.sds-herd{grid-template-columns:repeat(9,minmax(0,1fr));-webkit-mask-image:linear-gradient(180deg,var(--sd-mask) 0,color-mix(in srgb,var(--sd-mask) 35%,transparent) 18%,color-mix(in srgb,var(--sd-mask) 20%,transparent) 50%,var(--sd-mask) 100%);mask-image:linear-gradient(180deg,var(--sd-mask) 0,color-mix(in srgb,var(--sd-mask) 35%,transparent) 18%,color-mix(in srgb,var(--sd-mask) 20%,transparent) 50%,var(--sd-mask) 100%)}}
+@media (max-width:699.98px){.sds-herd{grid-template-columns:repeat(5,minmax(0,1fr));inset:-4% -14%;-webkit-mask-image:linear-gradient(180deg,var(--sd-mask) 0,color-mix(in srgb,var(--sd-mask) 60%,transparent) 14%,color-mix(in srgb,var(--sd-mask) 35%,transparent) 50%,var(--sd-mask) 92%);mask-image:linear-gradient(180deg,var(--sd-mask) 0,color-mix(in srgb,var(--sd-mask) 60%,transparent) 14%,color-mix(in srgb,var(--sd-mask) 35%,transparent) 50%,var(--sd-mask) 92%)}}
+@media (prefers-reduced-transparency:reduce){.sds-herd{display:none}}
 .sds-in{position:relative;display:grid;grid-template-columns:minmax(0,1.6fr) var(--s8) minmax(0,1fr) var(--s8) minmax(0,.92fr);column-gap:var(--s3);align-items:end;max-width:1760px;margin:0 auto}
 .sds-part{min-width:0}
 .sds-chev{align-self:center;display:flex;justify-content:center;color:var(--sd-chev)}
@@ -32,7 +43,11 @@
 .sds-wla .sds-lk{min-width:var(--tap);justify-content:center} /* "Got It" is 39px wide in its words: the tap area is 44 by 44 (qcheck TAP, C8) */
 .sds-rings{list-style:none;margin:var(--s4) 0 0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));container-type:inline-size;
   --cw:16.66cqi;--sw:33cqi;--sh:38cqi;--rw:14cqi}
-.sds-rings[data-named="4"],.sds-rings[data-named="5"],.sds-rings[data-named="6"]{--sw:25cqi;--sh:33cqi} /* a full six stands closer, as a group photo */
+/* four or more: two rows of three at every width, each Pokémon on its own spot with its name under it (Sim, Nov 28: one row of six
+   overlapped up to half a sprite on desktop and looked cramped; phones already had two rows of three and looked right) */
+.sds-rings[data-named="4"],.sds-rings[data-named="5"],.sds-rings[data-named="6"]{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s8);
+  --cw:33.3cqi;--sw:min(32cqi,220px);--sh:min(32cqi,220px);--rw:min(18cqi,140px)}
+.sds-rings[data-named="4"] .sds-slot,.sds-rings[data-named="5"] .sds-slot,.sds-rings[data-named="6"] .sds-slot{--ry:var(--s2)} /* the name sits right under its Pokémon */
 .sds-slot{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;min-width:0;--ry:calc(var(--rw)*.2)}
 .sds-slot:nth-child(odd){z-index:2} /* all six rings one size on one line (audit L4); 1, 3, 5 stand in front where sprites overlap */
 .sds-st{position:relative;width:100%;height:var(--sh)}
@@ -132,6 +147,8 @@ button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(10
   .sds-rings{flex:1 1 auto;grid-template-rows:minmax(var(--sh),1fr) auto}
   .sds-slot{display:grid;grid-row:span 2;grid-template-rows:subgrid;justify-items:center;align-items:stretch}
   .sds-st{height:auto}
+  .sds-rings[data-named="4"],.sds-rings[data-named="5"],.sds-rings[data-named="6"]{grid-template-rows:var(--sh) auto var(--s10) var(--sh) auto;row-gap:0;flex:0 0 auto;align-content:center}
+  .sds-rings[data-named="4"] .sds-slot:nth-child(n+4),.sds-rings[data-named="5"] .sds-slot:nth-child(n+4),.sds-rings[data-named="6"] .sds-slot:nth-child(n+4){grid-row:4/span 2} /* a 40px track between the two rows only (a row gap would also split each Pokémon from its name) */ /* two rows of three: each a stage + its names, at their own size (a stretched stage left a gap under the sprite) */
   .sds-rc{padding-left:var(--s4);padding-right:var(--s4)} /* 8px more room inside the receipt, so its five band names keep one row at 1440 */
 }
 /* the seam under the hero (900 and wider; both bands are ink there): the line-up starts a short step under the pink ticker, not a band's

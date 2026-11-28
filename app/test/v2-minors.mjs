@@ -1539,14 +1539,14 @@ if (part('main2')) {
     ok(r.seq.every((x, i) => x >= 0 && (!i || x > r.seq[i - 1])) && r.old < 0 && r.h1.length === 1 && /^Sharply raise your win rate\. Rate your Pokémon Champions team (before|for) Reg M-D\.$/.test(r.h1[0].replace(/\s+/g, ' ')) && r.bars === 6 && r.barsOk && !r.errs,
       `F3-1 (Job DD): Home is Final 3's hero, then Top 10, your six, tools rack, post band; no Stampede hero; one h1, the slogan then the Reg M-D line (Sim, option A); 6 receipt bars, each a link whose spoken name starts with its number: "<n>, <name>'s Rating" (${JSON.stringify(r)})`); }
   // F3-2: the first screen. At 1440x900 the hero ends at the window's bottom even under the Preview's data note, and Home stays within its
-  // 4 screens; Score My Team is on the first screen (above the phone tab bar) at the sizes Sim checks
+  // 4.5 screens (Sim, Nov 28: was 4; 4.3 for the six in two rows of three; 4.5 with tools option D); Score My Team is on the first screen (above the phone tab bar) at the sizes Sim checks
   { const bad = []; for (const [w, h] of [[390, 844], [1280, 800], [1366, 768], [1440, 900], [1920, 1080]]) {
       const r = await f3(w, h, () => { const g = document.querySelector('#main .f3-acts .k-go'), H = document.querySelector('#main .f3-hero'), bar = document.querySelector('.np-bar');
         const fold = innerHeight - (bar && getComputedStyle(bar).position === 'fixed' ? bar.offsetHeight : 0);
         return {go: g ? Math.round(g.getBoundingClientRect().bottom) : null, fold, heroEnd: H ? Math.round(H.getBoundingClientRect().bottom + scrollY) : null, scr: +(document.documentElement.scrollHeight / innerHeight).toFixed(3), note: !!document.querySelector('.np-dnote')}; });
       if (r.go == null || r.go > r.fold) bad.push(`${w}x${h}: Score My Team ends ${r.go} under the first screen ${r.fold}`);
-      if (w === 1440 && (Math.abs(r.heroEnd - h) > 1 || r.scr > 4)) bad.push(`1440x900: hero ends ${r.heroEnd} (want ${h}; data note ${r.note}), ${r.scr} screens (4 at most)`); }
-    ok(!bad.length, `F3-2 (Job DD): Score My Team on the first screen at 390x844, 1280x800, 1366x768, 1440x900, 1920x1080; at 1440x900 the hero ends at the window's bottom under the data note and Home is at most 4 screens (${bad.join(' | ') || 'all good'})`); }
+      if (w === 1440 && (Math.abs(r.heroEnd - h) > 1 || r.scr > 4.5)) bad.push(`1440x900: hero ends ${r.heroEnd} (want ${h}; data note ${r.note}), ${r.scr} screens (4.5 at most: Sim, Nov 28, the six in two rows of three + tools option D)`); }
+    ok(!bad.length, `F3-2 (Job DD): Score My Team on the first screen at 390x844, 1280x800, 1366x768, 1440x900, 1920x1080; at 1440x900 the hero ends at the window's bottom under the data note and Home is at most 4.5 screens (${bad.join(' | ') || 'all good'})`); }
   // F3-3: every width, day and night: no sideways scroll, no name, item, type or receipt line cut, no page error
   { const bad = []; for (const w of [320, 360, 390, 414, 600, 768, 900, 1024, 1180, 1280, 1366, 1440, 1600, 1920, 2560]) for (const night of [false, true]) {
       const r = await f3(w, 900, () => ({hero: !!document.querySelector('#main .f3-hero'), sw: document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -1930,8 +1930,11 @@ if (part('main2')) {
         /* Nov 19: Sim had the rings under the six removed ("the rings mess it up"); a hidden ring measures 0, so only drawn rings count, and the
            six names (Sim: "the names are not all in a line") must share one baseline too */
         const vis = s => [...document.querySelectorAll(s)].filter(e => e.getClientRects().length), spread = a => a.length ? Math.max(...a) - Math.min(...a) : 0;
+        /* Sim, Nov 28: a full six stands in two rows of three at every width ("too crowded" as one row on desktop), so each ROW's rings and
+           names share one line: values more than 40px apart are different rows */
+        const rowSpread = a => { const v = [...a].sort((x, y) => x - y), rows = []; for (const x of v) { const r = rows[rows.length - 1]; if (r && x - r[r.length - 1] <= 40) r.push(x); else rows.push([x]); } return rows.length ? Math.max(...rows.map(spread)) : 0; };
         const rings = vis('#main .sds-rings .sds-ring').map(e => { const r = e.getBoundingClientRect(); return r.top + r.height / 2; }), names = vis('#main .sds-rings .sds-nm').map(e => e.getBoundingClientRect().bottom);
-        return {gap, side, topGap: side ? Math.round(P[0].top - Math.min(P[1].top, P[2].top)) : 0, ends: side ? Math.round(Math.max(...P.map(r => r.bottom)) - Math.min(...P.map(r => r.bottom))) : 0, ringSpread: Math.round(Math.max(spread(rings), spread(names)))}; });
+        return {gap, side, topGap: side ? Math.round(P[0].top - Math.min(P[1].top, P[2].top)) : 0, ends: side ? Math.round(Math.max(...P.map(r => r.bottom)) - Math.min(...P.map(r => r.bottom))) : 0, ringSpread: Math.round(Math.max(rowSpread(rings), rowSpread(names)))}; });
       const tag = (empty ? 'empty ' : '') + w;
       seam.push(m.err ? tag + ' ' + m.err : m.gap >= 16 && m.gap <= 80 ? '' : `${tag}: line-up ${m.gap}px under the ticker`);
       if (m.side) start.push(m.topGap <= 8 && m.ends <= 32 && m.ringSpread <= 2 ? '' : `${tag}: line-up starts ${m.topGap}px under the board, ends ${m.ends}px apart, rings/names ${m.ringSpread}px off one line`); }
@@ -1954,7 +1957,7 @@ if (part('main2')) {
       strip.push(r ? `${empty ? 'empty ' : ''}${night ? 'night ' : ''}${w}: ${r}` : ''); }
     await ctx.close(); }
   ok(!seam.filter(Boolean).length, `Stampede polish 1 (Nov 18): at 1100-2560 (sample team and empty team) the line-up starts 16-80px under the pink ticker, no empty ink strip between them${seam.filter(Boolean).length ? ': ' + seam.filter(Boolean).join(' | ') : ''}`);
-  ok(start.length >= 6 && !start.filter(Boolean).length, `Stampede polish 1b: where the three parts stand side by side (1280-2560) the line-up starts with the board (no strip above its headline), all three end on one baseline and the six rings and names stay on one line${start.filter(Boolean).length ? ': ' + start.filter(Boolean).join(' | ') : ` (${start.length} views)`}`);
+  ok(start.length >= 6 && !start.filter(Boolean).length, `Stampede polish 1b: where the three parts stand side by side (1280-2560) the line-up starts with the board (no strip above its headline), all three end on one baseline and each row's rings and names stay on one line (two rows of three, Sim Nov 28)${start.filter(Boolean).length ? ': ' + start.filter(Boolean).join(' | ') : ` (${start.length} views)`}`);
   ok(!strip.filter(Boolean).length, `Stampede polish 2 (Nov 18): the receipt's five band names are 13px or more, inside the strip, at least 8px apart and clear of the chosen bar's ring at 320-2560, day and night, team and no team${strip.filter(Boolean).length ? ': ' + strip.filter(Boolean).slice(0, 4).join(' | ') : ''}`); }
 // ---- NPR begin: review of the three new pages (Nov 18, docs/rebuild/audits/review-new-pages-nov18.md). Each check failed on the build before its fix. ----
 { /* two test gifts (through the test hook; never in post.js): G1 a day-only (approx) serial code with a space in its code, G2 an exact-time one */
