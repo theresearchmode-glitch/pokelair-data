@@ -2989,3 +2989,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:09 PM: Build C2 CI fixes rechecked locally as GitHub builds: unbounded/q83/tap-size/s16/s17 pass, B-build 77/0. Committed 891b38a9; merged alt/practice-deploy (batch); pushed 631f989d; GitHub run 46091631179 queued; gate started.
 - 8:09 PM: HH design authority: Build slip phone plates 15px (My Box own width + Whole Roster rest at 390+; stacked under 380). Picture sent to Sim (iPhone 15 + SE).
 - 8:36 PM: Hourly 8:36 PM: Game Plan v126; disk 8 GB; no helper (as needed); Build batch run 46091631179 in progress, gate waiting.
+- 8:58 PM: Build batch merged into design6 fdf1ac27 (GitHub green on 631f989d; merge-check ALL PASSED): Build page C2 + CI fixes, practice-deploy.yml, wrangler routes nastyplot.org. main-merge.sh started.
