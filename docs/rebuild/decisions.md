@@ -2991,3 +2991,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:36 PM: Hourly 8:36 PM: Game Plan v126; disk 8 GB; no helper (as needed); Build batch run 46091631179 in progress, gate waiting.
 - 8:58 PM: Build batch merged into design6 fdf1ac27 (GitHub green on 631f989d; merge-check ALL PASSED): Build page C2 + CI fixes, practice-deploy.yml, wrangler routes nastyplot.org. main-merge.sh started.
 - 9:36 PM: Hourly 9:35 PM: Game Plan v127; disk 8 GB; no helper (as needed); main-merge.sh waiting for GitHub on design6 fdf1ac27.
+- 10:07 PM: main cc21cf94 pushed (design6 fdf1ac27: Build page C2, practice deploy, nastyplot.org route; merge-check ALL PASSED). Live v163 (1795835262-7825) published: host-wrapper 8/8 (0 px), WebKit iPhone light/dark + iPad dark clean, 0 errors; v2.js read back 3,828,885 B. Before/after Build picture sent. Main's own run being watched.
