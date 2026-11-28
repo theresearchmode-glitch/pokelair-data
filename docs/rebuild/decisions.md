@@ -3001,3 +3001,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:36 PM: Hourly 11:36 PM: Game Plan v129; disk 7 GB; deploy-fix GitHub run in progress, gate waiting.
 - 11:52 PM: Deploy fix merged into design6 d35d475c (GitHub green on aa5d141a; merge-check ALL PASSED). main-merge.sh started (design6 run must pass first).
 - 12:07 AM: main-merge stopped: no GitHub run on design6 d35d475c (only deploy workflow files changed; test.yml paths don't include them). Dispatched test.yml on design6; main-merge.sh rerun.
+- 12:36 AM: Hourly 12:36 AM: Game Plan v130 (no content change); disk 7 GB; main-merge.sh waiting for GitHub on design6 d35d475c.
